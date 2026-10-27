@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2022-2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,14 +60,14 @@ fun ScaffoldWithTopBar(
   navigationIcon: @Composable () -> Unit,
   actions: @Composable RowScope.() -> Unit = {},
   colors: TopAppBarColors =
-    TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+    TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
   floatingActionButton: @Composable () -> Unit = {},
   floatingActionButtonPosition: FabPosition = FabPosition.End,
   scrollBehavior: TopAppBarScrollBehavior? = null,
   content: @Composable (PaddingValues) -> Unit,
 ) {
   Scaffold(
-    containerColor = MaterialTheme.colorScheme.surfaceContainer,
+    containerColor = MaterialTheme.colorScheme.surface,
     modifier = modifier,
     topBar = {
       AnimatedVisibility(

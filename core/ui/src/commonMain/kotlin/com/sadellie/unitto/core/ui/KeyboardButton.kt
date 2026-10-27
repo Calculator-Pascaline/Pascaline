@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2022-2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,7 +53,8 @@ fun BasicKeyboardButton(
           interactionSource = remember { MutableInteractionSource() },
           onClick = { onClick() },
           onLongClick = onLongClick,
-          cornerRadiusRange = 30..50,
+          // Rounded squares, a bit rounder while pressed
+          cornerRadiusRange = 24..36,
           animationSpec = tween(KeyboardButtonToken.SQUASH_ANIMATION_DURATION_MS),
         )
         .background(containerColor),
@@ -90,7 +92,7 @@ fun KeyboardButtonLight(
     containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
     icon = icon,
     contentDescription = contentDescription,
-    iconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    iconColor = MaterialTheme.colorScheme.onSurface,
   )
 }
 
@@ -129,10 +131,11 @@ fun KeyboardButtonFilledPrimary(
     contentHeight = contentHeight,
     onClick = onClick,
     onLongClick = onLongClick,
-    containerColor = MaterialTheme.colorScheme.primaryContainer,
+    // The accent color: orange = key
+    containerColor = MaterialTheme.colorScheme.tertiary,
     icon = icon,
     contentDescription = contentDescription,
-    iconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+    iconColor = MaterialTheme.colorScheme.onTertiary,
   )
 }
 

@@ -49,8 +49,9 @@ interface UserPreferencesRepository {
   val startingScreenPrefs: Flow<StartingScreenPreferences>
 
   companion object Defaults {
+    // Pascaline colors by default, wallpaper colors can be turned on in settings
     val enableDynamicTheme: Boolean
-      get() = true
+      get() = false
 
     val themingMode: ThemingMode
       get() = ThemingMode.AUTO

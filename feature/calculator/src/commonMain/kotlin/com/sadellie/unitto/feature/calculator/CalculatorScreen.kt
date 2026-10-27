@@ -25,6 +25,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,7 +42,6 @@ import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -62,6 +63,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
@@ -192,7 +194,7 @@ private fun ReadyCompact(
     title = {},
     navigationIcon = { DrawerButton(onClick = openDrawer) },
     colors =
-      TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+      TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
     actions = {
       ClearHistoryButton(
         onClick = { showClearHistoryDialog = true },
@@ -212,16 +214,19 @@ private fun ReadyCompact(
           addTokens = onAddTokenClick,
           onDelete = onDeleteHistoryItemClick,
         )
-        HorizontalDivider()
+        // Rounded input box
         ExpressionLayoutTextField(
           modifier =
-            Modifier.background(MaterialTheme.colorScheme.surfaceVariant)
+            Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
               .fillMaxWidth()
               .height(INPUT_HEIGHT)
-              .padding(horizontal = 8.dp, vertical = 6.dp),
+              .clip(INPUT_SHAPE)
+              .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+              .border(INPUT_BORDER, MaterialTheme.colorScheme.primary.copy(alpha = INPUT_BORDER_ALPHA), INPUT_SHAPE)
+              .padding(horizontal = 12.dp, vertical = 6.dp),
           state = uiState.input,
           formatterSymbols = uiState.formatterSymbols,
-          textColor = MaterialTheme.colorScheme.onSurfaceVariant,
+          textColor = MaterialTheme.colorScheme.onSurface,
           minRatio = INPUT_MIN_RATIO,
           alignStart = true,
           keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -410,6 +415,9 @@ private const val KEYBOARD_HEIGHT_FACTOR = 0.5f
 private const val INPUT_MIN_RATIO = 0.35f
 // Tall enough for Σ with both bounds
 private val INPUT_HEIGHT = 96.dp
+private val INPUT_SHAPE = RoundedCornerShape(20.dp)
+private val INPUT_BORDER = 1.5.dp
+private const val INPUT_BORDER_ALPHA = 0.5f
 
 @Preview(widthDp = 432, heightDp = 1008, device = "spec:parent=pixel_5,orientation=portrait")
 @Preview(widthDp = 432, heightDp = 864, device = "spec:parent=pixel_5,orientation=portrait")

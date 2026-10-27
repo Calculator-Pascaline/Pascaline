@@ -19,12 +19,14 @@
 package com.sadellie.unitto.feature.calculator.functions
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,6 +39,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.Checkbox
@@ -147,10 +150,10 @@ private fun FunctionsScreen(
   ScaffoldWithTopBar(
     title = { Text(stringResource(Res.string.functions_title)) },
     navigationIcon = { DrawerButton(onClick = openDrawer) },
-    colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+    colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
   ) { paddingValues ->
     Column(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
-      PrimaryTabRow(selectedTabIndex = tab) {
+      PrimaryTabRow(selectedTabIndex = tab, containerColor = MaterialTheme.colorScheme.surface) {
         listOf(Res.string.functions_expressions, Res.string.functions_graph, Res.string.functions_table)
           .forEachIndexed { index, title ->
             Tab(
@@ -215,7 +218,11 @@ private fun ExpressionsTab(
   BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
     val keyboardHeight = maxHeight * KEYBOARD_HEIGHT_FACTOR
     Column(modifier = Modifier.fillMaxSize()) {
-      LazyColumn(modifier = Modifier.weight(1f).fillMaxWidth()) {
+      LazyColumn(
+        modifier = Modifier.weight(1f).fillMaxWidth(),
+        contentPadding = PaddingValues(CARD_SPACING),
+        verticalArrangement = Arrangement.spacedBy(CARD_SPACING),
+      ) {
         itemsIndexed(uiState.functions, key = { _, item -> item.name }) { index, item ->
           FunctionRow(
             item = item,
@@ -226,11 +233,10 @@ private fun ExpressionsTab(
             onVisibleChange = { viewModel.setVisible(index, it) },
             onDelete = { viewModel.delete(index) },
           )
-          HorizontalDivider()
         }
         if (uiState.functions.size < FUNCTION_NAMES.size) {
           item {
-            TextButton(modifier = Modifier.padding(8.dp), onClick = viewModel::add) {
+            TextButton(onClick = viewModel::add) {
               Icon(Symbols.Add, contentDescription = null)
               Spacer(Modifier.width(8.dp))
               Text(stringResource(Res.string.functions_add))
@@ -239,7 +245,6 @@ private fun ExpressionsTab(
         }
       }
       val selected = uiState.selected?.let { uiState.functions[it] } ?: return@Column
-      HorizontalDivider()
       CalculatorKeyboard(
         modifier = Modifier.height(keyboardHeight).fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
         onAddTokenClick = viewModel::addTokens,
@@ -274,11 +279,18 @@ private fun FunctionRow(
   onDelete: () -> Unit,
 ) {
   val color = FUNCTION_COLORS[item.color]
-  val background = if (isSelected) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.surface
+  val background =
+    if (isSelected) MaterialTheme.colorScheme.surfaceContainerHighest else MaterialTheme.colorScheme.surfaceContainer
+  val border = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = BORDER_ALPHA) else Color.Transparent
   val textColor = if (isValid) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error
   Row(
     modifier =
-      Modifier.fillMaxWidth().background(background).clickable(onClick = onClick).padding(start = 16.dp, end = 4.dp),
+      Modifier.fillMaxWidth()
+        .clip(CARD_SHAPE)
+        .background(background)
+        .border(CARD_BORDER, border, CARD_SHAPE)
+        .clickable(onClick = onClick)
+        .padding(start = 16.dp, end = 4.dp),
     verticalAlignment = Alignment.CenterVertically,
   ) {
     Box(Modifier.size(12.dp).clip(CircleShape).background(color))
@@ -436,6 +448,10 @@ private const val TABLE_ROWS = 101
 private const val KEYBOARD_HEIGHT_FACTOR = 0.62f
 private const val INPUT_MIN_RATIO = 0.5f
 private val ROW_HEIGHT = 64.dp
+private val CARD_SPACING = 8.dp
+private val CARD_SHAPE = RoundedCornerShape(20.dp)
+private val CARD_BORDER = 1.5.dp
+private const val BORDER_ALPHA = 0.5f
 // Same as the caret margin of the editable field
 private val TEXT_START_PADDING = 4.dp
 private val MIN_COLUMN_WIDTH = 110.dp

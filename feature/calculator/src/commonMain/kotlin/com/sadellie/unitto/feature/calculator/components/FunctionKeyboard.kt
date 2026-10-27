@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -140,7 +141,7 @@ private fun FunctionKeyButton(modifier: Modifier, key: FunctionKey, onClick: (St
   Surface(
     modifier = modifier,
     onClick = { onClick(key.token) },
-    shape = MaterialTheme.shapes.medium,
+    shape = KEY_SHAPE,
     color = MaterialTheme.colorScheme.surfaceContainerHigh,
     contentColor = MaterialTheme.colorScheme.onSurface,
   ) {
@@ -161,7 +162,7 @@ private fun InverseSwitch(modifier: Modifier, checked: Boolean, onCheckedChange:
     modifier = modifier,
     checked = checked,
     onCheckedChange = onCheckedChange,
-    shape = MaterialTheme.shapes.medium,
+    shape = KEY_SHAPE,
     color = MaterialTheme.colorScheme.surfaceContainerHigh,
     contentColor = MaterialTheme.colorScheme.onSurface,
   ) {
@@ -310,3 +311,6 @@ private const val DOT_ALPHA = 0.3f
 private val DOT_SIZE = 6.dp
 internal val DOTS_HEIGHT = 14.dp
 private const val DIVIDER_ALPHA = 0.5f
+
+/** Same corners as the other keys. */
+internal val KEY_SHAPE = RoundedCornerShape(percent = 24)

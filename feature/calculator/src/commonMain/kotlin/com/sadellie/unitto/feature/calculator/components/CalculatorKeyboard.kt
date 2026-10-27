@@ -333,7 +333,7 @@ private fun CalculusButton(
   Surface(
     onClick = { onClick(token) },
     modifier = modifier,
-    shape = MaterialTheme.shapes.large,
+    shape = KEY_SHAPE,
     color = MaterialTheme.colorScheme.surfaceContainerHigh,
     contentColor = MaterialTheme.colorScheme.onSurface,
   ) {
