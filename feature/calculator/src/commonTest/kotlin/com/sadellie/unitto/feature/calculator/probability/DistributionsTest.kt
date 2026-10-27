@@ -40,6 +40,13 @@ class DistributionsTest {
 
   @Test fun binomialQuantile() = assertEquals(5.0, Binomial(10, 0.5).quantile(0.5))
 
+  // P(X ≤ 2) = 0.3483 is the closest to 0.5 without going over it
+  @Test fun binomialLargestAtMost() = assertEquals(2.0, Binomial(4, 0.7).largestAtMost(0.5))
+
+  @Test fun binomialLargestAtMostExact() = assertEquals(2.0, Binomial(4, 0.7).largestAtMost(0.3483))
+
+  @Test fun binomialSnappedProbability() = assertEquals(0.3483, Binomial(4, 0.7).atMost(2.0), 1e-12)
+
   @Test fun uniformBetween() = assertEquals(0.3, Uniform(0.0, 10.0).between(2.0, 5.0), 1e-12)
 
   @Test fun exponentialAtLeast() = assertEquals(1 / E, Exponential(0.5).atLeast(2.0), 1e-12)

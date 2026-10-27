@@ -31,9 +31,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,6 +62,7 @@ import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
+import kotlin.math.sqrt
 import org.jetbrains.compose.resources.stringResource
 import unitto.core.common.generated.resources.Res
 import unitto.core.common.generated.resources.probability_coefficients_explanation
@@ -64,16 +70,25 @@ import unitto.core.common.generated.resources.probability_coefficients_question
 import unitto.core.common.generated.resources.probability_coin
 import unitto.core.common.generated.resources.probability_coin_preset
 import unitto.core.common.generated.resources.probability_examples
+import unitto.core.common.generated.resources.probability_expected_baskets
+import unitto.core.common.generated.resources.probability_expected_heads
+import unitto.core.common.generated.resources.probability_expected_value
 import unitto.core.common.generated.resources.probability_free_throws
 import unitto.core.common.generated.resources.probability_free_throws_preset
 import unitto.core.common.generated.resources.probability_head
 import unitto.core.common.generated.resources.probability_heads
-import unitto.core.common.generated.resources.probability_pascal_row
+import unitto.core.common.generated.resources.probability_mean_check
+import unitto.core.common.generated.resources.probability_mean_explanation
 import unitto.core.common.generated.resources.probability_miss_letter
+import unitto.core.common.generated.resources.probability_pascal_row
 import unitto.core.common.generated.resources.probability_score_and_miss
 import unitto.core.common.generated.resources.probability_score_letter
 import unitto.core.common.generated.resources.probability_tap_to_use
 import unitto.core.common.generated.resources.probability_tree_legend
+import unitto.core.common.generated.resources.probability_variance
+import unitto.core.common.generated.resources.probability_variance_baskets
+import unitto.core.common.generated.resources.probability_variance_explanation
+import unitto.core.common.generated.resources.probability_variance_heads
 
 /** Example of the parameters step: tapping it fills n and p. */
 private class Preset(val description: @Composable () -> String, val n: String, val p: String)
@@ -133,6 +148,110 @@ internal fun BinomialExplanation(n: Int, p: Double, fractional: String) {
     }
   }
 }
+
+/** What the moment buttons show under the equation. */
+private enum class Moment {
+  EXPECTED_VALUE,
+  VARIANCE,
+}
+
+/**
+ * Buttons for E(X) = n × p and V(X) = n × p × (1 − p), each opening a card that explains where the
+ * formula comes from, with the entered n and p.
+ */
+@Composable
+internal fun BinomialMoments(n: Int, p: Double, fractional: String) {
+  var shown by rememberSaveable { mutableStateOf<Moment?>(null) }
+  Column(verticalArrangement = Arrangement.spacedBy(CARD_SPACING * 2)) {
+    Row(horizontalArrangement = Arrangement.spacedBy(CARD_SPACING)) {
+      FilterChip(
+        selected = shown == Moment.EXPECTED_VALUE,
+        onClick = { shown = if (shown == Moment.EXPECTED_VALUE) null else Moment.EXPECTED_VALUE },
+        label = { Text(stringResource(Res.string.probability_expected_value), style = MaterialTheme.typography.titleSmall) },
+      )
+      FilterChip(
+        selected = shown == Moment.VARIANCE,
+        onClick = { shown = if (shown == Moment.VARIANCE) null else Moment.VARIANCE },
+        label = { Text(stringResource(Res.string.probability_variance), style = MaterialTheme.typography.titleSmall) },
+      )
+    }
+    when (shown) {
+      Moment.EXPECTED_VALUE -> ExplanationCard { ExpectedValue(n, p, fractional) }
+      Moment.VARIANCE -> ExplanationCard { Variance(n, p, fractional) }
+      null -> {}
+    }
+  }
+}
+
+/** E(X) = n × p = 5 × 0.5 = 2.5, why, and for a few trials the same number from the probabilities. */
+@Composable
+private fun ExpectedValue(n: Int, p: Double, fractional: String) {
+  val isCoin = abs(p - HALF) < SAME_TOLERANCE
+  val mean = n * p
+  Text(
+    stringResource(
+      if (isCoin) Res.string.probability_expected_heads else Res.string.probability_expected_baskets,
+      n.toString(),
+    ),
+    style = MaterialTheme.typography.titleMedium,
+    fontWeight = FontWeight.Bold,
+  )
+  MomentFormula("E(X) = n × p = $n × ${p.value(fractional)} = ", mean.value(fractional))
+  Text(stringResource(Res.string.probability_mean_explanation), style = MaterialTheme.typography.bodyMedium)
+  if (n <= MAX_CHECK_TRIALS) {
+    // 0 × P(X = 0) + 1 × P(X = 1) + … gives the same number
+    val distribution = Binomial(n, p)
+    val terms =
+      // Non-breaking spaces keep each k × P(X = k) on one line
+      (0..n).joinToString(" + ") { k ->
+        "$k × ${distribution.density(k.toDouble()).value(fractional, CHECK_DECIMALS)}"
+      }
+    Text(
+      stringResource(Res.string.probability_mean_check),
+      style = MaterialTheme.typography.bodyMedium,
+      color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+    Text("E(X) = $terms = ${mean.value(fractional)}", style = MaterialTheme.typography.bodyMedium)
+  }
+}
+
+/** V(X) = n × p × (1 − p), why, and the standard deviation σ = √V. */
+@Composable
+private fun Variance(n: Int, p: Double, fractional: String) {
+  val isCoin = abs(p - HALF) < SAME_TOLERANCE
+  val variance = n * p * (1 - p)
+  Text(
+    stringResource(
+      if (isCoin) Res.string.probability_variance_heads else Res.string.probability_variance_baskets,
+      n.toString(),
+      (n * p).value(fractional),
+    ),
+    style = MaterialTheme.typography.titleMedium,
+    fontWeight = FontWeight.Bold,
+  )
+  MomentFormula(
+    "V(X) = n × p × (1 − p) = $n × ${p.value(fractional)} × ${(1 - p).value(fractional)} = ",
+    variance.value(fractional),
+  )
+  MomentFormula("σ(X) = √V(X) ≈ ", sqrt(variance).value(fractional, CHECK_DECIMALS))
+  Text(stringResource(Res.string.probability_variance_explanation), style = MaterialTheme.typography.bodyMedium)
+}
+
+/** Formula with its result in the primary color: `E(X) = n × p = 5 × 0.5 = ` **2.5**. */
+@Composable
+private fun MomentFormula(formula: String, result: String) {
+  Text(
+    style = MaterialTheme.typography.titleMedium,
+    text =
+      buildAnnotatedString {
+        append(formula)
+        withStyle(SpanStyle(color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)) { append(result) }
+      },
+  )
+}
+
+/** 0.7 ==> 0,7 with a comma separator, without rounding errors. */
+private fun Double.value(fractional: String, decimals: Int = VALUE_DECIMALS) = rounded(decimals).decimal(fractional)
 
 @Composable
 private fun ExplanationCard(content: @Composable () -> Unit) {
@@ -445,6 +564,9 @@ private const val MAX_TREE_FLIPS = 4
 private const val MAX_LINES = 20
 private const val MAX_TRIANGLE_ROW = 12
 private const val VALUE_DECIMALS = 6
+// The check lists every P(X = k), short enough only for a few trials
+private const val MAX_CHECK_TRIALS = 6
+private const val CHECK_DECIMALS = 4
 private const val SUPERSCRIPTS = "⁰¹²³⁴⁵⁶⁷⁸⁹"
 
 // One color per number of heads, readable in light and dark

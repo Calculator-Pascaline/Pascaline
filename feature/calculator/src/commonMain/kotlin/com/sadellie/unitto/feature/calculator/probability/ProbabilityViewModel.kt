@@ -120,20 +120,32 @@ internal class ProbabilityViewModel(userPrefsRepository: UserPreferencesReposito
     typedProbability = null
   }
 
-  /** Finds a so that P(X ≤ a) or P(X ≥ a) is [value]. */
+  /**
+   * Finds a so that P(X ≤ a) or P(X ≥ a) is [value]. Discrete distributions only reach some
+   * probabilities, so a is the closest bound that does not go over [value].
+   */
   fun setProbability(value: String) {
     typedProbability = value
     val p = value.toNumberOrNull()?.takeIf { it in 0.0..1.0 } ?: return
     val distribution = distribution ?: return
     val bound =
       when (calculation) {
-        CalculationType.AT_MOST -> distribution.quantile(p)
+        CalculationType.AT_MOST -> if (distribution.isDiscrete) distribution.largestAtMost(p) else distribution.quantile(p)
         // P(X ≥ a) = 1 − P(X ≤ a − 1) for discrete
         CalculationType.AT_LEAST ->
-          if (distribution.isDiscrete) distribution.quantile(1 - p) + 1 else distribution.quantile(1 - p)
+          if (distribution.isDiscrete) {
+            (distribution.quantile(1 - p) + 1).coerceAtMost(distribution.support.endInclusive)
+          } else {
+            distribution.quantile(1 - p)
+          }
         else -> return
       }
     if (bound.isFinite()) a = bound.toInput()
+  }
+
+  /** Done typing the probability: discrete ones show the probability that a really gives. */
+  fun finishProbability() {
+    if (distribution?.isDiscrete == true) typedProbability = null
   }
 
   /** One step back, false when already on the first one. */

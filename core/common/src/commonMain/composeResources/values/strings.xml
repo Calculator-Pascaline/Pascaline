@@ -113,6 +113,15 @@
     <string name="probability_score_letter">S</string>
     <string name="probability_miss_letter">M</string>
     <string name="probability_tree_legend">S = score, M = miss. Each branch shows its probability.</string>
+    <string name="probability_expected_value">Expected value E(X)</string>
+    <string name="probability_variance">Variance V(X)</string>
+    <string name="probability_expected_heads">Expected number of heads in %1$s flips</string>
+    <string name="probability_expected_baskets">Expected number of baskets in %1$s throws</string>
+    <string name="probability_mean_explanation">One trial gives 1 success with probability p and 0 otherwise, so on average 0 × (1 − p) + 1 × p = p successes. The n trials add up: n × p. It is the average over many repeats of the whole experiment, not always a possible result.</string>
+    <string name="probability_mean_check">Same number from the probabilities: E(X) = 0 × P(X = 0) + 1 × P(X = 1) + 2 × P(X = 2) + …</string>
+    <string name="probability_variance_heads">How far the number of heads in %1$s flips usually is from %2$s</string>
+    <string name="probability_variance_baskets">How far the number of baskets in %1$s throws usually is from %2$s</string>
+    <string name="probability_variance_explanation">For one trial X is 0 or 1, so X² = X and V = E(X²) − E(X)² = p − p² = p × (1 − p). The trials are independent, so their variances add up: n × p × (1 − p). The standard deviation σ = √V is in the same unit as X: results are usually within about σ of the expected value. V is largest for p = ½ and 0 when p is 0 or 1.</string>
     <string name="calculator_title">Calculator</string>
     <string name="common_add">Add</string>
     <string name="common_cancel">Cancel</string>

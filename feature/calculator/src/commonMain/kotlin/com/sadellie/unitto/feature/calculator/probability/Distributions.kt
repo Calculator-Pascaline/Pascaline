@@ -91,6 +91,17 @@ internal sealed class Distribution {
     return k
   }
 
+  /**
+   * Largest whole x with P(X ≤ x) ≤ [p], for discrete distributions: the bound that gets as close
+   * to [p] as possible without going over it.
+   */
+  fun largestAtMost(p: Double): Double {
+    var k = quantile(p)
+    // Allow rounding errors so typing 0.3483 for 0.34830000000000005 stays on that value
+    while (k > support.start && cdf(k) > p + SAME_PROBABILITY) k--
+    return k
+  }
+
   /** Values worth showing on a graph: almost all of the probability is between them. */
   fun visibleRange(): ClosedRange<Double> {
     var start = max(support.start, quantile(VISIBLE_TAIL))
@@ -356,3 +367,4 @@ private const val SEARCH_LIMIT = 1e12
 private const val BISECTION_STEPS = 200
 private const val VISIBLE_TAIL = 0.001
 private const val MIN_RANGE = 1e-9
+private const val SAME_PROBABILITY = 1e-9
