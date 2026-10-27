@@ -480,18 +480,16 @@ private fun ComplexPlane(
       val imaginaryX = if (re >= 0) center.x - gap - imaginary.width else center.x + gap
       imaginary.place(imaginary.clampX(imaginaryX), imaginary.clampY(end.y - imaginary.height / 2f))
       // angle next to its arc: inside of the angle, just over (or under) real axis. Small angles
-      // don't have space there, label goes over the vector instead
+      // don't have space there, and over the vector is where the length goes: label goes on the
+      // other side of real axis, under (or over) the start of the arc
       val blockHeight = angleText.height + degrees.height
       val isNegative = im < 0
       val isSmall = abs(angle) < SMALL_ANGLE
       val left: Float
       val top: Float
       if (isSmall) {
-        val direction = angle + (if (isNegative) -SMALL_ANGLE_OFFSET else SMALL_ANGLE_OFFSET)
-        val distance = geometry.arcRadius + gap
-        left = center.x + (cos(direction) * distance).toFloat()
-        val anchorY = center.y - (sin(direction) * distance).toFloat()
-        top = if (isNegative) anchorY else anchorY - blockHeight
+        left = center.x + gap * 2
+        top = if (isNegative) center.y - gap - blockHeight else center.y + gap
       } else {
         // far enough so that the vector is above the whole label
         val underVector =
@@ -511,10 +509,17 @@ private fun ComplexPlane(
       val offset = gap + maxOf(lengthText.width, lengthText.height) / 2f
       val lengthCenterX = (center.x + end.x) / 2 + (normalX * offset).toFloat()
       val lengthCenterY = (center.y + end.y) / 2 + (normalY * offset).toFloat()
-      lengthText.place(
-        lengthText.clampX(lengthCenterX - lengthText.width / 2f),
-        lengthText.clampY(lengthCenterY - lengthText.height / 2f),
-      )
+      var lengthLeft = lengthCenterX - lengthText.width / 2f
+      var lengthTop = lengthCenterY - lengthText.height / 2f
+      // Off the dashed projections: almost flat vectors put it on the horizontal one, almost
+      // vertical ones on the vertical one
+      if (lengthTop < end.y && lengthTop + lengthText.height > end.y) {
+        lengthTop = if (im >= 0) end.y - gap - lengthText.height else end.y + gap
+      }
+      if (lengthLeft < end.x && lengthLeft + lengthText.width > end.x) {
+        lengthLeft = if (re >= 0) end.x - gap - lengthText.width else end.x + gap
+      }
+      lengthText.place(lengthText.clampX(lengthLeft), lengthText.clampY(lengthTop))
     }
   }
 }
@@ -613,7 +618,6 @@ private const val PLANE_SIDE = 0.3
 private const val AXIS_EPSILON = 1e-9
 /** Radians, angles smaller than this have no space for label inside of them */
 private const val SMALL_ANGLE = 0.6
-private const val SMALL_ANGLE_OFFSET = 0.35
 private const val ANGLE_ARC_ALPHA = 0.7f
 private val MENU_CONTENT_WIDTH = 288.dp
 private const val ITEM_FONT_SCALE = 0.8f
