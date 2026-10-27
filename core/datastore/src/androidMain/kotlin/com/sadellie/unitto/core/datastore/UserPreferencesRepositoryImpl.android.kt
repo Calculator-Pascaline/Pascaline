@@ -127,6 +127,9 @@ class UserPreferencesRepositoryImpl(private val dataStore: DataStore<Preferences
       AddSubtractPreferences(formatterSymbols = preferences.getFormatterSymbols())
     }
 
+  override val graphFunctions: Flow<String> =
+    data.map { preferences -> preferences[DatastorePrefKeys.GRAPH_FUNCTIONS] ?: "" }
+
   override val bodyMassPrefs: Flow<BodyMassPreferences> =
     data.map { preferences ->
       BodyMassPreferences(formatterSymbols = preferences.getFormatterSymbols())
@@ -236,6 +239,10 @@ class UserPreferencesRepositoryImpl(private val dataStore: DataStore<Preferences
     dataStore.edit { preferences ->
       preferences[DatastorePrefKeys.ENABLE_TOOLS_EXPERIMENT] = enabled
     }
+  }
+
+  override suspend fun updateGraphFunctions(value: String) {
+    dataStore.edit { preferences -> preferences[DatastorePrefKeys.GRAPH_FUNCTIONS] = value }
   }
 
   override suspend fun updateRadianMode(radianMode: Boolean) {

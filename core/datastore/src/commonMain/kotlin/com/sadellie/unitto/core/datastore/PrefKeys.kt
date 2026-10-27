@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2025-2026 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +41,7 @@ object PrefKeys {
   const val OUTPUT_FORMAT_PREF_KEY = "OUTPUT_FORMAT_PREF_KEY"
   const val FORMATTER_INDIAN_PREF_KEY = "FORMATTER_INDIAN_PREF_KEY"
   const val RADIAN_MODE_PREF_KEY = "RADIAN_MODE_PREF_KEY"
+  const val GRAPH_FUNCTIONS_PREF_KEY = "GRAPH_FUNCTIONS_PREF_KEY"
   const val PARTIAL_HISTORY_VIEW_PREF_KEY = "PARTIAL_HISTORY_VIEW_PREF_KEY"
   const val STEPPED_PARTIAL_HISTORY_VIEW_PREF_KEY = "STEPPED_PARTIAL_HISTORY_VIEW_PREF_KEY"
   const val OPEN_HISTORY_VIEW_BUTTON_PREF_KEY = "OPEN_HISTORY_VIEW_BUTTON_PREF_KEY"

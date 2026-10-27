@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,6 +45,7 @@ interface Route : NavKey {
       val deepLinkPatterns: List<DeepLinkPattern<out Route>> =
         listOf(
           DeepLinkPattern(serializer(), deepLink(CalculatorStartRoute).toKmpUri()),
+          DeepLinkPattern(FunctionsStartRoute.serializer(), deepLink(FunctionsStartRoute).toKmpUri()),
           DeepLinkPattern(
             ConverterStartRoute.serializer(),
             deepLink(ConverterStartRoute()).toKmpUri(),
@@ -78,6 +80,11 @@ interface TopLevelRoute : Route
 @Serializable
 data object CalculatorStartRoute : TopLevelRoute {
   override val routeId = "calculator_route"
+}
+
+@Serializable
+data object FunctionsStartRoute : TopLevelRoute {
+  override val routeId = "functions_route"
 }
 
 @Serializable

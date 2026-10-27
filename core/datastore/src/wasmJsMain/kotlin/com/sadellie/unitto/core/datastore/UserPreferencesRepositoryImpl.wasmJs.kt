@@ -120,6 +120,9 @@ class UserPreferencesRepositoryImpl : UserPreferencesRepository {
       AddSubtractPreferences(formatterSymbols = preferences.getFormatterSymbols())
     }
 
+  override val graphFunctions: Flow<String> =
+    _data.map { preferences -> preferences.getTyped<String>(PrefKeys.GRAPH_FUNCTIONS_PREF_KEY) ?: "" }
+
   override val bodyMassPrefs: Flow<BodyMassPreferences> =
     _data.map { preferences ->
       BodyMassPreferences(formatterSymbols = preferences.getFormatterSymbols())
@@ -208,6 +211,9 @@ class UserPreferencesRepositoryImpl : UserPreferencesRepository {
 
   override suspend fun updateToolsExperiment(enabled: Boolean) =
     updateData(PrefKeys.ENABLE_TOOLS_EXPERIMENT_PREF_KEY, enabled)
+
+  override suspend fun updateGraphFunctions(value: String) =
+    updateData(PrefKeys.GRAPH_FUNCTIONS_PREF_KEY, value)
 
   override suspend fun updateRadianMode(radianMode: Boolean) =
     updateData(PrefKeys.RADIAN_MODE_PREF_KEY, radianMode)

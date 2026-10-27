@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +22,7 @@ package com.sadellie.unitto.core.navigation
 actual val mainDrawerItems: List<DrawerItem> by lazy {
   listOf(
     CalculatorDrawerItem,
+    FunctionsDrawerItem,
     ConverterDrawerItem,
     BodyMassDrawerItem,
     DateCalculatorDrawerItem,

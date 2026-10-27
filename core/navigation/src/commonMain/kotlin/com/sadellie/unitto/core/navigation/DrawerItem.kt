@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2023-2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +25,7 @@ import com.sadellie.unitto.core.designsystem.icons.symbols.Calculate
 import com.sadellie.unitto.core.designsystem.icons.symbols.CalculateFill
 import com.sadellie.unitto.core.designsystem.icons.symbols.Event
 import com.sadellie.unitto.core.designsystem.icons.symbols.EventFill
+import com.sadellie.unitto.core.designsystem.icons.symbols.LineAxis
 import com.sadellie.unitto.core.designsystem.icons.symbols.Schedule
 import com.sadellie.unitto.core.designsystem.icons.symbols.ScheduleFill
 import com.sadellie.unitto.core.designsystem.icons.symbols.Settings
@@ -36,6 +38,7 @@ import unitto.core.common.generated.resources.body_mass_title
 import unitto.core.common.generated.resources.calculator_title
 import unitto.core.common.generated.resources.converter_title
 import unitto.core.common.generated.resources.date_calculator_title
+import unitto.core.common.generated.resources.functions_title
 import unitto.core.common.generated.resources.settings_title
 import unitto.core.common.generated.resources.time_zone_title
 
@@ -60,13 +63,12 @@ data object ConverterDrawerItem : DrawerItem {
   override val defaultIcon = Symbols.SwapHoriz
 }
 
-// unused until solver update
-// data object GraphingDrawerItem : DrawerItem {
-//  override val graphRoute = GraphingGraphRoute
-//  override val name = Res.string.graphing_title
-//  override val selectedIcon = Symbols.LineAxis
-//  override val defaultIcon = Symbols.LineAxis
-// }
+data object FunctionsDrawerItem : DrawerItem {
+  override val topLevelRoute = FunctionsStartRoute
+  override val name = Res.string.functions_title
+  override val selectedIcon = Symbols.LineAxis
+  override val defaultIcon = Symbols.LineAxis
+}
 
 data object DateCalculatorDrawerItem : DrawerItem {
   override val topLevelRoute = DateCalculatorStartRoute

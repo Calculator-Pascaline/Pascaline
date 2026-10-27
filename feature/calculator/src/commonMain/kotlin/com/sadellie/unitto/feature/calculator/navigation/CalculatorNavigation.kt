@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2023-2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +20,10 @@
 package com.sadellie.unitto.feature.calculator.navigation
 
 import com.sadellie.unitto.core.navigation.CalculatorStartRoute
+import com.sadellie.unitto.core.navigation.FunctionsStartRoute
 import com.sadellie.unitto.core.navigation.LocalNavigator
 import com.sadellie.unitto.feature.calculator.CalculatorRoute
+import com.sadellie.unitto.feature.calculator.functions.FunctionsRoute
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.core.module.Module
 import org.koin.dsl.navigation3.navigation
@@ -30,5 +33,9 @@ fun Module.calculatorNavigation() {
   navigation<CalculatorStartRoute> {
     val navigator = LocalNavigator.current
     CalculatorRoute(openDrawer = navigator::openDrawer)
+  }
+  navigation<FunctionsStartRoute> {
+    val navigator = LocalNavigator.current
+    FunctionsRoute(openDrawer = navigator::openDrawer)
   }
 }

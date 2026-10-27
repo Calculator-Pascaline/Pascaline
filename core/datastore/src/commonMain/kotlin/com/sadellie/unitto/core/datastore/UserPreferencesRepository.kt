@@ -42,6 +42,9 @@ interface UserPreferencesRepository {
   val unitGroupsPrefs: Flow<UnitGroupsPreferences>
   val addSubtractPrefs: Flow<AddSubtractPreferences>
   val bodyMassPrefs: Flow<BodyMassPreferences>
+
+  /** Functions of the Functions screen, one per line. Empty when there are none yet. */
+  val graphFunctions: Flow<String>
   val aboutPrefs: Flow<AboutPreferences>
   val startingScreenPrefs: Flow<StartingScreenPreferences>
 
@@ -171,6 +174,8 @@ interface UserPreferencesRepository {
   suspend fun updateToolsExperiment(enabled: Boolean)
 
   suspend fun updateRadianMode(radianMode: Boolean)
+
+  suspend fun updateGraphFunctions(value: String)
 
   suspend fun updateUnitConverterFavoritesOnly(enabled: Boolean)
 

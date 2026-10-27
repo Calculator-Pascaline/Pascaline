@@ -81,6 +81,8 @@ import kotlinx.coroutines.delay
  *
  * Text is scaled down to fit (but not below [minRatio]), aligned to the bottom end. Tapping places
  * the cursor. A hidden [BasicTextField] keeps focus for hardware keyboard input.
+ *
+ * @param textStyle Text size, null for the big calculator input size.
  */
 @Composable
 fun ExpressionLayoutTextField(
@@ -92,10 +94,11 @@ fun ExpressionLayoutTextField(
   alignStart: Boolean = false,
   keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
   onKeyboardAction: KeyboardActionHandler? = null,
+  textStyle: TextStyle? = null,
 ) {
   val measurer = rememberTextMeasurer()
   val density = LocalDensity.current
-  val style = LocalNumberTypography.current.displayLarge
+  val style = textStyle ?: LocalNumberTypography.current.displayLarge
   val text = state.text.toString()
   val layout =
     remember(text, formatterSymbols, style, density) {
