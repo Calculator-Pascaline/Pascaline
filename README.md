@@ -3,6 +3,13 @@
 A calculator for Android inspired by graphing calculators like the NumWorks. Named after the
 Pascaline, the mechanical calculator Blaise Pascal built in 1642.
 
+<p align="center">
+  <img src="docs/screenshots/history.png" width="24%" alt="History with exact results for a square root, an integral, a sum, a derivative and a unit" />
+  <img src="docs/screenshots/polynomial.png" width="24%" alt="Factorization, roots and discriminant of a polynomial" />
+  <img src="docs/screenshots/complex-plane.png" width="24%" alt="Complex plane with modulus and argument" />
+  <img src="docs/screenshots/units.png" width="24%" alt="Units and constants menu" />
+</p>
+
 ## Features
 
 - **Natural input**: powers, indices, fractions, square roots and integral bounds are typed in
