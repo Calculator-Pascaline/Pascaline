@@ -80,5 +80,7 @@ class DistributionsTest {
     }
   }
 
+  @Test fun pascalRow() = assertEquals(listOf(1L, 6L, 15L, 20L, 15L, 6L, 1L), (0..6).map { binomialCoefficient(6, it) })
+
   @Test fun lnGammaOfFactorial() = assertEquals(kotlin.math.ln(120.0), lnGamma(6.0), 1e-12)
 }

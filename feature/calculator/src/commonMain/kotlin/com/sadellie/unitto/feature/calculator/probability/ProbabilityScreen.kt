@@ -20,6 +20,14 @@ package com.sadellie.unitto.feature.calculator.probability
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -54,6 +62,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
@@ -108,7 +117,7 @@ internal fun ProbabilityRoute(openDrawer: () -> Unit) {
     val modifier = Modifier.padding(paddingValues).fillMaxSize()
     when {
       type == null -> DistributionList(modifier, onClick = viewModel::choose)
-      !viewModel.isCalculating -> ParametersStep(modifier, type, viewModel)
+      !viewModel.isCalculating -> ParametersStep(modifier, type, viewModel, format)
       else -> viewModel.distribution?.let { CalculationStep(modifier, it, viewModel, format) }
     }
   }
@@ -162,7 +171,12 @@ private fun DistributionList(modifier: Modifier, onClick: (DistributionType) -> 
 
 /** Second step: parameters, with a live picture of the distribution. */
 @Composable
-private fun ParametersStep(modifier: Modifier, type: DistributionType, viewModel: ProbabilityViewModel) {
+private fun ParametersStep(
+  modifier: Modifier,
+  type: DistributionType,
+  viewModel: ProbabilityViewModel,
+  format: NumberFormat,
+) {
   val distribution = viewModel.distribution
   Column(
     modifier = modifier.verticalScroll(rememberScrollState()).padding(CARD_SPACING * 2),
@@ -185,6 +199,12 @@ private fun ParametersStep(modifier: Modifier, type: DistributionType, viewModel
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
       )
+    }
+    if (type == DistributionType.BINOMIAL) {
+      BinomialPresets(fractional = format.formatterSymbols.fractional) { n, p ->
+        viewModel.setParameter(0, n.replace(".", format.formatterSymbols.fractional))
+        viewModel.setParameter(1, p.replace(".", format.formatterSymbols.fractional))
+      }
     }
     if (distribution == null) {
       Text(
@@ -246,31 +266,134 @@ private fun CalculationStep(
         }
     }
 
-    Row(horizontalArrangement = Arrangement.spacedBy(CARD_SPACING * 2)) {
-      NumberField(Modifier.weight(1f), viewModel.a, viewModel::updateA, "a")
-      if (calculation.usesB) NumberField(Modifier.weight(1f), viewModel.b, viewModel::updateB, "b")
-    }
-    // Typing a probability finds a
+    // P(X ≤ a) = p with a, b and p typed right in it. Typing p finds a
     val canFindBound = calculation == CalculationType.AT_MOST || calculation == CalculationType.AT_LEAST
-    NumberField(
-      modifier = Modifier.fillMaxWidth(),
-      value = viewModel.typedProbability ?: probability.format(format, ""),
-      onValueChange = viewModel::setProbability,
-      label = "P",
-      readOnly = !canFindBound,
+    EditableEquation(
+      calculation = calculation,
+      a = viewModel.a,
+      b = viewModel.b,
+      probability = viewModel.typedProbability ?: probability.format(format, ""),
+      onA = viewModel::updateA,
+      onB = viewModel::updateB,
+      onProbability = viewModel::setProbability,
+      canEditProbability = canFindBound,
     )
 
-    // P(X ≤ 1.96) = 0.975
-    Text(
-      text =
-        calculation.symbol(viewModel.a.ifBlank { "a" }, viewModel.b.ifBlank { "b" }) +
-          " = " +
-          probability.format(format, "?"),
-      style = MaterialTheme.typography.headlineSmall,
-      color = MaterialTheme.colorScheme.primary,
-      fontWeight = FontWeight.Medium,
-    )
+    if (viewModel.type == DistributionType.BINOMIAL) {
+      val n = viewModel.parameters.getOrNull(0)?.toNumberOrNull()?.toInt()
+      val p = viewModel.parameters.getOrNull(1)?.toNumberOrNull()
+      if (n != null && p != null) BinomialExplanation(n, p, format.formatterSymbols.fractional)
+    }
   }
+}
+
+/** `P(X ≤ [a]) = [p]`: boxes are text fields, the rest is text. Wraps on narrow screens. */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun EditableEquation(
+  calculation: CalculationType,
+  a: String,
+  b: String,
+  probability: String,
+  onA: (String) -> Unit,
+  onB: (String) -> Unit,
+  onProbability: (String) -> Unit,
+  canEditProbability: Boolean,
+) {
+  FlowRow(
+    modifier = Modifier.fillMaxWidth(),
+    horizontalArrangement = Arrangement.spacedBy(6.dp),
+    verticalArrangement = Arrangement.spacedBy(CARD_SPACING),
+  ) {
+    when (calculation) {
+      CalculationType.AT_MOST -> {
+        EquationText("P(X ≤")
+        EquationSlot(a, onA, "a")
+        EquationText(")")
+      }
+      CalculationType.AT_LEAST -> {
+        EquationText("P(X ≥")
+        EquationSlot(a, onA, "a")
+        EquationText(")")
+      }
+      CalculationType.EXACTLY -> {
+        EquationText("P(X =")
+        EquationSlot(a, onA, "a")
+        EquationText(")")
+      }
+      CalculationType.BETWEEN -> {
+        EquationText("P(")
+        EquationSlot(a, onA, "a")
+        EquationText("≤ X ≤")
+        EquationSlot(b, onB, "b")
+        EquationText(")")
+      }
+    }
+    EquationText("=")
+    EquationSlot(probability, onProbability, "p", readOnly = !canEditProbability, isResult = true)
+  }
+}
+
+@Composable
+private fun EquationText(text: String) {
+  Box(modifier = Modifier.height(SLOT_HEIGHT), contentAlignment = Alignment.Center) {
+    Text(text, style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onSurface)
+  }
+}
+
+/** Number typed inside the equation, in a rounded box that grows with it. */
+@Composable
+private fun EquationSlot(
+  value: String,
+  onValueChange: (String) -> Unit,
+  placeholder: String,
+  readOnly: Boolean = false,
+  isResult: Boolean = false,
+) {
+  val isError = value.isNotBlank() && value.toNumberOrNull() == null
+  val textColor =
+    when {
+      isError -> MaterialTheme.colorScheme.error
+      isResult -> MaterialTheme.colorScheme.onPrimaryContainer
+      else -> MaterialTheme.colorScheme.primary
+    }
+  val background =
+    if (isResult) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerHighest
+  val style =
+    MaterialTheme.typography.headlineSmall.copy(color = textColor, fontWeight = FontWeight.Medium, textAlign = TextAlign.Center)
+  // Box grows with the number: measured text plus padding and room for the cursor
+  val measurer = rememberTextMeasurer()
+  val density = LocalDensity.current
+  val textWidth = with(density) { measurer.measure(value.ifEmpty { placeholder }, style).size.width.toDp() }
+  BasicTextField(
+    modifier = Modifier.height(SLOT_HEIGHT).width(maxOf(SLOT_MIN_WIDTH, textWidth + SLOT_PADDING * 2 + 4.dp)),
+    value = value,
+    onValueChange = onValueChange,
+    readOnly = readOnly,
+    singleLine = true,
+    textStyle = style,
+    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+    decorationBox = { innerTextField ->
+      Box(
+        modifier =
+          Modifier.clip(SLOT_SHAPE)
+            .background(background)
+            .border(SLOT_BORDER, if (isError) MaterialTheme.colorScheme.error else Color.Transparent, SLOT_SHAPE)
+            .padding(horizontal = SLOT_PADDING),
+        contentAlignment = Alignment.Center,
+      ) {
+        if (value.isEmpty()) {
+          Text(
+            placeholder,
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = PLACEHOLDER_ALPHA),
+          )
+        }
+        innerTextField()
+      }
+    },
+  )
 }
 
 @Composable
@@ -285,26 +408,6 @@ private fun GraphCard(content: @Composable () -> Unit) {
   ) {
     content()
   }
-}
-
-@Composable
-private fun NumberField(
-  modifier: Modifier,
-  value: String,
-  onValueChange: (String) -> Unit,
-  label: String,
-  readOnly: Boolean = false,
-) {
-  OutlinedTextField(
-    modifier = modifier,
-    value = value,
-    onValueChange = onValueChange,
-    label = { Text(label) },
-    singleLine = true,
-    readOnly = readOnly,
-    isError = value.isNotBlank() && value.toNumberOrNull() == null,
-    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-  )
 }
 
 /**
@@ -474,6 +577,12 @@ private fun CalculationType.symbol(a: String, b: String): String =
   }
 
 private val CARD_SPACING = 8.dp
+private val SLOT_HEIGHT = 52.dp
+private val SLOT_MIN_WIDTH = 56.dp
+private val SLOT_PADDING = 12.dp
+private val SLOT_SHAPE = RoundedCornerShape(14.dp)
+private val SLOT_BORDER = 2.dp
+private const val PLACEHOLDER_ALPHA = 0.5f
 private val CARD_SHAPE = RoundedCornerShape(20.dp)
 private val GRAPH_HEIGHT = 240.dp
 private val PREVIEW_WIDTH = 56.dp

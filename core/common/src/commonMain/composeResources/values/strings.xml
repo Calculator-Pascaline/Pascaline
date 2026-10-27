@@ -98,6 +98,21 @@
     <string name="probability_population_successes">Successes in the population</string>
     <string name="probability_draws">Number of draws</string>
     <string name="probability_back">Back</string>
+    <string name="probability_examples">Examples</string>
+    <string name="probability_tap_to_use">Tap to use these values</string>
+    <string name="probability_coin_preset">3 flips of a fair coin</string>
+    <string name="probability_free_throws_preset">Free throws made in %1$s trials, the probability to score is %2$s</string>
+    <string name="probability_coin">%1$s flips of a fair coin</string>
+    <string name="probability_head">1 head</string>
+    <string name="probability_heads">%1$s heads</string>
+    <string name="probability_free_throws">Free throws made in %1$s trials</string>
+    <string name="probability_score_and_miss">P(score) = %1$s   P(miss) = %2$s</string>
+    <string name="probability_coefficients_question">How to get the coefficients in front?</string>
+    <string name="probability_coefficients_explanation">Pascal’s triangle: every number is the sum of the two above it. Row n gives the number of ways to get 0, 1, 2… successes in n trials. The underlined row is the one used above.</string>
+    <string name="probability_pascal_row">n = %1$s</string>
+    <string name="probability_score_letter">S</string>
+    <string name="probability_miss_letter">M</string>
+    <string name="probability_tree_legend">S = score, M = miss. Each branch shows its probability.</string>
     <string name="calculator_title">Calculator</string>
     <string name="common_add">Add</string>
     <string name="common_cancel">Cancel</string>
