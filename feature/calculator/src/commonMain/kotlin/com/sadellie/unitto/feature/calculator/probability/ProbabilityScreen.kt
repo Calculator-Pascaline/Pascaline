@@ -295,6 +295,11 @@ private fun CalculationStep(
         BinomialMoments(n, p, format.formatterSymbols.fractional)
         BinomialExplanation(n, p, format.formatterSymbols.fractional)
       }
+    } else {
+      viewModel.type?.let { type ->
+        val values = viewModel.parameters.mapNotNull { it.toNumberOrNull() }
+        if (values.size == type.parameters.size) DistributionMoments(type, values, format.formatterSymbols.fractional)
+      }
     }
   }
 }

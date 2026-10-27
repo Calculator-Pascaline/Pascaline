@@ -150,7 +150,7 @@ internal fun BinomialExplanation(n: Int, p: Double, fractional: String) {
 }
 
 /** What the moment buttons show under the equation. */
-private enum class Moment {
+private enum class ShownMoment {
   EXPECTED_VALUE,
   VARIANCE,
 }
@@ -161,23 +161,29 @@ private enum class Moment {
  */
 @Composable
 internal fun BinomialMoments(n: Int, p: Double, fractional: String) {
-  var shown by rememberSaveable { mutableStateOf<Moment?>(null) }
+  MomentButtons(expectedValue = { ExpectedValue(n, p, fractional) }, variance = { Variance(n, p, fractional) })
+}
+
+/** Expected value and variance buttons, the selected one opens its card under them. */
+@Composable
+internal fun MomentButtons(expectedValue: @Composable () -> Unit, variance: @Composable () -> Unit) {
+  var shown by rememberSaveable { mutableStateOf<ShownMoment?>(null) }
   Column(verticalArrangement = Arrangement.spacedBy(CARD_SPACING * 2)) {
     Row(horizontalArrangement = Arrangement.spacedBy(CARD_SPACING)) {
       FilterChip(
-        selected = shown == Moment.EXPECTED_VALUE,
-        onClick = { shown = if (shown == Moment.EXPECTED_VALUE) null else Moment.EXPECTED_VALUE },
+        selected = shown == ShownMoment.EXPECTED_VALUE,
+        onClick = { shown = if (shown == ShownMoment.EXPECTED_VALUE) null else ShownMoment.EXPECTED_VALUE },
         label = { Text(stringResource(Res.string.probability_expected_value), style = MaterialTheme.typography.titleSmall) },
       )
       FilterChip(
-        selected = shown == Moment.VARIANCE,
-        onClick = { shown = if (shown == Moment.VARIANCE) null else Moment.VARIANCE },
+        selected = shown == ShownMoment.VARIANCE,
+        onClick = { shown = if (shown == ShownMoment.VARIANCE) null else ShownMoment.VARIANCE },
         label = { Text(stringResource(Res.string.probability_variance), style = MaterialTheme.typography.titleSmall) },
       )
     }
     when (shown) {
-      Moment.EXPECTED_VALUE -> ExplanationCard { ExpectedValue(n, p, fractional) }
-      Moment.VARIANCE -> ExplanationCard { Variance(n, p, fractional) }
+      ShownMoment.EXPECTED_VALUE -> ExplanationCard { expectedValue() }
+      ShownMoment.VARIANCE -> ExplanationCard { variance() }
       null -> {}
     }
   }
@@ -196,7 +202,7 @@ private fun ExpectedValue(n: Int, p: Double, fractional: String) {
     style = MaterialTheme.typography.titleMedium,
     fontWeight = FontWeight.Bold,
   )
-  MomentFormula("E(X) = n × p = $n × ${p.value(fractional)} = ", mean.value(fractional))
+  MomentFormula("E(X) = n × p = $n × ${p.shown(fractional)} = ", mean.shown(fractional))
   Text(stringResource(Res.string.probability_mean_explanation), style = MaterialTheme.typography.bodyMedium)
   if (n <= MAX_CHECK_TRIALS) {
     // 0 × P(X = 0) + 1 × P(X = 1) + … gives the same number
@@ -204,14 +210,14 @@ private fun ExpectedValue(n: Int, p: Double, fractional: String) {
     val terms =
       // Non-breaking spaces keep each k × P(X = k) on one line
       (0..n).joinToString(" + ") { k ->
-        "$k × ${distribution.density(k.toDouble()).value(fractional, CHECK_DECIMALS)}"
+        "$k × ${distribution.density(k.toDouble()).shown(fractional, CHECK_DECIMALS)}"
       }
     Text(
       stringResource(Res.string.probability_mean_check),
       style = MaterialTheme.typography.bodyMedium,
       color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
-    Text("E(X) = $terms = ${mean.value(fractional)}", style = MaterialTheme.typography.bodyMedium)
+    Text("E(X) = $terms = ${mean.shown(fractional)}", style = MaterialTheme.typography.bodyMedium)
   }
 }
 
@@ -224,22 +230,22 @@ private fun Variance(n: Int, p: Double, fractional: String) {
     stringResource(
       if (isCoin) Res.string.probability_variance_heads else Res.string.probability_variance_baskets,
       n.toString(),
-      (n * p).value(fractional),
+      (n * p).shown(fractional),
     ),
     style = MaterialTheme.typography.titleMedium,
     fontWeight = FontWeight.Bold,
   )
   MomentFormula(
-    "V(X) = n × p × (1 − p) = $n × ${p.value(fractional)} × ${(1 - p).value(fractional)} = ",
-    variance.value(fractional),
+    "V(X) = n × p × (1 − p) = $n × ${p.shown(fractional)} × ${(1 - p).shown(fractional)} = ",
+    variance.shown(fractional),
   )
-  MomentFormula("σ(X) = √V(X) ≈ ", sqrt(variance).value(fractional, CHECK_DECIMALS))
+  MomentFormula("σ(X) = √V(X) ≈ ", sqrt(variance).shown(fractional, CHECK_DECIMALS))
   Text(stringResource(Res.string.probability_variance_explanation), style = MaterialTheme.typography.bodyMedium)
 }
 
 /** Formula with its result in the primary color: `E(X) = n × p = 5 × 0.5 = ` **2.5**. */
 @Composable
-private fun MomentFormula(formula: String, result: String) {
+internal fun MomentFormula(formula: String, result: String) {
   Text(
     style = MaterialTheme.typography.titleMedium,
     text =
@@ -251,10 +257,10 @@ private fun MomentFormula(formula: String, result: String) {
 }
 
 /** 0.7 ==> 0,7 with a comma separator, without rounding errors. */
-private fun Double.value(fractional: String, decimals: Int = VALUE_DECIMALS) = rounded(decimals).decimal(fractional)
+internal fun Double.shown(fractional: String, decimals: Int = VALUE_DECIMALS) = rounded(decimals).decimal(fractional)
 
 @Composable
-private fun ExplanationCard(content: @Composable () -> Unit) {
+internal fun ExplanationCard(content: @Composable () -> Unit) {
   Column(
     modifier =
       Modifier.fillMaxWidth()

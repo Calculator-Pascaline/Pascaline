@@ -113,6 +113,25 @@
     <string name="probability_score_letter">S</string>
     <string name="probability_miss_letter">M</string>
     <string name="probability_tree_legend">S = score, M = miss. Each branch shows its probability.</string>
+    <string name="probability_undefined">does not exist</string>
+    <string name="probability_uniform_mean">The density is flat between a and b, so X is balanced around the middle of the interval.</string>
+    <string name="probability_uniform_variance">V(X) = E((X − E(X))²) is the average of (x − (a + b)/2)² over the interval, which gives (b − a)²/12. An interval twice as wide has 4 times the variance and twice the standard deviation.</string>
+    <string name="probability_exponential_mean">X is the waiting time for an event that happens λ times per unit of time on average, so the wait is 1/λ on average. With the density: E(X) = ∫ x × λe^(−λx) dx from 0 to ∞ = 1/λ.</string>
+    <string name="probability_exponential_variance">E(X²) = ∫ x² × λe^(−λx) dx from 0 to ∞ = 2/λ², so V(X) = E(X²) − E(X)² = 2/λ² − 1/λ² = 1/λ². The standard deviation 1/λ is the same as the mean.</string>
+    <string name="probability_normal_mean">The bell curve is symmetric around μ, so the expected value is μ: it is the parameter itself.</string>
+    <string name="probability_normal_variance">σ is the standard deviation, so V(X) = σ². About 68% of the values are within σ of μ and 95% within 1.96σ.</string>
+    <string name="probability_chi_squared_mean">χ² with k degrees of freedom is the sum Z₁² + … + Zₖ² of the squares of k independent standard normals. E(Z²) = V(Z) + E(Z)² = 1 + 0 = 1, so E(X) = k.</string>
+    <string name="probability_chi_squared_variance">For a standard normal E(Z⁴) = 3, so V(Z²) = E(Z⁴) − E(Z²)² = 3 − 1 = 2. The k squares are independent, so their variances add up: 2k.</string>
+    <string name="probability_student_mean">The curve is symmetric around 0, so E(X) = 0 when k &gt; 1. With k ≤ 1 the tails are so heavy that the average does not exist (k = 1 is the Cauchy distribution).</string>
+    <string name="probability_student_variance">With k &gt; 2, V(X) = k/(k − 2): more than 1 because the tails are heavier than for the normal, and close to 1 when k is large. With 1 &lt; k ≤ 2 it is infinite, with k ≤ 1 it does not exist.</string>
+    <string name="probability_geometric_mean">X is the number of trials until the first success. There is always one trial, and if it fails (probability 1 − p) everything starts again: E = 1 + (1 − p) × E, so E = 1/p. With p = 0.2 it takes 5 trials on average.</string>
+    <string name="probability_geometric_variance">The same reasoning with E(X²) gives V(X) = (1 − p)/p². The rarer the success, the more the number of trials varies.</string>
+    <string name="probability_poisson_mean">The Poisson distribution counts rare events: it is a binomial with many trials n and a small p, with n × p = λ. So E(X) = n × p = λ.</string>
+    <string name="probability_poisson_variance">The binomial variance n × p × (1 − p) is λ × (1 − p), which gets close to λ when p is small. The mean and the variance are both λ.</string>
+    <string name="probability_fisher_mean">F = (U/d₁)/(V/d₂) with U and V independent χ². U/d₁ has mean 1 and d₂/V has mean d₂/(d₂ − 2), so E(X) = d₂/(d₂ − 2). It only exists when d₂ &gt; 2 and does not depend on d₁.</string>
+    <string name="probability_fisher_variance">It only exists when d₂ &gt; 4, and it is infinite when 2 &lt; d₂ ≤ 4. It gets smaller as both degrees of freedom grow: the values then gather around 1.</string>
+    <string name="probability_hypergeometric_mean">Each draw is a success with probability K/N, like in a binomial with p = K/N, so the n draws give n × K/N successes on average.</string>
+    <string name="probability_hypergeometric_variance">Like the binomial n × p × (1 − p) with p = K/N, times (N − n)/(N − 1): drawing without putting back makes the results less spread out. Drawing all N gives exactly K successes, so V = 0.</string>
     <string name="probability_expected_value">Expected value E(X)</string>
     <string name="probability_variance">Variance V(X)</string>
     <string name="probability_expected_heads">Expected number of heads in %1$s flips</string>
