@@ -171,7 +171,7 @@ private fun SettingsScreen(
         AnnoyingBox(
           modifier = Modifier.padding(vertical = Sizes.small).fillMaxWidth(),
           onClick = {
-            linkOpener.launch("https://github.com/sadellie/unitto/releases/latest")
+            linkOpener.launch("https://github.com/Calculator-Pascaline/Pascaline/releases/latest")
             updateLastReadChangelog(Config.VERSION_CODE)
           },
           imageVector = Symbols.NewReleases,

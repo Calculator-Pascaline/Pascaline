@@ -17,6 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import java.util.Properties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -45,8 +46,26 @@ kotlin {
   }
 }
 
+// Release key, kept out of git: storeFile, storePassword, keyAlias and keyPassword
+val keystoreProperties =
+  rootProject
+    .file("keystore.properties")
+    .takeIf { it.exists() }
+    ?.let { file -> Properties().apply { file.inputStream().use(::load) } }
+
 android {
   namespace = "com.sadellie.unitto"
+
+  signingConfigs {
+    if (keystoreProperties != null) {
+      create("release") {
+        storeFile = rootProject.file(keystoreProperties.getProperty("storeFile"))
+        storePassword = keystoreProperties.getProperty("storePassword")
+        keyAlias = keystoreProperties.getProperty("keyAlias")
+        keyPassword = keystoreProperties.getProperty("keyPassword")
+      }
+    }
+  }
   compileSdk = 36
 
   defaultConfig {
@@ -86,6 +105,8 @@ android {
       isMinifyEnabled = true
       isShrinkResources = true
       applicationIdSuffix = ""
+      // Never the debug key: without keystore.properties the APK is unsigned
+      signingConfig = signingConfigs.findByName("release")
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
     }
   }

@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2025-2026 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +25,7 @@ object Config {
   const val WEB_LINK = "https://sadellie.github.io/unitto/app"
   const val TERMS_LINK = "https://sadellie.github.io/unitto/terms"
   const val PRIVACY_LINK = "https://sadellie.github.io/unitto/privacy"
-  const val SOURCE_CODE_LINK = "https://github.com/sadellie/unitto"
+  const val SOURCE_CODE_LINK = "https://github.com/Calculator-Pascaline/Pascaline"
   const val AUTHOR_LINK = "https://sadellie.github.io"
   val VERSION_CODE
     get() = BuildKonfig.VERSION_CODE
