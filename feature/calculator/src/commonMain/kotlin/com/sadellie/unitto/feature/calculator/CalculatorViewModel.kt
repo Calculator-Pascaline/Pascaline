@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2023-2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,16 +20,18 @@
 package com.sadellie.unitto.feature.calculator
 
 import androidx.compose.foundation.text.input.clearText
-import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sadellie.unitto.core.common.KBigDecimal
+import com.sadellie.unitto.core.common.KBigDecimalMath
+import com.sadellie.unitto.core.common.KMathContext
 import com.sadellie.unitto.core.common.KRoundingMode
 import com.sadellie.unitto.core.common.Token
 import com.sadellie.unitto.core.common.isExpression
 import com.sadellie.unitto.core.common.isGreaterThan
 import com.sadellie.unitto.core.common.stateIn
+import com.sadellie.unitto.core.common.OutputFormat
 import com.sadellie.unitto.core.common.toFormattedString
 import com.sadellie.unitto.core.data.calculator.CalculatorHistoryRepository
 import com.sadellie.unitto.core.datastore.UserPreferencesRepository
@@ -41,6 +44,10 @@ import com.sadellie.unitto.core.ui.textfield.observe
 import com.sadellie.unitto.core.ui.textfield.placeCursorAtTheEnd
 import io.github.sadellie.evaluatto.Expression
 import io.github.sadellie.evaluatto.ExpressionException
+import io.github.sadellie.evaluatto.ExpressionResult
+import io.github.sadellie.evaluatto.integerInfo
+import kotlin.math.PI
+import kotlin.math.atan2
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
@@ -51,6 +58,42 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
+private const val COMPLEX_INFO_PRECISION = 50
+
+/** Indefinite integral is entered with empty bounds, history shows it without them: ∫cos(x)dx */
+private const val EMPTY_INTEGRAL_BOUNDS =
+  Token.Calculus.INTEGRAL +
+    Token.Layout.SUBSCRIPT_START +
+    Token.Layout.END +
+    Token.Layout.SUPERSCRIPT_START +
+    Token.Layout.END
+private val SCIENTIFIC_MAX = KBigDecimal("1E9")
+private val SCIENTIFIC_MIN = KBigDecimal("1E-6")
+
+/** 5.5×10¹⁶ (layout slots) when value is too big or too small to read, plain number otherwise. */
+private fun KBigDecimal.toScientific(precision: Int, outputFormat: Int): String {
+  val magnitude = abs()
+  val isPlain = magnitude.compareTo(KBigDecimal.ZERO) == 0 || (magnitude >= SCIENTIFIC_MIN && magnitude < SCIENTIFIC_MAX)
+  if (isPlain) return toFormattedString(precision, outputFormat).replace("-", Token.Operator.MINUS)
+
+  val digits = magnitude.stripTrailingZeros().toPlainString()
+  val exponent =
+    if (magnitude >= KBigDecimal.ONE) {
+      digits.substringBefore(".").length - 1
+    } else {
+      -(digits.substringAfter(".").indexOfFirst { it != '0' } + 1)
+    }
+  val mantissa = multiply(KBigDecimal("1E${-exponent}"))
+  return mantissa.toFormattedString(precision, OutputFormat.PLAIN).replace("-", Token.Operator.MINUS) +
+    Token.Operator.MULTIPLY +
+    "10" +
+    Token.Operator.POWER +
+    Token.Layout.SUPERSCRIPT_START +
+    exponent.toString().replace("-", Token.Operator.MINUS) +
+    Token.Layout.END
+}
+private const val DEGREES_IN_HALF_TURN = 180.0
 
 internal class CalculatorViewModel(
   private val userPrefsRepository: UserPreferencesRepository,
@@ -155,46 +198,63 @@ internal class CalculatorViewModel(
   fun deleteHistoryItem(item: CalculatorHistoryItem) =
     viewModelScope.launch { calculatorHistoryRepository.delete(item.id) }
 
+  /**
+   * Adds calculation to history (errors too, with empty result) and clears input, like NumWorks.
+   * Result is saved as lines: result, then fraction and roots if there are any.
+   */
   fun onEqualClick() =
     viewModelScope.launch {
       val prefs = _prefs.value ?: return@launch
-      if (_equalClicked.value) return@launch
       val inputValue = _input.text.toString()
-      if (!inputValue.isExpression()) return@launch
+      if (inputValue.isBlank()) return@launch
 
-      val calculated =
+      val evaluated =
         try {
-            calculate(inputValue, prefs.radianMode, KRoundingMode.HALF_EVEN)
-              .toFormattedString(prefs.precision, prefs.outputFormat)
-          } catch (e: ExpressionException.DivideByZero) {
-            _result.update { CalculationResult.DivideByZeroError }
-            return@launch
-          } catch (e: Exception) {
-            _result.update { CalculationResult.Error }
-            return@launch
-          }
-          // replace minus symbols since it is not recognized by evaluatto
-          .replace("-", Token.Operator.MINUS)
-
-      val fractional =
-        if (prefs.fractionalOutput) {
-          try {
-            // Different rounding mode to properly calculate fractional
-            calculate(inputValue, prefs.radianMode, KRoundingMode.DOWN).toFractionalString()
-          } catch (e: Exception) {
-            _result.update { CalculationResult.Error }
-            return@launch
-          }
-        } else {
-          // User doesn't want fractional output, clear result field
-          ""
+          evaluate(inputValue, prefs.radianMode, prefs.precision, prefs.outputFormat)
+        } catch (e: Exception) {
+          null
         }
 
-      calculatorHistoryRepository.add(expression = inputValue, result = calculated)
+      val lines = mutableListOf<String>()
+      if (evaluated != null) {
+        // Exact value with square roots first, then approximation: √5i, ≈2.236i
+        val exact =
+          when (evaluated) {
+            is ExpressionResult.Real -> evaluated.exact
+            is ExpressionResult.Complex -> evaluated.exact
+            is ExpressionResult.Symbolic -> null
+          }
+        if (exact != null) lines += exact
+        val approximation =
+          evaluated
+            .format(prefs.precision, prefs.outputFormat)
+            // replace minus symbols since it is not recognized by evaluatto
+            .replace("-", Token.Operator.MINUS)
+        lines += if (exact != null) APPROXIMATELY + approximation else approximation
 
-      _equalClicked.update { true }
-      _input.setTextAndPlaceCursorAtEnd(calculated)
-      _result.update { CalculationResult.Success(fractional) }
+        // Complex numbers and expressions with x can't be fractions
+        if (prefs.fractionalOutput && evaluated is ExpressionResult.Real) {
+          val fractional =
+            try {
+              // Different rounding mode to properly calculate fractional
+              calculate(inputValue, prefs.radianMode, KRoundingMode.DOWN).toFractionalString()
+            } catch (e: Exception) {
+              ""
+            }
+          if (fractional.isNotEmpty()) lines += fractional.toFractionSlots()
+        }
+
+      }
+
+      val historyResult = HistoryResult(lines = lines, menu = evaluated?.menuSections() ?: emptyList())
+      calculatorHistoryRepository.add(
+        expression = inputValue.replace(EMPTY_INTEGRAL_BOUNDS, Token.Calculus.INTEGRAL),
+        result = historyResult.encode(),
+      )
+
+      _equalClicked.update { false }
+      _input.clearText()
+      _result.update { CalculationResult.Empty }
     }
 
   private fun calculateInput() {
@@ -209,15 +269,14 @@ internal class CalculatorViewModel(
         val prefs = _prefs.value ?: return@launch
         val newResult =
           try {
-            val calculated =
-              calculate(
+            val evaluated =
+              evaluate(
                 input = _input.text.toString(),
                 radianMode = prefs.radianMode,
-                roundingMode = KRoundingMode.HALF_EVEN,
+                precision = prefs.precision,
+                outputFormat = prefs.outputFormat,
               )
-            CalculationResult.Success(
-              calculated.toFormattedString(prefs.precision, prefs.outputFormat)
-            )
+            CalculationResult.Success(evaluated.format(prefs.precision, prefs.outputFormat))
           } catch (e: Exception) {
             CalculationResult.Empty
           }
@@ -235,6 +294,137 @@ internal class CalculatorViewModel(
         if (it.isGreaterThan(maxCalculationResult)) throw ExpressionException.TooBig()
       }
     }
+
+  /**
+   * "…" menu: factorization, roots and discriminant for polynomials. Other forms and prime factors
+   * for whole numbers.
+   */
+  private fun ExpressionResult.menuSections(): List<Pair<MenuSection, List<String>>> =
+    when (this) {
+      is ExpressionResult.Symbolic ->
+        listOf(
+          MenuSection.FACTORIZATION to listOfNotNull(factorization),
+          MenuSection.ROOTS to roots,
+          MenuSection.DISCRIMINANT to listOfNotNull(discriminant),
+        )
+      is ExpressionResult.Real if si != null -> {
+        val prefs = _prefs.value ?: return emptyList()
+        val siValue = si ?: return emptyList()
+        val value = siValue.value.toScientific(prefs.precision, prefs.outputFormat)
+        listOf(MenuSection.SI_UNITS to listOfNotNull(value + siValue.unit, baseUnits?.let { value + it }))
+      }
+      is ExpressionResult.Real -> {
+        val info = if (unit == null) integerInfo(value) else null
+        if (info == null) {
+          emptyList()
+        } else {
+          listOf(
+            MenuSection.DECIMAL to listOf(info.decimal),
+            MenuSection.HEXADECIMAL to listOf(info.hexadecimal),
+            MenuSection.BINARY to listOf(info.binary),
+            MenuSection.PRIME_FACTORS to listOfNotNull(info.primeFactors),
+          )
+        }
+      }
+      is ExpressionResult.Complex -> complexSections(this)
+    }
+
+  /**
+   * Complex plane, parts, length and angle of a complex number. Exact values (like √5) go first,
+   * then approximation.
+   */
+  private fun complexSections(result: ExpressionResult.Complex): List<Pair<MenuSection, List<String>>> {
+    val prefs = _prefs.value ?: return emptyList()
+    val real = result.real
+    val imaginary = result.imaginary
+    val parts = result.parts
+    fun KBigDecimal.text() =
+      toFormattedString(prefs.precision, prefs.outputFormat).replace("-", Token.Operator.MINUS)
+
+    /** Exact value, then ≈ decimal when they are not the same. Only ≈ decimal without exact. */
+    fun exactAndApproximate(exact: String?, value: KBigDecimal, unit: String = ""): List<String> {
+      val decimal = value.text()
+      if (exact == null) return listOf(APPROXIMATELY + decimal + unit)
+      if (exact == decimal) return listOf(exact + unit)
+      return listOf(exact + unit, APPROXIMATELY + decimal + unit)
+    }
+
+    val mathContext = KMathContext(COMPLEX_INFO_PRECISION, KRoundingMode.HALF_EVEN)
+    val modulus = KBigDecimalMath.sqrt(real.multiply(real) + imaginary.multiply(imaginary), mathContext)
+    val reDouble = real.toPlainString().toDouble()
+    val imDouble = imaginary.toPlainString().toDouble()
+    val angle = atan2(imDouble, reDouble)
+    val degrees = KBigDecimal.valueOf(angle * DEGREES_IN_HALF_TURN / PI)
+    return listOf(
+      MenuSection.COMPLEX_PLANE to listOf("$reDouble,$imDouble"),
+      MenuSection.REAL_PART to exactAndApproximate(parts?.real, real),
+      MenuSection.IMAGINARY_PART to exactAndApproximate(parts?.imaginary, imaginary),
+      MenuSection.MODULUS to exactAndApproximate(parts?.modulus, modulus),
+      MenuSection.ARGUMENT to
+        exactAndApproximate(parts?.argument, KBigDecimal.valueOf(angle), " rad") +
+          // 45°, but ≈65.905°
+          listOf((if (parts?.argument == null) APPROXIMATELY else "") + degrees.text() + "°"),
+    )
+  }
+
+  /** Like [calculate], but also gives complex numbers and expressions with x. */
+  private suspend fun evaluate(
+    input: String,
+    radianMode: Boolean,
+    precision: Int,
+    outputFormat: Int,
+  ): ExpressionResult =
+    withContext(Dispatchers.Default) {
+      Expression(input, radianMode, KRoundingMode.HALF_EVEN).evaluate(precision, outputFormat).also {
+        val isTooBig =
+          when (it) {
+            is ExpressionResult.Real -> it.value.abs().isGreaterThan(maxCalculationResult)
+            is ExpressionResult.Complex ->
+              it.real.abs().isGreaterThan(maxCalculationResult) ||
+                it.imaginary.abs().isGreaterThan(maxCalculationResult)
+            is ExpressionResult.Symbolic -> false
+          }
+        if (isTooBig) throw ExpressionException.TooBig()
+      }
+    }
+
+  private fun ExpressionResult.format(precision: Int, outputFormat: Int): String =
+    when (this) {
+      is ExpressionResult.Real -> value.toFormattedString(precision, outputFormat) + (unit ?: "")
+      is ExpressionResult.Complex -> formatComplex(real, imaginary, precision, outputFormat)
+      is ExpressionResult.Symbolic -> expression
+    }
+
+  /** `a+bi`, `bi` or `a` when imaginary part is too small to be shown. */
+  private fun formatComplex(
+    real: KBigDecimal,
+    imaginary: KBigDecimal,
+    precision: Int,
+    outputFormat: Int,
+  ): String {
+    val realText = real.toFormattedString(precision, outputFormat)
+    val imaginaryText = imaginary.abs().toFormattedString(precision, outputFormat)
+    if (imaginaryText == "0") return realText
+    val imaginaryPart = if (imaginaryText == "1") Token.Const.I else imaginaryText + Token.Const.I
+    val isNegative = imaginary < KBigDecimal.ZERO
+    if (realText == "0") return (if (isNegative) "-" else "") + imaginaryPart
+    return realText + (if (isNegative) "-" else Token.Operator.PLUS) + imaginaryPart
+  }
+
+  /** `1 2⁄3` ==> `1⟨2⟩⟨3⟩` to show it with a horizontal bar. */
+  private fun String.toFractionSlots(): String {
+    val (whole, fraction) = if (" " in this) split(" ", limit = 2) else listOf("", this)
+    val (numerator, denominator) = fraction.split(Token.DisplayOnly.FRACTION, limit = 2)
+    val sign = if (numerator.startsWith("-") || whole.startsWith("-")) Token.Operator.MINUS else ""
+    return sign +
+      whole.removePrefix("-") +
+      Token.Layout.NUMERATOR_START +
+      numerator.removePrefix("-") +
+      Token.Layout.END +
+      Token.Layout.DENOMINATOR_START +
+      denominator +
+      Token.Layout.END
+  }
 
   private val maxCalculationResult = KBigDecimal.valueOf(Double.MAX_VALUE)
 

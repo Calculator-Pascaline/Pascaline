@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2023-2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,17 +22,21 @@ package com.sadellie.unitto.core.ui.textfield
 import androidx.compose.foundation.text.input.OutputTransformation
 import androidx.compose.foundation.text.input.TextFieldBuffer
 import androidx.compose.runtime.Stable
+import androidx.compose.ui.graphics.Color
 import com.sadellie.unitto.core.common.FormatterSymbols
 import com.sadellie.unitto.core.common.Token
 
 /**
  * - Inserts missing grouping symbols
  * - Replaces fraction symbol to user defined one
+ * - Renders slots (superscript and subscript), see [renderSlots]
  * - Doesn't filter output
  */
 @Stable
-data class ExpressionOutputTransformation(private val formatterSymbols: FormatterSymbols) :
-  OutputTransformation {
+data class ExpressionOutputTransformation(
+  private val formatterSymbols: FormatterSymbols,
+  private val slotPlaceholderColor: Color = Color.Unspecified,
+) : OutputTransformation {
   private val groupingChar = formatterSymbols.grouping.first()
   private val fractionalChar = formatterSymbols.fractional.first()
 
@@ -45,6 +50,15 @@ data class ExpressionOutputTransformation(private val formatterSymbols: Formatte
       // format number in expression
       formatNoFractional()
     }
+
+    formatSlots()
+  }
+
+  private fun TextFieldBuffer.formatSlots() {
+    val rendering = this.asCharSequence().renderSlots(slotPlaceholderColor)
+    // replacements don't change text length, styles stay at their positions
+    rendering.replacements.forEach { (index, char) -> replace(index, index + 1, char.toString()) }
+    rendering.styles.forEach { addStyle(it.item, it.start, it.end) }
   }
 
   private fun TextFieldBuffer.formatFractional() {

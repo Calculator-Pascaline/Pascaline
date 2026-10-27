@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2023-2026 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,10 +85,14 @@ fun ExpressionTextField(
     remember(formatterSymbols) { ExpressionClipboardManager(formatterSymbols, nativeClipboard) }
 
   CompositionLocalProvider(LocalClipboard provides clipboardManager) {
+    val placeholderColor = textColor.copy(alpha = SLOT_PLACEHOLDER_ALPHA)
     val displayedText =
-      remember(state.text) {
-        AnnotatedString(state.text.toString().formatExpression(formatterSymbols))
+      remember(state.text, formatterSymbols) {
+        state.text.toString().formatExpressionWithSlots(formatterSymbols, placeholderColor)
       }
+    // Smaller and shifted cursor inside of superscript and subscript
+    val cursorSlots = state.text.slotsAt(state.selection.max)
+    val cursorBrush = remember(cursorSlots, textColor) { slotCursorBrush(textColor, cursorSlots) }
 
     AutoSizeTextField(
       state = state,
@@ -96,8 +101,8 @@ fun ExpressionTextField(
       inputTransformation = ExpressionInputTransformation(formatterSymbols),
       textStyle = LocalNumberTypography.current.displayLarge.copy(textColor),
       lineLimits = TextFieldLineLimits.SingleLine,
-      cursorBrush = SolidColor(textColor),
-      outputTransformation = ExpressionOutputTransformation(formatterSymbols),
+      cursorBrush = cursorBrush,
+      outputTransformation = ExpressionOutputTransformation(formatterSymbols, placeholderColor),
       minRatio = minRatio,
       placeholder = placeholder,
       displayedText = displayedText,
@@ -254,6 +259,7 @@ private fun AutoSizeTextField(
   }
 
 private const val TEXT_FIELD_PLACEHOLDER_ALPHA = 0.5f
+private const val SLOT_PLACEHOLDER_ALPHA = 0.4f
 
 @Preview
 @Composable

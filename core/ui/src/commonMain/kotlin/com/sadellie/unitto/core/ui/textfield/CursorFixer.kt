@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2023-2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +21,8 @@ package com.sadellie.unitto.core.ui.textfield
 
 import androidx.compose.foundation.text.input.TextFieldBuffer
 import androidx.compose.ui.text.TextRange
+import com.sadellie.unitto.core.common.PhysicalUnit
+import com.sadellie.unitto.core.common.PhysicalUnits
 import com.sadellie.unitto.core.common.Token
 import kotlin.math.abs
 
@@ -48,6 +51,9 @@ fun TextFieldBuffer.fixTextRange(): TextRange {
  */
 fun String.tokenLengthAhead(pos: Int): Int {
   Token.Func.allWithOpeningBracket.forEach { if (pos.isAfterToken(this, it)) return it.length }
+  unitEndingAt(pos)?.let { return it.token.length }
+  if (pos.isAfterToken(this, Token.Calculus.DERIVATIVE)) return Token.Calculus.DERIVATIVE.length
+  if (pos.isAfterToken(this, Token.Calculus.DX)) return Token.Calculus.DX.length
 
   // We default to 1 here. It means that cursor is not placed after illegal token. Just a number
   // or a binary operator or something else, can delete by one symbol.
@@ -67,6 +73,8 @@ fun String.tokenAhead(pos: Int): String {
  */
 private fun CharSequence.isPlacedIllegallyAt(pos: Int): Boolean {
   Token.Func.allWithOpeningBracket.forEach { if (pos.isAtToken(this, it)) return true }
+  Token.Layout.inseparable.forEach { if (pos.isAtToken(this, it)) return true }
+  if (isInsideOfUnit(pos)) return true
 
   return false
 }
@@ -96,3 +104,24 @@ fun String.tokenAfter(pos: Int): String {
 private fun Int.isBeforeToken(str: String, token: String): Boolean {
   return str.substring(this, (this + token.length).coerceAtMost(str.length)).contains(token)
 }
+
+/** Unit token that ends right before [pos], like `_km` in `3_km|`. */
+private fun CharSequence.unitEndingAt(pos: Int): PhysicalUnit? {
+  for (start in (pos - 1) downTo (pos - MAX_UNIT_TOKEN_LENGTH).coerceAtLeast(0)) {
+    val unit = PhysicalUnits.tokenAt(this, start) ?: continue
+    if (start + unit.token.length == pos) return unit
+  }
+  return null
+}
+
+/** `_k|m` is not a valid cursor position. */
+private fun CharSequence.isInsideOfUnit(pos: Int): Boolean {
+  for (start in (pos - 1) downTo (pos - MAX_UNIT_TOKEN_LENGTH).coerceAtLeast(0)) {
+    val unit = PhysicalUnits.tokenAt(this, start) ?: continue
+    if (pos < start + unit.token.length) return true
+  }
+  return false
+}
+
+private val MAX_UNIT_TOKEN_LENGTH by lazy { PhysicalUnits.tokens.maxOf { it.length } }
+

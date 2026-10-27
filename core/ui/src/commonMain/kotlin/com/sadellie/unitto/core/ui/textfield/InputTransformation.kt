@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2024-2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +25,7 @@ import androidx.compose.foundation.text.input.delete
 import androidx.compose.runtime.Stable
 import com.sadellie.unitto.core.common.FormatterSymbols
 import com.sadellie.unitto.core.common.KBigDecimal
+import com.sadellie.unitto.core.common.PhysicalUnits
 import com.sadellie.unitto.core.common.Token
 import com.sadellie.unitto.core.common.trimZeros
 
@@ -40,7 +42,15 @@ data class ExpressionInputTransformation(private val formatterSymbols: Formatter
     transformInputWithReplacements(legalTokens, replacementMap)
 
   override val legalTokens =
-    listOf(
+    PhysicalUnits.tokens +
+      listOf(Token.Operator.CONVERT) +
+      listOf(
+      Token.Func.ARSINH_BRACKET,
+      Token.Func.ARCOSH_BRACKET,
+      Token.Func.ARTANH_BRACKET,
+      Token.Func.SINH_BRACKET,
+      Token.Func.COSH_BRACKET,
+      Token.Func.TANH_BRACKET,
       Token.Func.ARCOS_BRACKET,
       Token.Func.ARSIN_BRACKET,
       Token.Func.ACTAN_BRACKET,
@@ -74,6 +84,22 @@ data class ExpressionInputTransformation(private val formatterSymbols: Formatter
       Token.Operator.SQRT,
       Token.Const.PI,
       Token.Const.E,
+      Token.Const.I,
+      Token.Const.INFINITY,
+      Token.Layout.SUPERSCRIPT_START,
+      Token.Layout.SUBSCRIPT_START,
+      Token.Layout.END,
+      Token.Layout.NUMERATOR_START,
+      Token.Layout.DENOMINATOR_START,
+      Token.Layout.RADICAND_START,
+      Token.Calculus.INTEGRAL,
+      Token.Calculus.DERIVATIVE,
+      Token.Calculus.EVALUATED_AT,
+      Token.Calculus.DX,
+      Token.Calculus.X,
+      Token.Calculus.SUM,
+      Token.Calculus.PRODUCT,
+      Token.Calculus.N,
     )
 
   override val replacementMap =

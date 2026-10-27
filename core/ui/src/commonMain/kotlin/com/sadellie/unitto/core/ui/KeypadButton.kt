@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2023-2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,6 +56,7 @@ import com.sadellie.unitto.core.designsystem.icons.iconpack.KeyC
 import com.sadellie.unitto.core.designsystem.icons.iconpack.KeyD
 import com.sadellie.unitto.core.designsystem.icons.iconpack.KeyE
 import com.sadellie.unitto.core.designsystem.icons.iconpack.KeyF
+import com.sadellie.unitto.core.designsystem.icons.iconpack.KeyX
 import com.sadellie.unitto.core.designsystem.icons.iconpack.LeftBracket
 import com.sadellie.unitto.core.designsystem.icons.iconpack.Ln
 import com.sadellie.unitto.core.designsystem.icons.iconpack.Log
@@ -140,6 +142,7 @@ sealed interface KeypadButton {
     val KeyD = KeypadButtonAdd(IconPack.KeyD, null, Token.Letter.LETTER_D)
     val KeyE = KeypadButtonAdd(IconPack.KeyE, null, Token.Letter.LETTER_E)
     val KeyF = KeypadButtonAdd(IconPack.KeyF, null, Token.Letter.LETTER_F)
+    val KeyX = KeypadButtonAdd(IconPack.KeyX, null, "x")
 
     val AngleRadKey = KeypadButtonSimple(IconPack.Rad, Res.string.keyboard_radian)
     val AngleDegKey = KeypadButtonSimple(IconPack.Deg, Res.string.keyboard_degree)
@@ -160,8 +163,10 @@ sealed interface KeypadButton {
     val DotKey = KeypadButtonAdd(IconPack.Dot, Res.string.keyboard_dot, Token.Digit.DOT)
     val DivideKey =
       KeypadButtonAdd(IconPack.Divide, Res.string.keyboard_divide, Token.Operator.DIVIDE)
-    val EulerKey = KeypadButtonAdd(IconPack.Euler, Res.string.keyboard_euler, Token.Const.E)
-    val ExKey = KeypadButtonAdd(IconPack.Ex, Res.string.keyboard_exp, Token.Func.EXP_BRACKET)
+    val EulerKey = KeypadButtonAdd(IconPack.Euler, Res.string.keyboard_euler, Token.Layout.EXP)
+    val ExKey = KeypadButtonAdd(IconPack.Ex, Res.string.keyboard_exp, Token.Layout.EXP)
+    val FractionKey =
+      KeypadButtonAdd(IconPack.Divide, Res.string.keyboard_divide, Token.Layout.FRACTION)
     val FactorialKey =
       KeypadButtonAdd(IconPack.Factorial, Res.string.keyboard_factorial, Token.Operator.FACTORIAL)
     val MinusKey = KeypadButtonAdd(IconPack.Minus, Res.string.keyboard_minus, Token.Operator.MINUS)
@@ -176,19 +181,21 @@ sealed interface KeypadButton {
         Token.Operator.LEFT_BRACKET,
       )
     val LnKey = KeypadButtonAdd(IconPack.Ln, Res.string.keyboard_ln, Token.Func.LN_BRACKET)
-    val LogKey = KeypadButtonAdd(IconPack.Log, Res.string.keyboard_log, Token.Func.LOG_BRACKET)
+    val LogKey = KeypadButtonAdd(IconPack.Log, Res.string.keyboard_log, Token.Layout.LOG_10)
     val PercentKey =
       KeypadButtonAdd(IconPack.Percent, Res.string.keyboard_percent, Token.Operator.PERCENT)
     val PlusKey = KeypadButtonAdd(IconPack.Plus, Res.string.keyboard_plus, Token.Operator.PLUS)
     val PiKey = KeypadButtonAdd(IconPack.Pi, Res.string.keyboard_pi, Token.Const.PI)
-    val PowerKey = KeypadButtonAdd(IconPack.Power, Res.string.keyboard_power, Token.Operator.POWER)
+    val PowerKey = KeypadButtonAdd(IconPack.Power, Res.string.keyboard_power, Token.Layout.POWER)
     val Power10Key =
       KeypadButtonAdd(
         IconPack.Power10,
         Res.string.keyboard_power_10,
-        Token.Digit.DIGIT_1 + Token.Digit.DIGIT_0 + Token.Operator.POWER,
+        Token.Layout.POWER_10,
       )
     val RootKey = KeypadButtonAdd(IconPack.Root, Res.string.keyboard_root, Token.Operator.SQRT)
+    /** Square root with a box for radicand */
+    val RadicalKey = KeypadButtonAdd(IconPack.Root, Res.string.keyboard_root, Token.Layout.SQRT)
     val RightBracketKey =
       KeypadButtonAdd(
         IconPack.RightBracket,

@@ -20,7 +20,7 @@
     <string name="android_exclusive_action">Get Android version</string>
     <string name="android_exclusive_text">This feature is only available in Android version of the app</string>
     <string name="android_exclusive_title">Android exclusive</string>
-    <string name="app_name" translatable="false">Unitto</string>
+    <string name="app_name" translatable="false">Pascaline</string>
     <string name="body_mass_height">Height</string>
     <string name="body_mass_imperial">Imperial</string>
     <string name="body_mass_metric">Metric</string>
@@ -37,6 +37,25 @@
     <string name="calculator_clear_history_support">All expressions from history will be deleted forever. This action can't be undone!</string>
     <string name="calculator_divide_by_zero_error">Can't divide by 0</string>
     <string name="calculator_no_history">No history</string>
+    <string name="calculator_factorization">Factorization</string>
+    <string name="calculator_roots">Roots</string>
+    <string name="calculator_more">More</string>
+    <string name="calculator_discriminant">Discriminant</string>
+    <string name="calculator_decimal">Decimal</string>
+    <string name="calculator_hexadecimal">Hexadecimal</string>
+    <string name="calculator_binary">Binary</string>
+    <string name="calculator_prime_factors">Prime factors</string>
+    <string name="calculator_complex_plane">Complex plane</string>
+    <string name="calculator_real_part">Real part</string>
+    <string name="calculator_imaginary_part">Imaginary part</string>
+    <string name="calculator_modulus">Length</string>
+    <string name="calculator_argument">Angle</string>
+    <string name="calculator_category_basic">Basic</string>
+    <string name="calculator_category_calculus">Calculus</string>
+    <string name="calculator_category_trigonometry">Trig</string>
+    <string name="calculator_category_units">Units</string>
+    <string name="calculator_units_and_constants">Units and constants</string>
+    <string name="calculator_si_units">SI units</string>
     <string name="calculator_title">Calculator</string>
     <string name="common_add">Add</string>
     <string name="common_cancel">Cancel</string>

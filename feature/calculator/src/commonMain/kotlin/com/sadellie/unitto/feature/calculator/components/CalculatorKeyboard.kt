@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2023-2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,19 +22,29 @@ package com.sadellie.unitto.feature.calculator.components
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -42,9 +53,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.sadellie.unitto.core.common.Token
 import com.sadellie.unitto.core.designsystem.ExpressivePreview
 import com.sadellie.unitto.core.designsystem.LocalWindowSize
@@ -63,12 +77,12 @@ import com.sadellie.unitto.core.ui.KeypadButton.Companion.BracketsKey
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.ClearKey
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.CommaKey
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.CosKey
-import com.sadellie.unitto.core.ui.KeypadButton.Companion.DivideKey
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.DotKey
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.EqualKey
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.EulerKey
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.ExKey
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.FactorialKey
+import com.sadellie.unitto.core.ui.KeypadButton.Companion.FractionKey
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.InvKey
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.Key0
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.Key1
@@ -80,6 +94,7 @@ import com.sadellie.unitto.core.ui.KeypadButton.Companion.Key6
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.Key7
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.Key8
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.Key9
+import com.sadellie.unitto.core.ui.KeypadButton.Companion.KeyX
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.LeftBracketKey
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.LnKey
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.LogKey
@@ -92,7 +107,7 @@ import com.sadellie.unitto.core.ui.KeypadButton.Companion.PlusKey
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.Power10Key
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.PowerKey
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.RightBracketKey
-import com.sadellie.unitto.core.ui.KeypadButton.Companion.RootKey
+import com.sadellie.unitto.core.ui.KeypadButton.Companion.RadicalKey
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.SinKey
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.TanKey
 import com.sadellie.unitto.core.ui.KeypadButtonFilled
@@ -119,41 +134,339 @@ internal fun CalculatorKeyboard(
   showAcButton: Boolean,
   middleZero: Boolean,
   fractional: String,
+  isInSeries: Boolean = false,
 ) {
-  if (LocalWindowSize.current.heightSizeClass < WindowHeightSizeClass.Medium) {
-    CompactKeyboard(
-      modifier = modifier,
-      onAddTokenClick = onAddTokenClick,
-      onBracketsClick = onBracketsClick,
-      onDeleteClick = onDeleteClick,
-      onClearClick = onClearClick,
-      onEqualClick = onEqualClick,
-      radianMode = radianMode,
-      onRadianModeClick = onRadianModeClick,
-      inverseMode = inverseMode,
-      onInverseModeClick = onInverseModeClick,
-      showAcButton = showAcButton,
-      middleZero = middleZero,
-      fractional = fractional,
+  // Portrait: few function rows that scroll, digits never change
+  if (LocalWindowSize.current.heightSizeClass >= WindowHeightSizeClass.Medium) {
+    var showUnits by remember { mutableStateOf(false) }
+    ColumnWithConstraints(modifier = modifier) { constraints ->
+      // Function rows are half as tall as digit rows
+      val rowHeight =
+        (constraints.maxHeight - DOTS_HEIGHT) / (BOTTOM_ROWS + PAGE_ROWS * FUNCTION_ROW_SCALE)
+      FunctionRows(
+        modifier = Modifier.fillMaxWidth(),
+        rowHeight = rowHeight * FUNCTION_ROW_SCALE,
+        onAddTokenClick = onAddTokenClick,
+      )
+      BottomGrid(
+        modifier = Modifier.fillMaxWidth().weight(1f),
+        onAddTokenClick = onAddTokenClick,
+        onBracketsClick = onBracketsClick,
+        onDeleteClick = onDeleteClick,
+        onClearClick = onClearClick,
+        onEqualClick = onEqualClick,
+        onUnitsClick = { showUnits = true },
+        isInSeries = isInSeries,
+        fractional = fractional,
+      )
+    }
+    if (showUnits) {
+      UnitsSheet(
+        onDismiss = { showUnits = false },
+        onUnitClick = {
+          onAddTokenClick(it)
+          showUnits = false
+        },
+      )
+    }
+    return
+  }
+
+  val pagerState = rememberPagerState(pageCount = { KEYBOARD_PAGES })
+
+  Column(modifier = modifier) {
+    HorizontalPager(
+      state = pagerState,
+      modifier = Modifier.weight(1f).fillMaxWidth(),
+      userScrollEnabled = true,
+    ) { page ->
+      when (page) {
+        0 -> {
+          if (LocalWindowSize.current.heightSizeClass < WindowHeightSizeClass.Medium) {
+            CompactKeyboard(
+              modifier = Modifier.fillMaxSize(),
+              onAddTokenClick = onAddTokenClick,
+              onBracketsClick = onBracketsClick,
+              onDeleteClick = onDeleteClick,
+              onClearClick = onClearClick,
+              onEqualClick = onEqualClick,
+              radianMode = radianMode,
+              onRadianModeClick = onRadianModeClick,
+              inverseMode = inverseMode,
+              onInverseModeClick = onInverseModeClick,
+              showAcButton = showAcButton,
+              middleZero = middleZero,
+              fractional = fractional,
+            )
+          } else {
+            ExpandedKeyboard(
+              modifier = Modifier.fillMaxSize(),
+              onAddTokenClick = onAddTokenClick,
+              onBracketsClick = onBracketsClick,
+              onDeleteClick = onDeleteClick,
+              onClearClick = onClearClick,
+              onEqualClick = onEqualClick,
+              radianMode = radianMode,
+              onRadianModeClick = onRadianModeClick,
+              additionalButtons = additionalButtons,
+              onAdditionalButtonsClick = onAdditionalButtonsClick,
+              inverseMode = inverseMode,
+              onInverseModeClick = onInverseModeClick,
+              showAcButton = showAcButton,
+              middleZero = middleZero,
+              fractional = fractional,
+            )
+          }
+        }
+        1 -> {
+          CalculusKeyboard(
+            modifier = Modifier.fillMaxSize(),
+            onAddTokenClick = onAddTokenClick,
+          )
+        }
+        2 -> {
+          TrigonometryKeyboard(
+            modifier = Modifier.fillMaxSize(),
+            onAddTokenClick = onAddTokenClick,
+          )
+        }
+      }
+    }
+
+    // Page Indicator (Dots)
+    Row(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(bottom = 8.dp),
+      horizontalArrangement = Arrangement.Center,
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      repeat(KEYBOARD_PAGES) { index ->
+        val color =
+          if (pagerState.currentPage == index) MaterialTheme.colorScheme.primary
+          else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)
+
+        Box(
+          modifier = Modifier
+            .padding(horizontal = 4.dp)
+            .size(6.dp)
+            .clip(CircleShape)
+            .background(color)
+        )
+      }
+    }
+  }
+}
+
+/** Integrals (indefinite without bounds), derivatives, sums and products. */
+@Composable
+private fun CalculusKeyboard(modifier: Modifier, onAddTokenClick: (String) -> Unit) {
+  ButtonGrid(
+    modifier = modifier,
+    buttons =
+      listOf(
+        listOf("∫ □ dx" to Token.Layout.INTEGRAL, "d/dx(□)" to Token.Layout.DERIVATIVE),
+        listOf("Σ □" to Token.Layout.SUM, "∏ □" to Token.Layout.PRODUCT),
+        listOf(
+          Token.Calculus.N to Token.Calculus.N,
+          Token.Calculus.X to Token.Calculus.X,
+          Token.Const.INFINITY to Token.Const.INFINITY,
+        ),
+      ),
+    onClick = onAddTokenClick,
+  )
+}
+
+/** All trigonometric and hyperbolic functions with their inverses. */
+@Composable
+private fun TrigonometryKeyboard(modifier: Modifier, onAddTokenClick: (String) -> Unit) {
+  fun key(token: String) = token to "$token("
+  ButtonGrid(
+    modifier = modifier,
+    buttons =
+      listOf(
+        listOf(key(Token.Func.SIN), key(Token.Func.COS), key(Token.Func.TAN)),
+        listOf(key(Token.Func.ARSIN), key(Token.Func.ARCOS), key(Token.Func.ACTAN)),
+        listOf(key(Token.Func.SINH), key(Token.Func.COSH), key(Token.Func.TANH)),
+        listOf(key(Token.Func.ARSINH), key(Token.Func.ARCOSH), key(Token.Func.ARTANH)),
+      ),
+    onClick = onAddTokenClick,
+  )
+}
+
+/** Rows of [CalculusButton]s, pairs are label and token. */
+@Composable
+private fun ButtonGrid(
+  modifier: Modifier,
+  buttons: List<List<Pair<String, String>>>,
+  onClick: (String) -> Unit,
+) {
+  Column(
+    modifier = modifier.padding(horizontal = 8.dp, vertical = 8.dp),
+    verticalArrangement = Arrangement.spacedBy(GRID_SPACING),
+  ) {
+    buttons.forEach { row ->
+      Row(
+        modifier = Modifier.fillMaxWidth().weight(1f),
+        horizontalArrangement = Arrangement.spacedBy(GRID_SPACING),
+      ) {
+        row.forEach { (label, token) ->
+          CalculusButton(
+            label = label,
+            token = token,
+            modifier = Modifier.weight(1f).fillMaxHeight(),
+            onClick = onClick,
+          )
+        }
+      }
+    }
+  }
+}
+
+@Composable
+private fun CalculusButton(
+  label: String,
+  token: String,
+  modifier: Modifier = Modifier,
+  onClick: (String) -> Unit
+) {
+  Surface(
+    onClick = { onClick(token) },
+    modifier = modifier,
+    shape = MaterialTheme.shapes.large,
+    color = MaterialTheme.colorScheme.surfaceContainerHigh,
+    contentColor = MaterialTheme.colorScheme.onSurface,
+  ) {
+    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+      Text(
+        text = label,
+        style = MaterialTheme.typography.titleLarge,
+        fontWeight = FontWeight.Medium,
+        maxLines = 1
+      )
+    }
+  }
+}
+
+/**
+ * Keys that are always shown in portrait. Variable key types n inside of Σ and ∏, x everywhere
+ * else.
+ */
+@Composable
+private fun BottomGrid(
+  modifier: Modifier,
+  onAddTokenClick: (String) -> Unit,
+  onBracketsClick: () -> Unit,
+  onDeleteClick: () -> Unit,
+  onClearClick: () -> Unit,
+  onEqualClick: () -> Unit,
+  onUnitsClick: () -> Unit,
+  isInSeries: Boolean,
+  fractional: String,
+) {
+  KeypadFlow(modifier = modifier, rows = BOTTOM_ROWS, columns = BOTTOM_COLUMNS) { width, height ->
+    val buttonModifier = Modifier.fillMaxWidth(width).fillMaxHeight(height)
+    val textModifier = buttonModifier
+    val iconHeight = KeyboardButtonToken.ICON_HEIGHT_TALL
+
+    CalculusButton(
+      label = "x,n,t",
+      token = if (isInSeries) Token.Calculus.N else Token.Calculus.X,
+      modifier = textModifier,
+      onClick = onAddTokenClick,
     )
-  } else {
-    ExpandedKeyboard(
-      modifier = modifier,
-      onAddTokenClick = onAddTokenClick,
-      onBracketsClick = onBracketsClick,
-      onDeleteClick = onDeleteClick,
-      onClearClick = onClearClick,
-      onEqualClick = onEqualClick,
-      radianMode = radianMode,
-      onRadianModeClick = onRadianModeClick,
-      additionalButtons = additionalButtons,
-      onAdditionalButtonsClick = onAdditionalButtonsClick,
-      inverseMode = inverseMode,
-      onInverseModeClick = onInverseModeClick,
-      showAcButton = showAcButton,
-      middleZero = middleZero,
-      fractional = fractional,
+    CalculusButton(Token.Const.I, Token.Const.I, textModifier, onAddTokenClick)
+    CalculusButton("unit", "", textModifier) { onUnitsClick() }
+    KeypadButtonTertiary(buttonModifier, ClearKey, iconHeight, onClearClick)
+    KeypadButtonFilled(buttonModifier, BackspaceKey, iconHeight, onDeleteClick)
+
+    KeypadButtonLight(buttonModifier, Key7, iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key8, iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key9, iconHeight, onAddTokenClick)
+    KeypadButtonFilled(buttonModifier, PowerKey, iconHeight, onAddTokenClick)
+    KeypadButtonFilled(buttonModifier, BracketsKey, iconHeight, onBracketsClick)
+
+    KeypadButtonLight(buttonModifier, Key4, iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key5, iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key6, iconHeight, onAddTokenClick)
+    KeypadButtonFilled(buttonModifier, MultiplyKey, iconHeight, onAddTokenClick)
+    KeypadButtonFilled(buttonModifier, FractionKey, iconHeight, onAddTokenClick)
+
+    KeypadButtonLight(buttonModifier, Key1, iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key2, iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key3, iconHeight, onAddTokenClick)
+    KeypadButtonFilled(buttonModifier, PlusKey, iconHeight, onAddTokenClick)
+    KeypadButtonFilled(buttonModifier, MinusKey, iconHeight, onAddTokenClick)
+
+    val fractionalKey =
+      remember(fractional) { if (fractional == Token.PERIOD) DotKey else CommaKey }
+    KeypadButtonLight(buttonModifier, fractionalKey, iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key0, iconHeight, onAddTokenClick)
+    KeypadButtonFilled(buttonModifier, FactorialKey, iconHeight, onAddTokenClick)
+    KeypadButtonFilledPrimary(
+      Modifier.fillMaxWidth(width * 2).fillMaxHeight(height),
+      EqualKey,
+      iconHeight,
+      onEqualClick,
     )
+  }
+}
+
+/** Digits, basic operators, AC, delete and equal. Never changes. */
+@Composable
+private fun DigitsGrid(
+  modifier: Modifier,
+  onAddTokenClick: (String) -> Unit,
+  onBracketsClick: () -> Unit,
+  onDeleteClick: () -> Unit,
+  onClearClick: () -> Unit,
+  onEqualClick: () -> Unit,
+  showAcButton: Boolean,
+  middleZero: Boolean,
+  fractional: String,
+) {
+  KeypadFlow(modifier = modifier, rows = 5, columns = 4) { width, height
+    ->
+    val buttonModifier = Modifier.fillMaxWidth(width).fillMaxHeight(height)
+    val iconHeight = KeyboardButtonToken.ICON_HEIGHT_TALL
+
+    if (showAcButton) {
+      KeypadButtonTertiary(buttonModifier, ClearKey, iconHeight, onClearClick)
+      KeypadButtonFilled(buttonModifier, BracketsKey, iconHeight, onBracketsClick)
+    } else {
+      KeypadButtonFilled(buttonModifier, LeftBracketKey, iconHeight, onAddTokenClick)
+      KeypadButtonFilled(buttonModifier, RightBracketKey, iconHeight, onAddTokenClick)
+    }
+    KeypadButtonFilled(buttonModifier, PercentKey, iconHeight, onAddTokenClick)
+    KeypadButtonFilled(buttonModifier, FractionKey, iconHeight, onAddTokenClick)
+
+    KeypadButtonLight(buttonModifier, Key7, iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key8, iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key9, iconHeight, onAddTokenClick)
+    KeypadButtonFilled(buttonModifier, MultiplyKey, iconHeight, onAddTokenClick)
+
+    KeypadButtonLight(buttonModifier, Key4, iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key5, iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key6, iconHeight, onAddTokenClick)
+    KeypadButtonFilled(buttonModifier, MinusKey, iconHeight, onAddTokenClick)
+
+    KeypadButtonLight(buttonModifier, Key1, iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key2, iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key3, iconHeight, onAddTokenClick)
+    KeypadButtonFilled(buttonModifier, PlusKey, iconHeight, onAddTokenClick)
+
+    val fractionalKey =
+      remember(fractional) { if (fractional == Token.PERIOD) DotKey else CommaKey }
+    if (middleZero) {
+      KeypadButtonLight(buttonModifier, fractionalKey, iconHeight, onAddTokenClick)
+      KeypadButtonLight(buttonModifier, Key0, iconHeight, onAddTokenClick)
+    } else {
+      KeypadButtonLight(buttonModifier, Key0, iconHeight, onAddTokenClick)
+      KeypadButtonLight(buttonModifier, fractionalKey, iconHeight, onAddTokenClick)
+    }
+
+    KeypadButtonLight(buttonModifier, BackspaceKey, iconHeight, onClearClick, onDeleteClick)
+    KeypadButtonFilledPrimary(buttonModifier, EqualKey, iconHeight, onEqualClick)
   }
 }
 
@@ -194,49 +507,17 @@ private fun ExpandedKeyboard(
 
     Spacer(modifier = Modifier.height(spacerHeight))
 
-    KeypadFlow(modifier = Modifier.weight(1f).fillMaxSize(), rows = 5, columns = 4) { width, height
-      ->
-      val buttonModifier = Modifier.fillMaxWidth(width).fillMaxHeight(height)
-      val iconHeight = KeyboardButtonToken.ICON_HEIGHT_TALL
-
-      if (showAcButton) {
-        KeypadButtonTertiary(buttonModifier, ClearKey, iconHeight, onClearClick)
-        KeypadButtonFilled(buttonModifier, BracketsKey, iconHeight, onBracketsClick)
-      } else {
-        KeypadButtonFilled(buttonModifier, LeftBracketKey, iconHeight, onAddTokenClick)
-        KeypadButtonFilled(buttonModifier, RightBracketKey, iconHeight, onAddTokenClick)
-      }
-      KeypadButtonFilled(buttonModifier, PercentKey, iconHeight, onAddTokenClick)
-      KeypadButtonFilled(buttonModifier, DivideKey, iconHeight, onAddTokenClick)
-
-      KeypadButtonLight(buttonModifier, Key7, iconHeight, onAddTokenClick)
-      KeypadButtonLight(buttonModifier, Key8, iconHeight, onAddTokenClick)
-      KeypadButtonLight(buttonModifier, Key9, iconHeight, onAddTokenClick)
-      KeypadButtonFilled(buttonModifier, MultiplyKey, iconHeight, onAddTokenClick)
-
-      KeypadButtonLight(buttonModifier, Key4, iconHeight, onAddTokenClick)
-      KeypadButtonLight(buttonModifier, Key5, iconHeight, onAddTokenClick)
-      KeypadButtonLight(buttonModifier, Key6, iconHeight, onAddTokenClick)
-      KeypadButtonFilled(buttonModifier, MinusKey, iconHeight, onAddTokenClick)
-
-      KeypadButtonLight(buttonModifier, Key1, iconHeight, onAddTokenClick)
-      KeypadButtonLight(buttonModifier, Key2, iconHeight, onAddTokenClick)
-      KeypadButtonLight(buttonModifier, Key3, iconHeight, onAddTokenClick)
-      KeypadButtonFilled(buttonModifier, PlusKey, iconHeight, onAddTokenClick)
-
-      val fractionalKey =
-        remember(fractional) { if (fractional == Token.PERIOD) DotKey else CommaKey }
-      if (middleZero) {
-        KeypadButtonLight(buttonModifier, fractionalKey, iconHeight, onAddTokenClick)
-        KeypadButtonLight(buttonModifier, Key0, iconHeight, onAddTokenClick)
-      } else {
-        KeypadButtonLight(buttonModifier, Key0, iconHeight, onAddTokenClick)
-        KeypadButtonLight(buttonModifier, fractionalKey, iconHeight, onAddTokenClick)
-      }
-
-      KeypadButtonLight(buttonModifier, BackspaceKey, iconHeight, onClearClick, onDeleteClick)
-      KeypadButtonFilledPrimary(buttonModifier, EqualKey, iconHeight, onEqualClick)
-    }
+    DigitsGrid(
+      modifier = Modifier.weight(1f).fillMaxSize(),
+      onAddTokenClick = onAddTokenClick,
+      onBracketsClick = onBracketsClick,
+      onDeleteClick = onDeleteClick,
+      onClearClick = onClearClick,
+      onEqualClick = onEqualClick,
+      showAcButton = showAcButton,
+      middleZero = middleZero,
+      fractional = fractional,
+    )
 
     Spacer(modifier = Modifier.height(spacerHeight))
   }
@@ -264,32 +545,44 @@ private fun ExpandedAdditionalKeyboard(
 
     if (isInverse) {
       Row {
-        KeypadFlow(
-          modifier = Modifier.height(additionalButtonHeight * rows).fillMaxWidth().weight(1f),
-          rows = rows,
-          columns = 4,
-        ) { width, height ->
-          val bModifier = Modifier.fillMaxWidth(width).fillMaxHeight(height)
+        Column(modifier = Modifier.fillMaxWidth().weight(1f)) {
+          // First row has an extra column: both power and x
+          KeypadFlow(
+            modifier = Modifier.height(additionalButtonHeight).fillMaxWidth(),
+            rows = 1,
+            columns = 5,
+          ) { width, height ->
+            val bModifier = Modifier.fillMaxWidth(width).fillMaxHeight(height)
 
-          KeypadButtonTransparent(bModifier, ModuloKey, iconHeight, onAddTokenClick)
-          KeypadButtonTransparent(bModifier, PiKey, iconHeight, onAddTokenClick)
-          KeypadButtonTransparent(bModifier, PowerKey, iconHeight, onAddTokenClick)
-          KeypadButtonTransparent(bModifier, FactorialKey, iconHeight, onAddTokenClick)
+            KeypadButtonTransparent(bModifier, ModuloKey, iconHeight, onAddTokenClick)
+            KeypadButtonTransparent(bModifier, PiKey, iconHeight, onAddTokenClick)
+            KeypadButtonTransparent(bModifier, PowerKey, iconHeight, onAddTokenClick)
+            KeypadButtonTransparent(bModifier, KeyX, iconHeight, onAddTokenClick)
+            KeypadButtonTransparent(bModifier, FactorialKey, iconHeight, onAddTokenClick)
+          }
 
           if (expanded) {
-            KeypadButtonTransparent(bModifier, angleKey, iconHeight) {
-              onRadianModeClick(!radianMode)
-            }
-            KeypadButtonTransparent(bModifier, ArSinKey, iconHeight, onAddTokenClick)
-            KeypadButtonTransparent(bModifier, ArCosKey, iconHeight, onAddTokenClick)
-            KeypadButtonTransparent(bModifier, AcTanKey, iconHeight, onAddTokenClick)
+            KeypadFlow(
+              modifier = Modifier.height(additionalButtonHeight * (rows - 1)).fillMaxWidth(),
+              rows = rows - 1,
+              columns = 4,
+            ) { width, height ->
+              val bModifier = Modifier.fillMaxWidth(width).fillMaxHeight(height)
 
-            KeypadButtonTransparent(bModifier, InvKey, iconHeight) {
-              onInverseModeClick(!inverseMode)
+              KeypadButtonTransparent(bModifier, angleKey, iconHeight) {
+                onRadianModeClick(!radianMode)
+              }
+              KeypadButtonTransparent(bModifier, ArSinKey, iconHeight, onAddTokenClick)
+              KeypadButtonTransparent(bModifier, ArCosKey, iconHeight, onAddTokenClick)
+              KeypadButtonTransparent(bModifier, AcTanKey, iconHeight, onAddTokenClick)
+
+              KeypadButtonTransparent(bModifier, InvKey, iconHeight) {
+                onInverseModeClick(!inverseMode)
+              }
+              KeypadButtonTransparent(bModifier, EulerKey, iconHeight, onAddTokenClick)
+              KeypadButtonTransparent(bModifier, ExKey, iconHeight, onAddTokenClick)
+              KeypadButtonTransparent(bModifier, Power10Key, iconHeight, onAddTokenClick)
             }
-            KeypadButtonTransparent(bModifier, EulerKey, iconHeight, onAddTokenClick)
-            KeypadButtonTransparent(bModifier, ExKey, iconHeight, onAddTokenClick)
-            KeypadButtonTransparent(bModifier, Power10Key, iconHeight, onAddTokenClick)
           }
         }
 
@@ -301,32 +594,44 @@ private fun ExpandedAdditionalKeyboard(
       }
     } else {
       Row {
-        KeypadFlow(
-          modifier = Modifier.height(additionalButtonHeight * rows).fillMaxWidth().weight(1f),
-          rows = rows,
-          columns = 4,
-        ) { width, height ->
-          val bModifier = Modifier.fillMaxWidth(width).fillMaxHeight(height)
+        Column(modifier = Modifier.fillMaxWidth().weight(1f)) {
+          // First row has an extra column: both power and x
+          KeypadFlow(
+            modifier = Modifier.height(additionalButtonHeight).fillMaxWidth(),
+            rows = 1,
+            columns = 5,
+          ) { width, height ->
+            val bModifier = Modifier.fillMaxWidth(width).fillMaxHeight(height)
 
-          KeypadButtonTransparent(bModifier, RootKey, iconHeight, onAddTokenClick)
-          KeypadButtonTransparent(bModifier, PiKey, iconHeight, onAddTokenClick)
-          KeypadButtonTransparent(bModifier, PowerKey, iconHeight, onAddTokenClick)
-          KeypadButtonTransparent(bModifier, FactorialKey, iconHeight, onAddTokenClick)
+            KeypadButtonTransparent(bModifier, RadicalKey, iconHeight, onAddTokenClick)
+            KeypadButtonTransparent(bModifier, PiKey, iconHeight, onAddTokenClick)
+            KeypadButtonTransparent(bModifier, PowerKey, iconHeight, onAddTokenClick)
+            KeypadButtonTransparent(bModifier, KeyX, iconHeight, onAddTokenClick)
+            KeypadButtonTransparent(bModifier, FactorialKey, iconHeight, onAddTokenClick)
+          }
 
           if (expanded) {
-            KeypadButtonTransparent(bModifier, angleKey, iconHeight) {
-              onRadianModeClick(!radianMode)
-            }
-            KeypadButtonTransparent(bModifier, SinKey, iconHeight, onAddTokenClick)
-            KeypadButtonTransparent(bModifier, CosKey, iconHeight, onAddTokenClick)
-            KeypadButtonTransparent(bModifier, TanKey, iconHeight, onAddTokenClick)
+            KeypadFlow(
+              modifier = Modifier.height(additionalButtonHeight * (rows - 1)).fillMaxWidth(),
+              rows = rows - 1,
+              columns = 4,
+            ) { width, height ->
+              val bModifier = Modifier.fillMaxWidth(width).fillMaxHeight(height)
 
-            KeypadButtonTransparent(bModifier, InvKey, iconHeight) {
-              onInverseModeClick(!inverseMode)
+              KeypadButtonTransparent(bModifier, angleKey, iconHeight) {
+                onRadianModeClick(!radianMode)
+              }
+              KeypadButtonTransparent(bModifier, SinKey, iconHeight, onAddTokenClick)
+              KeypadButtonTransparent(bModifier, CosKey, iconHeight, onAddTokenClick)
+              KeypadButtonTransparent(bModifier, TanKey, iconHeight, onAddTokenClick)
+
+              KeypadButtonTransparent(bModifier, InvKey, iconHeight) {
+                onInverseModeClick(!inverseMode)
+              }
+              KeypadButtonTransparent(bModifier, EulerKey, iconHeight, onAddTokenClick)
+              KeypadButtonTransparent(bModifier, LnKey, iconHeight, onAddTokenClick)
+              KeypadButtonTransparent(bModifier, LogKey, iconHeight, onAddTokenClick)
             }
-            KeypadButtonTransparent(bModifier, EulerKey, iconHeight, onAddTokenClick)
-            KeypadButtonTransparent(bModifier, LnKey, iconHeight, onAddTokenClick)
-            KeypadButtonTransparent(bModifier, LogKey, iconHeight, onAddTokenClick)
           }
         }
 
@@ -348,11 +653,11 @@ private fun ToggleExpandedAdditionalKeysButton(
   onClick: (Boolean) -> Unit,
 ) {
   val expandRotation: Float by
-    animateFloatAsState(
-      targetValue = if (expanded) 0f else 180f,
-      animationSpec = MaterialTheme.motionScheme.defaultEffectsSpec(),
-      label = "Rotate on expand",
-    )
+  animateFloatAsState(
+    targetValue = if (expanded) 0f else 180f,
+    animationSpec = MaterialTheme.motionScheme.defaultEffectsSpec(),
+    label = "Rotate on expand",
+  )
   Box(modifier = modifier, contentAlignment = Alignment.Center) {
     IconButton(
       onClick = { onClick(!expanded) },
@@ -457,7 +762,7 @@ private fun CompactKeyboardInverse(
     KeypadButtonTransparent(buttonModifier, angleKey, iconHeightSecondary) {
       onRadianModeClick(!radianMode)
     }
-    KeypadButtonTransparent(buttonModifier, ModuloKey, iconHeightSecondary, onAddTokenClick)
+    KeypadButtonTransparent(buttonModifier, KeyX, iconHeightSecondary, onAddTokenClick)
     KeypadButtonTransparent(buttonModifier, PiKey, iconHeightSecondary, onAddTokenClick)
     KeypadButtonLight(buttonModifier, Key7, iconHeight, onAddTokenClick)
     KeypadButtonLight(buttonModifier, Key8, iconHeight, onAddTokenClick)
@@ -479,7 +784,7 @@ private fun CompactKeyboardInverse(
     KeypadButtonLight(buttonModifier, Key5, iconHeight, onAddTokenClick)
     KeypadButtonLight(buttonModifier, Key6, iconHeight, onAddTokenClick)
     KeypadButtonFilled(buttonModifier, MultiplyKey, iconHeight, onAddTokenClick)
-    KeypadButtonFilled(buttonModifier, DivideKey, iconHeight, onAddTokenClick)
+    KeypadButtonFilled(buttonModifier, FractionKey, iconHeight, onAddTokenClick)
 
     KeypadButtonTransparent(buttonModifier, ArSinKey, iconHeightSecondary, onAddTokenClick)
     KeypadButtonTransparent(buttonModifier, ArCosKey, iconHeightSecondary, onAddTokenClick)
@@ -532,7 +837,7 @@ private fun CompactKeyboardDefault(
     KeypadButtonTransparent(buttonModifier, angleKey, iconHeightSecondary) {
       onRadianModeClick(!radianMode)
     }
-    KeypadButtonTransparent(buttonModifier, RootKey, iconHeightSecondary, onAddTokenClick)
+    KeypadButtonTransparent(buttonModifier, KeyX, iconHeightSecondary, onAddTokenClick)
     KeypadButtonTransparent(buttonModifier, PiKey, iconHeightSecondary, onAddTokenClick)
     KeypadButtonLight(buttonModifier, Key7, iconHeight, onAddTokenClick)
     KeypadButtonLight(buttonModifier, Key8, iconHeight, onAddTokenClick)
@@ -554,7 +859,7 @@ private fun CompactKeyboardDefault(
     KeypadButtonLight(buttonModifier, Key5, iconHeight, onAddTokenClick)
     KeypadButtonLight(buttonModifier, Key6, iconHeight, onAddTokenClick)
     KeypadButtonFilled(buttonModifier, MultiplyKey, iconHeight, onAddTokenClick)
-    KeypadButtonFilled(buttonModifier, DivideKey, iconHeight, onAddTokenClick)
+    KeypadButtonFilled(buttonModifier, FractionKey, iconHeight, onAddTokenClick)
 
     KeypadButtonTransparent(buttonModifier, SinKey, iconHeightSecondary, onAddTokenClick)
     KeypadButtonTransparent(buttonModifier, CosKey, iconHeightSecondary, onAddTokenClick)
@@ -583,6 +888,12 @@ private fun CompactKeyboardDefault(
 }
 
 private const val SPACER_HEIGHT_FACTOR = 0.025f
+private const val KEYBOARD_PAGES = 3
+/** Function keys height compared to digits */
+private const val BOTTOM_ROWS = 5
+private const val BOTTOM_COLUMNS = 5
+private const val FUNCTION_ROW_SCALE = 0.5f
+private val GRID_SPACING = 8.dp
 private const val EXPANDED_ADDITIONAL_BUTTON_HEIGHT_FACTOR = 0.09f
 private const val EXPANDED_ADDITIONAL_ROWS_COUNT = 3
 

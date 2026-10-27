@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2023-2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +20,7 @@
 package com.sadellie.unitto.core.ui.textfield
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
@@ -26,6 +28,7 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboard
@@ -46,6 +49,25 @@ fun FixedExpressionInputTextField(
       formatterSymbols = formatterSymbols,
       clipboard = LocalClipboard.current.nativeClipboard,
     )
+
+  if (value.hasSlots()) {
+    // Fractions can't be drawn by Text. No text selection here
+    Box(
+      modifier =
+        Modifier.horizontalScroll(rememberScrollState(), reverseScrolling = true)
+          .clickable(onClick = onClick)
+          .then(modifier),
+      contentAlignment = Alignment.CenterEnd,
+    ) {
+      ExpressionLayoutText(
+        value = value,
+        formatterSymbols = formatterSymbols,
+        style = LocalNumberTypography.current.displaySmall,
+        textColor = textColor,
+      )
+    }
+    return
+  }
 
   CompositionLocalProvider(LocalClipboard provides clipboardManager) {
     SelectionContainer(

@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2024-2026 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +45,7 @@ class TextFieldTransformationTest {
 
     // replace ugly tokens
     transformAndCompare("1−2−3−4÷5×6×7[]", "1-2–3—4/5*6•7[]")
-    transformAndCompare("123+345+[]sin⁻¹(678)", "123+345+[]arsin(678)")
+    transformAndCompare("123+345+[]asin(678)", "123+345+[]arsin(678)")
 
     // Don't touch input if everything is ok
     transformAndCompare("1234[]", "1234[]")

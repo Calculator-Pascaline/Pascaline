@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2023-2026 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,8 +45,12 @@ import androidx.compose.ui.unit.dp
 import com.sadellie.unitto.core.common.FormatterSymbols
 import com.sadellie.unitto.core.common.Token
 import com.sadellie.unitto.core.designsystem.LocalWindowSize
+import com.sadellie.unitto.core.designsystem.theme.LocalNumberTypography
+import com.sadellie.unitto.core.ui.textfield.ExpressionLayoutTextField
 import com.sadellie.unitto.core.ui.textfield.ExpressionTextField
+import com.sadellie.unitto.core.ui.textfield.FittedExpressionLayoutText
 import com.sadellie.unitto.core.ui.textfield.SimpleTextField
+import com.sadellie.unitto.core.ui.textfield.hasSlots
 import com.sadellie.unitto.feature.calculator.CalculationResult
 import org.jetbrains.compose.resources.stringResource
 import unitto.core.common.generated.resources.Res
@@ -77,7 +82,7 @@ fun TextBox(
         .padding(top = 4.dp),
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
-    ExpressionTextField(
+    ExpressionLayoutTextField(
       modifier = Modifier.weight(INPUT_WEIGHT).fillMaxWidth().padding(horizontal = 8.dp),
       state = state,
       minRatio = 0.5f,
@@ -116,6 +121,15 @@ private fun CalculationResultTextField(
 ) {
   when (output) {
     is CalculationResult.Empty -> Spacer(modifier)
+    // Factorized polynomials and derivatives have powers and fractions
+    is CalculationResult.Success if output.text.hasSlots() ->
+      FittedExpressionLayoutText(
+        modifier = modifier,
+        value = output.text,
+        formatterSymbols = formatterSymbols,
+        style = LocalNumberTypography.current.displayLarge,
+        textColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(CALCULATION_ALPHA),
+      )
     is CalculationResult.Success ->
       ExpressionTextField(
         modifier = modifier,
