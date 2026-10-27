@@ -1,8 +1,6 @@
 # Pascaline
 
-A calculator for Android inspired by graphing calculators like the NumWorks: exact answers,
-symbolic calculus, function graphs and probability laws that explain themselves. Named after the
-Pascaline, the mechanical calculator Blaise Pascal built in 1642.
+A calculator for Android. Named after the Pascaline, the mechanical calculator Blaise Pascal built in 1642.
 
 <p align="center">
   <img src="docs/screenshots/calculator.png" width="24%" alt="Exact antiderivatives of x²eˣ and 1/(x³+1)" />
