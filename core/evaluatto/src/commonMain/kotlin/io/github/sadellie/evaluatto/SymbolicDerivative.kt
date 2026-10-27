@@ -127,7 +127,7 @@ internal fun Node.simplify(): Node =
         else -> Node.Negate(inner)
       }
     }
-    is Node.Binary -> simplifyBinary(operator, left.simplify(), right.simplify())
+    is Node.Binary -> simplifyBinary(operator, left.simplify(), right.simplify()).mergeLikeTerms()
     is Node.Function -> Node.Function(function, argument.simplify())
     is Node.Log -> Node.Log(base.simplify(), argument.simplify())
     else -> this
@@ -173,6 +173,85 @@ private fun simplifyBinary(operator: BinaryOperator, left: Node, right: Node): N
     BinaryOperator.MODULO -> Node.Binary(operator, left, right)
   }
 }
+
+/**
+ * Adds up terms of a sum that differ only by a number: `sin(x)+sin(x)` ==> `2sin(x)`,
+ * `3x×cos(x)−x×cos(x)+1+2` ==> `2x×cos(x)+3`. Sums without such terms are returned as they are.
+ */
+private fun Node.mergeLikeTerms(): Node {
+  if (this !is Node.Binary || (operator != BinaryOperator.PLUS && operator != BinaryOperator.MINUS)) {
+    return this
+  }
+  val terms = mutableListOf<Pair<KBigDecimal, Node?>>()
+  fun collect(node: Node, negative: Boolean) {
+    when {
+      node is Node.Binary && node.operator == BinaryOperator.PLUS -> {
+        collect(node.left, negative)
+        collect(node.right, negative)
+      }
+      node is Node.Binary && node.operator == BinaryOperator.MINUS -> {
+        collect(node.left, negative)
+        collect(node.right, !negative)
+      }
+      node is Node.Negate -> collect(node.node, !negative)
+      else -> {
+        val (coefficient, rest) = node.splitCoefficient()
+        terms += (if (negative) -coefficient else coefficient) to rest
+      }
+    }
+  }
+  collect(this, false)
+
+  // Group by everything but the number, keep order of first appearance
+  val groups = LinkedHashMap<String, Pair<KBigDecimal, Node?>>()
+  for ((coefficient, rest) in terms) {
+    val key = rest?.key() ?: ""
+    val previous = groups[key]
+    groups[key] = ((previous?.first ?: KBigDecimal.ZERO) + coefficient) to rest
+  }
+  if (groups.size == terms.size) return this
+
+  val merged =
+    groups.values
+      .filterNot { it.first.isZero() }
+      .map { (coefficient, rest) -> if (rest == null) Node.Number(coefficient) else simplifyProduct(Node.Number(coefficient), rest) }
+  if (merged.isEmpty()) return number(0)
+  return merged.drop(1).fold(merged.first()) { sum, term ->
+    when {
+      term is Node.Negate -> Node.Binary(BinaryOperator.MINUS, sum, term.node)
+      term is Node.Number && term.value < KBigDecimal.ZERO ->
+        Node.Binary(BinaryOperator.MINUS, sum, Node.Number(-term.value))
+      else -> Node.Binary(BinaryOperator.PLUS, sum, term)
+    }
+  }
+}
+
+/** `3x` ==> 3 and `x`, `5` ==> 5 and null, `−sin(x)` ==> −1 and `sin(x)`. */
+private fun Node.splitCoefficient(): Pair<KBigDecimal, Node?> =
+  when {
+    this is Node.Number -> value to null
+    this is Node.Negate -> node.splitCoefficient().let { (coefficient, rest) -> -coefficient to rest }
+    this is Node.Binary && operator == BinaryOperator.MULTIPLY && left is Node.Number ->
+      (left as Node.Number).value to right
+    else -> KBigDecimal.ONE to this
+  }
+
+/** Same text for nodes with the same structure, used to compare them. */
+private fun Node.key(): String =
+  when (this) {
+    is Node.Number -> value.stripTrailingZeros().toPlainString()
+    is Node.Negate -> "-(${node.key()})"
+    is Node.Binary -> "$operator(${left.key()},${right.key()})"
+    is Node.Function -> "$function(${argument.key()})"
+    is Node.Log -> "log(${base.key()},${argument.key()})"
+    is Node.Factorial -> "!(${node.key()})"
+    is Node.Integral -> "int(${lower?.key()},${upper?.key()},${body.key()})"
+    is Node.Derivative -> "d(${body.key()},${at?.key()})"
+    is Node.Unit -> "unit(${unit.symbol})"
+    is Node.Convert -> "to(${value.key()},${target.key()})"
+    is Node.Series -> "series($isProduct,${lower.key()},${upper.key()},${body.key()})"
+    else -> toString()
+  }
 
 /** Numbers go first and are multiplied together: `2·x·3` ==> `6x`. */
 private fun simplifyProduct(left: Node, right: Node): Node {

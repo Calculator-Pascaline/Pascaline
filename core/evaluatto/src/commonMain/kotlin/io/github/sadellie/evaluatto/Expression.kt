@@ -142,7 +142,8 @@ class Expression(
 
   /**
    * Polynomials are factorized (with roots), derivatives and integrals of polynomials are expanded.
-   * Other derivatives and integrals are calculated symbolically: d/dx(cos(x)) = −sin(x).
+   * Other derivatives and integrals are calculated symbolically: d/dx(cos(x)) = −sin(x). Other
+   * expressions with x are simplified.
    */
   private fun evaluateSymbolic(precision: Int, outputFormat: Int): ExpressionResult.Symbolic {
     // Integration constant
@@ -156,7 +157,7 @@ class Expression(
       try {
         tree.toPolynomial(evaluator)
       } catch (e: ExpressionException.BadExpression) {
-        if (!tree.hasSymbolicCalculus()) throw e
+        // Not a polynomial, like x³+cos(x): show it simplified
         val result = tree.expandCalculus(radianMode, evaluator).simplify()
         return ExpressionResult.Symbolic(NodeFormatter(precision, outputFormat).format(result) + constant)
       }

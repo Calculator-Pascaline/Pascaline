@@ -135,10 +135,7 @@ class ExpressionCalculusTest {
 
   @Test fun variableOnly() = assertSymbolic("x", "x")
 
-  @Test
-  fun notPolynomial() {
-    assertFailsWith<ExpressionException.BadExpression> { evaluate("sin(x)") }
-  }
+  @Test fun notPolynomialSin() = assertSymbolic("sin(x)", "sin(x)")
 
   @Test fun calculateWithVariable() = assertExprFail(ExpressionException.BadExpression(), "x+1")
 
@@ -209,6 +206,20 @@ class ExpressionCalculusTest {
 
   // Symbolic integrals
   @Test fun integralCos() = assertSymbolic("sin(x)+C", "∫cos(x)dx")
+
+  // Expressions with x that are not polynomials
+  @Test fun notPolynomial() = assertSymbolic("x${pow(3)}+cos(x)", "x${pow(3)}+cos(x)")
+
+  @Test fun notPolynomialFunction() = assertSymbolic("ln(x)", "ln(x)")
+
+  // Like terms are added up
+  @Test fun likeTerms() = assertSymbolic("2sin(x)", "sin(x)+sin(x)")
+
+  @Test fun likeTermsCoefficients() = assertSymbolic("2x×cos(x)", "3x×cos(x)${MINUS}x×cos(x)")
+
+  @Test fun likeTermsCancel() = assertSymbolic("1", "sin(x)+1${MINUS}sin(x)")
+
+  @Test fun likeTermsMixed() = assertSymbolic("3cos(x)+ln(x)", "cos(x)+ln(x)+2cos(x)")
 
   // Same template as definite integral, bounds left empty
   @Test fun integralEmptyBounds() = assertSymbolic("sin(x)+C", "∫$SUB$END$SUP${END}cos(x)dx")
