@@ -98,6 +98,9 @@ internal enum class FunctionType {
   ARSINH,
   ARCOSH,
   ARTANH,
+
+  /** Absolute value: |x| for reals, modulus for complex numbers. */
+  ABS,
 }
 
 /**
@@ -250,6 +253,7 @@ internal class Parser(private val tokens: List<String>, private val roundingMode
         moveIfMatched(Token.Func.ARSINH) -> function(FunctionType.ARSINH)
         moveIfMatched(Token.Func.ARCOSH) -> function(FunctionType.ARCOSH)
         moveIfMatched(Token.Func.ARTANH) -> function(FunctionType.ARTANH)
+        moveIfMatched(Token.Func.ABS) -> function(FunctionType.ABS)
         moveIfMatched(Token.Func.SINH) -> function(FunctionType.SINH)
         moveIfMatched(Token.Func.COSH) -> function(FunctionType.COSH)
         moveIfMatched(Token.Func.TANH) -> function(FunctionType.TANH)

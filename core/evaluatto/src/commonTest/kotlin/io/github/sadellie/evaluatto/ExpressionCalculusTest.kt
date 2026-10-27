@@ -39,6 +39,9 @@ private fun pow(n: Any) = "^$SUP$n$END"
 private fun evaluate(expr: String, precision: Int = 3) =
   Expression(expr).evaluate(precision, OutputFormat.PLAIN)
 
+private fun assertExprValue(expected: String, expr: String) =
+  kotlin.test.assertEquals(expected, (evaluate(expr) as ExpressionResult.Real).value.stripTrailingZeros().toPlainString())
+
 private fun assertSymbolic(expected: String, expr: String, precision: Int = 3) =
   assertEquals(expected, (evaluate(expr, precision) as ExpressionResult.Symbolic).expression)
 
@@ -207,6 +210,119 @@ class ExpressionCalculusTest {
   // Symbolic integrals
   @Test fun integralCos() = assertSymbolic("sin(x)+C", "∫cos(x)dx")
 
+  // Quotients with a quadratic
+  private fun frac(top: String, bottom: String) = "$NUM$top$END$DEN$bottom$END"
+
+  private fun root(inner: String) = "√$RAD$inner$END"
+
+  @Test fun integralAtan() = assertSymbolic("atan(x)+C", "∫${frac("1", "1+x${pow(2)}")}dx")
+
+  @Test
+  fun integralAtanScaled() =
+    assertSymbolic("${frac("1", "2")}atan(${frac("1", "2")}x)+C", "∫${frac("1", "4+x${pow(2)}")}dx")
+
+  @Test
+  fun integralAtanShifted() =
+    assertSymbolic(
+      "${frac("1", "2")}atan(${frac("1", "2")}x+${frac("1", "2")})+C",
+      "∫${frac("1", "x${pow(2)}+2x+5")}dx",
+    )
+
+  @Test fun integralLogOfQuadratic() = assertSymbolic("ln(x${pow(2)}+1)+C", "∫${frac("2x", "x${pow(2)}+1")}dx")
+
+  @Test
+  fun integralLogAndAtan() =
+    assertSymbolic("${frac("1", "2")}ln(x${pow(2)}+1)+atan(x)+C", "∫${frac("x+1", "x${pow(2)}+1")}dx")
+
+  @Test
+  fun integralTwoRoots() =
+    assertSymbolic(
+      "${frac("1", "2")}ln(abs(${frac("x${MINUS}1", "x+1")}))+C",
+      "∫${frac("1", "x${pow(2)}${MINUS}1")}dx",
+    )
+
+  @Test fun integralDoubleRoot() = assertSymbolic("${frac("${MINUS}1", "x+1")}+C", "∫${frac("1", "x${pow(2)}+2x+1")}dx")
+
+  @Test fun integralAsin() = assertSymbolic("asin(x)+C", "∫${frac("1", root("1${MINUS}x${pow(2)}"))}dx")
+
+  @Test
+  fun integralAsinScaled() =
+    assertSymbolic("asin(${frac("1", "2")}x)+C", "∫${frac("1", root("4${MINUS}x${pow(2)}"))}dx")
+
+  @Test fun integralAsinh() = assertSymbolic("asinh(x)+C", "∫${frac("1", root("x${pow(2)}+1"))}dx")
+
+  // Logarithms with absolute values
+  @Test fun integralLnAbs() = assertSymbolic("ln(abs(x))+C", "∫${frac("1", "x")}dx")
+
+  @Test fun integralTanAbs() = assertSymbolic("${MINUS}ln(abs(cos(x)))+C", "∫tan(x)dx")
+
+  // By parts
+  @Test fun integralXSin() = assertSymbolic("${MINUS}x×cos(x)+sin(x)+C", "∫x×sin(x)dx")
+
+  @Test
+  fun integralX2Exp() =
+    assertSymbolic("(x${pow(2)}${MINUS}2x+2)×e${pow("x")}+C", "∫x${pow(2)}×e${pow("x")}dx")
+
+  @Test
+  fun integralXLn() =
+    assertSymbolic(
+      "${frac("1", "2")}x${pow(2)}×ln(abs(x))${MINUS}${frac("1", "4")}x${pow(2)}+C",
+      "∫x×ln(x)dx",
+    )
+
+  @Test
+  fun integralXCosLinear() =
+    assertSymbolic("${frac("1", "2")}x×sin(2x)+${frac("1", "4")}cos(2x)+C", "∫x×cos(2x)dx")
+
+  @Test
+  fun integralExpSin() =
+    assertSymbolic(
+      "e${pow("x")}×(${frac("1", "2")}sin(x)${MINUS}${frac("1", "2")}cos(x))+C",
+      "∫e${pow("x")}×sin(x)dx",
+    )
+
+  // Substitution
+  @Test fun integralChainCos() = assertSymbolic("sin(x${pow(2)})+C", "∫2x×cos(x${pow(2)})dx")
+
+  @Test
+  fun integralChainExp() =
+    assertSymbolic("${frac("1", "2")}e${pow("x${pow(2)}")}+C", "∫x×e${pow("x${pow(2)}")}dx")
+
+  @Test fun integralSinCos() = assertSymbolic("${frac("1", "2")}sin(x)${pow(2)}+C", "∫sin(x)×cos(x)dx")
+
+  @Test fun integralLogDerivative() = assertSymbolic("ln(abs(sin(x)))+C", "∫${frac("cos(x)", "sin(x)")}dx")
+
+  @Test
+  fun integralOverRootOfFunction() =
+    assertSymbolic("${root("x${pow(2)}+1")}+C", "∫${frac("x", root("x${pow(2)}+1"))}dx")
+
+  @Test fun integralTanSquared() = assertSymbolic("tan(x)${MINUS}x+C", "∫tan(x)${pow(2)}dx")
+
+  @Test
+  fun integralAtanFunction() =
+    assertSymbolic("x×atan(x)${MINUS}${frac("1", "2")}ln(1+x${pow(2)})+C", "∫atan(x)dx")
+
+  // Terms with the same function are grouped
+  @Test
+  fun integralXAtanGrouped() =
+    assertSymbolic("${frac("1", "2")}(x${pow(2)}+1)×atan(x)${MINUS}${frac("1", "2")}x+C", "∫x×atan(x)dx")
+
+  @Test
+  fun integralPartialFractions() =
+    assertSymbolic(
+      "${MINUS}ln(abs(x))+${frac("1", "2")}ln(abs(x${MINUS}1))+${frac("1", "2")}ln(abs(x+1))+C",
+      "∫${frac("1", "x${pow(3)}${MINUS}x")}dx",
+    )
+
+  @Test fun absoluteValue() = assertExprValue("5", "abs(${MINUS}5)")
+
+  // Same value as numerical integration: ∫₀¹ 1/(1+x²) = π/4
+  @Test
+  fun definiteAtan() {
+    val result = evaluate("∫${SUB}0$END$SUP${"1"}$END${frac("1", "1+x${pow(2)}")}dx", precision = 6) as ExpressionResult.Real
+    kotlin.test.assertEquals(0.785398, result.value.toPlainString().toDouble(), 1e-6)
+  }
+
   // Expressions with x that are not polynomials
   @Test fun notPolynomial() = assertSymbolic("x${pow(3)}+cos(x)", "x${pow(3)}+cos(x)")
 
@@ -239,13 +355,14 @@ class ExpressionCalculusTest {
 
   @Test fun integralExpSymbolic() = assertSymbolic("e${pow("x")}+C", "∫e${pow("x")}dx")
 
-  @Test fun integralOneOverX() = assertSymbolic("ln(x)+C", "∫${NUM}1$END${DEN}x${END}dx")
+  @Test fun integralOneOverX() = assertSymbolic("ln(abs(x))+C", "∫${NUM}1$END${DEN}x${END}dx")
 
   @Test fun integralConstantTimes() = assertSymbolic("3sin(x)+C", "∫3cos(x)dx")
 
   @Test
-  fun integralByPartsNotSupported() {
-    assertFailsWith<ExpressionException.BadExpression> { evaluate("∫xsin(x)dx") }
+  fun integralWithoutElementaryForm() {
+    // sin(x)/x has no antiderivative made of usual functions
+    assertFailsWith<ExpressionException.BadExpression> { evaluate("∫${NUM}sin(x)$END${DEN}x${END}dx") }
   }
 
   // Polynomials are expanded

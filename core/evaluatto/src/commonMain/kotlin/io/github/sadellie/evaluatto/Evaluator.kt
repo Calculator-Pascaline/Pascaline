@@ -171,11 +171,17 @@ internal class Evaluator(
 
   private fun evaluateFunction(function: FunctionType, argument: Complex): Complex {
     if (function == FunctionType.SQRT) return sqrt(argument)
+    if (function == FunctionType.ABS) {
+      if (argument.isReal) return Complex(argument.re.abs())
+      val square = argument.re.multiply(argument.re) + argument.im.multiply(argument.im)
+      return Complex(KBigDecimalMath.sqrt(square, mathContext))
+    }
 
     val value = argument.real()
     val result =
       when (function) {
-        FunctionType.SQRT -> error("handled above")
+        FunctionType.SQRT,
+        FunctionType.ABS -> error("handled above")
         FunctionType.SIN -> value.sin(radianMode, mathContext).rescaleTrig()
         FunctionType.COS -> value.cos(radianMode, mathContext).rescaleTrig()
         FunctionType.TAN -> value.tan(radianMode, mathContext).rescaleTrig()

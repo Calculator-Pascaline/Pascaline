@@ -82,6 +82,8 @@ internal fun Node.dimension(evaluator: Evaluator): Dimension {
         argument.isDimensionless -> Dimension.NONE
         // √(m²) = m
         function == FunctionType.SQRT -> argument.half()
+        // |−5 m| = 5 m
+        function == FunctionType.ABS -> argument
         else -> throw ExpressionException.BadExpression()
       }
     }

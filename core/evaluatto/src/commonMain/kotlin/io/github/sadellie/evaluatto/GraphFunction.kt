@@ -133,6 +133,7 @@ class GraphFunction(input: String, private val radianMode: Boolean = true) {
       FunctionType.ARSINH -> { x -> asinh(f(x)) }
       FunctionType.ARCOSH -> { x -> acosh(f(x)) }
       FunctionType.ARTANH -> { x -> atanh(f(x)) }
+      FunctionType.ABS -> { x -> abs(f(x)) }
     }
   }
 

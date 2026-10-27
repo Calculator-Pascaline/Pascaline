@@ -91,6 +91,7 @@ class TokenTest {
           "tan",
           "log",
           "exp",
+          "abs",
           "ln",
         )
         .joinToString("")

@@ -115,6 +115,8 @@ object Token {
     const val ARCOSH_BRACKET = "$ARCOSH("
     const val ARTANH = "atanh"
     const val ARTANH_BRACKET = "$ARTANH("
+    const val ABS = "abs"
+    const val ABS_BRACKET = "$ABS("
 
     val all by lazy {
       listOf(
@@ -132,6 +134,7 @@ object Token {
           TAN,
           LOG,
           EXP,
+          ABS,
           LN,
         )
         .sortedByDescending { it.length }
@@ -154,6 +157,7 @@ object Token {
         TAN_BRACKET,
         LOG_BRACKET,
         EXP_BRACKET,
+        ABS_BRACKET,
         LN_BRACKET,
       )
     }

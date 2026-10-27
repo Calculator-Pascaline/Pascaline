@@ -103,6 +103,8 @@ internal fun Node.derivative(radianMode: Boolean): Node {
           FunctionType.ARSINH -> number(1) / sqrt(argument.pow(number(2)) + number(1))
           FunctionType.ARCOSH -> number(1) / sqrt(argument.pow(number(2)) - number(1))
           FunctionType.ARTANH -> number(1) / (number(1) - argument.pow(number(2)))
+          // Sign of the argument
+          FunctionType.ABS -> argument / this
         }
       outer * inner
     }
@@ -209,12 +211,16 @@ private fun Node.mergeLikeTerms(): Node {
     val previous = groups[key]
     groups[key] = ((previous?.first ?: KBigDecimal.ZERO) + coefficient) to rest
   }
-  if (groups.size == terms.size) return this
+  val combined = groups.values.filterNot { it.first.isZero() }
+  val regrouped = groupByCommonFactor(combined)
+  // Nothing to merge: rebuilt anyway when a nested sum starts with a minus, a + (−b + c) ==> a − b + c
+  if (regrouped == null && groups.size == terms.size && !hasNegativeInnerStart()) return this
 
   val merged =
-    groups.values
-      .filterNot { it.first.isZero() }
-      .map { (coefficient, rest) -> if (rest == null) Node.Number(coefficient) else simplifyProduct(Node.Number(coefficient), rest) }
+    regrouped
+      ?: combined.map { (coefficient, rest) ->
+        if (rest == null) Node.Number(coefficient) else simplifyProduct(Node.Number(coefficient), rest)
+      }
   if (merged.isEmpty()) return number(0)
   return merged.drop(1).fold(merged.first()) { sum, term ->
     when {
@@ -225,6 +231,132 @@ private fun Node.mergeLikeTerms(): Node {
     }
   }
 }
+
+/**
+ * Terms with the same function but different powers of x are added up:
+ * `½x²·atan(x) + ½atan(x)` ==> `½(x²+1)·atan(x)`. Null when no two terms share a function.
+ */
+private fun groupByCommonFactor(terms: List<Pair<KBigDecimal, Node?>>): List<Node>? {
+  class Split(val polynomial: Polynomial, val other: Node?, val original: Node)
+  val splits =
+    terms.map { (coefficient, rest) ->
+      val original = if (rest == null) Node.Number(coefficient) else simplifyProduct(Node.Number(coefficient), rest)
+      var polynomial = Polynomial.constant(Rational.fromDecimal(coefficient))
+      val others = mutableListOf<Node>()
+      if (rest != null) {
+        collectInto(rest) { factor ->
+          when {
+            factor is Node.Number -> polynomial *= Rational.fromDecimal(factor.value)
+            factor.isNumberFraction() -> {
+              val division = factor as Node.Binary
+              polynomial *=
+                Rational.fromDecimal((division.left as Node.Number).value) /
+                  Rational.fromDecimal((division.right as Node.Number).value)
+            }
+            else -> {
+              // x, x³, (x²−2x): already grouped polynomials too
+              val asPolynomial = factor.simplePolynomial()
+              if (asPolynomial != null) polynomial *= asPolynomial else others += factor
+            }
+          }
+        }
+      }
+      val other = others.reduceOrNull { acc, node -> Node.Binary(BinaryOperator.MULTIPLY, acc, node) }
+      Split(polynomial, other, original)
+    }
+  val groups = splits.filter { it.other != null }.groupBy { it.other!!.key() }
+  if (groups.values.none { it.size > 1 }) return null
+
+  val done = mutableSetOf<String>()
+  return splits.mapNotNull { split ->
+    val key = split.other?.key()
+    val group = key?.let { groups[it] }
+    when {
+      group == null || group.size == 1 -> split.original
+      key in done -> null
+      else -> {
+        done += key
+        val sum = group.map { it.polynomial }.reduce { acc, polynomial -> acc + polynomial }
+        if (sum.isZero) null else factorTimes(sum, split.other!!)
+      }
+    }
+  }
+}
+
+/** c·(x²+1)·f with the common fraction taken out: ½x²+½ ==> ½(x²+1), ⅔x−⅓ ==> ⅓(2x−1). */
+private fun factorTimes(polynomial: Polynomial, other: Node): Node {
+  if (polynomial.degree == 0) return simplifyProduct(rationalNode(polynomial[0]), other)
+  val factor = polynomial.content()
+  val inner = polynomial * (Rational.ONE / factor)
+  val product = Node.Binary(BinaryOperator.MULTIPLY, polynomialNode(inner), other)
+  if (factor == Rational.ONE) return product
+  val magnitude = Node.Binary(BinaryOperator.MULTIPLY, rationalNode(factor.abs()), product)
+  return if (factor.sign < 0) Node.Negate(magnitude) else magnitude
+}
+
+/**
+ * Fraction that makes the coefficients whole and coprime, with the sign of the leading one:
+ * ⅔x − ⅓ ==> ⅓, so that the rest is 2x − 1.
+ */
+private fun Polynomial.content(): Rational {
+  val nonZero = coefficients.filterNot { it.isZero }
+  var numerators = nonZero.first().numerator.abs()
+  var denominators = nonZero.first().denominator.abs()
+  for (c in nonZero.drop(1)) {
+    numerators = gcd(numerators, c.numerator.abs())
+    val d = c.denominator.abs()
+    denominators = denominators.multiply(d).exactDivide(gcd(denominators, d))
+  }
+  val content = Rational.of(numerators, denominators)
+  return if (leading.sign < 0) -content else content
+}
+
+/** a + (−b + c): the inner sum starts with a minus, so it would be written a+−b+c. */
+private fun Node.hasNegativeInnerStart(): Boolean {
+  if (this !is Node.Binary || (operator != BinaryOperator.PLUS && operator != BinaryOperator.MINUS)) return false
+  val inner = right as? Node.Binary ?: return left.hasNegativeInnerStart()
+  if (inner.operator != BinaryOperator.PLUS && inner.operator != BinaryOperator.MINUS) return left.hasNegativeInnerStart()
+  return inner.startsNegative() || inner.hasNegativeInnerStart() || left.hasNegativeInnerStart()
+}
+
+private fun Node.startsNegative(): Boolean =
+  when {
+    this is Node.Negate -> true
+    this is Node.Number -> value < KBigDecimal.ZERO
+    this is Node.Binary && (operator == BinaryOperator.PLUS || operator == BinaryOperator.MINUS) -> left.startsNegative()
+    else -> false
+  }
+
+/** Polynomial made of x, whole powers of x, numbers, sums and products. Null for anything else. */
+private fun Node.simplePolynomial(): Polynomial? =
+  when {
+    this == Node.X -> Polynomial.X
+    this is Node.Number -> Polynomial.constant(Rational.fromDecimal(value))
+    isNumberFraction() -> {
+      val division = this as Node.Binary
+      Polynomial.constant(
+        Rational.fromDecimal((division.left as Node.Number).value) /
+          Rational.fromDecimal((division.right as Node.Number).value)
+      )
+    }
+    this is Node.Negate -> node.simplePolynomial()?.let { -it }
+    this is Node.Binary && operator == BinaryOperator.POWER && left == Node.X -> {
+      val exponent = (right as? Node.Number)?.value
+      val whole = exponent?.setScale(0, com.sadellie.unitto.core.common.KRoundingMode.HALF_EVEN)
+      if (exponent != null && whole != null && exponent.isEqualTo(whole) && exponent > KBigDecimal.ZERO) {
+        Polynomial.X.pow(whole.intValueExact())
+      } else {
+        null
+      }
+    }
+    this is Node.Binary && operator == BinaryOperator.PLUS ->
+      left.simplePolynomial()?.let { l -> right.simplePolynomial()?.let { r -> l + r } }
+    this is Node.Binary && operator == BinaryOperator.MINUS ->
+      left.simplePolynomial()?.let { l -> right.simplePolynomial()?.let { r -> l - r } }
+    this is Node.Binary && operator == BinaryOperator.MULTIPLY ->
+      left.simplePolynomial()?.let { l -> right.simplePolynomial()?.let { r -> l * r } }
+    else -> null
+  }
 
 /** `3x` ==> 3 and `x`, `5` ==> 5 and null, `−sin(x)` ==> −1 and `sin(x)`. */
 private fun Node.splitCoefficient(): Pair<KBigDecimal, Node?> =
@@ -253,7 +385,7 @@ private fun Node.key(): String =
     else -> toString()
   }
 
-/** Numbers go first and are multiplied together: `2·x·3` ==> `6x`. */
+/** Numbers go first and are multiplied together: `2·x·3` ==> `6x`, `x·½·½` ==> `¼x`. */
 private fun simplifyProduct(left: Node, right: Node): Node {
   val factors = mutableListOf<Node>()
   fun collect(node: Node) {
@@ -268,19 +400,38 @@ private fun simplifyProduct(left: Node, right: Node): Node {
   collect(right)
 
   var coefficient = KBigDecimal.ONE
+  // Fractions like 1/2 stay exact, decimals stay decimals
+  var fraction = Rational.ONE
   val rest = mutableListOf<Node>()
-  for (factor in factors) {
-    when (factor) {
-      is Node.Number -> coefficient = coefficient.multiply(factor.value)
-      is Node.Negate -> {
+  fun absorb(factor: Node) {
+    when {
+      factor is Node.Number -> coefficient = coefficient.multiply(factor.value)
+      factor.isNumberFraction() -> {
+        val division = factor as Node.Binary
+        fraction *=
+          Rational.fromDecimal((division.left as Node.Number).value) /
+            Rational.fromDecimal((division.right as Node.Number).value)
+      }
+      factor is Node.Negate -> {
         coefficient = -coefficient
-        rest += factor.node
+        if (factor.node is Node.Binary && (factor.node as Node.Binary).operator == BinaryOperator.MULTIPLY) {
+          collectInto(factor.node, ::absorb)
+        } else {
+          absorb(factor.node)
+        }
       }
       else -> rest += factor
     }
   }
-  if (coefficient.isZero()) return number(0)
+  factors.forEach(::absorb)
+  if (coefficient.isZero() || fraction.isZero) return number(0)
   val product = rest.reduceOrNull { acc, node -> Node.Binary(BinaryOperator.MULTIPLY, acc, node) }
+  if (fraction != Rational.ONE) {
+    val total = Rational.fromDecimal(coefficient) * fraction
+    val magnitude = rationalNode(total.abs())
+    val value = if (product == null) magnitude else Node.Binary(BinaryOperator.MULTIPLY, magnitude, product)
+    return if (total.sign < 0) Node.Negate(value) else value
+  }
   return when {
     product == null -> Node.Number(coefficient)
     coefficient.isOne() -> product
@@ -394,10 +545,21 @@ internal class NodeFormatter(private val precision: Int, private val outputForma
       FunctionType.ARSINH -> Token.Func.ARSINH
       FunctionType.ARCOSH -> Token.Func.ARCOSH
       FunctionType.ARTANH -> Token.Func.ARTANH
+      FunctionType.ABS -> Token.Func.ABS
     }
 }
 
 private fun number(value: Long) = Node.Number(KBigDecimal.valueOf(value))
+
+/** Factors of a product, flattened: (a·b)·c ==> a, b, c. */
+private fun collectInto(node: Node, onFactor: (Node) -> Unit) {
+  if (node is Node.Binary && node.operator == BinaryOperator.MULTIPLY) {
+    collectInto(node.left, onFactor)
+    collectInto(node.right, onFactor)
+  } else {
+    onFactor(node)
+  }
+}
 
 private fun Node.isNumberFraction() =
   this is Node.Binary &&
