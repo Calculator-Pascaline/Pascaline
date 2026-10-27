@@ -20,7 +20,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
-        android:label="Fuck You"
+        android:label="Pascaline Debug"
         tools:ignore="MissingApplicationIcon"
         tools:replace="android:label" />
 

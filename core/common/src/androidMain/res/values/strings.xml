@@ -27,4 +27,5 @@
     <string name="unit_currency_eur">Euro</string>
     <string name="unit_gram">Gram</string>
     <string name="unit_ounce">Ounce</string>
+    <string name="app_name" translatable="false">Pascaline</string>
 </resources>

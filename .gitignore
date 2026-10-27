@@ -11,3 +11,8 @@ local.properties
 tools/
 internals/
 /detekt/*.html
+
+# Release signing, never commit
+*.jks
+*.keystore
+keystore.properties

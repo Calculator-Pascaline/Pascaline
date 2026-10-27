@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2026 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +50,7 @@ android {
   compileSdk = 36
 
   defaultConfig {
-    applicationId = "com.sadellie.unitto"
+    applicationId = "io.github.calculatorpascaline"
     minSdk = 23
     targetSdk = 36
     versionCode = libs.versions.versionCode.get().toInt()
