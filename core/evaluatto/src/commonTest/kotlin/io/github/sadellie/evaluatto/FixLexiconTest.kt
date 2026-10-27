@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2023-2024 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +33,7 @@ class FixLexiconTest {
 
     assertLex(".×(69−420)", ".(69−420)")
 
-    assertLex("2×(69−420)×(23−4)×cos(9)×tan((sin⁻¹(.9)))", "2(69−420)(23−4)cos(9)tan((sin⁻¹(.9)))")
+    assertLex("2×(69−420)×(23−4)×cos(9)×tan((asin(.9)))", "2(69−420)(23−4)cos(9)tan((asin(.9)))")
 
     assertLex("e×e+π", "ee+π")
 

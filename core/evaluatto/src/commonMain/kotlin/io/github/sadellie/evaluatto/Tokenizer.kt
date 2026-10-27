@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2023-2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +19,7 @@
 
 package io.github.sadellie.evaluatto
 
+import com.sadellie.unitto.core.common.PhysicalUnits
 import com.sadellie.unitto.core.common.Token
 
 internal sealed class TokenizerException(message: String) : Exception(message) {
@@ -45,10 +47,14 @@ internal fun String.tokenize(): List<String> {
     }
   }
 
-  return tokens.repairLexicon()
+  return tokens.unpackSlots().repairLexicon()
 }
 
 private fun peekTokenAfter(streamOfTokens: String, cursor: Int): String? {
+  // Units: _km
+  PhysicalUnits.tokenAt(streamOfTokens, cursor)?.let { return it.token }
+  if (streamOfTokens.startsWith(Token.Operator.CONVERT, cursor)) return Token.Operator.CONVERT
+
   Token.expressionTokens.forEach { token ->
     val subs =
       streamOfTokens.substring(cursor, (cursor + token.length).coerceAtMost(streamOfTokens.length))
@@ -84,6 +90,56 @@ private fun MutableList<String>.repairLexicon(): List<String> {
     // In that case unpackAllPercents gets input with all operators 80%*80% in this case
     // Can't be done right now since missingMultiply checks for tokens in front only
     .missingMultiply()
+}
+
+/**
+ * Slots that can be calculated with regular tokens:
+ * - Empty power is ignored: `e^⟨⟩` ==> `e`
+ * - Power slots become brackets: `2^⟨3⟩` ==> `2^(3)`
+ * - Fractions become division: `⟨1⟩⟨2⟩` ==> `((1)÷(2))`
+ * - Square root slots become brackets: `√⟨2⟩` ==> `√(2)`
+ *
+ * Other slots (logarithm base, integral bounds) keep their markers, parser handles them.
+ */
+private fun MutableList<String>.unpackSlots(): MutableList<String> {
+  val result = mutableListOf<String>()
+  // Tokens that replace slot end, null if slot end is kept
+  val slotEnds = ArrayDeque<List<String>?>()
+  var index = 0
+  while (index < size) {
+    val token = this[index]
+    val isPower = token == Token.Operator.POWER && getOrNull(index + 1) == Token.Layout.SUPERSCRIPT_START
+    when {
+      isPower && getOrNull(index + 2) == Token.Layout.END -> index += 2
+      isPower -> {
+        result.add(Token.Operator.POWER)
+        result.add(Token.Operator.LEFT_BRACKET)
+        slotEnds.addLast(listOf(Token.Operator.RIGHT_BRACKET))
+        index++
+      }
+      token == Token.Layout.NUMERATOR_START -> {
+        result.add(Token.Operator.LEFT_BRACKET)
+        result.add(Token.Operator.LEFT_BRACKET)
+        slotEnds.addLast(listOf(Token.Operator.RIGHT_BRACKET, Token.Operator.DIVIDE))
+      }
+      token == Token.Layout.RADICAND_START -> {
+        result.add(Token.Operator.LEFT_BRACKET)
+        slotEnds.addLast(listOf(Token.Operator.RIGHT_BRACKET))
+      }
+      token == Token.Layout.DENOMINATOR_START -> {
+        result.add(Token.Operator.LEFT_BRACKET)
+        slotEnds.addLast(listOf(Token.Operator.RIGHT_BRACKET, Token.Operator.RIGHT_BRACKET))
+      }
+      token == Token.Layout.SUPERSCRIPT_START || token == Token.Layout.SUBSCRIPT_START -> {
+        result.add(token)
+        slotEnds.addLast(null)
+      }
+      token == Token.Layout.END -> result.addAll(slotEnds.removeLastOrNull() ?: listOf(token))
+      else -> result.add(token)
+    }
+    index++
+  }
+  return result
 }
 
 private fun MutableList<String>.missingClosingBrackets(): MutableList<String> {
@@ -124,7 +180,14 @@ private fun MutableList<String>.missingMultiply(): MutableList<String> {
     val isConst1 = currentToken in Token.Const.all
     val isRightBracket1 = currentToken == Token.Operator.RIGHT_BRACKET
     val isFactorial1 = currentToken == Token.Operator.FACTORIAL
-    val canBeFollowedByMultiplyToken = isDigit1 || isConst1 || isRightBracket1 || isFactorial1
+    val isUnit1 = currentToken.startsWith(Token.Units.PREFIX)
+    val isVariable1 =
+      isUnit1 ||
+        currentToken == Token.Calculus.X ||
+        currentToken == Token.Calculus.DX ||
+        currentToken == Token.Calculus.N
+    val canBeFollowedByMultiplyToken =
+      isDigit1 || isConst1 || isRightBracket1 || isFactorial1 || isVariable1
     if (canBeFollowedByMultiplyToken) {
       // Peek next, but then go back
       val nextToken = iterator.next()
@@ -138,7 +201,17 @@ private fun MutableList<String>.missingMultiply(): MutableList<String> {
       val isSqrt2 = nextToken == Token.Operator.SQRT
       val isDigit2 = nextToken.isDigitToken()
 
-      val canHaveMultiplyBefore = isLeftBracket2 || isFunction2 || isConst2 || isSqrt2 || isDigit2
+      val isCalculus2 =
+        nextToken.startsWith(Token.Units.PREFIX) ||
+          nextToken == Token.Calculus.X ||
+          nextToken == Token.Calculus.N ||
+          nextToken == Token.Calculus.INTEGRAL ||
+          nextToken == Token.Calculus.DERIVATIVE ||
+          nextToken == Token.Calculus.SUM ||
+          nextToken == Token.Calculus.PRODUCT
+
+      val canHaveMultiplyBefore =
+        isLeftBracket2 || isFunction2 || isConst2 || isSqrt2 || isDigit2 || isCalculus2
       if (canHaveMultiplyBefore) {
         iterator.add(Token.Operator.MULTIPLY)
       }

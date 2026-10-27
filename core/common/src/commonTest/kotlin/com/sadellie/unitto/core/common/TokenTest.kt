@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2023-2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,11 +57,11 @@ class TokenTest {
 
   @Test
   fun func_test() {
-    listOf("sin", "cos", "tan", "sin⁻¹", "cos⁻¹", "tan⁻¹", "ln", "log", "exp").forEach {
+    listOf("sin", "cos", "tan", "asin", "acos", "atan", "ln", "log", "exp").forEach {
       assertContains(Token.Func.all, it)
     }
 
-    listOf("sin(", "cos(", "tan(", "sin⁻¹(", "cos⁻¹(", "tan⁻¹(", "ln(", "log(", "exp(").forEach {
+    listOf("sin(", "cos(", "tan(", "asin(", "acos(", "atan(", "ln(", "log(", "exp(").forEach {
       assertContains(Token.Func.allWithOpeningBracket, it)
     }
   }
@@ -75,11 +76,35 @@ class TokenTest {
     val operator = listOf("+", "−", "×", "÷", "(", ")", "^", "!", "#", "%", "√").joinToString("")
 
     val func =
-      listOf("sin⁻¹", "cos⁻¹", "tan⁻¹", "sin", "cos", "tan", "log", "exp", "ln").joinToString("")
+      listOf(
+          "asinh",
+          "acosh",
+          "atanh",
+          "sinh",
+          "cosh",
+          "tanh",
+          "asin",
+          "acos",
+          "atan",
+          "sin",
+          "cos",
+          "tan",
+          "log",
+          "exp",
+          "ln",
+        )
+        .joinToString("")
 
-    val consts = listOf("π", "e").joinToString("")
+    val consts = listOf("π", "e", "i", "∞").joinToString("")
 
-    assertEquals("1234567890.$operator$func${consts}E", Token.expressionTokens.joinToString(""))
+    val layout = listOf("\uE000", "\uE001", "\uE002", "\uE003", "\uE004", "\uE005").joinToString("")
+
+    val calculus = listOf("∫", "d/dx", "|", "dx", "x", "Σ", "∏", "n").joinToString("")
+
+    assertEquals(
+      "1234567890.$operator$func${consts}E$layout$calculus",
+      Token.expressionTokens.joinToString(""),
+    )
   }
 
   @Test
@@ -94,7 +119,7 @@ class TokenTest {
 
   @Test
   fun sexyToUgly_test() {
-    listOf("−", "÷", "×", "sin⁻¹", "cos⁻¹", "tan⁻¹").forEach {
+    listOf("−", "÷", "×", "asin", "acos", "atan").forEach {
       assertContains(Token.sexyToUgly.keys, it)
     }
   }

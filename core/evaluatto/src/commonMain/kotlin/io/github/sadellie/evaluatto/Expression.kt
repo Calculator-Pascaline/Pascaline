@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2023-2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,12 +20,8 @@
 package io.github.sadellie.evaluatto
 
 import com.sadellie.unitto.core.common.KBigDecimal
-import com.sadellie.unitto.core.common.KBigDecimalMath
-import com.sadellie.unitto.core.common.KMathContext
 import com.sadellie.unitto.core.common.KRoundingMode
-import com.sadellie.unitto.core.common.MAX_SCALE
 import com.sadellie.unitto.core.common.Token
-import com.sadellie.unitto.core.common.isEqualTo
 
 sealed class ExpressionException(override val message: String) : Exception(message) {
   class DivideByZero : ExpressionException("Can't divide by zero")
@@ -38,219 +35,143 @@ sealed class ExpressionException(override val message: String) : Exception(messa
   class TooBig : ExpressionException("Value is too big")
 }
 
-class Expression(
-  input: String,
-  private val radianMode: Boolean = true,
-  private val roundingMode: KRoundingMode = KRoundingMode.HALF_EVEN,
-) {
-  private val scale = MAX_SCALE
-  private val mathContext = KMathContext(TRIG_SCALE, roundingMode)
-  private val tokens = input.tokenize()
-  private var cursorPosition = 0
+/**
+ * Exact parts of a complex number, with layout slots. null when part can't be written exactly.
+ *
+ * @property argument Angle in radians, like `π/4`.
+ */
+data class ComplexParts(
+  val real: String?,
+  val imaginary: String?,
+  val modulus: String?,
+  val argument: String?,
+)
+
+/** Number with unit (layout slots), like 5000 and `_m`. */
+data class UnitValue(val value: KBigDecimal, val unit: String)
+
+/** Result of [Expression.evaluate]. */
+sealed interface ExpressionResult {
+  /** @property exact Exact value with square roots, like `2√2`. null when value is rational. */
+  data class Real(
+    val value: KBigDecimal,
+    val exact: String? = null,
+    /** Unit of [value] with layout slots, like `_km` or `⟨_m⟩⟨_s⟩`. */
+    val unit: String? = null,
+    /** Same value in SI units without prefix: 5 km ==> 5000 m. */
+    val si: UnitValue? = null,
+    /** SI base units when they differ from [si] unit: N ==> kg×m/s². Value is the same. */
+    val baseUnits: String? = null,
+  ) : ExpressionResult
+
+  /** @property exact Exact value with square roots, like `√5i`. */
+  data class Complex(
+    val real: KBigDecimal,
+    val imaginary: KBigDecimal,
+    val exact: String? = null,
+    val parts: ComplexParts? = null,
+  ) : ExpressionResult
 
   /**
-   * Expression := [ "-" ] Term { ("+" | "-") Term }
+   * Expression with x, like expanded polynomial or derivative. Uses layout slots, see
+   * [com.sadellie.unitto.core.common.Token.Layout].
    *
-   * Term := Factor { ( "*" | "/" ) Factor }
-   *
-   * Factor := RealNumber | "(" Expression ")"
-   *
-   * RealNumber := Digit{Digit} | [ Digit ] "." {Digit}
-   *
-   * Digit := "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+   * @property factorization Factorized polynomial, null when [expression] is not a polynomial.
+   * @property roots Lines with exact and approximate roots of a polynomial.
+   * @property discriminant `Δ=12` for quadratic polynomials.
    */
-  fun calculate(): KBigDecimal {
-    return parseExpression()
-  }
-
-  // Null when at the end of expression
-  private fun peek() = tokens.getOrNull(cursorPosition) ?: ""
-
-  private fun moveIfMatched(token: String): Boolean {
-    if (peek() == token) {
-      // Move cursor
-      cursorPosition++
-      return true
-    }
-    return false
-  }
-
-  // Expression := [ "-" ] Term { ("+" | "-") Term }
-  private fun parseExpression(): KBigDecimal {
-    if (tokens.isEmpty()) return KBigDecimal.ZERO.setScale(scale)
-
-    var expression = parseTerm()
-
-    while (peek() in listOf(Token.Operator.PLUS, Token.Operator.MINUS)) {
-      when {
-        moveIfMatched(Token.Operator.PLUS) -> expression += parseTerm()
-        moveIfMatched(Token.Operator.MINUS) -> expression -= parseTerm()
-      }
-    }
-    return expression
-  }
-
-  // Term       := Factor { ( "*" | "/" ) Factor }
-  private fun parseTerm(): KBigDecimal {
-    var expression = parseFactor()
-
-    while (peek() in listOf(Token.Operator.MULTIPLY, Token.Operator.DIVIDE)) {
-      when {
-        moveIfMatched(Token.Operator.MULTIPLY) -> {
-          expression = expression.multiply(parseFactor())
-        }
-
-        moveIfMatched(Token.Operator.DIVIDE) -> {
-          val divisor = parseFactor()
-          if (divisor.isEqualTo(KBigDecimal.ZERO)) throw ExpressionException.DivideByZero()
-
-          expression = expression.divide(divisor, scale, roundingMode)
-        }
-      }
-    }
-    return expression
-  }
-
-  // Factor     := RealNumber | "(" Expression ")"
-  private fun parseFactor(negative: Boolean = false): KBigDecimal {
-    // This will throw Exception if some function lacks argument, for example: "cos()" or "600^"
-    var expr: KBigDecimal? = null
-
-    fun parseFuncParentheses(): KBigDecimal {
-      return if (moveIfMatched(Token.Operator.LEFT_BRACKET)) {
-        // Parse in parentheses
-        val res = parseExpression()
-
-        // Check if parentheses is closed
-        if (!moveIfMatched(Token.Operator.RIGHT_BRACKET)) throw ExpressionException.BadExpression()
-        res
-      } else {
-        parseFactor()
-      }
-    }
-
-    // Unary plus
-    if (moveIfMatched(Token.Operator.PLUS)) {
-      return parseFactor()
-    }
-
-    // Unary minus
-    if (moveIfMatched(Token.Operator.MINUS)) {
-      return -parseFactor(true)
-    }
-
-    // Parentheses
-    if (moveIfMatched(Token.Operator.LEFT_BRACKET)) {
-      // Parse in parentheses
-      expr = parseExpression()
-
-      // Check if parentheses is closed
-      if (!moveIfMatched(Token.Operator.RIGHT_BRACKET)) throw ExpressionException.BadExpression()
-    }
-
-    // Numbers
-    val possibleNumber = peek()
-    // We know that if next token starts with a digit or dot, it can be converted into BigDecimal
-    // Ugly
-    if (possibleNumber.isNotEmpty()) {
-      if (Token.Digit.allWithDot.contains(possibleNumber.first().toString())) {
-        expr = KBigDecimal(possibleNumber).setScale(scale, roundingMode)
-        cursorPosition++
-      }
-    }
-
-    // PI
-    if (moveIfMatched(Token.Const.PI)) {
-      expr = KBigDecimalMath.pi(mathContext)
-    }
-
-    // e
-    if (moveIfMatched(Token.Const.E)) {
-      expr = KBigDecimalMath.e(mathContext)
-    }
-
-    // sqrt
-    if (moveIfMatched(Token.Operator.SQRT)) {
-      expr = KBigDecimalMath.sqrt(parseFuncParentheses(), mathContext)
-    }
-
-    // sin
-    if (moveIfMatched(Token.Func.SIN)) {
-      expr = parseFuncParentheses().sin(radianMode, mathContext).rescaleTrig()
-    }
-
-    // cos
-    if (moveIfMatched(Token.Func.COS)) {
-      expr = parseFuncParentheses().cos(radianMode, mathContext).rescaleTrig()
-    }
-
-    // tan
-    if (moveIfMatched(Token.Func.TAN)) {
-      expr = parseFuncParentheses().tan(radianMode, mathContext).rescaleTrig()
-    }
-
-    // arsin
-    if (moveIfMatched(Token.Func.ARSIN)) {
-      expr = parseFuncParentheses().arsin(radianMode, mathContext).rescaleTrig()
-    }
-
-    // arcos
-    if (moveIfMatched(Token.Func.ARCOS)) {
-      expr = parseFuncParentheses().arcos(radianMode, mathContext).rescaleTrig()
-    }
-
-    // actan
-    if (moveIfMatched(Token.Func.ACTAN)) {
-      expr = parseFuncParentheses().artan(radianMode, mathContext).rescaleTrig()
-    }
-
-    // ln
-    if (moveIfMatched(Token.Func.LN)) {
-      expr = parseFuncParentheses().ln(mathContext)
-    }
-
-    // log
-    if (moveIfMatched(Token.Func.LOG)) {
-      expr = parseFuncParentheses().log(mathContext)
-    }
-
-    // exp
-    if (moveIfMatched(Token.Func.EXP)) {
-      expr = parseFuncParentheses().exp(mathContext)
-    }
-
-    // Power
-    if (moveIfMatched(Token.Operator.POWER)) {
-      val factor = parseFactor()
-      if (expr == null) throw ExpressionException.BadExpression()
-      // mathematicians made up this controversy because reasons
-      if (expr.isEqualTo(KBigDecimal.ZERO) && factor.isEqualTo(KBigDecimal.ZERO)) {
-        throw ExpressionException.BadExpression()
-      }
-
-      expr = KBigDecimalMath.pow(expr, factor, mathContext)
-    }
-
-    // Modulo
-    if (moveIfMatched(Token.Operator.MODULO)) {
-      if (expr == null) throw ExpressionException.BadExpression()
-      expr = expr.remainder(parseFactor())
-    }
-
-    // Factorial
-    if (moveIfMatched(Token.Operator.FACTORIAL)) {
-      if (expr == null) throw ExpressionException.BadExpression()
-      if (negative) throw ExpressionException.FactorialCalculation()
-      expr = expr.factorial()
-    }
-
-    if (expr == null) throw ExpressionException.BadExpression()
-    return expr
-  }
-
-  // rescale to avoid precision loss when evaluating special cases in trigonometry
-  private fun KBigDecimal.rescaleTrig(): KBigDecimal =
-    this.setScale(mathContext.precision, KRoundingMode.HALF_EVEN)
+  data class Symbolic(
+    val expression: String,
+    val factorization: String? = null,
+    val roots: List<String> = emptyList(),
+    val discriminant: String? = null,
+  ) : ExpressionResult
 }
 
-private const val TRIG_SCALE = 100
+class Expression(
+  input: String,
+  radianMode: Boolean = true,
+  roundingMode: KRoundingMode = KRoundingMode.HALF_EVEN,
+) {
+  private val tree = Parser(input.tokenize(), roundingMode).parse()
+  private val evaluator = Evaluator(radianMode, roundingMode)
+  private val radianMode = radianMode
+
+  /**
+   * Real result only.
+   *
+   * @throws ExpressionException.BadExpression When result is complex or has variables.
+   */
+  fun calculate(): KBigDecimal {
+    try {
+      return evaluator.evaluate(tree).real()
+    } catch (e: SymbolicExpressionException) {
+      throw ExpressionException.BadExpression()
+    }
+  }
+
+  /**
+   * Calculates expression. Expressions with x are polynomials: derivatives and integrals are
+   * expanded, everything else is factorized.
+   *
+   * @param precision Digits after the dot for approximate coefficients in symbolic results.
+   * @param outputFormat Format for numbers in symbolic results.
+   */
+  fun evaluate(precision: Int, outputFormat: Int): ExpressionResult {
+    if (tree is Node.Convert || tree.units().isNotEmpty()) {
+      return evaluateUnits(tree, evaluator, NodeFormatter(precision, outputFormat))
+    }
+    val value =
+      try {
+        evaluator.evaluate(tree)
+      } catch (e: SymbolicExpressionException) {
+        return evaluateSymbolic(precision, outputFormat)
+      }
+    val exact =
+      tree.exactValue()?.takeIf { it.hasSurd }?.let { SymbolicFormatter(precision, outputFormat).exact(it) }
+        // Σ1/n² = π²/6
+        ?: if (value.isReal && tree.hasNumericCalculus()) recognizeConstant(value.re) else null
+    if (value.isReal) return ExpressionResult.Real(value.re, exact)
+    return ExpressionResult.Complex(
+      real = value.re,
+      imaginary = value.im,
+      exact = exact,
+      parts = complexParts(tree.exactValue(), value, SymbolicFormatter(precision, outputFormat)),
+    )
+  }
+
+  /**
+   * Polynomials are factorized (with roots), derivatives and integrals of polynomials are expanded.
+   * Other derivatives and integrals are calculated symbolically: d/dx(cos(x)) = −sin(x).
+   */
+  private fun evaluateSymbolic(precision: Int, outputFormat: Int): ExpressionResult.Symbolic {
+    // Integration constant
+    val constant =
+      if (tree.hasIndefiniteIntegral()) {
+        Token.Operator.PLUS + Token.DisplayOnly.INTEGRATION_CONSTANT
+      } else {
+        ""
+      }
+    val polynomial =
+      try {
+        tree.toPolynomial(evaluator)
+      } catch (e: ExpressionException.BadExpression) {
+        if (!tree.hasSymbolicCalculus()) throw e
+        val result = tree.expandCalculus(radianMode, evaluator).simplify()
+        return ExpressionResult.Symbolic(NodeFormatter(precision, outputFormat).format(result) + constant)
+      }
+    if (polynomial.degree > MAX_POLYNOMIAL_DEGREE) throw ExpressionException.TooBig()
+    val formatter = SymbolicFormatter(precision, outputFormat)
+    val expanded = formatter.expanded(polynomial) + constant
+    if (constant.isNotEmpty() || tree is Node.Derivative || polynomial.degree < 1) {
+      return ExpressionResult.Symbolic(expanded)
+    }
+    val factorization = polynomial.factorize()
+    return ExpressionResult.Symbolic(
+      expression = expanded,
+      factorization = formatter.factorized(factorization),
+      roots = formatter.roots(factorization),
+      discriminant = formatter.discriminant(polynomial),
+    )
+  }
+}

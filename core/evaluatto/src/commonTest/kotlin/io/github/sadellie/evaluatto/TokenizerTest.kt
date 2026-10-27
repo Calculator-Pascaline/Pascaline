@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2023-2024 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,9 +41,10 @@ class TokenizerTest {
 
   @Test fun tokens8() = assertLex(emptyList(), "")
 
-  @Test fun tokens9() = assertLex(listOf("e"), "something") // Tokenizer knows "e"
+  // Tokenizer knows "e", "i" and "n"
+  @Test fun tokens9() = assertLex(listOf("e", "×", "i", "×", "n"), "something")
 
-  @Test fun tokens10() = assertLex(emptyList(), "funnyword")
+  @Test fun tokens10() = assertLex(listOf("n", "×", "n"), "funnyword")
 
   @Test
   fun getBaseBefore_number() {

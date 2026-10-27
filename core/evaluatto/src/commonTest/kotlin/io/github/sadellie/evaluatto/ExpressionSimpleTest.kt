@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2023-2024 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,17 +61,17 @@ class ExpressionSimpleTest {
 
   @Test fun expression17() = assertExpr("tan(42)", "0.9004040443", radianMode = false)
 
-  @Test fun expression18() = assertExpr("sin⁻¹(.69)", "0.7614890527")
+  @Test fun expression18() = assertExpr("asin(.69)", "0.7614890527")
 
-  @Test fun expression19() = assertExpr("sin⁻¹(.69)", "43.6301088679", radianMode = false)
+  @Test fun expression19() = assertExpr("asin(.69)", "43.6301088679", radianMode = false)
 
-  @Test fun expression20() = assertExpr("cos⁻¹(.69)", "0.8093072740")
+  @Test fun expression20() = assertExpr("acos(.69)", "0.8093072740")
 
-  @Test fun expression21() = assertExpr("cos⁻¹(.69)", "46.3698911321", radianMode = false)
+  @Test fun expression21() = assertExpr("acos(.69)", "46.3698911321", radianMode = false)
 
-  @Test fun expression22() = assertExpr("tan⁻¹(.69)", "0.6039829783")
+  @Test fun expression22() = assertExpr("atan(.69)", "0.6039829783")
 
-  @Test fun expression23() = assertExpr("tan⁻¹(.69)", "34.6056755516", radianMode = false)
+  @Test fun expression23() = assertExpr("atan(.69)", "34.6056755516", radianMode = false)
 
   @Test fun expression24() = assertExpr("ln(.69)", "-0.3710636814")
 
