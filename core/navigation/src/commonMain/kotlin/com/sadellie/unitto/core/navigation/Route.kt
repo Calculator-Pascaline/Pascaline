@@ -46,6 +46,7 @@ interface Route : NavKey {
         listOf(
           DeepLinkPattern(serializer(), deepLink(CalculatorStartRoute).toKmpUri()),
           DeepLinkPattern(FunctionsStartRoute.serializer(), deepLink(FunctionsStartRoute).toKmpUri()),
+          DeepLinkPattern(ProbabilityStartRoute.serializer(), deepLink(ProbabilityStartRoute).toKmpUri()),
           DeepLinkPattern(
             ConverterStartRoute.serializer(),
             deepLink(ConverterStartRoute()).toKmpUri(),
@@ -85,6 +86,11 @@ data object CalculatorStartRoute : TopLevelRoute {
 @Serializable
 data object FunctionsStartRoute : TopLevelRoute {
   override val routeId = "functions_route"
+}
+
+@Serializable
+data object ProbabilityStartRoute : TopLevelRoute {
+  override val routeId = "probability_route"
 }
 
 @Serializable

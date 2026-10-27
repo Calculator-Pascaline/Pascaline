@@ -45,6 +45,7 @@ actual val mainDrawerItems: List<DrawerItem> by lazy {
     listOf(
       CalculatorDrawerItem,
       FunctionsDrawerItem,
+      ProbabilityDrawerItem,
       ConverterDrawerItem,
       DateCalculatorDrawerItem,
       TimeZonesDrawerItem,
@@ -121,6 +122,7 @@ private fun generateShortcut(drawerItem: DrawerItem): Shortcut? {
       )
     // No launcher icon yet
     FunctionsDrawerItem,
+    ProbabilityDrawerItem,
     SettingsDrawerItem -> null
   }
 }

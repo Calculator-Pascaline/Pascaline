@@ -22,6 +22,7 @@ package com.sadellie.unitto.feature.calculator
 import com.sadellie.unitto.core.data.calculatorDataModule
 import com.sadellie.unitto.feature.calculator.functions.FunctionsViewModel
 import com.sadellie.unitto.feature.calculator.navigation.calculatorNavigation
+import com.sadellie.unitto.feature.calculator.probability.ProbabilityViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -30,4 +31,5 @@ val calculatorModule = module {
   calculatorNavigation()
   viewModelOf(::CalculatorViewModel)
   viewModelOf(::FunctionsViewModel)
+  viewModelOf(::ProbabilityViewModel)
 }

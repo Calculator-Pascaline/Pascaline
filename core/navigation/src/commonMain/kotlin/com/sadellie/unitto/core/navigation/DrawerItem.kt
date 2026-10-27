@@ -21,6 +21,7 @@ package com.sadellie.unitto.core.navigation
 
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.sadellie.unitto.core.designsystem.icons.symbols.AccessibilityNew
+import com.sadellie.unitto.core.designsystem.icons.symbols.BarChart
 import com.sadellie.unitto.core.designsystem.icons.symbols.Calculate
 import com.sadellie.unitto.core.designsystem.icons.symbols.CalculateFill
 import com.sadellie.unitto.core.designsystem.icons.symbols.Event
@@ -39,6 +40,7 @@ import unitto.core.common.generated.resources.calculator_title
 import unitto.core.common.generated.resources.converter_title
 import unitto.core.common.generated.resources.date_calculator_title
 import unitto.core.common.generated.resources.functions_title
+import unitto.core.common.generated.resources.probability_title
 import unitto.core.common.generated.resources.settings_title
 import unitto.core.common.generated.resources.time_zone_title
 
@@ -68,6 +70,13 @@ data object FunctionsDrawerItem : DrawerItem {
   override val name = Res.string.functions_title
   override val selectedIcon = Symbols.LineAxis
   override val defaultIcon = Symbols.LineAxis
+}
+
+data object ProbabilityDrawerItem : DrawerItem {
+  override val topLevelRoute = ProbabilityStartRoute
+  override val name = Res.string.probability_title
+  override val selectedIcon = Symbols.BarChart
+  override val defaultIcon = Symbols.BarChart
 }
 
 data object DateCalculatorDrawerItem : DrawerItem {

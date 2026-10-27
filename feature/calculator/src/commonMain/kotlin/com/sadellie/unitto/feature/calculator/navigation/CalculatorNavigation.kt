@@ -22,8 +22,10 @@ package com.sadellie.unitto.feature.calculator.navigation
 import com.sadellie.unitto.core.navigation.CalculatorStartRoute
 import com.sadellie.unitto.core.navigation.FunctionsStartRoute
 import com.sadellie.unitto.core.navigation.LocalNavigator
+import com.sadellie.unitto.core.navigation.ProbabilityStartRoute
 import com.sadellie.unitto.feature.calculator.CalculatorRoute
 import com.sadellie.unitto.feature.calculator.functions.FunctionsRoute
+import com.sadellie.unitto.feature.calculator.probability.ProbabilityRoute
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.core.module.Module
 import org.koin.dsl.navigation3.navigation
@@ -37,5 +39,9 @@ fun Module.calculatorNavigation() {
   navigation<FunctionsStartRoute> {
     val navigator = LocalNavigator.current
     FunctionsRoute(openDrawer = navigator::openDrawer)
+  }
+  navigation<ProbabilityStartRoute> {
+    val navigator = LocalNavigator.current
+    ProbabilityRoute(openDrawer = navigator::openDrawer)
   }
 }
