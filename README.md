@@ -3,7 +3,7 @@
 A calculator for Android. Named after the Pascaline, the mechanical calculator Blaise Pascal built in 1642.
 
 <p align="center">
-  <img src="docs/screenshots/calculator.png" width="24%" alt="Exact antiderivatives of x²eˣ and 1/(x³+1)" />
+  <img src="docs/screenshots/calculator.png" width="24%" alt="Factorization, exact roots and discriminant of x²+6x−3" />
   <img src="docs/screenshots/functions.png" width="24%" alt="Graph of sin(x) and cos(x)" />
   <img src="docs/screenshots/probability.png" width="24%" alt="Binomial distribution with P(X ≤ 2) = 0.3483 and its expected value explained" />
   <img src="docs/screenshots/probability-tree.png" width="24%" alt="Probability tree of 4 free throws with arrows to each number of baskets" />
