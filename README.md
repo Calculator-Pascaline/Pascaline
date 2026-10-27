@@ -1,28 +1,50 @@
 # Pascaline
 
-A calculator for Android inspired by graphing calculators like the NumWorks. Named after the
+A calculator for Android inspired by graphing calculators like the NumWorks: exact answers,
+symbolic calculus, function graphs and probability laws that explain themselves. Named after the
 Pascaline, the mechanical calculator Blaise Pascal built in 1642.
 
 <p align="center">
-  <img src="docs/screenshots/history.png" width="24%" alt="History with exact results for a square root, an integral, a sum, a derivative and a unit" />
-  <img src="docs/screenshots/polynomial.png" width="24%" alt="Factorization, roots and discriminant of a polynomial" />
-  <img src="docs/screenshots/complex-plane.png" width="24%" alt="Complex plane with modulus and argument" />
-  <img src="docs/screenshots/units.png" width="24%" alt="Units and constants menu" />
+  <img src="docs/screenshots/calculator.png" width="24%" alt="Exact antiderivatives of x²eˣ and 1/(x³+1)" />
+  <img src="docs/screenshots/functions.png" width="24%" alt="Graph of sin(x) and cos(x)" />
+  <img src="docs/screenshots/probability.png" width="24%" alt="Binomial distribution with P(X ≤ 2) = 0.3483 and its expected value explained" />
+  <img src="docs/screenshots/probability-tree.png" width="24%" alt="Probability tree of 4 free throws with arrows to each number of baskets" />
 </p>
 
 ## Features
 
-- **Natural input**: powers, indices, fractions, square roots and integral bounds are typed in
-  boxes, the way they are written on paper
+### Calculator
+
+- **Natural input**: powers, fractions, roots and integral bounds are typed in boxes, the way they
+  are written on paper
 - **Exact answers** next to approximations: `√(−5) = √5i ≈ 2.236i`, `Σ 1/n² = π²/6`
-- **Algebra**: polynomials are expanded and factorized, with their roots and discriminant
-- **Calculus**: symbolic derivatives and integrals (`∫cos(x)dx = sin(x)+C`), definite integrals,
-  sums and products, including infinite ones
+- **Calculus**: symbolic derivatives and antiderivatives, including integration by parts and
+  partial fractions (`∫x²eˣdx = (x²−2x+2)eˣ+C`), definite integrals, sums and products, including
+  infinite ones
+- **Algebra**: expressions are simplified and polynomials expanded and factorized, with their
+  roots and discriminant
 - **Complex numbers** with a complex plane showing modulus, argument, real and imaginary parts
+- **Units and constants**: results in the easiest unit to read (`10⁹ Hz = 1 GHz`)
 - **Number info**: decimal, hexadecimal, binary and prime factors of integers
-- **Units and constants**: results in the easiest unit to read (`10⁹ Hz = 1 GHz`), with the value
-  in SI units in the `…` menu
-- **History** that scrolls, with swipe to delete
+
+### Functions
+
+- Expressions, Graph and Table pages, like the NumWorks Functions app
+- Several functions in their own colors, zoom with buttons or by pinching one axis at a time
+
+### Probability
+
+- Ten laws: binomial, uniform, exponential, normal, chi-squared, Student, geometric, Poisson,
+  Fisher and hypergeometric
+- Type a, b or the probability right inside `P(X ≤ a) = p`: entering a probability finds the
+  bound, and for discrete laws it gives the closest probability that can actually be reached
+- **Expected value and variance** of every law, with the formula, your values and why it holds
+- **Binomial explained**: a probability tree of coin flips or free throws, colored arrows from each
+  number of successes to its outcomes, and Pascal's triangle for the coefficients
+
+### And also
+
+- Unit converter, date calculator, time zones and body mass index from Unitto
 - **No internet permission**: everything is computed on the device
 
 ## Credits

@@ -1,33 +1,29 @@
-Calculator, converter and more.
-
-Look for Calculator on your home screen after installing the app.
+A calculator inspired by graphing calculators like the NumWorks, named after the mechanical calculator Blaise Pascal built in 1642.
 
 Calculator
-• Home screen widget
-• Copy, paste, save and share expression results
-• Trigonometric functions
-• Fractional output
-• Optional Indian numbering system
+• Natural input: powers, fractions, roots and integral bounds in boxes, as on paper
+• Exact answers next to approximations: √(−5) = √5i ≈ 2.236i, Σ 1/n² = π²/6
+• Symbolic derivatives and antiderivatives, with integration by parts and partial fractions
+• Definite integrals, sums and products, including infinite ones
+• Simplification, expansion and factorization of polynomials with their roots
+• Complex numbers on a complex plane
+• Units and constants, shown in the easiest unit to read
+• Decimal, hexadecimal, binary and prime factors of integers
 
-Unit converter
-• 601 units
-• Currency converter (uses internet)
-• Home screen widget
-• Favorite units
-• Organize unit groups
-• Smart search algorithm
+Functions
+• Expressions, Graph and Table pages
+• Several functions in their own colors, zoom one axis at a time
 
-Date calculator
-• Add and subtract dates
-• Calculate difference
-• Create events in calendar
+Probability
+• Ten laws: binomial, uniform, exponential, normal, chi-squared, Student, geometric, Poisson, Fisher and hypergeometric
+• Type a, b or the probability right inside P(X ≤ a) = p
+• Expected value and variance of every law, with the formula, your values and why it holds
+• Binomial explained with probability trees and Pascal's triangle
 
-Time converter
-• Add to favorites
-• Add labels to time zones
+And also
+• Unit converter, date calculator, time zones and body mass index
 
-Body mass index
-• Get instant and accurate results
+No internet permission: everything is computed on the device.
 
-Permissions and Data? Visit: https://github.com/sadellie/unitto/security/
-Try web: https://sadellie.github.com/unitto/app
+Pascaline is free software under the GPL v3, based on Unitto by Elshan Agaev.
+Source code: https://github.com/Calculator-Pascaline/Pascaline
