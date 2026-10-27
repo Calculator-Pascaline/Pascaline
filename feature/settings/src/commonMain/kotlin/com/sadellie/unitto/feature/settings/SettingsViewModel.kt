@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2022-2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,23 +22,19 @@ package com.sadellie.unitto.feature.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sadellie.unitto.core.common.Config
-import com.sadellie.unitto.core.common.defaultIODispatcher
 import com.sadellie.unitto.core.common.stateIn
-import com.sadellie.unitto.core.database.CurrencyRatesDao
 import com.sadellie.unitto.core.datastore.UserPreferencesRepository
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
-internal class SettingsViewModel(
-  private val userPrefsRepository: UserPreferencesRepository,
-  private val currencyRatesDao: CurrencyRatesDao,
-) : ViewModel() {
+internal class SettingsViewModel(private val userPrefsRepository: UserPreferencesRepository) :
+  ViewModel() {
   val uiState =
-    combine(userPrefsRepository.generalPrefs, currencyRatesDao.size()) { prefs, cacheSize ->
+    userPrefsRepository.generalPrefs
+      .map { prefs ->
         SettingsUIState.Ready(
           enableVibrations = prefs.enableVibrations,
           enableKeepScreenOn = prefs.enableKeepScreenOn,
-          cacheSize = cacheSize,
           showUpdateChangelog = prefs.lastReadChangelog != Config.VERSION_CODE,
         )
       }
@@ -54,6 +51,4 @@ internal class SettingsViewModel(
   /** @see UserPreferencesRepository.updateEnableKeepScreenOn */
   fun updateEnableKeepScreenOn(enabled: Boolean) =
     viewModelScope.launch { userPrefsRepository.updateEnableKeepScreenOn(enabled) }
-
-  fun clearCache() = viewModelScope.launch(defaultIODispatcher) { currencyRatesDao.clear() }
 }

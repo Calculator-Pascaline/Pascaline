@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2022-2026 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +27,7 @@ import com.sadellie.unitto.core.common.OutputFormat
 import com.sadellie.unitto.core.common.stateIn
 import com.sadellie.unitto.core.data.converter.ConverterResult
 import com.sadellie.unitto.core.data.converter.UnitConverterRepository
+import com.sadellie.unitto.core.data.converter.UnitID
 import com.sadellie.unitto.core.datastore.ConverterPreferences
 import com.sadellie.unitto.core.datastore.UserPreferencesRepository
 import com.sadellie.unitto.core.model.converter.unit.BasicUnit
@@ -59,7 +61,6 @@ internal class ConverterViewModel(
   private val _input1 = savedStateHandle.getTextFieldState(_converterInputKey1)
   private val _input2 = savedStateHandle.getTextFieldState(_converterInputKey2)
   private val _output = MutableStateFlow<ConverterResult>(ConverterResult.Loading)
-  private val _currencyRateUpdateState = unitsRepo.currencyRateUpdateState
   private val _unitFromId = MutableStateFlow<String?>(null)
   private val _unitToId = MutableStateFlow<String?>(null)
   private val _unitFrom =
@@ -79,9 +80,8 @@ internal class ConverterViewModel(
         _output,
         _unitFrom,
         _unitTo,
-        _currencyRateUpdateState,
         userPrefsRepository.converterPrefs,
-      ) { outputValue, unitFromValue, unitToValue, currencyRateUpdateState, prefs ->
+      ) { outputValue, unitFromValue, unitToValue, prefs ->
         if (unitFromValue == null) return@combine ConverterUIState.Loading
         if (unitToValue == null) return@combine ConverterUIState.Loading
 
@@ -97,7 +97,6 @@ internal class ConverterViewModel(
             scale = prefs.precision,
             outputFormat = OutputFormat.PLAIN,
             formatTime = prefs.formatTime,
-            currencyRateUpdateState = currencyRateUpdateState,
             acButton = prefs.acButton,
           )
         }
@@ -200,7 +199,6 @@ internal class ConverterViewModel(
               value1 = input1Value,
               value2 = input2Value,
               formatTime = prefs.formatTime,
-              apiUrl = prefs.customApiUrl,
             )
           } catch (e: ExpressionException) {
             Logger.w(TAG, e) { "Failed to convert" }
@@ -223,9 +221,20 @@ internal class ConverterViewModel(
         _unitToId.update { args.unitToId }
       } else {
         val prefs = userPrefsRepository.converterPrefs.first()
-        _unitFromId.update { prefs.latestLeftSideUnit }
-        _unitToId.update { prefs.latestRightSideUnit }
+        // Saved units can be removed from the app (currencies), use defaults then
+        val savedUnitsExist =
+          unitExists(prefs.latestLeftSideUnit) && unitExists(prefs.latestRightSideUnit)
+        _unitFromId.update { if (savedUnitsExist) prefs.latestLeftSideUnit else UnitID.kilometer }
+        _unitToId.update { if (savedUnitsExist) prefs.latestRightSideUnit else UnitID.mile }
       }
+    }
+
+  private suspend fun unitExists(id: String): Boolean =
+    try {
+      unitsRepo.getById(id)
+      true
+    } catch (e: NoSuchElementException) {
+      false
     }
 
   private fun setPair() =

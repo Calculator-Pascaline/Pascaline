@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2024-2026 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,11 +22,8 @@ package com.sadellie.unitto.core.data.converter
 import com.sadellie.unitto.core.model.converter.UnitGroup
 import com.sadellie.unitto.core.model.converter.UnitsListSorting
 import com.sadellie.unitto.core.model.converter.unit.BasicUnit
-import kotlinx.coroutines.flow.MutableStateFlow
 
 interface UnitConverterRepository {
-  val currencyRateUpdateState: MutableStateFlow<CurrencyRateUpdateState>
-
   suspend fun getById(id: String): BasicUnit
 
   suspend fun getPairId(id: String): String
@@ -51,7 +49,6 @@ interface UnitConverterRepository {
     unitFromId: String,
     input1: String,
     input2: String,
-    apiUrl: String,
   ): Map<UnitGroup, List<UnitSearchResultItem>>
 
   suspend fun convert(
@@ -60,6 +57,5 @@ interface UnitConverterRepository {
     value1: String,
     value2: String,
     formatTime: Boolean,
-    apiUrl: String,
   ): ConverterResult
 }

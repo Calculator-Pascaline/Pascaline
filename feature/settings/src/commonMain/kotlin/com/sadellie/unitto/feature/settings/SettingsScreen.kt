@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2022-2026 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -87,7 +88,6 @@ import unitto.core.common.generated.resources.settings_additional
 import unitto.core.common.generated.resources.settings_backup
 import unitto.core.common.generated.resources.settings_backup_support
 import unitto.core.common.generated.resources.settings_calculator_support
-import unitto.core.common.generated.resources.settings_clear_cache
 import unitto.core.common.generated.resources.settings_converter_support
 import unitto.core.common.generated.resources.settings_display
 import unitto.core.common.generated.resources.settings_display_support
@@ -128,7 +128,6 @@ internal fun SettingsRoute(openDrawer: () -> Unit, navControllerAction: (route: 
           if (platform == Platform.Android) viewModel.updateEnableKeepScreenOn(it)
           else showAndroidExclusiveDialog = true
         },
-        clearCache = viewModel::clearCache,
       )
   }
   if (showAndroidExclusiveDialog) {
@@ -144,7 +143,6 @@ private fun SettingsScreen(
   updateLastReadChangelog: (String) -> Unit,
   updateVibrations: (Boolean) -> Unit,
   updateKeepScreenOn: (Boolean) -> Unit,
-  clearCache: () -> Unit,
 ) {
   ScaffoldWithLargeTopBar(
     title = stringResource(Res.string.settings_title),
@@ -241,18 +239,6 @@ private fun SettingsScreen(
         onClick = { navControllerAction(BackupRoute) },
         shape = ListItemExpressiveDefaults.middleShape,
       )
-      AnimatedVisibility(
-        visible = uiState.cacheSize > 0,
-        enter = expandVertically() + fadeIn(),
-        exit = shrinkVertically() + fadeOut(),
-      ) {
-        ListItemExpressive(
-          headlineText = stringResource(Res.string.settings_clear_cache),
-          icon = Symbols.Cached,
-          onClick = clearCache,
-          shape = ListItemExpressiveDefaults.middleShape,
-        )
-      }
       ListItemExpressive(
         icon = Symbols.RateReview,
         headlineText = stringResource(Res.string.settings_rate_this_app),
@@ -284,7 +270,6 @@ private fun PreviewSettingsScreen() {
     mutableStateOf(
       SettingsUIState.Ready(
         enableVibrations = false,
-        cacheSize = 2,
         showUpdateChangelog = true,
         enableKeepScreenOn = false,
       )
@@ -298,6 +283,5 @@ private fun PreviewSettingsScreen() {
     updateLastReadChangelog = { uiState = uiState.copy(showUpdateChangelog = false) },
     updateVibrations = { uiState = uiState.copy(enableVibrations = it) },
     updateKeepScreenOn = { uiState = uiState.copy(enableKeepScreenOn = it) },
-    clearCache = { uiState = uiState.copy(cacheSize = 0) },
   )
 }

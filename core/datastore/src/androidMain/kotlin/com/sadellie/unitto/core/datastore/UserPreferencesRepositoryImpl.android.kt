@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2022-2026 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -96,7 +97,6 @@ class UserPreferencesRepositoryImpl(private val dataStore: DataStore<Preferences
         favoritesOnly = preferences.getUnitConverterFavoritesOnly(),
         latestLeftSideUnit = preferences.getLatestLeftSide(),
         latestRightSideUnit = preferences.getLatestRightSide(),
-        customApiUrl = preferences.getCustomApiUrl(),
       )
     }
 
@@ -298,11 +298,6 @@ class UserPreferencesRepositoryImpl(private val dataStore: DataStore<Preferences
     dataStore.edit { preferences -> preferences[DatastorePrefKeys.INVERSE_MODE] = enabled }
   }
 
-  override suspend fun updateCustomApiUrl(apiUrl: String) {
-    dataStore.edit { preferences ->
-      preferences[DatastorePrefKeys.UNIT_CONVERTER_CUSTOM_API_URL] = apiUrl
-    }
-  }
 
   private fun Preferences.getEnableDynamicTheme() =
     this[DatastorePrefKeys.ENABLE_DYNAMIC_THEME] ?: Defaults.enableDynamicTheme
@@ -387,7 +382,8 @@ class UserPreferencesRepositoryImpl(private val dataStore: DataStore<Preferences
           return@letTryOrNull listOf()
         }
         .split(",")
-        .map { UnitGroup.valueOf(it) }
+        // Skip removed groups (currency)
+        .mapNotNull { name -> UnitGroup.entries.firstOrNull { it.name == name } }
     } ?: Defaults.shownUnitGroups
   }
 
@@ -411,6 +407,4 @@ class UserPreferencesRepositoryImpl(private val dataStore: DataStore<Preferences
   private fun Preferences.getInverseMode() =
     this[DatastorePrefKeys.INVERSE_MODE] ?: Defaults.inverseMode
 
-  private fun Preferences.getCustomApiUrl() =
-    this[DatastorePrefKeys.UNIT_CONVERTER_CUSTOM_API_URL] ?: Defaults.customApiUrl
 }

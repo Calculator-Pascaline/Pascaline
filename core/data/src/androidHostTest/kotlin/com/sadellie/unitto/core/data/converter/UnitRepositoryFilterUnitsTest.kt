@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2024-2026 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +22,6 @@ package com.sadellie.unitto.core.data.converter
 import com.sadellie.unitto.core.data.converter.collections.accelerationCollection
 import com.sadellie.unitto.core.data.converter.collections.angleCollection
 import com.sadellie.unitto.core.data.converter.collections.areaCollection
-import com.sadellie.unitto.core.data.converter.collections.currencyCollection
 import com.sadellie.unitto.core.data.converter.collections.dataCollection
 import com.sadellie.unitto.core.data.converter.collections.dataTransferCollection
 import com.sadellie.unitto.core.data.converter.collections.electrostaticCapacitance
@@ -54,19 +54,16 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class UnitRepositoryFilterUnitsTest {
-  private val fakeCurrencyApiService = FakeCurrencyApiService()
-  private val fakeCurrencyRatesDao = CurrencyRatesDaoInMemory()
   private val fakeUnitsDao = UnitsDaoInMemory()
   private val unitsRepository = UnitsRepository(fakeUnitsDao)
   private val unitConverterRepo =
-    UnitConverterRepositoryImpl(unitsRepository, fakeCurrencyRatesDao, fakeCurrencyApiService)
+    UnitConverterRepositoryImpl(unitsRepository)
 
   @Test
   fun filterUnits_getAll() = runTest {
     val expected =
       mapOf(
           UnitGroup.LENGTH to lengthCollection,
-          UnitGroup.CURRENCY to currencyCollection,
           UnitGroup.MASS to massCollection,
           UnitGroup.SPEED to speedCollection,
           UnitGroup.TEMPERATURE to temperatureCollection,
@@ -100,7 +97,6 @@ class UnitRepositoryFilterUnitsTest {
         unitGroups =
           listOf(
             UnitGroup.LENGTH,
-            UnitGroup.CURRENCY,
             UnitGroup.MASS,
             UnitGroup.SPEED,
             UnitGroup.TEMPERATURE,

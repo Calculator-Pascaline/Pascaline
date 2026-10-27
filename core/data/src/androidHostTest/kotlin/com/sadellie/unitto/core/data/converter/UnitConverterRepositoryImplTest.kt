@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2024-2026 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,12 +33,10 @@ import org.junit.Assert.assertThrows
 import org.junit.Test
 
 class UnitConverterRepositoryImplTest {
-  private val fakeCurrencyApiService = FakeCurrencyApiService()
-  private val fakeCurrencyRatesDao = CurrencyRatesDaoInMemory()
   private val fakeUnitsDao = UnitsDaoInMemory()
   private val unitsRepository = UnitsRepository(fakeUnitsDao)
   private val unitConverterRepo =
-    UnitConverterRepositoryImpl(unitsRepository, fakeCurrencyRatesDao, fakeCurrencyApiService)
+    UnitConverterRepositoryImpl(unitsRepository)
 
   @Test
   fun convert_numberBase() = runTest {
@@ -49,7 +48,6 @@ class UnitConverterRepositoryImplTest {
         value1 = "2",
         value2 = "",
         formatTime = false,
-        apiUrl = "",
       )
 
     assertEquals(expected, actual)
@@ -65,7 +63,6 @@ class UnitConverterRepositoryImplTest {
           value1 = "7",
           value2 = "",
           formatTime = false,
-          apiUrl = "",
         )
       }
     }
@@ -82,7 +79,6 @@ class UnitConverterRepositoryImplTest {
         value1 = "${Token.Operator.MINUS}28",
         value2 = "",
         formatTime = true,
-        apiUrl = "",
       )
 
     assertEquals(expected, actual)
@@ -98,7 +94,6 @@ class UnitConverterRepositoryImplTest {
         value1 = "0",
         value2 = "",
         formatTime = true,
-        apiUrl = "",
       )
 
     assertEquals(expected, actual)
@@ -114,7 +109,6 @@ class UnitConverterRepositoryImplTest {
         value1 = "${Token.Operator.MINUS}0",
         value2 = "",
         formatTime = true,
-        apiUrl = "",
       )
 
     assertEquals(expected, actual)
@@ -131,7 +125,6 @@ class UnitConverterRepositoryImplTest {
         value1 = "0.05",
         value2 = "",
         formatTime = true,
-        apiUrl = "",
       )
 
     assertEquals(expected, actual)
@@ -147,7 +140,6 @@ class UnitConverterRepositoryImplTest {
         value1 = "0.5",
         value2 = "",
         formatTime = true,
-        apiUrl = "",
       )
 
     assertEquals(expected, actual)
@@ -168,7 +160,6 @@ class UnitConverterRepositoryImplTest {
         value1 = "90.005",
         value2 = "",
         formatTime = true,
-        apiUrl = "",
       )
 
     assertEquals(expected, actual)
@@ -184,7 +175,6 @@ class UnitConverterRepositoryImplTest {
         value1 = "0.5",
         value2 = "",
         formatTime = true,
-        apiUrl = "",
       )
 
     assertEquals(expected, actual)
@@ -205,7 +195,6 @@ class UnitConverterRepositoryImplTest {
         value1 = "90.005",
         value2 = "",
         formatTime = true,
-        apiUrl = "",
       )
 
     assertEquals(expected, actual)
@@ -221,7 +210,6 @@ class UnitConverterRepositoryImplTest {
         value1 = "0.5",
         value2 = "",
         formatTime = true,
-        apiUrl = "",
       )
 
     assertEquals(expected, actual)
@@ -242,7 +230,6 @@ class UnitConverterRepositoryImplTest {
         value1 = "90.005",
         value2 = "",
         formatTime = true,
-        apiUrl = "",
       )
 
     assertEquals(expected, actual)
@@ -258,7 +245,6 @@ class UnitConverterRepositoryImplTest {
         value1 = "0.5",
         value2 = "",
         formatTime = true,
-        apiUrl = "",
       )
 
     assertEquals(expected, actual)
@@ -279,7 +265,6 @@ class UnitConverterRepositoryImplTest {
         value1 = "90.005",
         value2 = "",
         formatTime = true,
-        apiUrl = "",
       )
 
     assertEquals(expected, actual)
@@ -295,7 +280,6 @@ class UnitConverterRepositoryImplTest {
         value1 = "0.5",
         value2 = "",
         formatTime = true,
-        apiUrl = "",
       )
 
     assertEquals(expected, actual)
@@ -312,7 +296,6 @@ class UnitConverterRepositoryImplTest {
         value1 = "90.005",
         value2 = "",
         formatTime = true,
-        apiUrl = "",
       )
 
     assertEquals(expected, actual)
@@ -328,7 +311,6 @@ class UnitConverterRepositoryImplTest {
         value1 = "0.5",
         value2 = "",
         formatTime = true,
-        apiUrl = "",
       )
 
     assertEquals(expected, actual)
@@ -345,7 +327,6 @@ class UnitConverterRepositoryImplTest {
         value1 = "90.005",
         value2 = "",
         formatTime = true,
-        apiUrl = "",
       )
 
     assertEquals(expected, actual)
@@ -361,7 +342,6 @@ class UnitConverterRepositoryImplTest {
         value1 = "0.5",
         value2 = "",
         formatTime = true,
-        apiUrl = "",
       )
 
     assertEquals(expected, actual)
@@ -378,7 +358,6 @@ class UnitConverterRepositoryImplTest {
         value1 = "90.005",
         value2 = "",
         formatTime = true,
-        apiUrl = "",
       )
 
     assertEquals(expected, actual)
@@ -394,7 +373,6 @@ class UnitConverterRepositoryImplTest {
         value1 = "0.5",
         value2 = "",
         formatTime = true,
-        apiUrl = "",
       )
 
     assertEquals(expected, actual)
@@ -410,82 +388,6 @@ class UnitConverterRepositoryImplTest {
         value1 = "90.005",
         value2 = "",
         formatTime = true,
-        apiUrl = "",
-      )
-
-    assertEquals(expected, actual)
-  }
-
-  @Test
-  fun convert_currenciesOk() = runTest {
-    val expected =
-      ConverterResult.Default(
-        value = KBigDecimal("36").setMaxScale(),
-        calculation = KBigDecimal("72").setMaxScale(),
-      )
-    val actual =
-      unitConverterRepo.convert(
-        unitFromId = UnitID.currency_usd,
-        unitToId = UnitID.currency_eur,
-        value1 = "72",
-        value2 = "",
-        formatTime = false,
-        apiUrl = "",
-      )
-
-    assertEquals(expected, actual)
-  }
-
-  @Test
-  fun convert_currenciesFromCache() = runTest {
-    // insert rates that are not currencyApi
-    fakeCurrencyRatesDao.insertRates(
-      listOf(
-        CurrencyRatesEntity(
-          entityId = 201,
-          baseUnitId = UnitID.currency_btc,
-          date = 0,
-          pairUnitId = UnitID.currency_1inch,
-          pairUnitValue = KBigDecimal("40").setMaxScale(),
-        ),
-        CurrencyRatesEntity(
-          entityId = 202,
-          baseUnitId = UnitID.currency_btc,
-          date = 0,
-          pairUnitId = UnitID.currency_eth,
-          pairUnitValue = KBigDecimal("234").setMaxScale(),
-        ),
-      )
-    )
-    val expected =
-      ConverterResult.Default(
-        value = KBigDecimal("120").setMaxScale(),
-        calculation = KBigDecimal("3").setMaxScale(),
-      )
-    val actual =
-      unitConverterRepo.convert(
-        unitFromId = UnitID.currency_btc,
-        unitToId = UnitID.currency_1inch,
-        value1 = "3",
-        value2 = "",
-        formatTime = false,
-        apiUrl = "",
-      )
-
-    assertEquals(expected, actual)
-  }
-
-  @Test
-  fun convert_currenciesNoConnectionAndNoCache() = runTest {
-    val expected = ConverterResult.Error.CurrencyError
-    val actual =
-      unitConverterRepo.convert(
-        unitFromId = UnitID.currency_btc,
-        unitToId = UnitID.currency_1inch,
-        value1 = "3",
-        value2 = "",
-        formatTime = false,
-        apiUrl = "",
       )
 
     assertEquals(expected, actual)
@@ -505,7 +407,6 @@ class UnitConverterRepositoryImplTest {
         value1 = "72",
         value2 = "",
         formatTime = false,
-        apiUrl = "",
       )
 
     assertEquals(expected, actual)
@@ -521,7 +422,6 @@ class UnitConverterRepositoryImplTest {
           value1 = "!",
           value2 = "",
           formatTime = false,
-          apiUrl = "",
         )
       }
     }

@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2023-2026 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +30,6 @@ kotlin {
     implementation(project(":core:common"))
     implementation(project(":core:evaluatto"))
     implementation(project(":core:database"))
-    implementation(project(":core:remote"))
     implementation(libs.org.jetbrains.compose.runtime.runtime)
     implementation(libs.org.jetbrains.compose.components.components.resources)
     implementation(project.dependencies.platform(libs.io.insert.koin.koin.bom))

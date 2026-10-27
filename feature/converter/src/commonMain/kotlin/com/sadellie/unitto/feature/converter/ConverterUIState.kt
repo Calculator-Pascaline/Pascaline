@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2022-2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +27,6 @@ import com.sadellie.unitto.core.common.isEqualTo
 import com.sadellie.unitto.core.common.isGreaterThan
 import com.sadellie.unitto.core.common.toFormattedString
 import com.sadellie.unitto.core.data.converter.ConverterResult
-import com.sadellie.unitto.core.data.converter.CurrencyRateUpdateState
 import com.sadellie.unitto.core.model.converter.unit.BasicUnit
 import com.sadellie.unitto.core.ui.textfield.formatExpression
 
@@ -44,7 +44,6 @@ internal sealed class ConverterUIState {
     val scale: Int,
     val outputFormat: Int,
     val formatTime: Boolean,
-    val currencyRateUpdateState: CurrencyRateUpdateState,
     val acButton: Boolean,
   ) : ConverterUIState()
 

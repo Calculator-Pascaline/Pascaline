@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +23,6 @@ import com.sadellie.unitto.core.common.defaultIODispatcher
 import com.sadellie.unitto.core.data.converter.collections.accelerationCollection
 import com.sadellie.unitto.core.data.converter.collections.angleCollection
 import com.sadellie.unitto.core.data.converter.collections.areaCollection
-import com.sadellie.unitto.core.data.converter.collections.currencyCollection
 import com.sadellie.unitto.core.data.converter.collections.dataCollection
 import com.sadellie.unitto.core.data.converter.collections.dataTransferCollection
 import com.sadellie.unitto.core.data.converter.collections.electrostaticCapacitance
@@ -55,7 +55,6 @@ import org.jetbrains.compose.resources.getString
 class UnitsRepository(private val unitsDao: UnitsDao) {
   private val allUnits =
     lengthCollection +
-      currencyCollection +
       massCollection +
       speedCollection +
       temperatureCollection +

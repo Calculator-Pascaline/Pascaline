@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2022-2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,13 +29,6 @@ data class ThirdParty(
   companion object {
     fun allThirdParty(): List<ThirdParty> =
       listOf(
-        ThirdParty(
-          name = "currency-api",
-          dev = "Fawaz Ahmed (fawazahmed0)",
-          website = "https://github.com/fawazahmed0/exchange-api",
-          license = "CC0 1.0 Universal",
-          description = "Free Currency Rates API",
-        ),
         ThirdParty(
           name = "Lato",
           dev = "Łukasz Dziedzic",

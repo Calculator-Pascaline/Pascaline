@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2023-2026 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +29,6 @@ import com.sadellie.unitto.core.navigation.Route
 import com.sadellie.unitto.core.navigation.SettingsStartRoute
 import com.sadellie.unitto.feature.settings.SettingsRoute
 import com.sadellie.unitto.feature.settings.about.AboutRoute
-import com.sadellie.unitto.feature.settings.advanced.AdvancedSettingsRoute
 import com.sadellie.unitto.feature.settings.calculator.CalculatorSettingsRoute
 import com.sadellie.unitto.feature.settings.converter.ConverterSettingsRoute
 import com.sadellie.unitto.feature.settings.display.DisplayRoute
@@ -91,16 +91,11 @@ fun Module.settingNavigation() {
     AboutRoute(
       navigateUpAction = navigator::goBack,
       navigateToThirdParty = { navigator.goTo(ThirdPartyRoute) },
-      navigateToAdvanced = { navigator.goTo(AdvancedSettingsRoute) },
     )
   }
   navigation<ThirdPartyRoute>(metadata = NavDisplay.stackedTransition()) {
     val navigator = LocalNavigator.current
     ThirdPartyLicensesScreen(navigateUpAction = navigator::goBack)
-  }
-  navigation<AdvancedSettingsRoute>(metadata = NavDisplay.stackedTransition()) {
-    val navigator = LocalNavigator.current
-    AdvancedSettingsRoute(navigateUpAction = navigator::goBack)
   }
 }
 
@@ -156,9 +151,4 @@ internal data object AboutRoute : Route {
 @Serializable
 internal data object ThirdPartyRoute : Route {
   override val routeId = "third_party_route"
-}
-
-@Serializable
-internal data object AdvancedSettingsRoute : Route {
-  override val routeId = "advanced_settings_route"
 }

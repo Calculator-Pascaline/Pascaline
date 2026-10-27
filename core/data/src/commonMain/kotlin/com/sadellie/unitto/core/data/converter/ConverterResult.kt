@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2024-2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,8 +24,6 @@ import com.sadellie.unitto.core.common.KBigDecimal
 sealed class ConverterResult {
 
   sealed class Error : ConverterResult() {
-    data object CurrencyError : Error()
-
     data object DivideByZeroError : Error()
   }
 

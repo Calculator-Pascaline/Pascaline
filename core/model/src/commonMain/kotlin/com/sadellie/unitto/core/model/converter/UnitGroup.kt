@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2022-2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +24,6 @@ import unitto.core.common.generated.resources.Res
 import unitto.core.common.generated.resources.unit_group_acceleration
 import unitto.core.common.generated.resources.unit_group_angle
 import unitto.core.common.generated.resources.unit_group_area
-import unitto.core.common.generated.resources.unit_group_currency
 import unitto.core.common.generated.resources.unit_group_data
 import unitto.core.common.generated.resources.unit_group_data_transfer
 import unitto.core.common.generated.resources.unit_group_electrostatic_capacitance
@@ -48,7 +48,6 @@ import unitto.core.common.generated.resources.unit_group_volume
 enum class UnitGroup(val res: StringResource) {
   // NOTE: This order is used as default for new users
   LENGTH(res = Res.string.unit_group_length),
-  CURRENCY(res = Res.string.unit_group_currency),
   MASS(res = Res.string.unit_group_mass),
   SPEED(res = Res.string.unit_group_speed),
   TEMPERATURE(res = Res.string.unit_group_temperature),

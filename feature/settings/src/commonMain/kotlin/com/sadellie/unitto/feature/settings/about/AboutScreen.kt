@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2022-2026 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,8 +79,6 @@ import unitto.core.common.generated.resources.Res
 import unitto.core.common.generated.resources.common_ok
 import unitto.core.common.generated.resources.settings_about_unitto
 import unitto.core.common.generated.resources.settings_author
-import unitto.core.common.generated.resources.settings_currency_rates_note_text
-import unitto.core.common.generated.resources.settings_currency_rates_note_title
 import unitto.core.common.generated.resources.settings_note
 import unitto.core.common.generated.resources.settings_privacy_policy
 import unitto.core.common.generated.resources.settings_terms_and_conditions
@@ -91,23 +90,15 @@ import unitto.core.common.generated.resources.settings_view_source_code
 internal fun AboutRoute(
   navigateUpAction: () -> Unit,
   navigateToThirdParty: () -> Unit,
-  navigateToAdvanced: () -> Unit,
 ) {
-  AboutScreen(
-    navigateUpAction = navigateUpAction,
-    navigateToThirdParty = navigateToThirdParty,
-    navigateToAdvanced = navigateToAdvanced,
-  )
+  AboutScreen(navigateUpAction = navigateUpAction, navigateToThirdParty = navigateToThirdParty)
 }
 
 @Composable
 private fun AboutScreen(
   navigateUpAction: () -> Unit,
   navigateToThirdParty: () -> Unit,
-  navigateToAdvanced: () -> Unit,
 ) {
-  var showDialog: Boolean by rememberSaveable { mutableStateOf(false) }
-
   ScaffoldWithLargeTopBar(
     title = stringResource(Res.string.settings_about_unitto),
     navigationIcon = { NavigateUpButton(navigateUpAction) },
@@ -126,16 +117,10 @@ private fun AboutScreen(
         onClick = { linkOpener.launch(Config.AUTHOR_LINK) },
       )
       ListItemExpressive(
-        icon = Symbols.Help,
-        onClick = { showDialog = true },
-        headlineText = stringResource(Res.string.settings_currency_rates_note_title),
-        shape = ListItemExpressiveDefaults.firstShape,
-      )
-      ListItemExpressive(
         icon = Symbols.PrivacyTip,
         headlineText = stringResource(Res.string.settings_terms_and_conditions),
         onClick = { linkOpener.launch(Config.TERMS_LINK) },
-        shape = ListItemExpressiveDefaults.middleShape,
+        shape = ListItemExpressiveDefaults.firstShape,
       )
       ListItemExpressive(
         icon = Symbols.Policy,
@@ -155,35 +140,14 @@ private fun AboutScreen(
         onClick = { navigateToThirdParty() },
         shape = ListItemExpressiveDefaults.middleShape,
       )
-      var aboutItemClick: Int by rememberSaveable { mutableIntStateOf(0) }
       ListItemExpressive(
         icon = Symbols.Info,
         headlineText = stringResource(Res.string.settings_version_name),
         supportingText = "${Config.VERSION_NAME} (${Config.VERSION_CODE})",
-        onClick = {
-          val clicksToOpenAdvanced = 7
-          aboutItemClick++
-          if (aboutItemClick > clicksToOpenAdvanced) {
-            aboutItemClick = 0
-            navigateToAdvanced()
-          }
-        },
+        onClick = {},
         shape = ListItemExpressiveDefaults.lastShape,
       )
     }
-  }
-
-  if (showDialog) {
-    AlertDialog(
-      title = { Text(stringResource(Res.string.settings_note)) },
-      text = { Text(stringResource(Res.string.settings_currency_rates_note_text)) },
-      confirmButton = {
-        TextButton(onClick = { showDialog = false }, shapes = ButtonDefaults.shapes()) {
-          Text(stringResource(Res.string.common_ok))
-        }
-      },
-      onDismissRequest = { showDialog = false },
-    )
   }
 }
 
@@ -262,5 +226,5 @@ private const val FG_BOTTOM = 0xFF30003C
 @Preview
 @Composable
 private fun PreviewAboutScreen() {
-  AboutScreen(navigateUpAction = {}, navigateToThirdParty = {}, navigateToAdvanced = {})
+  AboutScreen(navigateUpAction = {}, navigateToThirdParty = {})
 }

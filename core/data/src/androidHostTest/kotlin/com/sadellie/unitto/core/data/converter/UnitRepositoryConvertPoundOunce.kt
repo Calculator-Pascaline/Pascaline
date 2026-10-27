@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2025-2026 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,12 +28,10 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class UnitRepositoryConvertPoundOunce {
-  private val fakeCurrencyApiService = FakeCurrencyApiService()
-  private val fakeCurrencyRatesDao = CurrencyRatesDaoInMemory()
   private val fakeUnitsDao = UnitsDaoInMemory()
   private val unitsRepository = UnitsRepository(fakeUnitsDao)
   private val unitConverterRepo =
-    UnitConverterRepositoryImpl(unitsRepository, fakeCurrencyRatesDao, fakeCurrencyApiService)
+    UnitConverterRepositoryImpl(unitsRepository)
 
   @Test
   fun convert_poundOunceOutput() = runTest {
@@ -48,7 +47,6 @@ class UnitRepositoryConvertPoundOunce {
         value1 = "72",
         value2 = "",
         formatTime = false,
-        apiUrl = "",
       )
 
     assertEquals(expected, actual)
@@ -68,7 +66,6 @@ class UnitRepositoryConvertPoundOunce {
         value1 = "2",
         value2 = "8",
         formatTime = false,
-        apiUrl = "",
       )
 
     assertEquals(expected, actual)
@@ -88,7 +85,6 @@ class UnitRepositoryConvertPoundOunce {
         value1 = "2",
         value2 = "8",
         formatTime = false,
-        apiUrl = "",
       )
 
     assertEquals(expected, actual)

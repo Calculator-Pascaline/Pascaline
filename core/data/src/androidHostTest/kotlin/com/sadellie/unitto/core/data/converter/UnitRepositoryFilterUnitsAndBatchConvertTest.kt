@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2024-2026 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +22,6 @@ package com.sadellie.unitto.core.data.converter
 import com.sadellie.unitto.core.common.KBigDecimal
 import com.sadellie.unitto.core.common.KRoundingMode
 import com.sadellie.unitto.core.common.setMaxScale
-import com.sadellie.unitto.core.data.converter.collections.currencyCollection
 import com.sadellie.unitto.core.data.converter.collections.lengthCollection
 import com.sadellie.unitto.core.database.CurrencyRatesDaoInMemory
 import com.sadellie.unitto.core.database.UnitsDaoInMemory
@@ -32,12 +32,10 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class UnitRepositoryFilterUnitsAndBatchConvertTest {
-  private val fakeCurrencyApiService = FakeCurrencyApiService()
-  private val fakeCurrencyRatesDao = CurrencyRatesDaoInMemory()
   private val fakeUnitsDao = UnitsDaoInMemory()
   private val unitsRepository = UnitsRepository(fakeUnitsDao)
   private val unitConverterRepo =
-    UnitConverterRepositoryImpl(unitsRepository, fakeCurrencyRatesDao, fakeCurrencyApiService)
+    UnitConverterRepositoryImpl(unitsRepository)
 
   @Test
   fun filterUnitsAndBatchConvert_convertWithoutIssues() = runTest {
@@ -67,43 +65,6 @@ class UnitRepositoryFilterUnitsAndBatchConvertTest {
         unitFromId = UnitID.kilometer,
         input1 = "12",
         input2 = "",
-        apiUrl = "",
-      )
-
-    assertEquals(expected, actual)
-  }
-
-  @Test
-  fun filterUnitsAndBatchConvert_convertCurrency() = runTest {
-    unitConverterRepo.favorite(UnitID.currency_usd)
-
-    val expected =
-      mapOf(
-        UnitGroup.CURRENCY to
-          listOf(
-            UnitSearchResultItem(
-              currencyCollection.first { it.id == UnitID.currency_usd },
-              UnitStats(UnitID.currency_usd, isFavorite = true, frequency = 0),
-              ConverterResult.Default(
-                value =
-                  KBigDecimal("24")
-                    .setScale(BATCH_CURRENCY_CONVERSION_SCALE, KRoundingMode.HALF_EVEN),
-                calculation = KBigDecimal("12").setMaxScale(),
-              ),
-            )
-          )
-      )
-
-    val actual =
-      unitConverterRepo.filterUnitsAndBatchConvert(
-        query = "",
-        unitGroup = UnitGroup.CURRENCY,
-        favoritesOnly = true,
-        sorting = UnitsListSorting.USAGE,
-        unitFromId = UnitID.currency_eur,
-        input1 = "12",
-        input2 = "",
-        apiUrl = "",
       )
 
     assertEquals(expected, actual)
@@ -134,29 +95,6 @@ class UnitRepositoryFilterUnitsAndBatchConvertTest {
         unitFromId = UnitID.kilometer,
         input1 = "!!!",
         input2 = "",
-        apiUrl = "",
-      )
-
-    assertEquals(expected, actual)
-  }
-
-  @Test
-  fun filterUnitsAndBatchConvert_brokenCurrenciesApi() = runTest {
-    unitConverterRepo.favorite(UnitID.currency_eth)
-
-    // do not return units if they can't be converted
-    val expected = emptyMap<UnitGroup, List<UnitSearchResultItem>>()
-
-    val actual =
-      unitConverterRepo.filterUnitsAndBatchConvert(
-        query = "",
-        unitGroup = UnitGroup.CURRENCY,
-        favoritesOnly = true,
-        sorting = UnitsListSorting.USAGE,
-        unitFromId = UnitID.currency_eth,
-        input1 = "12",
-        input2 = "",
-        apiUrl = "",
       )
 
     assertEquals(expected, actual)
@@ -190,7 +128,6 @@ class UnitRepositoryFilterUnitsAndBatchConvertTest {
         unitFromId = UnitID.foot,
         input1 = "10",
         input2 = "6",
-        apiUrl = "",
       )
 
     assertEquals(expected, actual)

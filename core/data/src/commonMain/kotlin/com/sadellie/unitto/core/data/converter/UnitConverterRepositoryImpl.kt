@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2022-2026 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,31 +26,15 @@ import com.sadellie.unitto.core.common.defaultIODispatcher
 import com.sadellie.unitto.core.common.isEqualTo
 import com.sadellie.unitto.core.common.isLessThan
 import com.sadellie.unitto.core.common.setMaxScale
-import com.sadellie.unitto.core.database.CurrencyRatesDao
-import com.sadellie.unitto.core.database.CurrencyRatesEntity
 import com.sadellie.unitto.core.model.converter.UnitGroup
 import com.sadellie.unitto.core.model.converter.UnitsListSorting
 import com.sadellie.unitto.core.model.converter.unit.BasicUnit
-import com.sadellie.unitto.core.remote.CurrencyApiService
 import io.github.sadellie.evaluatto.Expression
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 
-class UnitConverterRepositoryImpl(
-  private val unitsRepo: UnitsRepository,
-  private val currencyRatesDao: CurrencyRatesDao,
-  private val currencyApiService: CurrencyApiService,
-) : UnitConverterRepository {
-
-  override val currencyRateUpdateState =
-    MutableStateFlow<CurrencyRateUpdateState>(CurrencyRateUpdateState.Nothing)
+class UnitConverterRepositoryImpl(private val unitsRepo: UnitsRepository) :
+  UnitConverterRepository {
 
   override suspend fun getById(id: String): BasicUnit = unitsRepo.getById(id)
 
@@ -86,7 +71,6 @@ class UnitConverterRepositoryImpl(
     unitFromId: String,
     input1: String,
     input2: String,
-    apiUrl: String,
   ): Map<UnitGroup, List<UnitSearchResultItem>> =
     withContext(defaultIODispatcher) {
       val unitFrom = getById(unitFromId)
@@ -106,14 +90,6 @@ class UnitConverterRepositoryImpl(
                 input = input1,
                 unitSearchResultItems = units,
                 unitFrom = unitFrom as BasicUnit.NumberBase,
-              )
-
-            unitGroup == UnitGroup.CURRENCY ->
-              convertCurrenciesBatch(
-                input = input1,
-                unitSearchResultItems = units,
-                unitFrom = unitFrom as BasicUnit.Default,
-                apiUrl = apiUrl,
               )
 
             // foot and inches input
@@ -153,7 +129,6 @@ class UnitConverterRepositoryImpl(
     value1: String,
     value2: String,
     formatTime: Boolean,
-    apiUrl: String,
   ): ConverterResult {
     val unitFrom = getById(unitFromId)
     val unitTo = getById(unitToId)
@@ -170,14 +145,6 @@ class UnitConverterRepositoryImpl(
         convertTimeAndFormatToHumanReadable(
           unitFrom = unitFrom as BasicUnit.Default,
           value = calculateInput(value1),
-        )
-
-      unitFrom.group == UnitGroup.CURRENCY && unitTo.group == UnitGroup.CURRENCY ->
-        convertCurrencies(
-          unitFrom = unitFrom as BasicUnit.Default,
-          unitTo = unitTo as BasicUnit.Default,
-          value = calculateInput(value1),
-          apiUrl = apiUrl,
         )
 
       // foot and inches output and input
@@ -253,40 +220,6 @@ class UnitConverterRepositoryImpl(
           )
         result.add(unitSearchResultItem.copy(conversion = conversion))
       }
-      return@withContext result
-    }
-
-  private suspend fun convertCurrenciesBatch(
-    input: String,
-    unitSearchResultItems: Sequence<UnitSearchResultItem>,
-    unitFrom: BasicUnit.Default,
-    apiUrl: String,
-  ) =
-    withContext(Dispatchers.Default) {
-      val calculatedInput = calculateInput(input)
-      if (calculatedInput.isEqualTo(KBigDecimal.ZERO))
-        return@withContext unitSearchResultItems.toList()
-
-      val result = mutableListOf<UnitSearchResultItem>()
-      refreshCurrencyRates(unitFrom.id, apiUrl)
-      unitSearchResultItems.forEach { unitSearchResultItem ->
-        val latestRate =
-          currencyRatesDao
-            .getLatestRate(unitFrom.id, unitSearchResultItem.basicUnit.id)
-            ?.pairUnitValue
-
-        if (latestRate != null) {
-          val conversion =
-            ConverterResult.Default(
-              calculatedInput
-                .multiply(latestRate)
-                .setScale(BATCH_CURRENCY_CONVERSION_SCALE, KRoundingMode.HALF_EVEN),
-              calculatedInput,
-            )
-          result.add(unitSearchResultItem.copy(conversion = conversion))
-        }
-      }
-
       return@withContext result
     }
 
@@ -461,61 +394,9 @@ class UnitConverterRepositoryImpl(
     return calculated
   }
 
-  private suspend fun convertCurrencies(
-    unitFrom: BasicUnit.Default,
-    unitTo: BasicUnit.Default,
-    value: KBigDecimal,
-    apiUrl: String,
-  ): ConverterResult =
-    withContext(defaultIODispatcher) {
-      refreshCurrencyRates(unitFrom.id, apiUrl)
 
-      val latestRate = currencyRatesDao.getLatestRate(unitFrom.id, unitTo.id)
-      val pairUnitValue = latestRate?.pairUnitValue
-      if (pairUnitValue == null) {
-        // rate for given pair is not found in cached response
-        currencyRateUpdateState.update { CurrencyRateUpdateState.Error }
-        return@withContext ConverterResult.Error.CurrencyError
-      }
-      currencyRateUpdateState.update {
-        CurrencyRateUpdateState.Ready(LocalDate.fromEpochDays(latestRate.date))
-      }
-
-      val conversion = value.multiply(pairUnitValue).setMaxScale()
-
-      return@withContext ConverterResult.Default(value = conversion, calculation = value)
-    }
-
-  @OptIn(ExperimentalTime::class)
-  private suspend fun refreshCurrencyRates(unitFromId: String, apiUrl: String) =
-    withContext(defaultIODispatcher) {
-      val latestUpdateDate = currencyRatesDao.getLatestRateTimeStamp(unitFromId)
-      val currentDate =
-        Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date.toEpochDays()
-
-      if (latestUpdateDate != currentDate) {
-        // Update cache if needed
-        currencyRateUpdateState.update { CurrencyRateUpdateState.Loading }
-        try {
-          val conversions = currencyApiService.getCurrencyPairs(unitFromId, apiUrl)
-          val rates =
-            conversions.currency.map { (pairId, pairValue) ->
-              CurrencyRatesEntity(
-                baseUnitId = unitFromId,
-                date = currentDate,
-                pairUnitId = pairId,
-                pairUnitValue = KBigDecimal.valueOf(pairValue),
-              )
-            }
-          currencyRatesDao.insertRates(rates)
-        } catch (e: Exception) {
-          Logger.d(LOG_TAG, e) { "Skipped update" }
-        }
-      }
-    }
 }
 
-internal const val BATCH_CURRENCY_CONVERSION_SCALE = 10
 private const val LOG_TAG = "UnitConverterRepo"
 private val dayBasicUnit by lazy { KBigDecimal("86400000000000000000000") }
 private val hourBasicUnit by lazy { KBigDecimal("3600000000000000000000") }

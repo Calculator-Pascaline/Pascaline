@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2024-2026 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +49,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -71,9 +71,7 @@ import com.sadellie.unitto.core.common.isEqualTo
 import com.sadellie.unitto.core.common.isExpression
 import com.sadellie.unitto.core.common.toFormattedString
 import com.sadellie.unitto.core.data.converter.ConverterResult
-import com.sadellie.unitto.core.data.converter.CurrencyRateUpdateState
 import com.sadellie.unitto.core.data.converter.UnitID
-import com.sadellie.unitto.core.designsystem.LocalLocale
 import com.sadellie.unitto.core.designsystem.icons.symbols.SwapHoriz
 import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
 import com.sadellie.unitto.core.designsystem.shapes.Sizes
@@ -81,7 +79,6 @@ import com.sadellie.unitto.core.model.converter.UnitGroup
 import com.sadellie.unitto.core.model.converter.unit.NormalUnit
 import com.sadellie.unitto.core.ui.ColumnWithConstraints
 import com.sadellie.unitto.core.ui.PortraitLandscape
-import com.sadellie.unitto.core.ui.datetime.formatDateWeekDayMonthYear
 import com.sadellie.unitto.core.ui.textfield.ExpressionTextField
 import com.sadellie.unitto.core.ui.textfield.NumberBaseTextField
 import com.sadellie.unitto.core.ui.textfield.SimpleTextField
@@ -91,8 +88,6 @@ import com.sadellie.unitto.core.ui.textfield.deleteTokens
 import com.sadellie.unitto.feature.converter.components.DefaultKeyboard
 import com.sadellie.unitto.feature.converter.components.NumberBaseKeyboard
 import com.sadellie.unitto.feature.converter.components.UnitSelectionButton
-import kotlinx.coroutines.delay
-import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 import unitto.core.common.generated.resources.Res
 import unitto.core.common.generated.resources.calculator_divide_by_zero_error
@@ -127,29 +122,14 @@ internal fun ConverterDefault(
   convert: () -> Unit,
 ) {
   var focusedOnInput1 by rememberSaveable { mutableStateOf(true) }
-  val connection by connectivityState()
 
-  LaunchedEffect(connection) {
-    if (
-      connection is ConnectionState.Available &&
-        uiState.result is ConverterResult.Error &&
-        uiState.unitFrom.group == UnitGroup.CURRENCY
-    )
-      delay(RETRY_CURRENCY_UPDATE_DEBOUNCE_MS)
-    convert()
-  }
+  LaunchedEffect(Unit) { convert() }
 
   PortraitLandscape(
     modifier = modifier.fillMaxSize(),
     content1 = { contentModifier ->
       ColumnWithConstraints(modifier = contentModifier) { boxWithConstraintsScope ->
         val textFieldModifier = Modifier.fillMaxWidth().weight(2f)
-
-        CurrencyUpdateStatusBar(
-          modifier = Modifier.align(Alignment.CenterHorizontally),
-          currencyRateUpdateState = uiState.currencyRateUpdateState,
-          unitFromGroup = uiState.unitFrom.group,
-        )
 
         when (uiState.unitFrom.id) {
           UnitID.foot ->
@@ -420,46 +400,6 @@ private fun DoubleUnitInput(
 }
 
 @Composable
-private fun CurrencyUpdateStatusBar(
-  modifier: Modifier,
-  currencyRateUpdateState: CurrencyRateUpdateState,
-  unitFromGroup: UnitGroup,
-) {
-  val locale = LocalLocale.current
-  val lastUpdate by
-    remember(currencyRateUpdateState, unitFromGroup, locale) {
-      derivedStateOf {
-        if (
-          unitFromGroup == UnitGroup.CURRENCY &&
-            currencyRateUpdateState is CurrencyRateUpdateState.Ready
-        ) {
-          currencyRateUpdateState.date.formatDateWeekDayMonthYear(locale)
-        } else {
-          null
-        }
-      }
-    }
-
-  AnimatedVisibility(
-    visible = lastUpdate != null,
-    enter = expandVertically() + fadeIn(),
-    exit = shrinkVertically() + fadeOut(),
-  ) {
-    Text(
-      modifier =
-        modifier
-          .clip(MaterialTheme.shapes.medium)
-          .background(MaterialTheme.colorScheme.inverseOnSurface)
-          .fillMaxWidth(),
-      text = lastUpdate.orEmpty(),
-      minLines = 1,
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
-      textAlign = TextAlign.Center,
-    )
-  }
-}
-
-@Composable
 private fun ConverterResultTextField(
   modifier: Modifier,
   result: ConverterResult,
@@ -587,14 +527,6 @@ private fun ConverterResultTextField(
         readOnly = true,
         textColor = MaterialTheme.colorScheme.error,
       )
-    is ConverterResult.Error.CurrencyError ->
-      SimpleTextField(
-        modifier = modifier,
-        state = TextFieldState(stringResource(Res.string.common_error)),
-        minRatio = 0.7f,
-        readOnly = true,
-        textColor = MaterialTheme.colorScheme.error,
-      )
   }
 }
 
@@ -670,16 +602,6 @@ private fun UnitSelectionButtons(
 private val converterTextFieldColor: Color
   @Composable get() = MaterialTheme.colorScheme.onSurface
 
-@Preview
-@Composable
-private fun PreviewCurrencyUpdateStatusBar() {
-  CurrencyUpdateStatusBar(
-    modifier = Modifier,
-    currencyRateUpdateState = CurrencyRateUpdateState.Ready(LocalDate(2024, 3, 4)),
-    unitFromGroup = UnitGroup.CURRENCY,
-  )
-}
-
 @Composable
 @Preview
 private fun PreviewConverterDefault() {
@@ -710,7 +632,6 @@ private fun PreviewConverterDefault() {
           ),
         acButton = true,
         formatterSymbols = FormatterSymbols(Token.SPACE, Token.PERIOD, false),
-        currencyRateUpdateState = CurrencyRateUpdateState.Nothing,
         outputFormat = OutputFormat.PLAIN,
         result = ConverterResult.Default(KBigDecimal.ZERO, KBigDecimal.ZERO),
         formatTime = true,
@@ -722,4 +643,3 @@ private fun PreviewConverterDefault() {
 }
 
 private const val SPACER_HEIGHT_FACTOR = 0.03f
-private const val RETRY_CURRENCY_UPDATE_DEBOUNCE_MS = 1_000L
