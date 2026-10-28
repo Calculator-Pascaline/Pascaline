@@ -153,7 +153,7 @@ private fun FunctionKeyButton(modifier: Modifier, key: FunctionKey, onClick: (St
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
       Text(
         text = key.label,
-        style = MaterialTheme.typography.titleMedium,
+        style = MaterialTheme.typography.titleLarge,
         fontWeight = FontWeight.Medium,
         maxLines = 1,
       )
@@ -178,7 +178,7 @@ private fun InverseSwitch(modifier: Modifier, checked: Boolean, onCheckedChange:
       horizontalArrangement = Arrangement.Center,
       verticalAlignment = Alignment.CenterVertically,
     ) {
-      Text(text = INVERSE_SWITCH.label, style = MaterialTheme.typography.titleMedium)
+      Text(text = INVERSE_SWITCH.label, style = MaterialTheme.typography.titleLarge)
       Spacer(Modifier.width(6.dp))
       Switch(checked = checked, onCheckedChange = null)
     }

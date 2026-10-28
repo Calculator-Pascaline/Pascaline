@@ -75,6 +75,7 @@ import com.sadellie.unitto.core.common.FormatterSymbols
 import com.sadellie.unitto.core.common.OutputFormat
 import com.sadellie.unitto.core.common.Token
 import com.sadellie.unitto.core.common.collectAsStateWithLifecycleKMP
+import com.sadellie.unitto.core.designsystem.theme.LocalNumberTypography
 import com.sadellie.unitto.core.designsystem.LocalWindowSize
 import com.sadellie.unitto.core.designsystem.icons.symbols.Delete
 import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
@@ -227,6 +228,8 @@ private fun ReadyCompact(
           state = uiState.input,
           formatterSymbols = uiState.formatterSymbols,
           textColor = MaterialTheme.colorScheme.onSurface,
+          // A bit smaller than the default displayLarge, closer to the history
+          textStyle = LocalNumberTypography.current.displayMedium,
           minRatio = INPUT_MIN_RATIO,
           alignStart = true,
           keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),

@@ -337,10 +337,12 @@ private class LayoutBuilder(
                 layoutFraction(node, next, size)
               }
               node.kind == SlotKind.SUBSCRIPT && next?.kind == SlotKind.SUPERSCRIPT -> {
-                // integral bounds, one above the other
+                // integral bounds, one above the other. Both empty: small, they are optional
                 last = next
                 nodeIndex++
-                layoutScripts(next, node, size, previousAscent, previousDescent)
+                val scale =
+                  if (node.content.isEmpty() && next.content.isEmpty()) EMPTY_BOUNDS_SCALE else SCRIPT_SCALE
+                layoutScripts(next, node, size, previousAscent, previousDescent, scale)
               }
               node.kind == SlotKind.SUPERSCRIPT ->
                 layoutScripts(node, null, size, previousAscent, previousDescent)
@@ -351,6 +353,12 @@ private class LayoutBuilder(
               else -> layoutRow(node.content, node.start + 1, node.end, size)
             }
           add(box)
+          // ∫ with nothing before dx: empty box for the function, with the cursor in it
+          val isEmptyIntegrand =
+            node.kind == SlotKind.SUBSCRIPT &&
+              last.kind == SlotKind.SUPERSCRIPT &&
+              (nodes.getOrNull(nodeIndex + 1) as? LayoutNode.Text)?.text?.startsWith(Token.Calculus.DX) == true
+          if (isEmptyIntegrand) add(layoutRow(emptyList(), last.end + 1, last.end + 1, size))
           carets += Caret(last.end + 1, x, caretTop, caretBottom)
           if (node.kind == SlotKind.NUMERATOR || node.kind == SlotKind.RADICAND) {
             previousAscent = box.ascent
@@ -428,8 +436,9 @@ private class LayoutBuilder(
     size: Float,
     previousAscent: Float,
     previousDescent: Float,
+    scale: Float = SCRIPT_SCALE,
   ): Box {
-    val scriptSize = size * SCRIPT_SCALE
+    val scriptSize = size * scale
     val superBox =
       superscript?.let {
         val box = layoutRow(it.content, it.start + 1, it.end, scriptSize)
@@ -639,6 +648,8 @@ private const val TEXT_DESCENT = 0.22f
 private const val CARET_ASCENT = 0.82f
 private const val CARET_DESCENT = 0.22f
 private const val SCRIPT_SCALE = 0.65f
+/** Empty integral bounds are smaller than filled ones */
+private const val EMPTY_BOUNDS_SCALE = 0.45f
 private const val SUPERSCRIPT_SHIFT = 0.45f
 private const val SUBSCRIPT_SHIFT = 0.22f
 private const val SCRIPT_OVERLAP = 0.55f
