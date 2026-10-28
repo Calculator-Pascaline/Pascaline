@@ -72,12 +72,15 @@ private const val EMPTY_INTEGRAL_BOUNDS =
 private val SCIENTIFIC_MAX = KBigDecimal("1E9")
 private val SCIENTIFIC_MIN = KBigDecimal("1E-6")
 
-/** 5.5×10¹⁶ (layout slots) when value is too big or too small to read, plain number otherwise. */
-private fun KBigDecimal.toScientific(precision: Int, outputFormat: Int): String {
+/** True when [toScientific] would show this value as a power of ten. */
+private fun KBigDecimal.isScientific(): Boolean {
   val magnitude = abs()
-  val isPlain = magnitude.compareTo(KBigDecimal.ZERO) == 0 || (magnitude >= SCIENTIFIC_MIN && magnitude < SCIENTIFIC_MAX)
-  if (isPlain) return toFormattedString(precision, outputFormat).replace("-", Token.Operator.MINUS)
+  return magnitude.compareTo(KBigDecimal.ZERO) != 0 && (magnitude < SCIENTIFIC_MIN || magnitude >= SCIENTIFIC_MAX)
+}
 
+/** 5.5 for 5.5×10¹⁶: the digits of this value with one before the point. */
+private fun KBigDecimal.scientificMantissa(): Pair<KBigDecimal, Int> {
+  val magnitude = abs()
   val digits = magnitude.stripTrailingZeros().toPlainString()
   val exponent =
     if (magnitude >= KBigDecimal.ONE) {
@@ -85,7 +88,18 @@ private fun KBigDecimal.toScientific(precision: Int, outputFormat: Int): String 
     } else {
       -(digits.substringAfter(".").indexOfFirst { it != '0' } + 1)
     }
-  val mantissa = multiply(KBigDecimal("1E${-exponent}"))
+  return multiply(KBigDecimal("1E${-exponent}")) to exponent
+}
+
+/** True when the power of ten form loses digits: 55! ==> ≈1.27×10⁷³, but 5.5×10⁵⁶ is exact. */
+private fun KBigDecimal.isRoundedAsScientific(precision: Int): Boolean =
+  isScientific() && scientificMantissa().first.stripTrailingZeros().scale() > precision
+
+/** 5.5×10¹⁶ (layout slots) when value is too big or too small to read, plain number otherwise. */
+private fun KBigDecimal.toScientific(precision: Int, outputFormat: Int): String {
+  if (!isScientific()) return toFormattedString(precision, outputFormat).replace("-", Token.Operator.MINUS)
+
+  val (mantissa, exponent) = scientificMantissa()
   return mantissa.toFormattedString(precision, OutputFormat.PLAIN).replace("-", Token.Operator.MINUS) +
     Token.Operator.MULTIPLY +
     "10" +
@@ -231,7 +245,7 @@ internal class CalculatorViewModel(
             .format(prefs.precision, prefs.outputFormat)
             // replace minus symbols since it is not recognized by evaluatto
             .replace("-", Token.Operator.MINUS)
-        lines += if (exact != null) APPROXIMATELY + approximation else approximation
+        lines += if (exact != null) APPROXIMATELY + approximation.removePrefix(APPROXIMATELY) else approximation
 
         // Complex numbers and expressions with x can't be fractions
         if (prefs.fractionalOutput && evaluated is ExpressionResult.Real) {
@@ -400,7 +414,11 @@ internal class CalculatorViewModel(
 
   private fun ExpressionResult.format(precision: Int, outputFormat: Int): String =
     when (this) {
-      is ExpressionResult.Real -> value.toFormattedString(precision, outputFormat) + (unit ?: "")
+      // 55! ==> ≈1.27×10⁷³ instead of every digit
+      is ExpressionResult.Real ->
+        (if (value.isRoundedAsScientific(precision)) APPROXIMATELY else "") +
+          value.toScientific(precision, outputFormat) +
+          (unit ?: "")
       is ExpressionResult.Complex -> formatComplex(real, imaginary, precision, outputFormat)
       is ExpressionResult.Symbolic -> expression
     }
@@ -412,8 +430,8 @@ internal class CalculatorViewModel(
     precision: Int,
     outputFormat: Int,
   ): String {
-    val realText = real.toFormattedString(precision, outputFormat)
-    val imaginaryText = imaginary.abs().toFormattedString(precision, outputFormat)
+    val realText = real.toScientific(precision, outputFormat)
+    val imaginaryText = imaginary.abs().toScientific(precision, outputFormat)
     if (imaginaryText == "0") return realText
     val imaginaryPart = if (imaginaryText == "1") Token.Const.I else imaginaryText + Token.Const.I
     val isNegative = imaginary < KBigDecimal.ZERO
