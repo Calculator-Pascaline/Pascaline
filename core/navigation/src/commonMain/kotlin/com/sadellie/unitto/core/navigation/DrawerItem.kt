@@ -29,6 +29,7 @@ import com.sadellie.unitto.core.designsystem.icons.symbols.CalculateFill
 import com.sadellie.unitto.core.designsystem.icons.symbols.Event
 import com.sadellie.unitto.core.designsystem.icons.symbols.EventFill
 import com.sadellie.unitto.core.designsystem.icons.symbols.LineAxis
+import com.sadellie.unitto.core.designsystem.icons.symbols.PriceTag
 import com.sadellie.unitto.core.designsystem.icons.symbols.ScatterPlot
 import com.sadellie.unitto.core.designsystem.icons.symbols.Schedule
 import com.sadellie.unitto.core.designsystem.icons.symbols.ScheduleFill
@@ -45,6 +46,7 @@ import unitto.core.common.generated.resources.converter_title
 import unitto.core.common.generated.resources.date_calculator_title
 import unitto.core.common.generated.resources.elements_title
 import unitto.core.common.generated.resources.functions_title
+import unitto.core.common.generated.resources.prices_title
 import unitto.core.common.generated.resources.probability_title
 import unitto.core.common.generated.resources.regression_title
 import unitto.core.common.generated.resources.sequences_title
@@ -113,6 +115,13 @@ data object ElementsDrawerItem : DrawerItem {
   override val name = Res.string.elements_title
   override val selectedIcon = Symbols.Atom
   override val defaultIcon = Symbols.Atom
+}
+
+data object PricesDrawerItem : DrawerItem {
+  override val topLevelRoute = PricesStartRoute
+  override val name = Res.string.prices_title
+  override val selectedIcon = Symbols.PriceTag
+  override val defaultIcon = Symbols.PriceTag
 }
 
 data object DateCalculatorDrawerItem : DrawerItem {

@@ -51,6 +51,7 @@ interface Route : NavKey {
           DeepLinkPattern(StatisticsStartRoute.serializer(), deepLink(StatisticsStartRoute).toKmpUri()),
           DeepLinkPattern(RegressionStartRoute.serializer(), deepLink(RegressionStartRoute).toKmpUri()),
           DeepLinkPattern(ElementsStartRoute.serializer(), deepLink(ElementsStartRoute).toKmpUri()),
+          DeepLinkPattern(PricesStartRoute.serializer(), deepLink(PricesStartRoute).toKmpUri()),
           DeepLinkPattern(
             ConverterStartRoute.serializer(),
             deepLink(ConverterStartRoute()).toKmpUri(),
@@ -115,6 +116,11 @@ data object RegressionStartRoute : TopLevelRoute {
 @Serializable
 data object ElementsStartRoute : TopLevelRoute {
   override val routeId = "elements_route"
+}
+
+@Serializable
+data object PricesStartRoute : TopLevelRoute {
+  override val routeId = "prices_route"
 }
 
 @Serializable

@@ -21,6 +21,7 @@ package com.sadellie.unitto.feature.calculator.navigation
 
 import com.sadellie.unitto.core.navigation.CalculatorStartRoute
 import com.sadellie.unitto.core.navigation.ElementsStartRoute
+import com.sadellie.unitto.core.navigation.PricesStartRoute
 import com.sadellie.unitto.core.navigation.FunctionsStartRoute
 import com.sadellie.unitto.core.navigation.LocalNavigator
 import com.sadellie.unitto.core.navigation.ProbabilityStartRoute
@@ -29,6 +30,7 @@ import com.sadellie.unitto.core.navigation.SequencesStartRoute
 import com.sadellie.unitto.core.navigation.StatisticsStartRoute
 import com.sadellie.unitto.feature.calculator.CalculatorRoute
 import com.sadellie.unitto.feature.calculator.elements.ElementsRoute
+import com.sadellie.unitto.feature.calculator.prices.PricesRoute
 import com.sadellie.unitto.feature.calculator.functions.FunctionsRoute
 import com.sadellie.unitto.feature.calculator.probability.ProbabilityRoute
 import com.sadellie.unitto.feature.calculator.regression.RegressionRoute
@@ -67,5 +69,9 @@ fun Module.calculatorNavigation() {
   navigation<ElementsStartRoute> {
     val navigator = LocalNavigator.current
     ElementsRoute(openDrawer = navigator::openDrawer)
+  }
+  navigation<PricesStartRoute> {
+    val navigator = LocalNavigator.current
+    PricesRoute(openDrawer = navigator::openDrawer)
   }
 }

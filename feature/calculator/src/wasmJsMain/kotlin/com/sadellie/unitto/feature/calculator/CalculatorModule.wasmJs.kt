@@ -22,6 +22,7 @@ package com.sadellie.unitto.feature.calculator
 import com.sadellie.unitto.core.data.calculatorDataModule
 import com.sadellie.unitto.feature.calculator.functions.FunctionsViewModel
 import com.sadellie.unitto.feature.calculator.navigation.calculatorNavigation
+import com.sadellie.unitto.feature.calculator.prices.PricesViewModel
 import com.sadellie.unitto.feature.calculator.probability.ProbabilityViewModel
 import com.sadellie.unitto.feature.calculator.regression.RegressionViewModel
 import com.sadellie.unitto.feature.calculator.sequences.SequencesViewModel
@@ -38,4 +39,5 @@ val calculatorModule = module {
   viewModelOf(::SequencesViewModel)
   viewModelOf(::StatisticsViewModel)
   viewModelOf(::RegressionViewModel)
+  viewModelOf(::PricesViewModel)
 }
