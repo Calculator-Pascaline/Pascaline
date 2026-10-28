@@ -64,6 +64,7 @@ import com.sadellie.unitto.core.ui.KeypadButtonLight
 import com.sadellie.unitto.core.ui.KeypadButtonTertiary
 import com.sadellie.unitto.core.ui.KeypadFlow
 import com.sadellie.unitto.core.ui.inKeypadRow
+import com.sadellie.unitto.core.ui.keypadSpanWidth
 
 @Composable
 internal fun DefaultKeyboard(
@@ -137,7 +138,7 @@ internal fun NumberBaseKeyboard(
 
   KeypadFlow(modifier = modifier, rows = 6, columns = 3) { width, height ->
     val bModifier = Modifier.fillMaxWidth(width).fillMaxHeight(height)
-    val wideButtonModifier = Modifier.fillMaxHeight(height).fillMaxWidth(width * 2)
+    val wideButtonModifier = Modifier.fillMaxHeight(height).fillMaxWidth(keypadSpanWidth(width, columns = 3, span = 2))
 
     KeypadButtonFilled(bModifier, KeyA, iconHeight, onAddTokenClick)
     KeypadButtonFilled(bModifier, KeyB, iconHeight, onAddTokenClick)

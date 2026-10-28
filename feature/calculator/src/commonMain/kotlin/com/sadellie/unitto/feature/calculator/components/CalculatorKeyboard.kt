@@ -119,6 +119,7 @@ import com.sadellie.unitto.core.ui.KeypadButtonTransparent
 import com.sadellie.unitto.core.ui.KeypadFlow
 import com.sadellie.unitto.core.ui.inKeypadRow
 import com.sadellie.unitto.core.ui.keyHaptics
+import com.sadellie.unitto.core.ui.keypadSpanWidth
 
 @Composable
 internal fun CalculatorKeyboard(
@@ -414,7 +415,7 @@ private fun BottomGrid(
     KeypadButtonLight(buttonModifier, Key0, iconHeight, onAddTokenClick)
     KeypadButtonFilled(buttonModifier, FactorialKey, iconHeight, onAddTokenClick)
     KeypadButtonFilledPrimary(
-      Modifier.fillMaxWidth(width * 2).fillMaxHeight(height),
+      Modifier.fillMaxWidth(keypadSpanWidth(width, BOTTOM_COLUMNS, span = 2)).fillMaxHeight(height),
       EqualKey,
       iconHeight,
       onEqualClick,

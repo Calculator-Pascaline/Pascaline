@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2024-2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,8 +46,8 @@ fun KeypadFlow(
   rows: Int,
   columns: Int,
   // 0 causes floating error
-  @IntRange(1, MAX_PADDING) horizontalPadding: Int = 10,
-  @IntRange(1, MAX_PADDING) verticalPadding: Int = 10,
+  @IntRange(1, MAX_PADDING) horizontalPadding: Int = DEFAULT_PADDING,
+  @IntRange(1, MAX_PADDING) verticalPadding: Int = DEFAULT_PADDING,
   content: @Composable FlowRowScope.(width: Float, height: Float) -> Unit,
 ) {
   val height: Float = (1f - verticalPadding / MAX_PADDING.toFloat()) / rows
@@ -62,4 +63,12 @@ fun KeypadFlow(
   }
 }
 
+/**
+ * Width of a key that spans [span] columns of a [KeypadFlow], with the gaps between them. A row with
+ * such a key then lines up with the full rows, where SpaceAround would spread it differently.
+ */
+fun keypadSpanWidth(width: Float, columns: Int, span: Int, horizontalPadding: Int = DEFAULT_PADDING): Float =
+  width * span + (span - 1) * horizontalPadding / MAX_PADDING.toFloat() / columns
+
+private const val DEFAULT_PADDING = 10
 private const val MAX_PADDING = 100L
