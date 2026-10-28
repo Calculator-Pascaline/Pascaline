@@ -374,14 +374,14 @@ private fun BottomGrid(
     val textModifier = buttonModifier
     val iconHeight = KeyboardButtonToken.ICON_HEIGHT_TALL
 
+    CalculusButton("unit", "", textModifier) { onUnitsClick() }
+    CalculusButton(Token.Const.I, Token.Const.I, textModifier, onAddTokenClick)
     CalculusButton(
       label = "x,n,t",
       token = if (isInSeries) Token.Calculus.N else Token.Calculus.X,
       modifier = textModifier,
       onClick = onAddTokenClick,
     )
-    CalculusButton(Token.Const.I, Token.Const.I, textModifier, onAddTokenClick)
-    CalculusButton("unit", "", textModifier) { onUnitsClick() }
     KeypadButtonTertiary(buttonModifier, ClearKey, iconHeight, onClearClick)
     KeypadButtonFilled(buttonModifier, BackspaceKey, iconHeight, onDeleteClick)
 
