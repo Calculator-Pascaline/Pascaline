@@ -62,8 +62,8 @@ sealed interface ExpressionResult {
     val si: UnitValue? = null,
     /** SI base units when they differ from [si] unit: N ==> kg×m/s². Value is the same. */
     val baseUnits: String? = null,
-    /** Temperature in the other units: 55 °C ==> 328.15 K and 131 °F. */
-    val otherTemperatures: List<UnitValue> = emptyList(),
+    /** Same value in other usual units: 55 °C ==> 328.15 K and 131 °F, 55 J ==> 15.28 mWh. */
+    val otherUnits: List<UnitValue> = emptyList(),
   ) : ExpressionResult
 
   /** @property exact Exact value with square roots, like `√5i`. */

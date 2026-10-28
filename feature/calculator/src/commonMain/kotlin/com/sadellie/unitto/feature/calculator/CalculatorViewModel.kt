@@ -308,15 +308,15 @@ internal class CalculatorViewModel(
           MenuSection.ROOTS to roots,
           MenuSection.DISCRIMINANT to listOfNotNull(discriminant),
         )
-      is ExpressionResult.Real if si != null || otherTemperatures.isNotEmpty() -> {
+      is ExpressionResult.Real if si != null || otherUnits.isNotEmpty() -> {
         val prefs = _prefs.value ?: return emptyList()
         fun UnitValue.line() = value.toScientific(prefs.precision, prefs.outputFormat) + unit
         buildList {
-          if (otherTemperatures.isNotEmpty()) {
-            add(MenuSection.OTHER_TEMPERATURES to otherTemperatures.map { it.line() })
+          if (otherUnits.isNotEmpty()) {
+            add(MenuSection.OTHER_UNITS to otherUnits.map { it.line() })
           }
-          // 300 K in SI is 300 K again
-          val siValue = si?.takeIf { otherTemperatures.isEmpty() || it.unit != unit }
+          // 300 K in SI is 300 K again, nothing new to show
+          val siValue = si?.takeIf { it.unit != unit || baseUnits != null }
           if (siValue != null) {
             val value = siValue.value.toScientific(prefs.precision, prefs.outputFormat)
             add(MenuSection.SI_UNITS to listOfNotNull(value + siValue.unit, baseUnits?.let { value + it }))

@@ -47,8 +47,9 @@ internal enum class MenuSection(
   ARGUMENT("argument", isExpression = true, isInsertable = false),
   /** Result with units in SI: 5 km ==> 5000 m */
   SI_UNITS("si_units", isExpression = true, isInsertable = true),
-  /** Temperature in the other units: 55 °C ==> 328.15 K and 131 °F */
-  OTHER_TEMPERATURES("other_temperatures", isExpression = true, isInsertable = true),
+  /** Same value in other usual units: 55 °C ==> 328.15 K and 131 °F, 55 J ==> 15.28 mWh */
+  // Key from when it was only for temperatures, kept for history
+  OTHER_UNITS("other_temperatures", isExpression = true, isInsertable = true),
 }
 
 /**

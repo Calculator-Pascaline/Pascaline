@@ -355,7 +355,7 @@ private fun MenuSection.title(): StringResource =
     MenuSection.MODULUS -> Res.string.calculator_modulus
     MenuSection.ARGUMENT -> Res.string.calculator_argument
     MenuSection.SI_UNITS -> Res.string.calculator_si_units
-    MenuSection.OTHER_TEMPERATURES -> Res.string.calculator_other_temperatures
+    MenuSection.OTHER_UNITS -> Res.string.calculator_other_temperatures
   }
 
 /**

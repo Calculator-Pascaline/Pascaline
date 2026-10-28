@@ -427,6 +427,11 @@ object PhysicalUnits {
 
   val timeUnits: List<PhysicalUnit> by lazy { listOf(year, day, hour, minute, second) }
 
+  /** Energy is also shown in watt-hours: 356 400 000 J = 99 kWh. */
+  val wattHourUnits: List<PhysicalUnit> by lazy {
+    listOf(milliwattHour, wattHour, kilowattHour, megawattHour, gigawattHour)
+  }
+
   /** Temperatures are also shown in the other two: 55 °C = 328.15 K = 131 °F. */
   val temperatureUnits: List<PhysicalUnit> by lazy { listOf(kelvin, celsius, fahrenheit) }
 

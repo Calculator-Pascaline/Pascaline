@@ -38,26 +38,36 @@ private fun withUnit(expr: String): Pair<String, String?> {
   return result.value.toFormattedString(6, OutputFormat.PLAIN) to result.unit
 }
 
-/** Same temperature in the other units, values with 6 digits */
-private fun otherTemperatures(expr: String): List<Pair<String, String>> =
-  (Expression(expr).evaluate(6, OutputFormat.PLAIN) as ExpressionResult.Real).otherTemperatures.map {
+/** Same value in other units, values with 6 digits */
+private fun otherUnits(expr: String): List<Pair<String, String>> =
+  (Expression(expr).evaluate(6, OutputFormat.PLAIN) as ExpressionResult.Real).otherUnits.map {
     it.value.toFormattedString(6, OutputFormat.PLAIN) to it.unit
   }
 
 class ExpressionUnitsTest {
   @Test
   fun celsiusInOtherUnits() =
-    assertEquals(listOf("328.15" to "_K", "131" to "_°F"), otherTemperatures("55_°C"))
+    assertEquals(listOf("328.15" to "_K", "131" to "_°F"), otherUnits("55_°C"))
 
   @Test
   fun convertedInOtherUnits() =
-    assertEquals(listOf("293.15" to "_K", "20" to "_°C"), otherTemperatures("68_°F→_°F"))
+    assertEquals(listOf("293.15" to "_K", "20" to "_°C"), otherUnits("68_°F→_°F"))
 
   @Test
   fun kelvinsInOtherUnits() =
-    assertEquals(listOf("26.85" to "_°C", "80.33" to "_°F"), otherTemperatures("300_K"))
+    assertEquals(listOf("26.85" to "_°C", "80.33" to "_°F"), otherUnits("300_K"))
 
-  @Test fun notForOtherUnits() = assertEquals(emptyList(), otherTemperatures("3_km"))
+  @Test fun notForOtherUnits() = assertEquals(emptyList(), otherUnits("3_km"))
+
+  @Test fun joulesInMilliwattHours() = assertEquals(listOf("15.277778" to "_mWh"), otherUnits("55_J"))
+
+  @Test fun joulesInKilowattHours() = assertEquals(listOf("99" to "_kWh"), otherUnits("356400000_J"))
+
+  // 3.6 MJ is shown in MJ, 1 kWh in other units
+  @Test fun megajoulesInKilowattHours() = assertEquals(listOf("1" to "_kWh"), otherUnits("3.6_MJ"))
+
+  // Already in watt-hours: SI units give joules
+  @Test fun notForWattHours() = assertEquals(emptyList(), otherUnits("1_kWh"))
 
   @Test fun sameUnit() = assertEquals("5" to "_km", withUnit("3_km+2_km"))
 

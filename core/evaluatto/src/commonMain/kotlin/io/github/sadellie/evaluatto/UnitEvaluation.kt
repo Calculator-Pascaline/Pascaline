@@ -155,10 +155,13 @@ internal fun evaluateUnits(
     unit = shown.second,
     si = UnitValue(value, siUnit(dimension)),
     baseUnits = baseUnits(dimension).takeIf { it != siUnit(dimension) },
-    // Results in kelvins, like 300_K or 5_K+3_K: value is already in kelvins
-    otherTemperatures =
-      if (dimension == PhysicalUnits.kelvin.dimension) otherTemperatures(value, PhysicalUnits.kelvin)
-      else emptyList(),
+    otherUnits =
+      when (dimension) {
+        // Results in kelvins, like 300_K or 5_K+3_K: value is already in kelvins
+        PhysicalUnits.kelvin.dimension -> otherTemperatures(value, PhysicalUnits.kelvin)
+        PhysicalUnits.joule.dimension -> listOfNotNull(wattHours(value, unit))
+        else -> emptyList()
+      },
   )
 }
 
@@ -236,7 +239,7 @@ private fun temperature(tree: Node, evaluator: Evaluator): ExpressionResult.Real
   // value in kelvins, then in target unit
   val kelvins = number.multiply(KBigDecimal(from.factor)) + KBigDecimal(from.offset ?: "0")
   if (target == null) {
-    return ExpressionResult.Real(number, unit = from.token, otherTemperatures = otherTemperatures(kelvins, from))
+    return ExpressionResult.Real(number, unit = from.token, otherUnits = otherTemperatures(kelvins, from))
   }
   val to = (target as? Node.Unit)?.unit ?: throw ExpressionException.BadExpression()
   if (from.dimension != to.dimension) throw ExpressionException.BadExpression()
@@ -244,8 +247,20 @@ private fun temperature(tree: Node, evaluator: Evaluator): ExpressionResult.Real
   return ExpressionResult.Real(
     kelvins.inTemperature(to),
     unit = to.token,
-    otherTemperatures = otherTemperatures(kelvins, to),
+    otherUnits = otherTemperatures(kelvins, to),
   )
+}
+
+/**
+ * [joules] in watt-hours with the prefix that is the easiest to read: 55 J ==> 15.28 mWh, 356.4 MJ
+ * ==> 99 kWh. Null when [shown] is already in watt-hours: SI units then give joules.
+ */
+private fun wattHours(joules: KBigDecimal, shown: PhysicalUnit?): UnitValue? {
+  if (shown in PhysicalUnits.wattHourUnits) return null
+  val magnitude = joules.abs()
+  val units = PhysicalUnits.wattHourUnits
+  val unit = units.lastOrNull { magnitude >= KBigDecimal(it.factor) } ?: units.first()
+  return UnitValue(joules.divide(KBigDecimal(unit.factor), mathContext), unit.token)
 }
 
 /** [kelvins] in K, °C and °F, without [shown]: 328.15 K shown in °C ==> 328.15 K and 131 °F. */
