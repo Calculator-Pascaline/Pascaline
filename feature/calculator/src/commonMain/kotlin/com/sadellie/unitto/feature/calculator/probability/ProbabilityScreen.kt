@@ -209,9 +209,8 @@ private fun ParametersStep(
       )
     }
     if (type == DistributionType.BINOMIAL) {
-      BinomialPresets(fractional = format.formatterSymbols.fractional) { n, p ->
-        viewModel.setParameter(0, n.replace(".", format.formatterSymbols.fractional))
-        viewModel.setParameter(1, p.replace(".", format.formatterSymbols.fractional))
+      BinomialPresets(fractional = format.formatterSymbols.fractional) { values ->
+        values.forEachIndexed { index, value -> viewModel.setParameter(index, value.replace(".", format.formatterSymbols.fractional)) }
       }
     }
     if (distribution == null) {
@@ -227,6 +226,11 @@ private fun ParametersStep(
       enabled = distribution != null,
     ) {
       Text(stringResource(Res.string.probability_next), style = MaterialTheme.typography.titleMedium)
+    }
+    if (type == DistributionType.NORMAL) {
+      NormalPresets(fractional = format.formatterSymbols.fractional) { values ->
+        values.forEachIndexed { index, value -> viewModel.setParameter(index, value.replace(".", format.formatterSymbols.fractional)) }
+      }
     }
   }
 }
@@ -298,7 +302,13 @@ private fun CalculationStep(
     } else {
       viewModel.type?.let { type ->
         val values = viewModel.parameters.mapNotNull { it.toNumberOrNull() }
-        if (values.size == type.parameters.size) DistributionMoments(type, values, format.formatterSymbols.fractional)
+        if (values.size == type.parameters.size) {
+          if (type == DistributionType.NORMAL) {
+            NormalMoments(values[0], values[1], format.formatterSymbols.fractional)
+          } else {
+            DistributionMoments(type, values, format.formatterSymbols.fractional)
+          }
+        }
       }
     }
   }
@@ -451,11 +461,13 @@ private fun GraphCard(content: @Composable () -> Unit) {
  * highlighted.
  */
 @Composable
-private fun DistributionGraph(
+internal fun DistributionGraph(
   modifier: Modifier,
   distribution: Distribution,
   shaded: ClosedRange<Double>?,
   showLabels: Boolean,
+  // Without them only the bounds of the shaded area are labelled, for small graphs
+  showEdgeLabels: Boolean = true,
 ) {
   val measurer = rememberTextMeasurer()
   val accent = MaterialTheme.colorScheme.primary
@@ -481,8 +493,10 @@ private fun DistributionGraph(
     // Discrete: first and last whole values, not the margin around their bars
     val first = if (distribution.isDiscrete) ceil(range.start) else range.start
     val last = if (distribution.isDiscrete) floor(range.endInclusive) else range.endInclusive
-    drawLabel(measurer, first.label(), toX(first), plotHeight, labelStyle)
-    drawLabel(measurer, last.label(), toX(last), plotHeight, labelStyle)
+    if (showEdgeLabels) {
+      drawLabel(measurer, first.label(), toX(first), plotHeight, labelStyle)
+      drawLabel(measurer, last.label(), toX(last), plotHeight, labelStyle)
+    }
     shaded?.start?.takeIf { it.isFinite() && it in range }?.let {
       drawLabel(measurer, it.label(), toX(it), plotHeight, boundStyle)
     }

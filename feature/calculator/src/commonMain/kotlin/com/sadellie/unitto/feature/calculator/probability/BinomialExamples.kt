@@ -62,7 +62,6 @@ import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
-import kotlin.math.sqrt
 import org.jetbrains.compose.resources.stringResource
 import unitto.core.common.generated.resources.Res
 import unitto.core.common.generated.resources.probability_coefficients_explanation
@@ -70,15 +69,12 @@ import unitto.core.common.generated.resources.probability_coefficients_question
 import unitto.core.common.generated.resources.probability_coin
 import unitto.core.common.generated.resources.probability_coin_preset
 import unitto.core.common.generated.resources.probability_examples
-import unitto.core.common.generated.resources.probability_expected_baskets
-import unitto.core.common.generated.resources.probability_expected_heads
 import unitto.core.common.generated.resources.probability_expected_value
 import unitto.core.common.generated.resources.probability_free_throws
 import unitto.core.common.generated.resources.probability_free_throws_preset
 import unitto.core.common.generated.resources.probability_head
 import unitto.core.common.generated.resources.probability_heads
-import unitto.core.common.generated.resources.probability_mean_check
-import unitto.core.common.generated.resources.probability_mean_explanation
+import unitto.core.common.generated.resources.probability_height_preset
 import unitto.core.common.generated.resources.probability_miss_letter
 import unitto.core.common.generated.resources.probability_pascal_row
 import unitto.core.common.generated.resources.probability_score_and_miss
@@ -86,21 +82,44 @@ import unitto.core.common.generated.resources.probability_score_letter
 import unitto.core.common.generated.resources.probability_tap_to_use
 import unitto.core.common.generated.resources.probability_tree_legend
 import unitto.core.common.generated.resources.probability_variance
-import unitto.core.common.generated.resources.probability_variance_baskets
-import unitto.core.common.generated.resources.probability_variance_explanation
-import unitto.core.common.generated.resources.probability_variance_heads
+import unitto.core.common.generated.resources.probability_water_preset
 
 /** Example of the parameters step: tapping it fills n and p. */
-private class Preset(val description: @Composable () -> String, val n: String, val p: String)
+/** Example of the parameters step: tapping it fills the parameters with [values]. */
+private class Preset(val description: @Composable () -> String, val values: List<String>)
 
 /** Two everyday binomial situations under the parameters. */
 @Composable
-internal fun BinomialPresets(fractional: String, onPick: (n: String, p: String) -> Unit) {
-  val presets =
-    listOf(
-      Preset({ stringResource(Res.string.probability_coin_preset) }, "3", "0.5"),
-      Preset({ stringResource(Res.string.probability_free_throws_preset, "4", "0.7".decimal(fractional)) }, "4", "0.7"),
-    )
+internal fun BinomialPresets(fractional: String, onPick: (List<String>) -> Unit) {
+  PresetList(
+    symbols = listOf("n", "p"),
+    presets =
+      listOf(
+        Preset({ stringResource(Res.string.probability_coin_preset) }, listOf("3", "0.5")),
+        Preset({ stringResource(Res.string.probability_free_throws_preset, "4", "0.7".decimal(fractional)) }, listOf("4", "0.7")),
+      ),
+    fractional = fractional,
+    onPick = onPick,
+  )
+}
+
+/** Two everyday quantities that follow a normal law, under the Next button. */
+@Composable
+internal fun NormalPresets(fractional: String, onPick: (List<String>) -> Unit) {
+  PresetList(
+    symbols = listOf("μ", "σ"),
+    presets =
+      listOf(
+        Preset({ stringResource(Res.string.probability_water_preset) }, listOf("2", "0.7")),
+        Preset({ stringResource(Res.string.probability_height_preset) }, listOf("175", "7")),
+      ),
+    fractional = fractional,
+    onPick = onPick,
+  )
+}
+
+@Composable
+private fun PresetList(symbols: List<String>, presets: List<Preset>, fractional: String, onPick: (List<String>) -> Unit) {
   Column(verticalArrangement = Arrangement.spacedBy(CARD_SPACING)) {
     SectionTitle(stringResource(Res.string.probability_examples))
     presets.forEach { preset ->
@@ -109,13 +128,13 @@ internal fun BinomialPresets(fractional: String, onPick: (n: String, p: String) 
           Modifier.fillMaxWidth()
             .clip(EXAMPLE_SHAPE)
             .background(MaterialTheme.colorScheme.surfaceContainer)
-            .clickable { onPick(preset.n, preset.p) }
+            .clickable { onPick(preset.values) }
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
       ) {
         Text(preset.description(), style = MaterialTheme.typography.bodyLarge)
         Text(
-          text = "n = ${preset.n}   p = ${preset.p.decimal(fractional)}",
+          text = symbols.zip(preset.values).joinToString("   ") { (symbol, value) -> "$symbol = ${value.decimal(fractional)}" },
           style = MaterialTheme.typography.titleMedium,
           color = MaterialTheme.colorScheme.primary,
           fontWeight = FontWeight.Medium,
@@ -155,15 +174,6 @@ private enum class ShownMoment {
   VARIANCE,
 }
 
-/**
- * Buttons for E(X) = n × p and V(X) = n × p × (1 − p), each opening a card that explains where the
- * formula comes from, with the entered n and p.
- */
-@Composable
-internal fun BinomialMoments(n: Int, p: Double, fractional: String) {
-  MomentButtons(expectedValue = { ExpectedValue(n, p, fractional) }, variance = { Variance(n, p, fractional) })
-}
-
 /** Expected value and variance buttons, the selected one opens its card under them. */
 @Composable
 internal fun MomentButtons(expectedValue: @Composable () -> Unit, variance: @Composable () -> Unit) {
@@ -187,60 +197,6 @@ internal fun MomentButtons(expectedValue: @Composable () -> Unit, variance: @Com
       null -> {}
     }
   }
-}
-
-/** E(X) = n × p = 5 × 0.5 = 2.5, why, and for a few trials the same number from the probabilities. */
-@Composable
-private fun ExpectedValue(n: Int, p: Double, fractional: String) {
-  val isCoin = abs(p - HALF) < SAME_TOLERANCE
-  val mean = n * p
-  Text(
-    stringResource(
-      if (isCoin) Res.string.probability_expected_heads else Res.string.probability_expected_baskets,
-      n.toString(),
-    ),
-    style = MaterialTheme.typography.titleMedium,
-    fontWeight = FontWeight.Bold,
-  )
-  MomentFormula("E(X) = n × p = $n × ${p.shown(fractional)} = ", mean.shown(fractional))
-  Text(stringResource(Res.string.probability_mean_explanation), style = MaterialTheme.typography.bodyMedium)
-  if (n <= MAX_CHECK_TRIALS) {
-    // 0 × P(X = 0) + 1 × P(X = 1) + … gives the same number
-    val distribution = Binomial(n, p)
-    val terms =
-      // Non-breaking spaces keep each k × P(X = k) on one line
-      (0..n).joinToString(" + ") { k ->
-        "$k × ${distribution.density(k.toDouble()).shown(fractional, CHECK_DECIMALS)}"
-      }
-    Text(
-      stringResource(Res.string.probability_mean_check),
-      style = MaterialTheme.typography.bodyMedium,
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
-    Text("E(X) = $terms = ${mean.shown(fractional)}", style = MaterialTheme.typography.bodyMedium)
-  }
-}
-
-/** V(X) = n × p × (1 − p), why, and the standard deviation σ = √V. */
-@Composable
-private fun Variance(n: Int, p: Double, fractional: String) {
-  val isCoin = abs(p - HALF) < SAME_TOLERANCE
-  val variance = n * p * (1 - p)
-  Text(
-    stringResource(
-      if (isCoin) Res.string.probability_variance_heads else Res.string.probability_variance_baskets,
-      n.toString(),
-      (n * p).shown(fractional),
-    ),
-    style = MaterialTheme.typography.titleMedium,
-    fontWeight = FontWeight.Bold,
-  )
-  MomentFormula(
-    "V(X) = n × p × (1 − p) = $n × ${p.shown(fractional)} × ${(1 - p).shown(fractional)} = ",
-    variance.shown(fractional),
-  )
-  MomentFormula("σ(X) = √V(X) ≈ ", sqrt(variance).shown(fractional, CHECK_DECIMALS))
-  Text(stringResource(Res.string.probability_variance_explanation), style = MaterialTheme.typography.bodyMedium)
 }
 
 /** Formula with its result in the primary color: `E(X) = n × p = 5 × 0.5 = ` **2.5**. */

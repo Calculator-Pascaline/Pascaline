@@ -251,6 +251,8 @@
     <string name="probability_examples">Examples</string>
     <string name="probability_tap_to_use">Tap to use these values</string>
     <string name="probability_coin_preset">3 flips of a fair coin</string>
+    <string name="probability_water_preset">Water a person drinks in a day, in liters</string>
+    <string name="probability_height_preset">Height of adult men, in centimeters</string>
     <string name="probability_free_throws_preset">Free throws made in %1$s trials, the probability to score is %2$s</string>
     <string name="probability_coin">%1$s flips of a fair coin</string>
     <string name="probability_head">1 head</string>
@@ -284,13 +286,40 @@
     <string name="probability_hypergeometric_variance">Like the binomial n × p × (1 − p) with p = K/N, times (N − n)/(N − 1): drawing without putting back makes the results less spread out. Drawing all N gives exactly K successes, so V = 0.</string>
     <string name="probability_expected_value">Expected value E(X)</string>
     <string name="probability_variance">Variance V(X)</string>
-    <string name="probability_expected_heads">Expected number of heads in %1$s flips</string>
-    <string name="probability_expected_baskets">Expected number of baskets in %1$s throws</string>
-    <string name="probability_mean_explanation">One trial gives 1 success with probability p and 0 otherwise, so on average 0 × (1 − p) + 1 × p = p successes. The n trials add up: n × p. It is the average over many repeats of the whole experiment, not always a possible result.</string>
-    <string name="probability_mean_check">Same number from the probabilities: E(X) = 0 × P(X = 0) + 1 × P(X = 1) + 2 × P(X = 2) + …</string>
-    <string name="probability_variance_heads">How far the number of heads in %1$s flips usually is from %2$s</string>
-    <string name="probability_variance_baskets">How far the number of baskets in %1$s throws usually is from %2$s</string>
-    <string name="probability_variance_explanation">For one trial X is 0 or 1, so X² = X and V = E(X²) − E(X)² = p − p² = p × (1 − p). The trials are independent, so their variances add up: n × p × (1 − p). The standard deviation σ = √V is in the same unit as X: results are usually within about σ of the expected value. V is largest for p = ½ and 0 when p is 0 or 1.</string>
+    <string name="probability_moments">Expected value and variance</string>
+    <string name="probability_mean_label">Mean E(X)</string>
+    <string name="probability_variance_label">Variance V(X)</string>
+    <string name="probability_heads_average">heads on average</string>
+    <string name="probability_baskets_average">baskets on average</string>
+    <string name="probability_one_flip_table">One flip: X = 1 for heads, 0 for tails</string>
+    <string name="probability_one_throw_table">One throw: X = 1 if it scores, 0 if it misses</string>
+    <string name="probability_quick_flips">Quick way: one flip, times %1$s</string>
+    <string name="probability_quick_throws">Quick way: one throw, times %1$s</string>
+    <string name="probability_one_flip_column">1 flip</string>
+    <string name="probability_one_throw_column">1 throw</string>
+    <string name="probability_flips_column">%1$s flips</string>
+    <string name="probability_throws_column">%1$s throws</string>
+    <string name="probability_from_probabilities">Same numbers from the probabilities</string>
+    <string name="probability_sum">Sum</string>
+    <string name="probability_curve_center">center of the curve</string>
+    <string name="probability_water_title">Example: water for a group</string>
+    <string name="probability_water_one">One person drinks %1$s L of water a day, give or take %2$s L. What happens for a group?</string>
+    <string name="probability_one_person">1 person</string>
+    <string name="probability_people">%1$s people</string>
+    <string name="probability_water_add">People drink independently, so the means and the variances add up, not the standard deviations: σ = √%1$s ≈ %2$s L, not %3$s × %4$s = %5$s L.</string>
+    <string name="probability_water_range">In %3$s of cases the total is between %1$s L and %2$s L, within 2σ of the mean.</string>
+    <string name="probability_water_enough">of water are enough for the %1$s people in %2$s of cases.</string>
+    <string name="probability_so">So</string>
+    <string name="probability_moments_how">How to calculate E(X) and V(X)</string>
+    <string name="probability_example_sports">X = number of sports practiced</string>
+    <string name="probability_how_expected">E(X): multiply each value by its probability, then add them up.</string>
+    <string name="probability_how_variance">V(X): multiply the square of each value minus E(X) by its probability, then add them up.</string>
+    <string name="probability_symbols">Names and symbols</string>
+    <string name="probability_mean_name">Mean</string>
+    <string name="probability_variance_name">Variance</string>
+    <string name="probability_deviation_name">Standard deviation</string>
+    <string name="probability_whole_population">entire population</string>
+    <string name="probability_sample_of">sample</string>
     <string name="calculator_title">Calculator</string>
     <string name="common_add">Add</string>
     <string name="common_cancel">Cancel</string>
