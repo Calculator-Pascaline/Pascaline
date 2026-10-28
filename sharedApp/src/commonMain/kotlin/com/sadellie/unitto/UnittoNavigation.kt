@@ -29,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalCursorBlinkEnabled
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavEntryDecorator
@@ -83,7 +84,11 @@ fun MainAppContent(
     remember(userPrefsRepository) { userPrefsRepository.appData(PrefKeys.PHONE_KEYPAD_PREF_KEY) }
       .collectAsState(initial = "")
 
-  CompositionLocalProvider(LocalPhoneKeypad provides (phoneKeypad == "true")) {
+  CompositionLocalProvider(
+    LocalPhoneKeypad provides (phoneKeypad == "true"),
+    // A static cursor is less distracting than a blinking one
+    LocalCursorBlinkEnabled provides false,
+  ) {
     NavigationDrawer(
       modifier = Modifier,
       state = drawerState,
