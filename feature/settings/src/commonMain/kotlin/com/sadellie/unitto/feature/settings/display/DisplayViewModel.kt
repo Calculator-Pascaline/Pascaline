@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2023-2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,14 +23,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sadellie.unitto.core.common.stateIn
+import com.sadellie.unitto.core.datastore.PrefKeys
 import com.sadellie.unitto.core.datastore.UserPreferencesRepository
 import io.github.sadellie.themmo.core.MonetMode
 import io.github.sadellie.themmo.core.ThemingMode
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class DisplayViewModel(private val userPrefsRepository: UserPreferencesRepository) : ViewModel() {
 
   val prefs = userPrefsRepository.displayPrefs.stateIn(viewModelScope, null)
+
+  val phoneKeypad =
+    userPrefsRepository
+      .appData(PrefKeys.PHONE_KEYPAD_PREF_KEY)
+      .map { it == "true" }
+      .stateIn(viewModelScope, false)
 
   fun updateThemingMode(themingMode: ThemingMode) {
     viewModelScope.launch { userPrefsRepository.updateThemingMode(themingMode) }
@@ -57,4 +66,9 @@ class DisplayViewModel(private val userPrefsRepository: UserPreferencesRepositor
 
   fun updateMiddleZero(enabled: Boolean) =
     viewModelScope.launch { userPrefsRepository.updateMiddleZero(enabled) }
+
+  fun updatePhoneKeypad(enabled: Boolean) =
+    viewModelScope.launch {
+      userPrefsRepository.updateAppData(PrefKeys.PHONE_KEYPAD_PREF_KEY, enabled.toString())
+    }
 }

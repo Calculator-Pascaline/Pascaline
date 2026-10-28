@@ -23,6 +23,7 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -106,8 +107,8 @@ import com.sadellie.unitto.core.ui.KeypadButton.Companion.PiKey
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.PlusKey
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.Power10Key
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.PowerKey
-import com.sadellie.unitto.core.ui.KeypadButton.Companion.RightBracketKey
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.RadicalKey
+import com.sadellie.unitto.core.ui.KeypadButton.Companion.RightBracketKey
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.SinKey
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.TanKey
 import com.sadellie.unitto.core.ui.KeypadButtonFilled
@@ -116,7 +117,7 @@ import com.sadellie.unitto.core.ui.KeypadButtonLight
 import com.sadellie.unitto.core.ui.KeypadButtonTertiary
 import com.sadellie.unitto.core.ui.KeypadButtonTransparent
 import com.sadellie.unitto.core.ui.KeypadFlow
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import com.sadellie.unitto.core.ui.inKeypadRow
 import com.sadellie.unitto.core.ui.keyHaptics
 
 @Composable
@@ -389,9 +390,9 @@ private fun BottomGrid(
     KeypadButtonTertiary(buttonModifier, ClearKey, iconHeight, onClearClick)
     KeypadButtonFilled(buttonModifier, BackspaceKey, iconHeight, onDeleteClick)
 
-    KeypadButtonLight(buttonModifier, Key7, iconHeight, onAddTokenClick)
-    KeypadButtonLight(buttonModifier, Key8, iconHeight, onAddTokenClick)
-    KeypadButtonLight(buttonModifier, Key9, iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key7.inKeypadRow(), iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key8.inKeypadRow(), iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key9.inKeypadRow(), iconHeight, onAddTokenClick)
     KeypadButtonFilled(buttonModifier, PowerKey, iconHeight, onAddTokenClick)
     KeypadButtonFilled(buttonModifier, BracketsKey, iconHeight, onBracketsClick)
 
@@ -401,9 +402,9 @@ private fun BottomGrid(
     KeypadButtonFilled(buttonModifier, MultiplyKey, iconHeight, onAddTokenClick)
     KeypadButtonFilled(buttonModifier, FractionKey, iconHeight, onAddTokenClick)
 
-    KeypadButtonLight(buttonModifier, Key1, iconHeight, onAddTokenClick)
-    KeypadButtonLight(buttonModifier, Key2, iconHeight, onAddTokenClick)
-    KeypadButtonLight(buttonModifier, Key3, iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key1.inKeypadRow(), iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key2.inKeypadRow(), iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key3.inKeypadRow(), iconHeight, onAddTokenClick)
     KeypadButtonFilled(buttonModifier, PlusKey, iconHeight, onAddTokenClick)
     KeypadButtonFilled(buttonModifier, MinusKey, iconHeight, onAddTokenClick)
 
@@ -449,9 +450,9 @@ private fun DigitsGrid(
     KeypadButtonFilled(buttonModifier, PercentKey, iconHeight, onAddTokenClick)
     KeypadButtonFilled(buttonModifier, FractionKey, iconHeight, onAddTokenClick)
 
-    KeypadButtonLight(buttonModifier, Key7, iconHeight, onAddTokenClick)
-    KeypadButtonLight(buttonModifier, Key8, iconHeight, onAddTokenClick)
-    KeypadButtonLight(buttonModifier, Key9, iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key7.inKeypadRow(), iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key8.inKeypadRow(), iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key9.inKeypadRow(), iconHeight, onAddTokenClick)
     KeypadButtonFilled(buttonModifier, MultiplyKey, iconHeight, onAddTokenClick)
 
     KeypadButtonLight(buttonModifier, Key4, iconHeight, onAddTokenClick)
@@ -459,9 +460,9 @@ private fun DigitsGrid(
     KeypadButtonLight(buttonModifier, Key6, iconHeight, onAddTokenClick)
     KeypadButtonFilled(buttonModifier, MinusKey, iconHeight, onAddTokenClick)
 
-    KeypadButtonLight(buttonModifier, Key1, iconHeight, onAddTokenClick)
-    KeypadButtonLight(buttonModifier, Key2, iconHeight, onAddTokenClick)
-    KeypadButtonLight(buttonModifier, Key3, iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key1.inKeypadRow(), iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key2.inKeypadRow(), iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key3.inKeypadRow(), iconHeight, onAddTokenClick)
     KeypadButtonFilled(buttonModifier, PlusKey, iconHeight, onAddTokenClick)
 
     val fractionalKey =
@@ -773,9 +774,9 @@ private fun CompactKeyboardInverse(
     }
     KeypadButtonTransparent(buttonModifier, KeyX, iconHeightSecondary, onAddTokenClick)
     KeypadButtonTransparent(buttonModifier, PiKey, iconHeightSecondary, onAddTokenClick)
-    KeypadButtonLight(buttonModifier, Key7, iconHeight, onAddTokenClick)
-    KeypadButtonLight(buttonModifier, Key8, iconHeight, onAddTokenClick)
-    KeypadButtonLight(buttonModifier, Key9, iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key7.inKeypadRow(), iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key8.inKeypadRow(), iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key9.inKeypadRow(), iconHeight, onAddTokenClick)
     if (showAcButton) {
       KeypadButtonTertiary(buttonModifier, ClearKey, iconHeight, onClearClick)
       KeypadButtonFilled(buttonModifier, BracketsKey, iconHeight, onBracketsClick)
@@ -798,9 +799,9 @@ private fun CompactKeyboardInverse(
     KeypadButtonTransparent(buttonModifier, ArSinKey, iconHeightSecondary, onAddTokenClick)
     KeypadButtonTransparent(buttonModifier, ArCosKey, iconHeightSecondary, onAddTokenClick)
     KeypadButtonTransparent(buttonModifier, AcTanKey, iconHeightSecondary, onAddTokenClick)
-    KeypadButtonLight(buttonModifier, Key1, iconHeight, onAddTokenClick)
-    KeypadButtonLight(buttonModifier, Key2, iconHeight, onAddTokenClick)
-    KeypadButtonLight(buttonModifier, Key3, iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key1.inKeypadRow(), iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key2.inKeypadRow(), iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key3.inKeypadRow(), iconHeight, onAddTokenClick)
     KeypadButtonFilled(buttonModifier, MinusKey, iconHeight, onAddTokenClick)
     KeypadButtonFilled(buttonModifier, PercentKey, iconHeight, onAddTokenClick)
 
@@ -848,9 +849,9 @@ private fun CompactKeyboardDefault(
     }
     KeypadButtonTransparent(buttonModifier, KeyX, iconHeightSecondary, onAddTokenClick)
     KeypadButtonTransparent(buttonModifier, PiKey, iconHeightSecondary, onAddTokenClick)
-    KeypadButtonLight(buttonModifier, Key7, iconHeight, onAddTokenClick)
-    KeypadButtonLight(buttonModifier, Key8, iconHeight, onAddTokenClick)
-    KeypadButtonLight(buttonModifier, Key9, iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key7.inKeypadRow(), iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key8.inKeypadRow(), iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key9.inKeypadRow(), iconHeight, onAddTokenClick)
     if (showAcButton) {
       KeypadButtonTertiary(buttonModifier, ClearKey, iconHeight, onClearClick)
       KeypadButtonFilled(buttonModifier, BracketsKey, iconHeight, onBracketsClick)
@@ -873,9 +874,9 @@ private fun CompactKeyboardDefault(
     KeypadButtonTransparent(buttonModifier, SinKey, iconHeightSecondary, onAddTokenClick)
     KeypadButtonTransparent(buttonModifier, CosKey, iconHeightSecondary, onAddTokenClick)
     KeypadButtonTransparent(buttonModifier, TanKey, iconHeightSecondary, onAddTokenClick)
-    KeypadButtonLight(buttonModifier, Key1, iconHeight, onAddTokenClick)
-    KeypadButtonLight(buttonModifier, Key2, iconHeight, onAddTokenClick)
-    KeypadButtonLight(buttonModifier, Key3, iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key1.inKeypadRow(), iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key2.inKeypadRow(), iconHeight, onAddTokenClick)
+    KeypadButtonLight(buttonModifier, Key3.inKeypadRow(), iconHeight, onAddTokenClick)
     KeypadButtonFilled(buttonModifier, MinusKey, iconHeight, onAddTokenClick)
     KeypadButtonFilled(buttonModifier, PercentKey, iconHeight, onAddTokenClick)
 

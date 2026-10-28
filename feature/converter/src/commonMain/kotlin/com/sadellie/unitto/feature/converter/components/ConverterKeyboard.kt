@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2022-2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +27,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.sadellie.unitto.core.common.Token
+import com.sadellie.unitto.core.designsystem.LocalWindowSize
 import com.sadellie.unitto.core.ui.KeyboardButtonToken
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.BackspaceKey
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.BracketsKey
@@ -60,8 +63,7 @@ import com.sadellie.unitto.core.ui.KeypadButtonFilled
 import com.sadellie.unitto.core.ui.KeypadButtonLight
 import com.sadellie.unitto.core.ui.KeypadButtonTertiary
 import com.sadellie.unitto.core.ui.KeypadFlow
-import com.sadellie.unitto.core.common.Token
-import com.sadellie.unitto.core.designsystem.LocalWindowSize
+import com.sadellie.unitto.core.ui.inKeypadRow
 
 @Composable
 internal fun DefaultKeyboard(
@@ -92,9 +94,9 @@ internal fun DefaultKeyboard(
     KeypadButtonFilled(bModifier, PowerKey, iconHeight, onAddTokenClick)
     KeypadButtonFilled(bModifier, RootKey, iconHeight, onAddTokenClick)
 
-    KeypadButtonLight(bModifier, Key7, iconHeight, onAddTokenClick)
-    KeypadButtonLight(bModifier, Key8, iconHeight, onAddTokenClick)
-    KeypadButtonLight(bModifier, Key9, iconHeight, onAddTokenClick)
+    KeypadButtonLight(bModifier, Key7.inKeypadRow(), iconHeight, onAddTokenClick)
+    KeypadButtonLight(bModifier, Key8.inKeypadRow(), iconHeight, onAddTokenClick)
+    KeypadButtonLight(bModifier, Key9.inKeypadRow(), iconHeight, onAddTokenClick)
     KeypadButtonFilled(bModifier, DivideKey, iconHeight, onAddTokenClick)
 
     KeypadButtonLight(bModifier, Key4, iconHeight, onAddTokenClick)
@@ -102,9 +104,9 @@ internal fun DefaultKeyboard(
     KeypadButtonLight(bModifier, Key6, iconHeight, onAddTokenClick)
     KeypadButtonFilled(bModifier, MultiplyKey, iconHeight, onAddTokenClick)
 
-    KeypadButtonLight(bModifier, Key1, iconHeight, onAddTokenClick)
-    KeypadButtonLight(bModifier, Key2, iconHeight, onAddTokenClick)
-    KeypadButtonLight(bModifier, Key3, iconHeight, onAddTokenClick)
+    KeypadButtonLight(bModifier, Key1.inKeypadRow(), iconHeight, onAddTokenClick)
+    KeypadButtonLight(bModifier, Key2.inKeypadRow(), iconHeight, onAddTokenClick)
+    KeypadButtonLight(bModifier, Key3.inKeypadRow(), iconHeight, onAddTokenClick)
     KeypadButtonFilled(bModifier, MinusKey, iconHeight, onAddTokenClick)
 
     val fractionalKey =
@@ -145,17 +147,17 @@ internal fun NumberBaseKeyboard(
     KeypadButtonFilled(bModifier, KeyE, iconHeight, onAddTokenClick)
     KeypadButtonFilled(bModifier, KeyF, iconHeight, onAddTokenClick)
 
-    KeypadButtonLight(bModifier, Key7, iconHeight, onAddTokenClick)
-    KeypadButtonLight(bModifier, Key8, iconHeight, onAddTokenClick)
-    KeypadButtonLight(bModifier, Key9, iconHeight, onAddTokenClick)
+    KeypadButtonLight(bModifier, Key7.inKeypadRow(), iconHeight, onAddTokenClick)
+    KeypadButtonLight(bModifier, Key8.inKeypadRow(), iconHeight, onAddTokenClick)
+    KeypadButtonLight(bModifier, Key9.inKeypadRow(), iconHeight, onAddTokenClick)
 
     KeypadButtonLight(bModifier, Key4, iconHeight, onAddTokenClick)
     KeypadButtonLight(bModifier, Key5, iconHeight, onAddTokenClick)
     KeypadButtonLight(bModifier, Key6, iconHeight, onAddTokenClick)
 
-    KeypadButtonLight(bModifier, Key1, iconHeight, onAddTokenClick)
-    KeypadButtonLight(bModifier, Key2, iconHeight, onAddTokenClick)
-    KeypadButtonLight(bModifier, Key3, iconHeight, onAddTokenClick)
+    KeypadButtonLight(bModifier, Key1.inKeypadRow(), iconHeight, onAddTokenClick)
+    KeypadButtonLight(bModifier, Key2.inKeypadRow(), iconHeight, onAddTokenClick)
+    KeypadButtonLight(bModifier, Key3.inKeypadRow(), iconHeight, onAddTokenClick)
 
     // TODO Should be a separate o use custom widthFillFactors and heightFillFactors
     KeypadButtonLight(bModifier, Key0, iconHeight, onAddTokenClick)

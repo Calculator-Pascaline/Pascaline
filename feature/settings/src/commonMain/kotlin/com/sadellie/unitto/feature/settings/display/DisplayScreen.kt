@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2022-2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,6 +54,7 @@ import com.sadellie.unitto.core.designsystem.icons.iconpack.IconPack
 import com.sadellie.unitto.core.designsystem.icons.symbols.Colorize
 import com.sadellie.unitto.core.designsystem.icons.symbols.DarkModeFill
 import com.sadellie.unitto.core.designsystem.icons.symbols.ExposureZero
+import com.sadellie.unitto.core.designsystem.icons.symbols.Keyboard
 import com.sadellie.unitto.core.designsystem.icons.symbols.Language
 import com.sadellie.unitto.core.designsystem.icons.symbols.Palette
 import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
@@ -89,6 +91,8 @@ import unitto.core.common.generated.resources.settings_language_support
 import unitto.core.common.generated.resources.settings_light_mode
 import unitto.core.common.generated.resources.settings_middle_zero
 import unitto.core.common.generated.resources.settings_middle_zero_support
+import unitto.core.common.generated.resources.settings_phone_keypad
+import unitto.core.common.generated.resources.settings_phone_keypad_support
 import unitto.core.common.generated.resources.settings_selected_color
 import unitto.core.common.generated.resources.settings_selected_style
 
@@ -99,6 +103,7 @@ internal fun DisplayRoute(
   navigateToLanguages: () -> Unit,
 ) {
   val viewModel: DisplayViewModel = koinViewModel()
+  val phoneKeypad = viewModel.phoneKeypad.collectAsStateWithLifecycleKMP().value
   when (val prefs = viewModel.prefs.collectAsStateWithLifecycleKMP().value) {
     null -> EmptyScreen()
     else ->
@@ -128,6 +133,8 @@ internal fun DisplayRoute(
         },
         updateAcButton = viewModel::updateAcButton,
         updateMiddleZero = viewModel::updateMiddleZero,
+        phoneKeypad = phoneKeypad,
+        updatePhoneKeypad = viewModel::updatePhoneKeypad,
         navigateToLanguages = navigateToLanguages,
       )
   }
@@ -145,6 +152,8 @@ private fun DisplayScreen(
   onMonetModeChange: (MonetMode) -> Unit,
   updateAcButton: (Boolean) -> Unit,
   updateMiddleZero: (Boolean) -> Unit,
+  phoneKeypad: Boolean,
+  updatePhoneKeypad: (Boolean) -> Unit,
   navigateToLanguages: () -> Unit,
 ) {
   ScaffoldWithLargeTopBar(
@@ -214,6 +223,15 @@ private fun DisplayScreen(
         supportingText = stringResource(Res.string.settings_middle_zero_support),
         switchState = prefs.middleZero,
         onSwitchChange = updateMiddleZero,
+        shape = ListItemExpressiveDefaults.middleShape,
+      )
+
+      ListItemExpressive(
+        icon = Symbols.Keyboard,
+        headlineText = stringResource(Res.string.settings_phone_keypad),
+        supportingText = stringResource(Res.string.settings_phone_keypad_support),
+        switchState = phoneKeypad,
+        onSwitchChange = updatePhoneKeypad,
         shape = ListItemExpressiveDefaults.middleShape,
       )
 
@@ -403,6 +421,8 @@ private fun Preview() {
       onMonetModeChange = themmoController::setMonetMode,
       updateAcButton = {},
       updateMiddleZero = {},
+      phoneKeypad = false,
+      updatePhoneKeypad = {},
       navigateToLanguages = {},
     )
   }

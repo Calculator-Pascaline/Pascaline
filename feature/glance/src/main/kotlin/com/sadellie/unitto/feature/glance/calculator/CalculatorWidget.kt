@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2023-2026 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +64,9 @@ import com.sadellie.unitto.core.common.FormatterSymbols
 import com.sadellie.unitto.core.common.OutputFormat
 import com.sadellie.unitto.core.common.Token
 import com.sadellie.unitto.core.datastore.CalculatorPreferences
+import com.sadellie.unitto.core.datastore.PrefKeys
 import com.sadellie.unitto.core.datastore.UserPreferencesRepository
+import com.sadellie.unitto.core.ui.LocalPhoneKeypad
 import com.sadellie.unitto.core.ui.textfield.formatExpression
 import com.sadellie.unitto.feature.glance.R
 import com.sadellie.unitto.feature.glance.common.IconButton
@@ -99,6 +102,8 @@ class CalculatorWidget : GlanceAppWidget(), KoinComponent {
         ) {
           val calculatorPrefs = userPrefsRepository.calculatorPrefs.collectAsState(null).value
           val appPrefs = userPrefsRepository.appPrefs.collectAsState(null).value
+          val phoneKeypad =
+            userPrefsRepository.appData(PrefKeys.PHONE_KEYPAD_PREF_KEY).collectAsState("").value
 
           LaunchedEffect(calculatorPrefs) {
             updateAppWidgetState(context, id) { state ->
@@ -108,16 +113,18 @@ class CalculatorWidget : GlanceAppWidget(), KoinComponent {
             this@CalculatorWidget.update(context, id)
           }
 
-          WidgetTheme(appPrefs?.enableAmoledTheme ?: false) {
-            if (calculatorPrefs == null) {
-              LoadingUI(actionRunCallback<RestartCalculatorWidget>())
-            } else {
-              val state = currentState<Preferences>()
-              ReadyUI(
-                appPrefs = calculatorPrefs,
-                input = state[inputStateKey] ?: "",
-                output = state[outputStateKey] ?: "",
-              )
+          CompositionLocalProvider(LocalPhoneKeypad provides (phoneKeypad == "true")) {
+            WidgetTheme(appPrefs?.enableAmoledTheme ?: false) {
+              if (calculatorPrefs == null) {
+                LoadingUI(actionRunCallback<RestartCalculatorWidget>())
+              } else {
+                val state = currentState<Preferences>()
+                ReadyUI(
+                  appPrefs = calculatorPrefs,
+                  input = state[inputStateKey] ?: "",
+                  output = state[outputStateKey] ?: "",
+                )
+              }
             }
           }
         }

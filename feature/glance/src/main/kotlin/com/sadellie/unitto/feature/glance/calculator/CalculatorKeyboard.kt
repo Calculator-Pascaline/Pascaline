@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2024-2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +30,7 @@ import androidx.glance.layout.fillMaxWidth
 import androidx.glance.preview.ExperimentalGlancePreviewApi
 import androidx.glance.preview.Preview
 import com.sadellie.unitto.core.common.Token
+import com.sadellie.unitto.core.ui.LocalPhoneKeypad
 import com.sadellie.unitto.feature.glance.R
 import com.sadellie.unitto.feature.glance.common.IconButton
 import com.sadellie.unitto.feature.glance.common.UnittoGlanceTheme
@@ -103,28 +105,30 @@ private fun KeyboardRow1(
   }
 }
 
+// 7 8 9 on top, or 1 2 3 with a phone keypad
 @Composable
 private fun KeyboardRow2(rowModifier: GlanceModifier, addTokenAction: (String) -> Action) {
   Row(rowModifier) {
     val buttonModifier = GlanceModifier.defaultWeight()
+    val phoneKeypad = LocalPhoneKeypad.current
 
     IconButton(
       glanceModifier = buttonModifier,
       containerColor = UnittoGlanceTheme.colors.inverseOnSurface,
-      iconRes = R.drawable.key7,
-      onClick = addTokenAction(Token.Digit.DIGIT_7),
+      iconRes = if (phoneKeypad) R.drawable.key1 else R.drawable.key7,
+      onClick = addTokenAction(if (phoneKeypad) Token.Digit.DIGIT_1 else Token.Digit.DIGIT_7),
     )
     IconButton(
       glanceModifier = buttonModifier,
       containerColor = UnittoGlanceTheme.colors.inverseOnSurface,
-      iconRes = R.drawable.key8,
-      onClick = addTokenAction(Token.Digit.DIGIT_8),
+      iconRes = if (phoneKeypad) R.drawable.key2 else R.drawable.key8,
+      onClick = addTokenAction(if (phoneKeypad) Token.Digit.DIGIT_2 else Token.Digit.DIGIT_8),
     )
     IconButton(
       glanceModifier = buttonModifier,
       containerColor = UnittoGlanceTheme.colors.inverseOnSurface,
-      iconRes = R.drawable.key9,
-      onClick = addTokenAction(Token.Digit.DIGIT_9),
+      iconRes = if (phoneKeypad) R.drawable.key3 else R.drawable.key9,
+      onClick = addTokenAction(if (phoneKeypad) Token.Digit.DIGIT_3 else Token.Digit.DIGIT_9),
     )
     IconButton(
       glanceModifier = buttonModifier,
@@ -171,24 +175,25 @@ private fun KeyboardRow3(rowModifier: GlanceModifier, addTokenAction: (String) -
 private fun KeyboardRow4(rowModifier: GlanceModifier, addTokenAction: (String) -> Action) {
   Row(rowModifier) {
     val buttonModifier = GlanceModifier.defaultWeight()
+    val phoneKeypad = LocalPhoneKeypad.current
 
     IconButton(
       glanceModifier = buttonModifier,
       containerColor = UnittoGlanceTheme.colors.inverseOnSurface,
-      iconRes = R.drawable.key1,
-      onClick = addTokenAction(Token.Digit.DIGIT_1),
+      iconRes = if (phoneKeypad) R.drawable.key7 else R.drawable.key1,
+      onClick = addTokenAction(if (phoneKeypad) Token.Digit.DIGIT_7 else Token.Digit.DIGIT_1),
     )
     IconButton(
       glanceModifier = buttonModifier,
       containerColor = UnittoGlanceTheme.colors.inverseOnSurface,
-      iconRes = R.drawable.key2,
-      onClick = addTokenAction(Token.Digit.DIGIT_2),
+      iconRes = if (phoneKeypad) R.drawable.key8 else R.drawable.key2,
+      onClick = addTokenAction(if (phoneKeypad) Token.Digit.DIGIT_8 else Token.Digit.DIGIT_2),
     )
     IconButton(
       glanceModifier = buttonModifier,
       containerColor = UnittoGlanceTheme.colors.inverseOnSurface,
-      iconRes = R.drawable.key3,
-      onClick = addTokenAction(Token.Digit.DIGIT_3),
+      iconRes = if (phoneKeypad) R.drawable.key9 else R.drawable.key3,
+      onClick = addTokenAction(if (phoneKeypad) Token.Digit.DIGIT_9 else Token.Digit.DIGIT_3),
     )
     IconButton(
       glanceModifier = buttonModifier,

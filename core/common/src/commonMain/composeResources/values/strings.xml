@@ -439,6 +439,8 @@
     <string name="settings_light_mode">Light</string>
     <string name="settings_middle_zero">Zero in the middle</string>
     <string name="settings_middle_zero_support">Swap zero and decimal buttons</string>
+    <string name="settings_phone_keypad">Phone keypad</string>
+    <string name="settings_phone_keypad_support">1 2 3 on the top row, like a phone, instead of 7 8 9</string>
     <string name="settings_note">Note</string>
     <string name="settings_partial_history_view">Partial history view</string>
     <string name="settings_partial_history_view_support">Peek latest entrance in history</string>

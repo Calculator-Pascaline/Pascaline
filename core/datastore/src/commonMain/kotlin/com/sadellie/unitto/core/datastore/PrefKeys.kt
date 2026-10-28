@@ -33,6 +33,8 @@ object PrefKeys {
   const val ENABLE_KEEP_SCREEN_ON_PREF_KEY = "ENABLE_KEEP_SCREEN_ON_PREF_KEY"
   /** App data key, "false" when the app must not show over the lock screen. On by default. */
   const val SHOW_ON_LOCK_SCREEN_PREF_KEY = "SHOW_ON_LOCK_SCREEN_PREF_KEY"
+  /** App data key, "true" when keypads put 1 2 3 on top like a phone. */
+  const val PHONE_KEYPAD_PREF_KEY = "PHONE_KEYPAD_PREF_KEY"
   const val MIDDLE_ZERO_PREF_KEY = "MIDDLE_ZERO_PREF_KEY"
   const val AC_BUTTON_PREF_KEY = "AC_BUTTON_PREF_KEY"
   // val RPN_MODE_PREF_KEY = "RPN_MODE_PREF_KEY"

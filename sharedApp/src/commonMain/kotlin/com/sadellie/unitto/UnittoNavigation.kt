@@ -35,6 +35,7 @@ import androidx.navigation3.runtime.NavEntryDecorator
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.sadellie.unitto.core.datastore.PrefKeys
 import com.sadellie.unitto.core.datastore.UserPreferencesRepository
 import com.sadellie.unitto.core.designsystem.unittoFadeIn
 import com.sadellie.unitto.core.designsystem.unittoFadeOut
@@ -46,6 +47,7 @@ import com.sadellie.unitto.core.navigation.Navigator
 import com.sadellie.unitto.core.navigation.TopLevelRoute
 import com.sadellie.unitto.core.navigation.additionalDrawerItems
 import com.sadellie.unitto.core.ui.BackHandler
+import com.sadellie.unitto.core.ui.LocalPhoneKeypad
 import com.sadellie.unitto.core.ui.NavigationDrawer
 import com.sadellie.unitto.core.ui.UnittoDrawerState
 import com.sadellie.unitto.core.ui.UnittoDrawerValue
@@ -77,25 +79,30 @@ fun MainAppContent(
     remember(userPrefsRepository) { userPrefsRepository.appData(DRAWER_LAYOUT_KEY) }
       .collectAsState(initial = "")
   val drawerItems = remember(savedLayout) { DrawerLayout.parse(savedLayout).shown }
+  val phoneKeypad by
+    remember(userPrefsRepository) { userPrefsRepository.appData(PrefKeys.PHONE_KEYPAD_PREF_KEY) }
+      .collectAsState(initial = "")
 
-  NavigationDrawer(
-    modifier = Modifier,
-    state = drawerState,
-    gesturesEnabled = gesturesEnabled,
-    mainTabs = drawerItems,
-    additionalTabs = additionalDrawerItems,
-    currentDestination = currentTopLevelRoute,
-    onItemClick = { destination ->
-      drawerScope.launch { drawerState.close() }
-      navigateToTab(destination, backStack)
-      onDrawerItemClick(destination)
-    },
-  ) {
-    UnittoNavigation(
-      backStack = backStack,
-      themmoController = themmoController,
-      drawerState = drawerState,
-    )
+  CompositionLocalProvider(LocalPhoneKeypad provides (phoneKeypad == "true")) {
+    NavigationDrawer(
+      modifier = Modifier,
+      state = drawerState,
+      gesturesEnabled = gesturesEnabled,
+      mainTabs = drawerItems,
+      additionalTabs = additionalDrawerItems,
+      currentDestination = currentTopLevelRoute,
+      onItemClick = { destination ->
+        drawerScope.launch { drawerState.close() }
+        navigateToTab(destination, backStack)
+        onDrawerItemClick(destination)
+      },
+    ) {
+      UnittoNavigation(
+        backStack = backStack,
+        themmoController = themmoController,
+        drawerState = drawerState,
+      )
+    }
   }
 }
 
