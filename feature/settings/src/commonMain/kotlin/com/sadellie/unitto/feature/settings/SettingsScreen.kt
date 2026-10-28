@@ -50,6 +50,7 @@ import com.sadellie.unitto.core.designsystem.icons.symbols.Copyright
 import com.sadellie.unitto.core.designsystem.icons.symbols.Favorite
 import com.sadellie.unitto.core.designsystem.icons.symbols.Home
 import com.sadellie.unitto.core.designsystem.icons.symbols.Info
+import com.sadellie.unitto.core.designsystem.icons.symbols.LockScreen
 import com.sadellie.unitto.core.designsystem.icons.symbols.Menu
 import com.sadellie.unitto.core.designsystem.icons.symbols.NewReleases
 import com.sadellie.unitto.core.designsystem.icons.symbols.Palette
@@ -101,6 +102,8 @@ import unitto.core.common.generated.resources.settings_keep_screen_on
 import unitto.core.common.generated.resources.settings_keep_screen_on_support
 import unitto.core.common.generated.resources.settings_menu
 import unitto.core.common.generated.resources.settings_menu_support
+import unitto.core.common.generated.resources.settings_show_on_lock_screen
+import unitto.core.common.generated.resources.settings_show_on_lock_screen_support
 import unitto.core.common.generated.resources.settings_starting_screen
 import unitto.core.common.generated.resources.settings_starting_screen_support
 import unitto.core.common.generated.resources.settings_third_party_licenses
@@ -134,6 +137,10 @@ internal fun SettingsRoute(openDrawer: () -> Unit, navControllerAction: (route: 
           if (platform == Platform.Android) viewModel.updateEnableKeepScreenOn(it)
           else showAndroidExclusiveDialog = true
         },
+        updateShowOnLockScreen = {
+          if (platform == Platform.Android) viewModel.updateShowOnLockScreen(it)
+          else showAndroidExclusiveDialog = true
+        },
       )
   }
   if (showAndroidExclusiveDialog) {
@@ -149,6 +156,7 @@ private fun SettingsScreen(
   updateLastReadChangelog: (String) -> Unit,
   updateVibrations: (Boolean) -> Unit,
   updateKeepScreenOn: (Boolean) -> Unit,
+  updateShowOnLockScreen: (Boolean) -> Unit,
 ) {
   ScaffoldWithLargeTopBar(
     title = stringResource(Res.string.settings_title),
@@ -246,6 +254,14 @@ private fun SettingsScreen(
         shape = ListItemExpressiveDefaults.middleShape,
       )
       ListItemExpressive(
+        icon = Symbols.LockScreen,
+        headlineText = stringResource(Res.string.settings_show_on_lock_screen),
+        supportingText = stringResource(Res.string.settings_show_on_lock_screen_support),
+        switchState = uiState.showOnLockScreen,
+        onSwitchChange = updateShowOnLockScreen,
+        shape = ListItemExpressiveDefaults.middleShape,
+      )
+      ListItemExpressive(
         icon = Symbols.RestorePage,
         headlineText = stringResource(Res.string.settings_backup),
         supportingText = stringResource(Res.string.settings_backup_support),
@@ -293,6 +309,7 @@ private fun PreviewSettingsScreen() {
         enableVibrations = false,
         showUpdateChangelog = true,
         enableKeepScreenOn = false,
+        showOnLockScreen = false,
       )
     )
   }
@@ -304,5 +321,6 @@ private fun PreviewSettingsScreen() {
     updateLastReadChangelog = { uiState = uiState.copy(showUpdateChangelog = false) },
     updateVibrations = { uiState = uiState.copy(enableVibrations = it) },
     updateKeepScreenOn = { uiState = uiState.copy(enableKeepScreenOn = it) },
+    updateShowOnLockScreen = { uiState = uiState.copy(showOnLockScreen = it) },
   )
 }

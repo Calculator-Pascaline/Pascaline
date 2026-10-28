@@ -432,6 +432,8 @@
     <string name="settings_indian_numbering_system">Indian numbering system</string>
     <string name="settings_keep_screen_on">Keep screen on</string>
     <string name="settings_keep_screen_on_support">Prevent your device from turning off the screen while the app is open</string>
+    <string name="settings_show_on_lock_screen">Show on the lock screen</string>
+    <string name="settings_show_on_lock_screen_support">If the app is open when the phone locks, it shows again without unlocking. Other apps stay locked.</string>
     <string name="settings_language">Language</string>
     <string name="settings_language_support">Change the app language</string>
     <string name="settings_light_mode">Light</string>

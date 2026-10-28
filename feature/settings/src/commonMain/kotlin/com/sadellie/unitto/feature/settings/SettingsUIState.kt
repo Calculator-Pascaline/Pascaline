@@ -25,6 +25,7 @@ internal sealed class SettingsUIState {
   data class Ready(
     val enableVibrations: Boolean,
     val enableKeepScreenOn: Boolean,
+    val showOnLockScreen: Boolean,
     val showUpdateChangelog: Boolean,
   ) : SettingsUIState()
 }

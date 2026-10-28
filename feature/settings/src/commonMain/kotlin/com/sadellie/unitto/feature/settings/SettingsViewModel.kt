@@ -23,18 +23,22 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sadellie.unitto.core.common.Config
 import com.sadellie.unitto.core.common.stateIn
+import com.sadellie.unitto.core.datastore.PrefKeys
 import com.sadellie.unitto.core.datastore.UserPreferencesRepository
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 internal class SettingsViewModel(private val userPrefsRepository: UserPreferencesRepository) :
   ViewModel() {
   val uiState =
-    userPrefsRepository.generalPrefs
-      .map { prefs ->
+    combine(
+        userPrefsRepository.generalPrefs,
+        userPrefsRepository.appData(PrefKeys.SHOW_ON_LOCK_SCREEN_PREF_KEY),
+      ) { prefs, showOnLockScreen ->
         SettingsUIState.Ready(
           enableVibrations = prefs.enableVibrations,
           enableKeepScreenOn = prefs.enableKeepScreenOn,
+          showOnLockScreen = showOnLockScreen != "false",
           showUpdateChangelog = prefs.lastReadChangelog != Config.VERSION_CODE,
         )
       }
@@ -51,4 +55,9 @@ internal class SettingsViewModel(private val userPrefsRepository: UserPreference
   /** @see UserPreferencesRepository.updateEnableKeepScreenOn */
   fun updateEnableKeepScreenOn(enabled: Boolean) =
     viewModelScope.launch { userPrefsRepository.updateEnableKeepScreenOn(enabled) }
+
+  fun updateShowOnLockScreen(enabled: Boolean) =
+    viewModelScope.launch {
+      userPrefsRepository.updateAppData(PrefKeys.SHOW_ON_LOCK_SCREEN_PREF_KEY, enabled.toString())
+    }
 }
