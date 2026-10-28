@@ -109,8 +109,6 @@
     <string name="keyboard_root">Квадратный корень</string>
     <string name="keyboard_sin">Синус</string>
     <string name="keyboard_tan">Тангенс</string>
-    <string name="settings_about_unitto">О Unitto</string>
-    <string name="settings_about_unitto_support">Узнайте больше о приложении</string>
     <string name="settings_ac_button">Кнопка AC</string>
     <string name="settings_ac_button_support">Показывать отдельную кнопку очистки</string>
     <string name="settings_additional">Дополнительное</string>
@@ -153,8 +151,6 @@
     <string name="settings_precision">Точность</string>
     <string name="settings_precision_max">%1$s (Максимум)</string>
     <string name="settings_precision_support">Количество знаков после запятой. Увеличивает время вычислений и расход батареи.</string>
-    <string name="settings_privacy_policy">Политика конфиденциальности</string>
-    <string name="settings_rate_this_app">Оценить приложение</string>
     <string name="settings_reorder_unit_group_description">Переместить группу величин</string>
     <string name="settings_restore">Импорт</string>
     <string name="settings_saved_expressions">Сохраненные выражения</string>
@@ -168,11 +164,9 @@
     <string name="settings_starting_screen">Начальный экран</string>
     <string name="settings_starting_screen_support">Начальный экран и ярлыки на рабочем столе</string>
     <string name="settings_system">Системный</string>
-    <string name="settings_terms_and_conditions">Условия и положения</string>
     <string name="settings_third_party_licenses">Лицензии третьих лиц</string>
     <string name="settings_thousands_separator">Тысячеотделитель</string>
     <string name="settings_title">Настройки</string>
-    <string name="settings_translate_app">Перевести приложение</string>
     <string name="settings_unit_groups_auto_sort_support">Сортировка групп единиц измерений по релевантности. Это действие можно отменить.</string>
     <string name="settings_unit_groups_support">Отключите или отсортируйте единицы измерений</string>
     <string name="settings_unit_groups_title">Группы величин</string>
@@ -1163,6 +1157,5 @@
     <string name="settings_fractional_output">Дробный вывод</string>
     <string name="settings_fractional_output_support">Отображать результат в виде дробей</string>
     <string name="settings_history_view_button">Кнопка просмотра истории</string>
-    <string name="settings_translate_app_support">Помочь сейчас</string>
     <string name="settings_unit_groups_auto_sort">Автоматическая сортировка</string>
 </resources>

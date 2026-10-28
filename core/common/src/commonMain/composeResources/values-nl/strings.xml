@@ -104,8 +104,6 @@
     <string name="keyboard_root">Vierkantswortel</string>
     <string name="keyboard_sin">Sinus</string>
     <string name="keyboard_tan">Tangent</string>
-    <string name="settings_about_unitto">Over Unitto</string>
-    <string name="settings_about_unitto_support">Leer meer over de app</string>
     <string name="settings_ac_button">AC knop</string>
     <string name="settings_ac_button_support">Toon aparte verwijderknop</string>
     <string name="settings_additional">Overig</string>
@@ -143,8 +141,6 @@
     <string name="settings_period">Punt</string>
     <string name="settings_precision">Nauwkeurigheid</string>
     <string name="settings_precision_max">%1$s (Maximum)</string>
-    <string name="settings_privacy_policy">Privacybeleid</string>
-    <string name="settings_rate_this_app">Beoordeel deze app</string>
     <string name="settings_reorder_unit_group_description">Herschik eenheidsgroep</string>
     <string name="settings_restore">Herstellen</string>
     <string name="settings_selected_color">Geselecteerde kleur</string>
@@ -156,10 +152,8 @@
     <string name="settings_space">Spatie</string>
     <string name="settings_starting_screen">Startscherm</string>
     <string name="settings_system">Systeem</string>
-    <string name="settings_terms_and_conditions">Voorwaarden</string>
     <string name="settings_third_party_licenses">Licenties van derden</string>
     <string name="settings_title">Instellingen</string>
-    <string name="settings_translate_app">Vertaal deze app</string>
     <string name="settings_unit_groups_support">Schakel eenheden uit en herschik ze</string>
     <string name="settings_unit_groups_title">Eenheidsgroepen</string>
     <string name="settings_units_sorting">Sorteer eenhedenlijst</string>

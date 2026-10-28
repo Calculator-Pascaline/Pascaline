@@ -75,8 +75,6 @@
     <string name="keyboard_pi">派</string>
     <string name="keyboard_plus">加</string>
     <string name="keyboard_root">平方根</string>
-    <string name="settings_about_unitto">关于 Unitto</string>
-    <string name="settings_about_unitto_support">了解此应用</string>
     <string name="settings_additional">额外的</string>
     <string name="settings_amoled_dark">AMOLED 黑</string>
     <string name="settings_amoled_dark_support">深色主题使用黑色背景</string>
@@ -103,8 +101,6 @@
     <string name="settings_note">备注</string>
     <string name="settings_precision">精度</string>
     <string name="settings_precision_max">%1$s (大)</string>
-    <string name="settings_privacy_policy">隐私政策</string>
-    <string name="settings_rate_this_app">评价此应用</string>
     <string name="settings_reorder_unit_group_description">重排序单位组</string>
     <string name="settings_selected_color">选择颜色</string>
     <string name="settings_selected_style">选择风格</string>
@@ -112,10 +108,8 @@
     <string name="settings_sort_by_usage">使用方法</string>
     <string name="settings_space">空间</string>
     <string name="settings_starting_screen">启动屏幕</string>
-    <string name="settings_terms_and_conditions">条款与条件</string>
     <string name="settings_third_party_licenses">第三方许可</string>
     <string name="settings_title">设置</string>
-    <string name="settings_translate_app">翻译此应用</string>
     <string name="settings_unit_groups_support">禁用和重新排列单位</string>
     <string name="settings_unit_groups_title">单位组</string>
     <string name="settings_units_sorting">单位列表排序</string>

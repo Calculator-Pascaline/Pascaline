@@ -56,8 +56,6 @@
     <string name="date_calculator_subtract">Çıkar</string>
     <string name="date_calculator_title">Tarih Hesaplayıcı</string>
     <string name="date_calculator_years">Yıl</string>
-    <string name="settings_about_unitto">Unitto hakkında</string>
-    <string name="settings_about_unitto_support">Uygulama hakkında bilgi edinin</string>
     <string name="settings_ac_button">AC düğmesi</string>
     <string name="settings_ac_button_support">Ayrı bir temizle düğmesi göster</string>
     <string name="settings_additional">Diğer ayarlar</string>
@@ -94,8 +92,6 @@
     <string name="settings_period">Nokta</string>
     <string name="settings_precision">Hassasiyet</string>
     <string name="settings_precision_max">%1$s (Maks)</string>
-    <string name="settings_privacy_policy">Gizlilik Politikası</string>
-    <string name="settings_rate_this_app">Bu uygulamayı oyla</string>
     <string name="settings_reorder_unit_group_description">Birim grubunu yeniden sırala</string>
     <string name="settings_selected_color">Seçilen renk</string>
     <string name="settings_selected_style">Seçilen stil</string>
@@ -106,10 +102,8 @@
     <string name="settings_space">Boşluk</string>
     <string name="settings_starting_screen">Başlangıç ekranı</string>
     <string name="settings_system">Sistem</string>
-    <string name="settings_terms_and_conditions">Şartlar ve Koşullar</string>
     <string name="settings_third_party_licenses">Üçüncü taraf lisansları</string>
     <string name="settings_title">Ayarlar</string>
-    <string name="settings_translate_app">Bu uygulamayı çevir</string>
     <string name="settings_unit_groups_support">Birimleri devre dışı bırakın ve yeniden düzenleyin</string>
     <string name="settings_unit_groups_title">Birim grupları</string>
     <string name="settings_units_sorting">Birim listesi sıralaması</string>

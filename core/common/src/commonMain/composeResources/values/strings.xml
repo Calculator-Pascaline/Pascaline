@@ -240,14 +240,14 @@
     <string name="locale_ru" translatable="false">Русский</string>
     <string name="locale_tr" translatable="false">Türkçe</string>
     <string name="locale_zh_rCN" translatable="false">简体中文</string>
-    <string name="settings_about_unitto">About Unitto</string>
-    <string name="settings_about_unitto_support">Learn about the app</string>
     <string name="settings_ac_button">AC button</string>
     <string name="settings_ac_button_support">Show separate clear button</string>
     <string name="settings_additional">Additional</string>
+    <string name="settings_about">About</string>
+    <string name="settings_based_on_unitto">Based on Unitto</string>
+    <string name="settings_based_on_unitto_support">Calculator and unit converter by Elshan Agaev</string>
     <string name="settings_amoled_dark">AMOLED Dark</string>
     <string name="settings_amoled_dark_support">Use black background for dark themes</string>
-    <string name="settings_author">Developed by Elshan Agaev</string>
     <string name="settings_auto">Auto</string>
     <string name="settings_back_up">Back up</string>
     <string name="settings_backup">Backup</string>
@@ -294,8 +294,6 @@
     <string name="settings_precision">Precision</string>
     <string name="settings_precision_max">%1$s (Max)</string>
     <string name="settings_precision_support">Number of decimal places. Increases calculation time and battery usage.</string>
-    <string name="settings_privacy_policy">Privacy Policy</string>
-    <string name="settings_rate_this_app">Rate this app</string>
     <string name="settings_reorder_unit_group_description">Reorder unit group</string>
     <string name="settings_restore">Restore</string>
     <string name="settings_saved_expressions">Saved expressions</string>
@@ -311,12 +309,9 @@
     <string name="settings_stepped_drag_gesture">Stepped drag gesture</string>
     <string name="settings_stepped_drag_gesture_support">Do not skip partial history view when dragging to much</string>
     <string name="settings_system">System</string>
-    <string name="settings_terms_and_conditions">Terms and Conditions</string>
     <string name="settings_third_party_licenses">Third party licenses</string>
     <string name="settings_thousands_separator">Thousands separator</string>
     <string name="settings_title">Settings</string>
-    <string name="settings_translate_app">Translate this app</string>
-    <string name="settings_translate_app_support">Become contributor now</string>
     <string name="settings_unit_groups_auto_sort">Auto-sort</string>
     <string name="settings_unit_groups_auto_sort_support">Sort unit groups by relevancy. This action can be reverted.</string>
     <string name="settings_unit_groups_support">Disable and rearrange units</string>
@@ -324,12 +319,10 @@
     <string name="settings_unit_groups_undo">Undo</string>
     <string name="settings_units_sorting">Units list sorting</string>
     <string name="settings_units_sorting_support">Change units order</string>
-    <string name="settings_unitto_anywhere">Try Unitto in your browser</string>
-    <string name="settings_unitto_anywhere_support">Use Unitto on any device</string>
     <string name="settings_updated">%1$s has been updated</string>
     <string name="settings_updated_support">See what's new in version %1$s</string>
     <string name="settings_used_units">Used units</string>
-    <string name="settings_version_name">Version name</string>
+    <string name="settings_version_name">Version</string>
     <string name="settings_vibrations">Vibrations</string>
     <string name="settings_vibrations_support">Haptic feedback when clicking keyboard buttons</string>
     <string name="settings_view_source_code">View source code</string>

@@ -28,7 +28,6 @@ import com.sadellie.unitto.core.navigation.LocalNavigator
 import com.sadellie.unitto.core.navigation.Route
 import com.sadellie.unitto.core.navigation.SettingsStartRoute
 import com.sadellie.unitto.feature.settings.SettingsRoute
-import com.sadellie.unitto.feature.settings.about.AboutRoute
 import com.sadellie.unitto.feature.settings.calculator.CalculatorSettingsRoute
 import com.sadellie.unitto.feature.settings.converter.ConverterSettingsRoute
 import com.sadellie.unitto.feature.settings.display.DisplayRoute
@@ -86,13 +85,6 @@ fun Module.settingNavigation() {
     UnitGroupsRoute(navigateUpAction = navigator::goBack)
   }
   backupNavigation()
-  navigation<AboutRoute>(metadata = NavDisplay.stackedTransition()) {
-    val navigator = LocalNavigator.current
-    AboutRoute(
-      navigateUpAction = navigator::goBack,
-      navigateToThirdParty = { navigator.goTo(ThirdPartyRoute) },
-    )
-  }
   navigation<ThirdPartyRoute>(metadata = NavDisplay.stackedTransition()) {
     val navigator = LocalNavigator.current
     ThirdPartyLicensesScreen(navigateUpAction = navigator::goBack)
@@ -141,11 +133,6 @@ internal data object UnitGroupRoute : Route {
 @Serializable
 internal data object BackupRoute : Route {
   override val routeId = "backup_route"
-}
-
-@Serializable
-internal data object AboutRoute : Route {
-  override val routeId = "about_route"
 }
 
 @Serializable

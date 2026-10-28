@@ -57,8 +57,6 @@
     <string name="date_calculator_subtract">Soustraire</string>
     <string name="date_calculator_title">Calculateur de date</string>
     <string name="date_calculator_years">Années</string>
-    <string name="settings_about_unitto">À propos d'Unitto</string>
-    <string name="settings_about_unitto_support">En savoir plus sur l'application</string>
     <string name="settings_additional">Additional</string>
     <string name="settings_amoled_dark">AMOLED Noir</string>
     <string name="settings_amoled_dark_support">Utiliser un fond noir pour les thèmes sombres</string>
@@ -92,8 +90,6 @@
     <string name="settings_period">Période</string>
     <string name="settings_precision">Précision</string>
     <string name="settings_precision_max">%1$s (Max)</string>
-    <string name="settings_privacy_policy">Politique de confidentialité</string>
-    <string name="settings_rate_this_app">Évaluer l'application</string>
     <string name="settings_reorder_unit_group_description">Réorganiser le groupe d'unités</string>
     <string name="settings_selected_color">Couleur sélectionnée</string>
     <string name="settings_selected_style">Style sélectionné</string>
@@ -104,10 +100,8 @@
     <string name="settings_space">Espaces</string>
     <string name="settings_starting_screen">Écran de départ</string>
     <string name="settings_system">Système</string>
-    <string name="settings_terms_and_conditions">Termes et conditions</string>
     <string name="settings_third_party_licenses">Licences tierces</string>
     <string name="settings_title">Paramètres</string>
-    <string name="settings_translate_app">Traduire cette app</string>
     <string name="settings_unit_groups_support">Désactiver et réorganiser les unités</string>
     <string name="settings_unit_groups_title">Groupes d'unités</string>
     <string name="settings_units_sorting">Tri de la liste d'unités</string>

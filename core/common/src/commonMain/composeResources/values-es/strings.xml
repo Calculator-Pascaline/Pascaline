@@ -104,8 +104,6 @@
     <string name="keyboard_root">Raíz cuadrada</string>
     <string name="keyboard_sin">Seno</string>
     <string name="keyboard_tan">Tangente</string>
-    <string name="settings_about_unitto">Acerca de Unitto</string>
-    <string name="settings_about_unitto_support">Más información sobre la app</string>
     <string name="settings_ac_button">Botón de borrar</string>
     <string name="settings_ac_button_support">Mostrar botón de borrar separado</string>
     <string name="settings_additional">Adicional</string>
@@ -143,8 +141,6 @@
     <string name="settings_period">Punto</string>
     <string name="settings_precision">Precisión</string>
     <string name="settings_precision_max">%1$s (Max)</string>
-    <string name="settings_privacy_policy">Política de privacidad</string>
-    <string name="settings_rate_this_app">Califica esta app</string>
     <string name="settings_reorder_unit_group_description">Reordenar grupo de unidades</string>
     <string name="settings_restore">Restaurar</string>
     <string name="settings_selected_color">Color seleccionado</string>
@@ -156,10 +152,8 @@
     <string name="settings_space">Espacio</string>
     <string name="settings_starting_screen">Pantalla inicial</string>
     <string name="settings_system">Sistema</string>
-    <string name="settings_terms_and_conditions">Términos y Condiciones</string>
     <string name="settings_third_party_licenses">Licencias de terceros</string>
     <string name="settings_title">Configuración</string>
-    <string name="settings_translate_app">Traducir esta app</string>
     <string name="settings_unit_groups_support">Deshabilitar y reordenar unidades</string>
     <string name="settings_unit_groups_title">Grupos de Unidades</string>
     <string name="settings_units_sorting">Units list sorting</string>

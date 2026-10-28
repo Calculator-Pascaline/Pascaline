@@ -21,12 +21,8 @@ package com.sadellie.unitto.core.common
 
 object Config {
   const val STORE_LINK = "https://play.google.com/store/apps/details?id=com.sadellie.unitto"
-  const val TRANSLATE_LINK = "https://github.com/sadellie/unitto"
-  const val WEB_LINK = "https://sadellie.github.io/unitto/app"
-  const val TERMS_LINK = "https://sadellie.github.io/unitto/terms"
-  const val PRIVACY_LINK = "https://sadellie.github.io/unitto/privacy"
+  const val UNITTO_LINK = "https://github.com/sadellie/unitto"
   const val SOURCE_CODE_LINK = "https://github.com/Calculator-Pascaline/Pascaline"
-  const val AUTHOR_LINK = "https://sadellie.github.io"
   val VERSION_CODE
     get() = BuildKonfig.VERSION_CODE
 

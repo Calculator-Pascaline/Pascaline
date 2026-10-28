@@ -57,8 +57,6 @@
     <string name="date_calculator_subtract">Kurang</string>
     <string name="date_calculator_title">Kalkulator Tanggal</string>
     <string name="date_calculator_years">Tahun</string>
-    <string name="settings_about_unitto">Tentang Unitto</string>
-    <string name="settings_about_unitto_support">Pelajari tentang aplikasi</string>
     <string name="settings_amoled_dark">Gelap AMOLED</string>
     <string name="settings_amoled_dark_support">Gunakan latar hitam untuk tema gelap</string>
     <string name="settings_auto">Otomatis</string>
@@ -92,8 +90,6 @@
     <string name="settings_period">Titik</string>
     <string name="settings_precision">Presisi</string>
     <string name="settings_precision_max">%1$s (Maks)</string>
-    <string name="settings_privacy_policy">Kebijakan Privasi</string>
-    <string name="settings_rate_this_app">Nilai aplikasi ini</string>
     <string name="settings_reorder_unit_group_description">Urutkan grup unit</string>
     <string name="settings_selected_color">Warna terpilih</string>
     <string name="settings_selected_style">Gaya terpilih</string>
@@ -104,10 +100,8 @@
     <string name="settings_space">Spasi</string>
     <string name="settings_starting_screen">Layar mulai</string>
     <string name="settings_system">Sistem</string>
-    <string name="settings_terms_and_conditions">Syarat dan Ketentuan</string>
     <string name="settings_third_party_licenses">Lisensi pihak ketiga</string>
     <string name="settings_title">Pengaturan</string>
-    <string name="settings_translate_app">Terjemahkan apl ini</string>
     <string name="settings_unit_groups_support">Nonaktifkan dan urutkan ulang unit</string>
     <string name="settings_unit_groups_title">Grup unit</string>
     <string name="settings_units_sorting">Urutan daftar unit</string>

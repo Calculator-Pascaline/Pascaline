@@ -45,12 +45,13 @@ import com.sadellie.unitto.core.designsystem.LocalWindowSize
 import com.sadellie.unitto.core.designsystem.icons.symbols.BacklightHigh
 import com.sadellie.unitto.core.designsystem.icons.symbols.Cached
 import com.sadellie.unitto.core.designsystem.icons.symbols.Calculate
-import com.sadellie.unitto.core.designsystem.icons.symbols.DevicesOther
+import com.sadellie.unitto.core.designsystem.icons.symbols.Code
+import com.sadellie.unitto.core.designsystem.icons.symbols.Copyright
+import com.sadellie.unitto.core.designsystem.icons.symbols.Favorite
 import com.sadellie.unitto.core.designsystem.icons.symbols.Home
 import com.sadellie.unitto.core.designsystem.icons.symbols.Info
 import com.sadellie.unitto.core.designsystem.icons.symbols.NewReleases
 import com.sadellie.unitto.core.designsystem.icons.symbols.Palette
-import com.sadellie.unitto.core.designsystem.icons.symbols.RateReview
 import com.sadellie.unitto.core.designsystem.icons.symbols.RestorePage
 import com.sadellie.unitto.core.designsystem.icons.symbols.SwapHoriz
 import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
@@ -69,24 +70,25 @@ import com.sadellie.unitto.core.ui.Platform
 import com.sadellie.unitto.core.ui.ScaffoldWithLargeTopBar
 import com.sadellie.unitto.core.ui.rememberLinkOpener
 import com.sadellie.unitto.feature.settings.components.AnnoyingBox
-import com.sadellie.unitto.feature.settings.navigation.AboutRoute
 import com.sadellie.unitto.feature.settings.navigation.BackupRoute
 import com.sadellie.unitto.feature.settings.navigation.CalculatorSettingsRoute
 import com.sadellie.unitto.feature.settings.navigation.ConverterSettingsRoute
 import com.sadellie.unitto.feature.settings.navigation.DisplayRoute
 import com.sadellie.unitto.feature.settings.navigation.FormattingRoute
 import com.sadellie.unitto.feature.settings.navigation.StartingScreenRoute
+import com.sadellie.unitto.feature.settings.navigation.ThirdPartyRoute
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import unitto.core.common.generated.resources.Res
 import unitto.core.common.generated.resources.app_name
 import unitto.core.common.generated.resources.calculator_title
 import unitto.core.common.generated.resources.converter_title
-import unitto.core.common.generated.resources.settings_about_unitto
-import unitto.core.common.generated.resources.settings_about_unitto_support
+import unitto.core.common.generated.resources.settings_about
 import unitto.core.common.generated.resources.settings_additional
 import unitto.core.common.generated.resources.settings_backup
 import unitto.core.common.generated.resources.settings_backup_support
+import unitto.core.common.generated.resources.settings_based_on_unitto
+import unitto.core.common.generated.resources.settings_based_on_unitto_support
 import unitto.core.common.generated.resources.settings_calculator_support
 import unitto.core.common.generated.resources.settings_converter_support
 import unitto.core.common.generated.resources.settings_display
@@ -95,16 +97,16 @@ import unitto.core.common.generated.resources.settings_formatting
 import unitto.core.common.generated.resources.settings_formatting_support
 import unitto.core.common.generated.resources.settings_keep_screen_on
 import unitto.core.common.generated.resources.settings_keep_screen_on_support
-import unitto.core.common.generated.resources.settings_rate_this_app
 import unitto.core.common.generated.resources.settings_starting_screen
 import unitto.core.common.generated.resources.settings_starting_screen_support
+import unitto.core.common.generated.resources.settings_third_party_licenses
 import unitto.core.common.generated.resources.settings_title
-import unitto.core.common.generated.resources.settings_unitto_anywhere
-import unitto.core.common.generated.resources.settings_unitto_anywhere_support
 import unitto.core.common.generated.resources.settings_updated
 import unitto.core.common.generated.resources.settings_updated_support
+import unitto.core.common.generated.resources.settings_version_name
 import unitto.core.common.generated.resources.settings_vibrations
 import unitto.core.common.generated.resources.settings_vibrations_support
+import unitto.core.common.generated.resources.settings_view_source_code
 
 @Composable
 internal fun SettingsRoute(openDrawer: () -> Unit, navControllerAction: (route: Route) -> Unit) {
@@ -237,26 +239,34 @@ private fun SettingsScreen(
         headlineText = stringResource(Res.string.settings_backup),
         supportingText = stringResource(Res.string.settings_backup_support),
         onClick = { navControllerAction(BackupRoute) },
+        shape = ListItemExpressiveDefaults.lastShape,
+      )
+      // Source code for the GPL, credits and licenses of the libraries
+      ListHeader(stringResource(Res.string.settings_about))
+      ListItemExpressive(
+        icon = Symbols.Code,
+        headlineText = stringResource(Res.string.settings_view_source_code),
+        onClick = { linkOpener.launch(Config.SOURCE_CODE_LINK) },
+        shape = ListItemExpressiveDefaults.firstShape,
+      )
+      ListItemExpressive(
+        icon = Symbols.Favorite,
+        headlineText = stringResource(Res.string.settings_based_on_unitto),
+        supportingText = stringResource(Res.string.settings_based_on_unitto_support),
+        onClick = { linkOpener.launch(Config.UNITTO_LINK) },
         shape = ListItemExpressiveDefaults.middleShape,
       )
       ListItemExpressive(
-        icon = Symbols.RateReview,
-        headlineText = stringResource(Res.string.settings_rate_this_app),
-        onClick = { linkOpener.launch(Config.STORE_LINK) },
-        shape = ListItemExpressiveDefaults.middleShape,
-      )
-      ListItemExpressive(
-        icon = Symbols.DevicesOther,
-        headlineText = stringResource(Res.string.settings_unitto_anywhere),
-        supportingText = stringResource(Res.string.settings_unitto_anywhere_support),
-        onClick = { linkOpener.launch(Config.WEB_LINK) },
+        icon = Symbols.Copyright,
+        headlineText = stringResource(Res.string.settings_third_party_licenses),
+        onClick = { navControllerAction(ThirdPartyRoute) },
         shape = ListItemExpressiveDefaults.middleShape,
       )
       ListItemExpressive(
         icon = Symbols.Info,
-        headlineText = stringResource(Res.string.settings_about_unitto),
-        supportingText = stringResource(Res.string.settings_about_unitto_support),
-        onClick = { navControllerAction(AboutRoute) },
+        headlineText = stringResource(Res.string.settings_version_name),
+        supportingText = Config.VERSION_NAME,
+        onClick = null,
         shape = ListItemExpressiveDefaults.lastShape,
       )
     }

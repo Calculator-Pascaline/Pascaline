@@ -83,8 +83,6 @@
     <string name="keyboard_percent">Percento</string>
     <string name="keyboard_sin">Seno</string>
     <string name="keyboard_tan">Tangente</string>
-    <string name="settings_about_unitto">Riguardo a Unitto</string>
-    <string name="settings_about_unitto_support">Impara riguardo all'app</string>
     <string name="settings_ac_button">Pulsante AC</string>
     <string name="settings_ac_button_support">Mostra pulsante pulisci separato</string>
     <string name="settings_additional">Aggiuntive</string>
@@ -122,8 +120,6 @@
     <string name="settings_period">Punto</string>
     <string name="settings_precision">Precisione</string>
     <string name="settings_precision_max">%1$s (Max)</string>
-    <string name="settings_privacy_policy">Politica sulla riservatezza</string>
-    <string name="settings_rate_this_app">Valuta questa app</string>
     <string name="settings_reorder_unit_group_description">Riordina gruppo unità</string>
     <string name="settings_restore">Ripristina</string>
     <string name="settings_selected_color">Colore selezionato</string>
@@ -135,10 +131,8 @@
     <string name="settings_space">Spazio</string>
     <string name="settings_starting_screen">Schermata iniziale</string>
     <string name="settings_system">Sistema</string>
-    <string name="settings_terms_and_conditions">Termini e condizioni</string>
     <string name="settings_third_party_licenses">Licenze terze parti</string>
     <string name="settings_title">Impostazioni</string>
-    <string name="settings_translate_app">Traduci questa app</string>
     <string name="settings_unit_groups_support">Disabilita e riordina unità</string>
     <string name="settings_unit_groups_title">Gruppi di unità</string>
     <string name="settings_units_sorting">Ordine lista unità</string>

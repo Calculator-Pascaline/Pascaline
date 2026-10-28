@@ -61,8 +61,6 @@
     <string name="date_calculator_subtract">Subtrair</string>
     <string name="date_calculator_title">Calculadora de data</string>
     <string name="date_calculator_years">Anos</string>
-    <string name="settings_about_unitto">Sobre o Unitto</string>
-    <string name="settings_about_unitto_support">Saiba mais sobre o app</string>
     <string name="settings_ac_button">Botão AC</string>
     <string name="settings_ac_button_support">Mostrar botão de limpar separado</string>
     <string name="settings_additional">Adicional</string>
@@ -99,8 +97,6 @@
     <string name="settings_period">Periodo</string>
     <string name="settings_precision">Precisão</string>
     <string name="settings_precision_max">%1$s (Máximo)</string>
-    <string name="settings_privacy_policy">Política de Privacidade</string>
-    <string name="settings_rate_this_app">Avalie o aplicativo</string>
     <string name="settings_reorder_unit_group_description">Reordenar grupo de unidades</string>
     <string name="settings_selected_color">Cor selecionada</string>
     <string name="settings_selected_style">Estilo Selecionado</string>
@@ -111,10 +107,8 @@
     <string name="settings_space">Espaço</string>
     <string name="settings_starting_screen">Starting screen</string>
     <string name="settings_system">Sistema</string>
-    <string name="settings_terms_and_conditions">Termos e Condições</string>
     <string name="settings_third_party_licenses">Licenças de terceiros</string>
     <string name="settings_title">Configurações</string>
-    <string name="settings_translate_app">Traduzir este aplicativo</string>
     <string name="settings_unit_groups_support">Desativar e reorganizar unidades</string>
     <string name="settings_unit_groups_title">Grupos de unidades</string>
     <string name="settings_units_sorting">Ordem da lista de unidades</string>
