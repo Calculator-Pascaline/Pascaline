@@ -26,6 +26,10 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.AnchoredDraggableState
+import androidx.compose.foundation.gestures.DraggableAnchors
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,8 +38,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -45,12 +51,10 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SwipeToDismissBox
-import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -69,10 +73,12 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Placeable
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.sadellie.unitto.core.common.FormatterSymbols
 import com.sadellie.unitto.core.designsystem.icons.symbols.Delete
@@ -85,7 +91,6 @@ import com.sadellie.unitto.core.ui.textfield.WrappedExpressionLayoutText
 import com.sadellie.unitto.feature.calculator.HistoryResult
 import com.sadellie.unitto.feature.calculator.MenuSection
 import com.sadellie.unitto.feature.calculator.toInsertable
-import org.jetbrains.compose.resources.StringResource
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.atan2
@@ -94,6 +99,7 @@ import kotlin.math.hypot
 import kotlin.math.roundToInt
 import kotlin.math.sin
 import kotlin.math.tan
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import unitto.core.common.generated.resources.Res
 import unitto.core.common.generated.resources.calculator_argument
@@ -107,10 +113,10 @@ import unitto.core.common.generated.resources.calculator_imaginary_part
 import unitto.core.common.generated.resources.calculator_modulus
 import unitto.core.common.generated.resources.calculator_more
 import unitto.core.common.generated.resources.calculator_no_history
+import unitto.core.common.generated.resources.calculator_other_temperatures
 import unitto.core.common.generated.resources.calculator_prime_factors
 import unitto.core.common.generated.resources.calculator_real_part
 import unitto.core.common.generated.resources.calculator_roots
-import unitto.core.common.generated.resources.calculator_other_temperatures
 import unitto.core.common.generated.resources.calculator_si_units
 import unitto.core.common.generated.resources.common_delete
 import unitto.core.common.generated.resources.common_error
@@ -163,14 +169,30 @@ internal fun CalculationList(
   }
 }
 
+/** Where a history card is: in place, or slid left to show its delete button. */
+private enum class CardSwipe {
+  CLOSED,
+  OPEN,
+}
+
+/**
+ * Swiping right to left slides the card open on a delete button, swiping back closes it. Only the
+ * button deletes, so a scroll that drifts sideways can't delete a calculation by mistake.
+ */
 @Composable
 private fun SwipeToDelete(modifier: Modifier, onDelete: () -> Unit, content: @Composable () -> Unit) {
-  val dismissState = rememberSwipeToDismissBoxState()
-  // The swiped card closes before it is deleted, so the cards around it slide instead of jumping
-  val visibility = remember { MutableTransitionState(true) }
-  LaunchedEffect(dismissState.currentValue) {
-    if (dismissState.currentValue == SwipeToDismissBoxValue.EndToStart) visibility.targetState = false
+  val revealPx = with(LocalDensity.current) { DELETE_BUTTON_WIDTH.toPx() }
+  val swipe = remember { AnchoredDraggableState(initialValue = CardSwipe.CLOSED) }
+  SideEffect {
+    swipe.updateAnchors(
+      DraggableAnchors {
+        CardSwipe.CLOSED at 0f
+        CardSwipe.OPEN at -revealPx
+      }
+    )
   }
+  // The card closes before it is deleted, so the cards around it slide instead of jumping
+  val visibility = remember { MutableTransitionState(true) }
   LaunchedEffect(visibility.isIdle, visibility.currentState) {
     if (visibility.isIdle && !visibility.currentState) onDelete()
   }
@@ -180,25 +202,30 @@ private fun SwipeToDelete(modifier: Modifier, onDelete: () -> Unit, content: @Co
     enter = EnterTransition.None,
     exit = shrinkVertically(),
   ) {
-    SwipeToDismissBox(
-      modifier = Modifier.clip(CARD_SHAPE),
-      state = dismissState,
-      enableDismissFromStartToEnd = false,
-      backgroundContent = {
-        Box(
-          modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.errorContainer),
-          contentAlignment = Alignment.CenterEnd,
+    Box(modifier = Modifier.clip(CARD_SHAPE)) {
+      Box(
+        modifier = Modifier.matchParentSize().background(MaterialTheme.colorScheme.errorContainer),
+        contentAlignment = Alignment.CenterEnd,
+      ) {
+        IconButton(
+          modifier = Modifier.width(DELETE_BUTTON_WIDTH),
+          onClick = { visibility.targetState = false },
+          enabled = swipe.currentValue == CardSwipe.OPEN,
         ) {
           Icon(
-            modifier = Modifier.padding(horizontal = 24.dp),
             imageVector = Symbols.Delete,
             contentDescription = stringResource(Res.string.common_delete),
             tint = MaterialTheme.colorScheme.onErrorContainer,
           )
         }
-      },
-    ) {
-      content()
+      }
+      Box(
+        modifier =
+          Modifier.offset { IntOffset(swipe.offset.takeIf { !it.isNaN() }?.roundToInt() ?: 0, 0) }
+            .anchoredDraggable(state = swipe, orientation = Orientation.Horizontal)
+      ) {
+        content()
+      }
     }
   }
 }
@@ -651,4 +678,5 @@ private const val ITEM_FONT_SCALE = 0.8f
 private const val EXTRA_LINE_SCALE = 0.75f
 private const val MIN_SCALE = 0.8f
 private val CARD_SPACING = 8.dp
+private val DELETE_BUTTON_WIDTH = 88.dp
 private val CARD_SHAPE = RoundedCornerShape(20.dp)
