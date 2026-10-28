@@ -23,12 +23,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.sadellie.unitto.core.designsystem.icons.symbols.AccessibilityNew
 import com.sadellie.unitto.core.designsystem.icons.symbols.Atom
 import com.sadellie.unitto.core.designsystem.icons.symbols.BarChart
+import com.sadellie.unitto.core.designsystem.icons.symbols.BellCurve
 import com.sadellie.unitto.core.designsystem.icons.symbols.BoxPlot
 import com.sadellie.unitto.core.designsystem.icons.symbols.Calculate
 import com.sadellie.unitto.core.designsystem.icons.symbols.CalculateFill
 import com.sadellie.unitto.core.designsystem.icons.symbols.Event
 import com.sadellie.unitto.core.designsystem.icons.symbols.EventFill
 import com.sadellie.unitto.core.designsystem.icons.symbols.LineAxis
+import com.sadellie.unitto.core.designsystem.icons.symbols.Percent
 import com.sadellie.unitto.core.designsystem.icons.symbols.PriceTag
 import com.sadellie.unitto.core.designsystem.icons.symbols.ScatterPlot
 import com.sadellie.unitto.core.designsystem.icons.symbols.Schedule
@@ -45,7 +47,9 @@ import unitto.core.common.generated.resources.calculator_title
 import unitto.core.common.generated.resources.converter_title
 import unitto.core.common.generated.resources.date_calculator_title
 import unitto.core.common.generated.resources.elements_title
+import unitto.core.common.generated.resources.finance_title
 import unitto.core.common.generated.resources.functions_title
+import unitto.core.common.generated.resources.inference_title
 import unitto.core.common.generated.resources.prices_title
 import unitto.core.common.generated.resources.probability_title
 import unitto.core.common.generated.resources.regression_title
@@ -115,6 +119,20 @@ data object ElementsDrawerItem : DrawerItem {
   override val name = Res.string.elements_title
   override val selectedIcon = Symbols.Atom
   override val defaultIcon = Symbols.Atom
+}
+
+data object InferenceDrawerItem : DrawerItem {
+  override val topLevelRoute = InferenceStartRoute
+  override val name = Res.string.inference_title
+  override val selectedIcon = Symbols.BellCurve
+  override val defaultIcon = Symbols.BellCurve
+}
+
+data object FinanceDrawerItem : DrawerItem {
+  override val topLevelRoute = FinanceStartRoute
+  override val name = Res.string.finance_title
+  override val selectedIcon = Symbols.Percent
+  override val defaultIcon = Symbols.Percent
 }
 
 data object PricesDrawerItem : DrawerItem {

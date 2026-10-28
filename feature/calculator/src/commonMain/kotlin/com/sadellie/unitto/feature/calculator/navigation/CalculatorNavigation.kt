@@ -21,6 +21,8 @@ package com.sadellie.unitto.feature.calculator.navigation
 
 import com.sadellie.unitto.core.navigation.CalculatorStartRoute
 import com.sadellie.unitto.core.navigation.ElementsStartRoute
+import com.sadellie.unitto.core.navigation.FinanceStartRoute
+import com.sadellie.unitto.core.navigation.InferenceStartRoute
 import com.sadellie.unitto.core.navigation.PricesStartRoute
 import com.sadellie.unitto.core.navigation.FunctionsStartRoute
 import com.sadellie.unitto.core.navigation.LocalNavigator
@@ -30,6 +32,8 @@ import com.sadellie.unitto.core.navigation.SequencesStartRoute
 import com.sadellie.unitto.core.navigation.StatisticsStartRoute
 import com.sadellie.unitto.feature.calculator.CalculatorRoute
 import com.sadellie.unitto.feature.calculator.elements.ElementsRoute
+import com.sadellie.unitto.feature.calculator.finance.FinanceRoute
+import com.sadellie.unitto.feature.calculator.inference.InferenceRoute
 import com.sadellie.unitto.feature.calculator.prices.PricesRoute
 import com.sadellie.unitto.feature.calculator.functions.FunctionsRoute
 import com.sadellie.unitto.feature.calculator.probability.ProbabilityRoute
@@ -73,5 +77,13 @@ fun Module.calculatorNavigation() {
   navigation<PricesStartRoute> {
     val navigator = LocalNavigator.current
     PricesRoute(openDrawer = navigator::openDrawer)
+  }
+  navigation<InferenceStartRoute> {
+    val navigator = LocalNavigator.current
+    InferenceRoute(openDrawer = navigator::openDrawer)
+  }
+  navigation<FinanceStartRoute> {
+    val navigator = LocalNavigator.current
+    FinanceRoute(openDrawer = navigator::openDrawer)
   }
 }
