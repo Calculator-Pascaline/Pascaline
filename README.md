@@ -8,6 +8,12 @@ A calculator for Android. Named after the Pascaline, the mechanical calculator B
   <img src="docs/screenshots/probability.png" width="24%" alt="Binomial distribution with P(X ≤ 2) = 0.3483 and its expected value explained" />
   <img src="docs/screenshots/probability-tree.png" width="24%" alt="Probability tree of 4 free throws with arrows to each number of baskets" />
 </p>
+<p align="center">
+  <img src="docs/screenshots/statistics.png" width="24%" alt="Histogram of grades from 8 to 16" />
+  <img src="docs/screenshots/regression.png" width="24%" alt="Exponential regression y = 1.096·e^(0.672·x) through seven points" />
+  <img src="docs/screenshots/elements.png" width="24%" alt="Periodic table with carbon selected" />
+  <img src="docs/screenshots/prices.png" width="24%" alt="Three offers compared by price per kilogram" />
+</p>
 
 ## Features
 
@@ -40,9 +46,48 @@ A calculator for Android. Named after the Pascaline, the mechanical calculator B
 - **Binomial explained**: a probability tree of coin flips or free throws, colored arrows from each
   number of successes to its outcomes, and Pascal's triangle for the coefficients
 
+### Sequences
+
+- As many sequences as you want, explicit or recursive (order 1 or 2), typed with the calculator
+  keyboard and its uₙ and uₙ₊₁ keys
+- Graph of the terms and a table of values
+
+### Statistics and regression
+
+- **Statistics**: values and frequencies, histogram, box plot, quartiles, mean and standard
+  deviation
+- **Regression**: eight kinds of curves fitted to your points, from linear to power, with the
+  graph, the coefficients, r and r²
+
+### Inference
+
+- Tests and confidence intervals for one or two proportions and for one or two means (z or t),
+  and the χ² goodness of fit test
+- The statistic, degrees of freedom, p-value and conclusion at your significance level
+
+### Finance
+
+- Simple and compound interest: find any of N, I%, PV, Pmt and FV from the others, with payments
+  and compoundings per year
+
+### Elements
+
+- Periodic table of the 118 elements, colored by family, with mass, electron configuration and
+  electronegativity
+
+### Price comparison
+
+- Compare as many offers as you like by price per kg, L, m or piece, even across units like 500 g
+  and 1.2 kg, and see how much the cheapest saves
+
 ### And also
 
-- Unit converter, date calculator, time zones and body mass index from Unitto
+- **Unit converter** with watt-hours, and long results that wrap instead of being cut off; date
+  calculator, time zones and body mass index from Unitto
+- **Your menu**: reorder the apps and hide the ones you don't use
+- **Phone keypad**: put 1 2 3 on the top row, like a phone
+- **Lock screen**: the app stays open when the phone locks, without unlocking the rest of it
+- **Static cursor** that doesn't blink
 - **No internet permission**: everything is computed on the device
 
 ## Credits
