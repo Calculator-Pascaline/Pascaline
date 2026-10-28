@@ -19,6 +19,10 @@
 
 package com.sadellie.unitto.feature.calculator.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -48,6 +52,7 @@ import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -136,8 +141,12 @@ internal fun CalculationList(
   }
 
   val state = rememberLazyListState()
-  // Show newest calculation
-  LaunchedEffect(items.firstOrNull()?.id) { state.scrollToItem(0) }
+  // Show newest calculation. Not after a deletion: scrolling would cut the cards' animation short
+  var newestId by remember { mutableIntStateOf(items.first().id) }
+  LaunchedEffect(items.first().id) {
+    if (items.first().id > newestId) state.scrollToItem(0)
+    newestId = items.first().id
+  }
 
   LazyColumn(
     modifier = modifier,
@@ -157,28 +166,40 @@ internal fun CalculationList(
 @Composable
 private fun SwipeToDelete(modifier: Modifier, onDelete: () -> Unit, content: @Composable () -> Unit) {
   val dismissState = rememberSwipeToDismissBoxState()
+  // The swiped card closes before it is deleted, so the cards around it slide instead of jumping
+  val visibility = remember { MutableTransitionState(true) }
   LaunchedEffect(dismissState.currentValue) {
-    if (dismissState.currentValue == SwipeToDismissBoxValue.EndToStart) onDelete()
+    if (dismissState.currentValue == SwipeToDismissBoxValue.EndToStart) visibility.targetState = false
   }
-  SwipeToDismissBox(
-    modifier = modifier.clip(CARD_SHAPE),
-    state = dismissState,
-    enableDismissFromStartToEnd = false,
-    backgroundContent = {
-      Box(
-        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.errorContainer),
-        contentAlignment = Alignment.CenterEnd,
-      ) {
-        Icon(
-          modifier = Modifier.padding(horizontal = 24.dp),
-          imageVector = Symbols.Delete,
-          contentDescription = stringResource(Res.string.common_delete),
-          tint = MaterialTheme.colorScheme.onErrorContainer,
-        )
-      }
-    },
+  LaunchedEffect(visibility.isIdle, visibility.currentState) {
+    if (visibility.isIdle && !visibility.currentState) onDelete()
+  }
+  AnimatedVisibility(
+    visibleState = visibility,
+    modifier = modifier,
+    enter = EnterTransition.None,
+    exit = shrinkVertically(),
   ) {
-    content()
+    SwipeToDismissBox(
+      modifier = Modifier.clip(CARD_SHAPE),
+      state = dismissState,
+      enableDismissFromStartToEnd = false,
+      backgroundContent = {
+        Box(
+          modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.errorContainer),
+          contentAlignment = Alignment.CenterEnd,
+        ) {
+          Icon(
+            modifier = Modifier.padding(horizontal = 24.dp),
+            imageVector = Symbols.Delete,
+            contentDescription = stringResource(Res.string.common_delete),
+            tint = MaterialTheme.colorScheme.onErrorContainer,
+          )
+        }
+      },
+    ) {
+      content()
+    }
   }
 }
 

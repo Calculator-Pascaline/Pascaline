@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2025-2026 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +24,8 @@ import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -32,14 +35,16 @@ import androidx.navigation3.runtime.NavEntryDecorator
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.sadellie.unitto.core.datastore.UserPreferencesRepository
 import com.sadellie.unitto.core.designsystem.unittoFadeIn
 import com.sadellie.unitto.core.designsystem.unittoFadeOut
+import com.sadellie.unitto.core.navigation.DRAWER_LAYOUT_KEY
 import com.sadellie.unitto.core.navigation.DrawerItem
+import com.sadellie.unitto.core.navigation.DrawerLayout
 import com.sadellie.unitto.core.navigation.LocalNavigator
 import com.sadellie.unitto.core.navigation.Navigator
 import com.sadellie.unitto.core.navigation.TopLevelRoute
 import com.sadellie.unitto.core.navigation.additionalDrawerItems
-import com.sadellie.unitto.core.navigation.mainDrawerItems
 import com.sadellie.unitto.core.ui.BackHandler
 import com.sadellie.unitto.core.ui.NavigationDrawer
 import com.sadellie.unitto.core.ui.UnittoDrawerState
@@ -50,6 +55,7 @@ import com.sadellie.unitto.feature.settings.navigation.navigateToUnitGroups
 import io.github.sadellie.themmo.ThemmoController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 import org.koin.compose.navigation3.koinEntryProvider
 import org.koin.core.annotation.KoinExperimentalAPI
 
@@ -66,12 +72,17 @@ fun MainAppContent(
   val currentTopLevelRoute = remember(currentRoute) { backStack.currentTopLevelRoute() }
   // allow opening drawer only when at top level route
   val gesturesEnabled = remember(currentRoute) { currentRoute is TopLevelRoute }
+  val userPrefsRepository = koinInject<UserPreferencesRepository>()
+  val savedLayout by
+    remember(userPrefsRepository) { userPrefsRepository.appData(DRAWER_LAYOUT_KEY) }
+      .collectAsState(initial = "")
+  val drawerItems = remember(savedLayout) { DrawerLayout.parse(savedLayout).shown }
 
   NavigationDrawer(
     modifier = Modifier,
     state = drawerState,
     gesturesEnabled = gesturesEnabled,
-    mainTabs = mainDrawerItems,
+    mainTabs = drawerItems,
     additionalTabs = additionalDrawerItems,
     currentDestination = currentTopLevelRoute,
     onItemClick = { destination ->

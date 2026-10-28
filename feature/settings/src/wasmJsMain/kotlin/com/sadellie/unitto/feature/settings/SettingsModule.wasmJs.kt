@@ -23,6 +23,7 @@ import com.sadellie.unitto.feature.settings.calculator.CalculatorSettingsViewMod
 import com.sadellie.unitto.feature.settings.converter.ConverterSettingsViewModel
 import com.sadellie.unitto.feature.settings.display.DisplayViewModel
 import com.sadellie.unitto.feature.settings.formatting.FormattingViewModel
+import com.sadellie.unitto.feature.settings.menu.MenuViewModel
 import com.sadellie.unitto.feature.settings.navigation.settingNavigation
 import com.sadellie.unitto.feature.settings.startingscreen.StartingScreenViewModel
 import com.sadellie.unitto.feature.settings.unitgroups.UnitGroupsViewModel
@@ -36,6 +37,7 @@ val settingsModule = module {
   viewModelOf(::DisplayViewModel)
   viewModelOf(::FormattingViewModel)
   viewModelOf(::StartingScreenViewModel)
+  viewModelOf(::MenuViewModel)
   viewModelOf(::UnitGroupsViewModel)
   viewModelOf(::SettingsViewModel)
 }

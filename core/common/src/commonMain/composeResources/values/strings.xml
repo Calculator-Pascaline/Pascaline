@@ -456,6 +456,14 @@
     <string name="settings_space">Space</string>
     <string name="settings_starting_screen">Starting screen</string>
     <string name="settings_starting_screen_support">Starting screen and shortcuts</string>
+    <string name="settings_menu">Menu</string>
+    <string name="settings_menu_support">Order of the apps and which ones are shown</string>
+    <string name="settings_menu_shown">Shown</string>
+    <string name="settings_menu_hidden">Hidden</string>
+    <string name="settings_menu_hide">Hide from the menu</string>
+    <string name="settings_menu_show">Show in the menu</string>
+    <string name="settings_menu_reorder">Drag to reorder</string>
+    <string name="settings_menu_reset">Reset the menu</string>
     <string name="settings_stepped_drag_gesture">Stepped drag gesture</string>
     <string name="settings_stepped_drag_gesture_support">Do not skip partial history view when dragging to much</string>
     <string name="settings_system">System</string>

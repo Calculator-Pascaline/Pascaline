@@ -50,6 +50,7 @@ import com.sadellie.unitto.core.designsystem.icons.symbols.Copyright
 import com.sadellie.unitto.core.designsystem.icons.symbols.Favorite
 import com.sadellie.unitto.core.designsystem.icons.symbols.Home
 import com.sadellie.unitto.core.designsystem.icons.symbols.Info
+import com.sadellie.unitto.core.designsystem.icons.symbols.Menu
 import com.sadellie.unitto.core.designsystem.icons.symbols.NewReleases
 import com.sadellie.unitto.core.designsystem.icons.symbols.Palette
 import com.sadellie.unitto.core.designsystem.icons.symbols.RestorePage
@@ -75,6 +76,7 @@ import com.sadellie.unitto.feature.settings.navigation.CalculatorSettingsRoute
 import com.sadellie.unitto.feature.settings.navigation.ConverterSettingsRoute
 import com.sadellie.unitto.feature.settings.navigation.DisplayRoute
 import com.sadellie.unitto.feature.settings.navigation.FormattingRoute
+import com.sadellie.unitto.feature.settings.navigation.MenuRoute
 import com.sadellie.unitto.feature.settings.navigation.StartingScreenRoute
 import com.sadellie.unitto.feature.settings.navigation.ThirdPartyRoute
 import org.jetbrains.compose.resources.stringResource
@@ -97,6 +99,8 @@ import unitto.core.common.generated.resources.settings_formatting
 import unitto.core.common.generated.resources.settings_formatting_support
 import unitto.core.common.generated.resources.settings_keep_screen_on
 import unitto.core.common.generated.resources.settings_keep_screen_on_support
+import unitto.core.common.generated.resources.settings_menu
+import unitto.core.common.generated.resources.settings_menu_support
 import unitto.core.common.generated.resources.settings_starting_screen
 import unitto.core.common.generated.resources.settings_starting_screen_support
 import unitto.core.common.generated.resources.settings_third_party_licenses
@@ -194,6 +198,13 @@ private fun SettingsScreen(
         headlineText = stringResource(Res.string.settings_starting_screen),
         supportingText = stringResource(Res.string.settings_starting_screen_support),
         onClick = { navControllerAction(StartingScreenRoute) },
+        shape = ListItemExpressiveDefaults.middleShape,
+      )
+      ListItemExpressive(
+        icon = Symbols.Menu,
+        headlineText = stringResource(Res.string.settings_menu),
+        supportingText = stringResource(Res.string.settings_menu_support),
+        onClick = { navControllerAction(MenuRoute) },
         shape = ListItemExpressiveDefaults.middleShape,
       )
       ListItemExpressive(

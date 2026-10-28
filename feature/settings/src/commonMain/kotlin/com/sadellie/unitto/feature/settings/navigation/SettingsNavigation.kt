@@ -32,6 +32,7 @@ import com.sadellie.unitto.feature.settings.calculator.CalculatorSettingsRoute
 import com.sadellie.unitto.feature.settings.converter.ConverterSettingsRoute
 import com.sadellie.unitto.feature.settings.display.DisplayRoute
 import com.sadellie.unitto.feature.settings.formatting.FormattingRoute
+import com.sadellie.unitto.feature.settings.menu.MenuRoute
 import com.sadellie.unitto.feature.settings.startingscreen.StartingScreenRoute
 import com.sadellie.unitto.feature.settings.thirdparty.ThirdPartyLicensesScreen
 import com.sadellie.unitto.feature.settings.unitgroups.UnitGroupsRoute
@@ -64,6 +65,10 @@ fun Module.settingNavigation() {
   navigation<StartingScreenRoute>(metadata = NavDisplay.stackedTransition()) {
     val navigator = LocalNavigator.current
     StartingScreenRoute(navigateUp = navigator::goBack)
+  }
+  navigation<MenuRoute>(metadata = NavDisplay.stackedTransition()) {
+    val navigator = LocalNavigator.current
+    MenuRoute(navigateUp = navigator::goBack)
   }
   navigation<FormattingRoute>(metadata = NavDisplay.stackedTransition()) {
     val navigator = LocalNavigator.current
@@ -108,6 +113,11 @@ internal data object LanguageRoute : Route {
 @Serializable
 internal data object StartingScreenRoute : Route {
   override val routeId = "starting_screen_route"
+}
+
+@Serializable
+internal data object MenuRoute : Route {
+  override val routeId = "menu_route"
 }
 
 @Serializable
