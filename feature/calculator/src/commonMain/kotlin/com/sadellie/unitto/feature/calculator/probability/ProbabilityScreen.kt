@@ -305,6 +305,7 @@ private fun CalculationStep(
         if (values.size == type.parameters.size) {
           if (type == DistributionType.NORMAL) {
             NormalMoments(values[0], values[1], format.formatterSymbols.fractional)
+            NormalRule(values[0], values[1], format.formatterSymbols.fractional)
           } else {
             DistributionMoments(type, values, format.formatterSymbols.fractional)
           }

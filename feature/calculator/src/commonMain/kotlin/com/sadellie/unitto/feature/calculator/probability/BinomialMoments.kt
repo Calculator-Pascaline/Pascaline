@@ -30,6 +30,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -64,16 +65,12 @@ import unitto.core.common.generated.resources.Res
 import unitto.core.common.generated.resources.probability_baskets_average
 import unitto.core.common.generated.resources.probability_curve_center
 import unitto.core.common.generated.resources.probability_deviation_name
-import unitto.core.common.generated.resources.probability_example_sports
 import unitto.core.common.generated.resources.probability_flips_column
 import unitto.core.common.generated.resources.probability_from_probabilities
 import unitto.core.common.generated.resources.probability_heads_average
-import unitto.core.common.generated.resources.probability_how_expected
-import unitto.core.common.generated.resources.probability_how_variance
 import unitto.core.common.generated.resources.probability_mean_label
 import unitto.core.common.generated.resources.probability_mean_name
 import unitto.core.common.generated.resources.probability_moments
-import unitto.core.common.generated.resources.probability_moments_how
 import unitto.core.common.generated.resources.probability_one_flip_column
 import unitto.core.common.generated.resources.probability_one_flip_table
 import unitto.core.common.generated.resources.probability_one_person
@@ -82,6 +79,12 @@ import unitto.core.common.generated.resources.probability_one_throw_table
 import unitto.core.common.generated.resources.probability_people
 import unitto.core.common.generated.resources.probability_quick_flips
 import unitto.core.common.generated.resources.probability_quick_throws
+import unitto.core.common.generated.resources.probability_rule_here
+import unitto.core.common.generated.resources.probability_rule_interval
+import unitto.core.common.generated.resources.probability_rule_intro
+import unitto.core.common.generated.resources.probability_rule_outside
+import unitto.core.common.generated.resources.probability_rule_share
+import unitto.core.common.generated.resources.probability_rule_title
 import unitto.core.common.generated.resources.probability_sample_of
 import unitto.core.common.generated.resources.probability_so
 import unitto.core.common.generated.resources.probability_sum
@@ -99,7 +102,7 @@ import unitto.core.common.generated.resources.probability_whole_population
 /**
  * Card for the expected value and variance of a binomial, closed by default with both numbers in its
  * header. Open, it shows where they come from: one trial in a table, n times that, and for a few
- * trials the whole distribution. The ? opens a sheet with a worked example and the names and symbols.
+ * trials the whole distribution. The ? opens a sheet with the names and symbols.
  */
 @Composable
 internal fun BinomialMoments(n: Int, p: Double, fractional: String) {
@@ -109,7 +112,7 @@ internal fun BinomialMoments(n: Int, p: Double, fractional: String) {
     MomentsHeader(n, p, fractional, shown, onClick = { shown = !shown }, onHelp = { showHow = true })
     if (shown) MomentsCard(n, p, fractional)
   }
-  if (showHow) MomentsHowSheet(fractional) { showHow = false }
+  if (showHow) SymbolsSheet { showHow = false }
 }
 
 /** Title with `E(X) = 2.8 baskets on average` and `V(X) = 0.84` under it while closed, the ? and an arrow. */
@@ -130,7 +133,7 @@ private fun MomentsHeader(
   onHelp: () -> Unit,
 ) {
   Row(
-    modifier = Modifier.fillMaxWidth().clip(CELL_SHAPE).clickable(onClick = onClick),
+    modifier = Modifier.fillMaxWidth().clip(CELL_SHAPE).clickable(onClick = onClick).padding(HEADER_PADDING),
     verticalAlignment = Alignment.CenterVertically,
   ) {
     Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -159,7 +162,7 @@ private fun MomentsHeader(
         )
       }
     }
-    if (shown) IconButton(onClick = onHelp) { Icon(Symbols.Help, stringResource(Res.string.probability_moments_how)) }
+    if (shown) IconButton(onClick = onHelp) { Icon(Symbols.Help, stringResource(Res.string.probability_symbols)) }
     Icon(if (shown) Symbols.KeyboardArrowUp else Symbols.KeyboardArrowDown, null)
   }
 }
@@ -195,7 +198,7 @@ internal fun NormalMoments(mean: Double, sigma: Double, fractional: String) {
       WaterExample(fractional)
     }
   }
-  if (showHow) MomentsHowSheet(fractional) { showHow = false }
+  if (showHow) SymbolsSheet { showHow = false }
 }
 
 /**
@@ -453,30 +456,100 @@ private fun ColoredTable(header: List<Cell>, rows: List<List<Cell>>, weights: Li
   }
 }
 
-/** X = number of sports practiced in the same table, the two rules, then the names and symbols. */
+/**
+ * Card for the 68–95–99.7 rule: the share of values within 1, 2 and 3 standard deviations of the mean
+ * is the same for every normal law. A curve with the entered μ and σ shades the chosen interval.
+ */
+@Composable
+internal fun NormalRule(mean: Double, sigma: Double, fractional: String) {
+  var shown by rememberSaveable { mutableStateOf(false) }
+  var deviations by rememberSaveable { mutableIntStateOf(1) }
+  val normal = Normal(mean, sigma)
+  fun share(k: Int) = normal.cdf(mean + k * sigma) - normal.cdf(mean - k * sigma)
+  fun Double.percent() = "${(this * PERCENT).shown(fractional, PERCENT_DECIMALS)} %"
+  fun interval(k: Int) = if (k == 1) "μ ± σ" else "μ ± ${k}σ"
+
+  ExplanationCard {
+    Row(
+      modifier = Modifier.fillMaxWidth().clip(CELL_SHAPE).clickable { shown = !shown }.padding(HEADER_PADDING),
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Text(
+          stringResource(Res.string.probability_rule_title),
+          style = MaterialTheme.typography.titleMedium,
+          fontWeight = FontWeight.Bold,
+        )
+        if (!shown) {
+          Text(
+            RULE_DEVIATIONS.joinToString("   ") { k -> "${interval(k)}: ${share(k).percent()}" },
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+          )
+        }
+      }
+      Icon(if (shown) Symbols.KeyboardArrowUp else Symbols.KeyboardArrowDown, null)
+    }
+    if (!shown) return@ExplanationCard
+
+    Text(stringResource(Res.string.probability_rule_intro), style = MaterialTheme.typography.bodyMedium)
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+      RULE_DEVIATIONS.forEach { k ->
+        FilterChip(selected = deviations == k, onClick = { deviations = k }, label = { Text(interval(k)) })
+      }
+    }
+    val lower = mean - deviations * sigma
+    val upper = mean + deviations * sigma
+    DistributionGraph(
+      modifier = Modifier.fillMaxWidth().height(SUM_GRAPH_HEIGHT),
+      distribution = normal,
+      shaded = lower..upper,
+      showLabels = true,
+      showEdgeLabels = false,
+    )
+    Text(
+      style = MaterialTheme.typography.bodyMedium,
+      text =
+        buildAnnotatedString {
+          withStyle(SpanStyle(color = MEAN_COLOR, fontWeight = FontWeight.Bold)) { append(share(deviations).percent()) }
+          append(" ")
+          append(
+            stringResource(Res.string.probability_rule_here, lower.shown(fractional, SUM_DECIMALS), upper.shown(fractional, SUM_DECIMALS))
+          )
+        },
+    )
+    ColoredTable(
+      header =
+        listOf(
+          Cell(""),
+          Cell(stringResource(Res.string.probability_rule_interval)),
+          Cell(stringResource(Res.string.probability_rule_share)),
+        ),
+      rows =
+        RULE_DEVIATIONS.map { k ->
+          listOf(
+            Cell(interval(k), bold = k == deviations),
+            Cell("${(mean - k * sigma).shown(fractional, SUM_DECIMALS)} ; ${(mean + k * sigma).shown(fractional, SUM_DECIMALS)}"),
+            Cell(share(k).percent(), MEAN_COLOR, bold = true),
+          )
+        },
+      weights = listOf(1f, 1.6f, 1f),
+    )
+    Caption(stringResource(Res.string.probability_rule_outside))
+  }
+}
+
+/** The names and symbols of the mean, the variance and the standard deviation. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun MomentsHowSheet(fractional: String, onDismiss: () -> Unit) {
-  var showSymbols by rememberSaveable { mutableStateOf(false) }
+private fun SymbolsSheet(onDismiss: () -> Unit) {
   ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
     Column(
       modifier = Modifier.verticalScroll(rememberScrollState()).padding(start = 24.dp, end = 24.dp, bottom = 32.dp),
       verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-      Text(stringResource(Res.string.probability_moments_how), style = MaterialTheme.typography.titleLarge)
-      Text(stringResource(Res.string.probability_example_sports), style = MaterialTheme.typography.titleMedium)
-      MomentsTable(EXAMPLE_VALUES, EXAMPLE_PROBABILITIES, fractional)
-      Text(stringResource(Res.string.probability_how_expected), style = MaterialTheme.typography.bodyMedium)
-      Text(stringResource(Res.string.probability_how_variance), style = MaterialTheme.typography.bodyMedium)
-
-      Row(
-        modifier = Modifier.fillMaxWidth().clip(CELL_SHAPE).clickable { showSymbols = !showSymbols }.padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        Text(stringResource(Res.string.probability_symbols), modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleSmall)
-        Icon(if (showSymbols) Symbols.KeyboardArrowUp else Symbols.KeyboardArrowDown, null)
-      }
-      if (showSymbols) MomentSymbols()
+      Text(stringResource(Res.string.probability_symbols), style = MaterialTheme.typography.titleLarge)
+      MomentSymbols()
     }
   }
 }
@@ -513,6 +586,8 @@ private const val MAX_TABLE_TRIALS = 6
 private const val TABLE_DECIMALS = 4
 private const val DEVIATION_DECIMALS = 3
 private val CELL_SHAPE = RoundedCornerShape(12.dp)
+// Keeps the first letters of a header out of its rounded corners
+private val HEADER_PADDING = 4.dp
 
 // The same color for each quantity in every table, readable in light and dark
 private val VALUE_COLOR = Color(0xFF1E88E5)
@@ -530,7 +605,6 @@ private const val SUM_DECIMALS = 2
 private const val PERCENT = 100
 private const val PERCENT_DECIMALS = 1
 private val SUM_GRAPH_HEIGHT = 140.dp
+// μ ± σ, μ ± 2σ and μ ± 3σ
+private val RULE_DEVIATIONS = listOf(1, 2, 3)
 
-// X = number of sports practiced, with the probability of each value
-private val EXAMPLE_VALUES = listOf(0.0, 1.0, 2.0, 3.0)
-private val EXAMPLE_PROBABILITIES = listOf(0.2, 0.15, 0.4, 0.25)

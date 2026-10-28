@@ -310,10 +310,12 @@
     <string name="probability_water_range">In %3$s of cases the total is between %1$s L and %2$s L, within 2σ of the mean.</string>
     <string name="probability_water_enough">of water are enough for the %1$s people in %2$s of cases.</string>
     <string name="probability_so">So</string>
-    <string name="probability_moments_how">How to calculate E(X) and V(X)</string>
-    <string name="probability_example_sports">X = number of sports practiced</string>
-    <string name="probability_how_expected">E(X): multiply each value by its probability, then add them up.</string>
-    <string name="probability_how_variance">V(X): multiply the square of each value minus E(X) by its probability, then add them up.</string>
+    <string name="probability_rule_title">The 68–95–99.7 rule</string>
+    <string name="probability_rule_intro">For every normal law, the share of values within 1, 2 or 3 standard deviations σ of the mean μ is always the same.</string>
+    <string name="probability_rule_here">of the values are between %1$s and %2$s.</string>
+    <string name="probability_rule_interval">Interval</string>
+    <string name="probability_rule_share">Share of values</string>
+    <string name="probability_rule_outside">Further than 3σ from the mean, only 0.3 % of the values are left: almost all of them are in μ ± 3σ.</string>
     <string name="probability_symbols">Names and symbols</string>
     <string name="probability_mean_name">Mean</string>
     <string name="probability_variance_name">Variance</string>
