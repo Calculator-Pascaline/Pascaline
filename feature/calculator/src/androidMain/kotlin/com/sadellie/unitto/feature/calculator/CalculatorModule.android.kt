@@ -23,6 +23,9 @@ import com.sadellie.unitto.core.data.calculatorDataModule
 import com.sadellie.unitto.feature.calculator.functions.FunctionsViewModel
 import com.sadellie.unitto.feature.calculator.navigation.calculatorNavigation
 import com.sadellie.unitto.feature.calculator.probability.ProbabilityViewModel
+import com.sadellie.unitto.feature.calculator.regression.RegressionViewModel
+import com.sadellie.unitto.feature.calculator.sequences.SequencesViewModel
+import com.sadellie.unitto.feature.calculator.statistics.StatisticsViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.core.module.includes
 import org.koin.dsl.lazyModule
@@ -33,4 +36,7 @@ val calculatorModule = lazyModule {
   viewModelOf(::CalculatorViewModel)
   viewModelOf(::FunctionsViewModel)
   viewModelOf(::ProbabilityViewModel)
+  viewModelOf(::SequencesViewModel)
+  viewModelOf(::StatisticsViewModel)
+  viewModelOf(::RegressionViewModel)
 }

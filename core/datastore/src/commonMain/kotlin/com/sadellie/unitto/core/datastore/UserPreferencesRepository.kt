@@ -45,6 +45,9 @@ interface UserPreferencesRepository {
 
   /** Functions of the Functions screen, one per line. Empty when there are none yet. */
   val graphFunctions: Flow<String>
+
+  /** Data of an app (like Statistics) saved as text under [key]. Empty when there is none yet. */
+  fun appData(key: String): Flow<String>
   val aboutPrefs: Flow<AboutPreferences>
   val startingScreenPrefs: Flow<StartingScreenPreferences>
 
@@ -177,6 +180,8 @@ interface UserPreferencesRepository {
   suspend fun updateRadianMode(radianMode: Boolean)
 
   suspend fun updateGraphFunctions(value: String)
+
+  suspend fun updateAppData(key: String, value: String)
 
   suspend fun updateUnitConverterFavoritesOnly(enabled: Boolean)
 

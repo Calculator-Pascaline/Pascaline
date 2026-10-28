@@ -47,6 +47,10 @@ interface Route : NavKey {
           DeepLinkPattern(serializer(), deepLink(CalculatorStartRoute).toKmpUri()),
           DeepLinkPattern(FunctionsStartRoute.serializer(), deepLink(FunctionsStartRoute).toKmpUri()),
           DeepLinkPattern(ProbabilityStartRoute.serializer(), deepLink(ProbabilityStartRoute).toKmpUri()),
+          DeepLinkPattern(SequencesStartRoute.serializer(), deepLink(SequencesStartRoute).toKmpUri()),
+          DeepLinkPattern(StatisticsStartRoute.serializer(), deepLink(StatisticsStartRoute).toKmpUri()),
+          DeepLinkPattern(RegressionStartRoute.serializer(), deepLink(RegressionStartRoute).toKmpUri()),
+          DeepLinkPattern(ElementsStartRoute.serializer(), deepLink(ElementsStartRoute).toKmpUri()),
           DeepLinkPattern(
             ConverterStartRoute.serializer(),
             deepLink(ConverterStartRoute()).toKmpUri(),
@@ -91,6 +95,26 @@ data object FunctionsStartRoute : TopLevelRoute {
 @Serializable
 data object ProbabilityStartRoute : TopLevelRoute {
   override val routeId = "probability_route"
+}
+
+@Serializable
+data object SequencesStartRoute : TopLevelRoute {
+  override val routeId = "sequences_route"
+}
+
+@Serializable
+data object StatisticsStartRoute : TopLevelRoute {
+  override val routeId = "statistics_route"
+}
+
+@Serializable
+data object RegressionStartRoute : TopLevelRoute {
+  override val routeId = "regression_route"
+}
+
+@Serializable
+data object ElementsStartRoute : TopLevelRoute {
+  override val routeId = "elements_route"
 }
 
 @Serializable

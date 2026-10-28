@@ -372,7 +372,7 @@ private fun ValuesTable(modifier: Modifier, plots: List<PlotFunction>, formatVal
               val x = startValue + row * stepValue
               TableRow(
                 cells = listOf(formatValue(x) to MaterialTheme.colorScheme.onSurface) +
-                  plots.map { formatValue(it.function.valueAt(x)) to MaterialTheme.colorScheme.onSurface },
+                  plots.map { formatValue(it.valueAt(x)) to MaterialTheme.colorScheme.onSurface },
                 columnWidth = columnWidth,
                 isHeader = false,
               )

@@ -44,6 +44,7 @@ data class ExpressionInputTransformation(private val formatterSymbols: Formatter
   override val legalTokens =
     PhysicalUnits.tokens +
       listOf(Token.Operator.CONVERT) +
+      Token.Sequence.all +
       listOf(
       Token.Func.ARSINH_BRACKET,
       Token.Func.ARCOSH_BRACKET,

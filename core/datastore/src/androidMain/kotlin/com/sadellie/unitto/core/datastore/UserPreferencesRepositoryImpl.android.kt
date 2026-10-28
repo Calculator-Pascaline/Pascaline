@@ -22,6 +22,7 @@ package com.sadellie.unitto.core.datastore
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.emptyPreferences
 import com.sadellie.unitto.core.common.FormatterSymbols
 import com.sadellie.unitto.core.datastore.UserPreferencesRepository.Defaults
@@ -129,6 +130,9 @@ class UserPreferencesRepositoryImpl(private val dataStore: DataStore<Preferences
 
   override val graphFunctions: Flow<String> =
     data.map { preferences -> preferences[DatastorePrefKeys.GRAPH_FUNCTIONS] ?: "" }
+
+  override fun appData(key: String): Flow<String> =
+    data.map { preferences -> preferences[stringPreferencesKey(key)] ?: "" }
 
   override val bodyMassPrefs: Flow<BodyMassPreferences> =
     data.map { preferences ->
@@ -243,6 +247,10 @@ class UserPreferencesRepositoryImpl(private val dataStore: DataStore<Preferences
 
   override suspend fun updateGraphFunctions(value: String) {
     dataStore.edit { preferences -> preferences[DatastorePrefKeys.GRAPH_FUNCTIONS] = value }
+  }
+
+  override suspend fun updateAppData(key: String, value: String) {
+    dataStore.edit { preferences -> preferences[stringPreferencesKey(key)] = value }
   }
 
   override suspend fun updateRadianMode(radianMode: Boolean) {

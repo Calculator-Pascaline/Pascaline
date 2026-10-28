@@ -54,6 +54,7 @@ fun String.tokenLengthAhead(pos: Int): Int {
   unitEndingAt(pos)?.let { return it.token.length }
   if (pos.isAfterToken(this, Token.Calculus.DERIVATIVE)) return Token.Calculus.DERIVATIVE.length
   if (pos.isAfterToken(this, Token.Calculus.DX)) return Token.Calculus.DX.length
+  Token.Sequence.all.forEach { if (pos.isAfterToken(this, it)) return it.length }
 
   // We default to 1 here. It means that cursor is not placed after illegal token. Just a number
   // or a binary operator or something else, can delete by one symbol.

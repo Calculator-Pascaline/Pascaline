@@ -191,6 +191,18 @@ object Token {
     val all by lazy { listOf(INTEGRAL, DERIVATIVE, EVALUATED_AT, DX, X, SUM, PRODUCT, N) }
   }
 
+  /** Terms of sequences of the Sequences app: `uₙ` is u(n), `uₙ₊₁` is u(n+1). */
+  object Sequence {
+    /** u, v and w like NumWorks, then letters that don't mean something else (like e, i, n, x). */
+    val names = listOf("u", "v", "w", "r", "s", "t", "a", "b", "c", "d", "f", "g", "h", "k", "p", "q")
+
+    /** `uₙ` for shift 0, `uₙ₊₁` for 1. */
+    fun term(name: String, shift: Int): String = name + "ₙ" + if (shift == 1) "₊₁" else ""
+
+    // uₙ₊₁ first, so that it is not read as uₙ
+    val all by lazy { names.flatMap { listOf(term(it, 1), term(it, 0)) } }
+  }
+
   /**
    * Invisible markers for two-dimensional input (like NumWorks Epsilon). A slot starts with
    * [SUPERSCRIPT_START] or [SUBSCRIPT_START] and ends with [END]. Slots can be nested.
@@ -278,7 +290,8 @@ object Token {
       Const.all +
       DisplayOnly.ENGINEERING_E +
       Layout.all +
-      Calculus.all
+      Calculus.all +
+      Sequence.all
   }
 
   val numberBaseTokens by lazy { Digit.all + Letter.all }

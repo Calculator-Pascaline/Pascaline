@@ -20,12 +20,20 @@
 package com.sadellie.unitto.feature.calculator.navigation
 
 import com.sadellie.unitto.core.navigation.CalculatorStartRoute
+import com.sadellie.unitto.core.navigation.ElementsStartRoute
 import com.sadellie.unitto.core.navigation.FunctionsStartRoute
 import com.sadellie.unitto.core.navigation.LocalNavigator
 import com.sadellie.unitto.core.navigation.ProbabilityStartRoute
+import com.sadellie.unitto.core.navigation.RegressionStartRoute
+import com.sadellie.unitto.core.navigation.SequencesStartRoute
+import com.sadellie.unitto.core.navigation.StatisticsStartRoute
 import com.sadellie.unitto.feature.calculator.CalculatorRoute
+import com.sadellie.unitto.feature.calculator.elements.ElementsRoute
 import com.sadellie.unitto.feature.calculator.functions.FunctionsRoute
 import com.sadellie.unitto.feature.calculator.probability.ProbabilityRoute
+import com.sadellie.unitto.feature.calculator.regression.RegressionRoute
+import com.sadellie.unitto.feature.calculator.sequences.SequencesRoute
+import com.sadellie.unitto.feature.calculator.statistics.StatisticsRoute
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.core.module.Module
 import org.koin.dsl.navigation3.navigation
@@ -43,5 +51,21 @@ fun Module.calculatorNavigation() {
   navigation<ProbabilityStartRoute> {
     val navigator = LocalNavigator.current
     ProbabilityRoute(openDrawer = navigator::openDrawer)
+  }
+  navigation<SequencesStartRoute> {
+    val navigator = LocalNavigator.current
+    SequencesRoute(openDrawer = navigator::openDrawer)
+  }
+  navigation<StatisticsStartRoute> {
+    val navigator = LocalNavigator.current
+    StatisticsRoute(openDrawer = navigator::openDrawer)
+  }
+  navigation<RegressionStartRoute> {
+    val navigator = LocalNavigator.current
+    RegressionRoute(openDrawer = navigator::openDrawer)
+  }
+  navigation<ElementsStartRoute> {
+    val navigator = LocalNavigator.current
+    ElementsRoute(openDrawer = navigator::openDrawer)
   }
 }

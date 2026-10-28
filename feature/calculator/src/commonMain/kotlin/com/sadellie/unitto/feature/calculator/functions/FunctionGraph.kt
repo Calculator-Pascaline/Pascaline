@@ -71,8 +71,22 @@ import unitto.core.common.generated.resources.Res
 import unitto.core.common.generated.resources.functions_zoom_in
 import unitto.core.common.generated.resources.functions_zoom_out
 
-/** Function ready to be drawn. */
-internal class PlotFunction(val name: String, val color: Color, val function: GraphFunction)
+/**
+ * Curve ready to be drawn.
+ *
+ * @property isFast `false` when [valueAt] is slow, then fewer points are computed.
+ */
+internal class PlotFunction(
+  val name: String,
+  val color: Color,
+  val valueAt: (Double) -> Double,
+  val isFast: Boolean = true,
+) {
+  constructor(name: String, color: Color, function: GraphFunction) : this(name, color, function::valueAt, function.isFast)
+}
+
+/** Point drawn as a dot, like data of the Regression app or terms of a sequence. */
+internal class PlotPoint(val x: Double, val y: Double, val color: Color)
 
 /** Visible part of the plane. */
 internal data class GraphWindow(val xMin: Double, val xMax: Double, val yMin: Double, val yMax: Double) {
@@ -88,7 +102,8 @@ internal data class GraphWindow(val xMin: Double, val xMax: Double, val yMin: Do
  * + and − buttons to zoom both, drag to move, tap to read a value of the closest function, double tap to go back to the automatic
  * view.
  *
- * @param window Visible part, null for automatic: x from −10 to 10 and y fitted to the functions.
+ * @param window Visible part, null for automatic: x from −10 to 10 and y fitted to the functions,
+ *   or fitted to [points] when there are some.
  */
 @Composable
 internal fun FunctionGraph(
@@ -97,6 +112,7 @@ internal fun FunctionGraph(
   window: GraphWindow?,
   onWindowChange: (GraphWindow?) -> Unit,
   formatValue: (Double) -> String,
+  points: List<PlotPoint> = emptyList(),
 ) {
   val measurer = rememberTextMeasurer()
   val axisColor = MaterialTheme.colorScheme.onSurface
@@ -108,7 +124,7 @@ internal fun FunctionGraph(
 
   BoxWithConstraints(modifier = modifier.clipToBounds()) {
     val aspect = (constraints.maxHeight.toDouble() / constraints.maxWidth.coerceAtLeast(1))
-    val autoWindow = remember(functions, aspect) { autoWindow(functions, aspect) }
+    val autoWindow = remember(functions, points, aspect) { autoWindow(functions, points, aspect) }
     val current = window ?: autoWindow
     val currentWindow by rememberUpdatedState(current)
     val currentFunctions by rememberUpdatedState(functions)
@@ -136,6 +152,10 @@ internal fun FunctionGraph(
     ) {
       drawGrid(current, gridColor, axisColor, measurer, labelStyle)
       functions.forEach { drawFunction(it, current) }
+      points.forEach { point ->
+        val center = Offset(current.toScreenX(point.x, size.width), current.toScreenY(point.y, size.height))
+        drawCircle(point.color, radius = POINT_RADIUS.toPx(), center = center)
+      }
 
       val (index, x) = trace ?: return@Canvas
       val function = functions.getOrNull(index) ?: return@Canvas
@@ -233,14 +253,15 @@ internal fun GraphWindow.transformed(
 
 /**
  * x from −10 to 10, y fitted to most values of the functions (ignoring asymptotes). Without
- * functions, units on both axes have the same size.
+ * functions, units on both axes have the same size. With [points], all of them are visible.
  */
-private fun autoWindow(functions: List<PlotFunction>, aspect: Double): GraphWindow {
+private fun autoWindow(functions: List<PlotFunction>, points: List<PlotPoint>, aspect: Double): GraphWindow {
+  if (points.isNotEmpty()) return pointsWindow(points)
   val values =
     functions
       .flatMap { plot ->
-        val samples = if (plot.function.isFast) AUTO_SAMPLES else SLOW_SAMPLES
-        (0..samples).map { plot.function.valueAt(AUTO_X_MIN + (AUTO_X_MAX - AUTO_X_MIN) * it / samples) }
+        val samples = if (plot.isFast) AUTO_SAMPLES else SLOW_SAMPLES
+        (0..samples).map { plot.valueAt(AUTO_X_MIN + (AUTO_X_MAX - AUTO_X_MIN) * it / samples) }
       }
       .filter { it.isFinite() }
       .sorted()
@@ -257,6 +278,23 @@ private fun autoWindow(functions: List<PlotFunction>, aspect: Double): GraphWind
   return GraphWindow(AUTO_X_MIN, AUTO_X_MAX, low - margin, high + margin)
 }
 
+/** All points with a margin around them, and the axes when they are close. */
+private fun pointsWindow(points: List<PlotPoint>): GraphWindow {
+  fun range(values: List<Double>): Pair<Double, Double> {
+    var low = values.min()
+    var high = values.max()
+    if (high - low < MIN_RANGE) {
+      low -= 1
+      high += 1
+    }
+    val margin = (high - low) * POINTS_MARGIN
+    return low - margin to high + margin
+  }
+  val (xMin, xMax) = range(points.map { it.x })
+  val (yMin, yMax) = range(points.map { it.y })
+  return GraphWindow(xMin, xMax, yMin, yMax)
+}
+
 /** Function whose curve is closest to the tap, and x of the tap. */
 private fun closestFunction(
   functions: List<PlotFunction>,
@@ -268,7 +306,7 @@ private fun closestFunction(
   val x = window.xMin + tap.x / widthPx * window.width
   return functions
     .mapIndexedNotNull { index, plot ->
-      val y = plot.function.valueAt(x)
+      val y = plot.valueAt(x)
       if (y.isNaN()) null else index to abs(window.toScreenY(y, heightPx.toFloat()) - tap.y)
     }
     .minByOrNull { it.second }
@@ -318,12 +356,12 @@ private fun DrawScope.drawLabel(measurer: TextMeasurer, text: String, topLeft: O
  * defined and at jumps (asymptotes of tan(x) or 1/x).
  */
 private fun DrawScope.drawFunction(plot: PlotFunction, window: GraphWindow) {
-  val samples = if (plot.function.isFast) (size.width / PIXELS_PER_SAMPLE).toInt() else SLOW_SAMPLES
+  val samples = if (plot.isFast) (size.width / PIXELS_PER_SAMPLE).toInt() else SLOW_SAMPLES
   val path = Path()
   var previous: Float? = null
   for (i in 0..samples) {
     val x = window.xMin + window.width * i / samples
-    val y = plot.function.valueAt(x)
+    val y = plot.valueAt(x)
     val sx = size.width * i / samples
     if (y.isNaN()) {
       previous = null
@@ -346,7 +384,7 @@ private fun DrawScope.drawTrace(
   background: Color,
   formatValue: (Double) -> String,
 ) {
-  val y = plot.function.valueAt(x)
+  val y = plot.valueAt(x)
   if (!y.isNaN()) {
     val point = Offset(window.toScreenX(x, size.width), window.toScreenY(y, size.height))
     drawCircle(plot.color, radius = TRACE_RADIUS.toPx(), center = point)
@@ -363,7 +401,7 @@ private fun DrawScope.drawTrace(
 }
 
 /** 1, 2 or 5 times a power of ten, close to [rough]. */
-private fun niceStep(rough: Double): Double {
+internal fun niceStep(rough: Double): Double {
   if (rough <= 0 || !rough.isFinite()) return 1.0
   val magnitude = 10.0.pow(floor(log10(rough)))
   val fraction = rough / magnitude
@@ -376,7 +414,7 @@ private fun niceStep(rough: Double): Double {
   return nice * magnitude
 }
 
-private fun gridValues(from: Double, to: Double, step: Double): List<Double> {
+internal fun gridValues(from: Double, to: Double, step: Double): List<Double> {
   val first = ceil(from / step).toLong()
   val last = floor(to / step).toLong()
   if (last - first > MAX_GRID_LINES) return emptyList()
@@ -384,7 +422,7 @@ private fun gridValues(from: Double, to: Double, step: Double): List<Double> {
 }
 
 /** As many decimals as the step needs: 0.5, 1, 1.5. */
-private fun formatTick(value: Double, step: Double): String {
+internal fun formatTick(value: Double, step: Double): String {
   val decimals = max(0, -floor(log10(step)).toInt())
   return KBigDecimal.valueOf(value)
     .toFormattedString(decimals, OutputFormat.PLAIN)
@@ -420,5 +458,7 @@ private const val OFF_SCREEN = 2f
 private const val MAX_JUMP = 1.5f
 private val CURVE_WIDTH = 2.5.dp
 private val TRACE_RADIUS = 5.dp
+private val POINT_RADIUS = 4.dp
+private const val POINTS_MARGIN = 0.12
 private val LABEL_PADDING = 6.dp
 private val LABEL_HEIGHT = 16.dp

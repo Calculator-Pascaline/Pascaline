@@ -102,8 +102,14 @@ class TokenTest {
 
     val calculus = listOf("∫", "d/dx", "|", "dx", "x", "Σ", "∏", "n").joinToString("")
 
+    // Terms of the Sequences app, uₙ₊₁ before uₙ
+    val sequence =
+      listOf("u", "v", "w", "r", "s", "t", "a", "b", "c", "d", "f", "g", "h", "k", "p", "q").joinToString("") {
+        "${it}ₙ₊₁${it}ₙ"
+      }
+
     assertEquals(
-      "1234567890.$operator$func${consts}E$layout$calculus",
+      "1234567890.$operator$func${consts}E$layout$calculus$sequence",
       Token.expressionTokens.joinToString(""),
     )
   }

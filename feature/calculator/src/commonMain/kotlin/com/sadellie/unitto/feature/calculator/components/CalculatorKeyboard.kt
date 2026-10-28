@@ -137,6 +137,8 @@ internal fun CalculatorKeyboard(
   middleZero: Boolean,
   fractional: String,
   isInSeries: Boolean = false,
+  firstFunctionKeys: List<Pair<String, String>> = emptyList(),
+  showCalculus: Boolean = true,
 ) {
   // Portrait: few function rows that scroll, digits never change
   if (LocalWindowSize.current.heightSizeClass >= WindowHeightSizeClass.Medium) {
@@ -149,6 +151,8 @@ internal fun CalculatorKeyboard(
         modifier = Modifier.fillMaxWidth(),
         rowHeight = rowHeight * FUNCTION_ROW_SCALE,
         onAddTokenClick = onAddTokenClick,
+        firstKeys = firstFunctionKeys,
+        showCalculus = showCalculus,
       )
       BottomGrid(
         modifier = Modifier.fillMaxWidth().weight(1f),

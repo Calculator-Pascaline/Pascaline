@@ -87,9 +87,25 @@ private val INVERSE_SWITCH = FunctionKey("inv", "")
  * fewer keys in a row are wider. Dots under the keys show current page.
  *
  * @param rowHeight Height of one row when page has [PAGE_ROWS] rows.
+ * @param firstKeys Label and token of keys for the first pages, like terms of sequences.
+ * @param showCalculus `false` hides the page of integrals, derivatives and sums.
  */
 @Composable
-internal fun FunctionRows(modifier: Modifier, rowHeight: Dp, onAddTokenClick: (String) -> Unit) {
+internal fun FunctionRows(
+  modifier: Modifier,
+  rowHeight: Dp,
+  onAddTokenClick: (String) -> Unit,
+  firstKeys: List<Pair<String, String>> = emptyList(),
+  showCalculus: Boolean = true,
+) {
+  val functionPages =
+    remember(firstKeys, showCalculus) {
+      val first =
+        firstKeys.chunked(KEYS_PER_PAGE).map { page ->
+          page.chunked(KEYS_PER_ROW).map { row -> row.map { (label, token) -> FunctionKey(label, token) } }
+        }
+      first + listOfNotNull(EXPONENTS_PAGE, TRIGONOMETRY_PAGE, CALCULUS_PAGE.takeIf { showCalculus })
+    }
   val pagerState = rememberPagerState(pageCount = { functionPages.size })
   var inverse by rememberSaveable { mutableStateOf(false) }
   Column(modifier = modifier) {
@@ -191,47 +207,49 @@ private fun function(name: String) = FunctionKey(name, "$name(")
 private fun trig(name: String, inverseName: String) =
   FunctionKey(name, "$name(", inverse = function(inverseName))
 
-private val functionPages =
+// Exponents and roots
+private val EXPONENTS_PAGE =
   listOf(
-    // Exponents and roots
     listOf(
-      listOf(
-        FunctionKey("eˣ", Token.Layout.EXP),
-        FunctionKey(Token.Func.LN, Token.Func.LN_BRACKET),
-        FunctionKey(Token.Func.LOG, Token.Layout.LOG_10),
-        FunctionKey("×10ˣ", Token.Operator.MULTIPLY + Token.Layout.POWER_10),
-      ),
-      listOf(
-        FunctionKey(Token.Operator.SQRT, Token.Layout.SQRT),
-        FunctionKey("x²", Token.Operator.POWER + Token.Layout.SUPERSCRIPT_START + "2" + Token.Layout.END),
-      ),
+      FunctionKey("eˣ", Token.Layout.EXP),
+      FunctionKey(Token.Func.LN, Token.Func.LN_BRACKET),
+      FunctionKey(Token.Func.LOG, Token.Layout.LOG_10),
+      FunctionKey("×10ˣ", Token.Operator.MULTIPLY + Token.Layout.POWER_10),
     ),
-    // Trigonometry, inverse functions with the switch
     listOf(
-      listOf(
-        trig(Token.Func.COS, Token.Func.ARCOS),
-        trig(Token.Func.SIN, Token.Func.ARSIN),
-        trig(Token.Func.TAN, Token.Func.ACTAN),
-        FunctionKey(Token.Const.PI, Token.Const.PI),
-      ),
-      listOf(
-        trig(Token.Func.COSH, Token.Func.ARCOSH),
-        trig(Token.Func.SINH, Token.Func.ARSINH),
-        trig(Token.Func.TANH, Token.Func.ARTANH),
-        INVERSE_SWITCH,
-      ),
+      FunctionKey(Token.Operator.SQRT, Token.Layout.SQRT),
+      FunctionKey("x²", Token.Operator.POWER + Token.Layout.SUPERSCRIPT_START + "2" + Token.Layout.END),
     ),
-    // Calculus. Integral without bounds is indefinite
+  )
+
+// Trigonometry, inverse functions with the switch
+private val TRIGONOMETRY_PAGE =
+  listOf(
     listOf(
-      listOf(
-        FunctionKey("∫ □ dx", Token.Layout.INTEGRAL),
-        FunctionKey("d/dx(□)", Token.Layout.DERIVATIVE),
-      ),
-      listOf(
-        FunctionKey(Token.Calculus.SUM + " □", Token.Layout.SUM),
-        FunctionKey(Token.Calculus.PRODUCT + " □", Token.Layout.PRODUCT),
-        FunctionKey(Token.Const.INFINITY, Token.Const.INFINITY),
-      ),
+      trig(Token.Func.COS, Token.Func.ARCOS),
+      trig(Token.Func.SIN, Token.Func.ARSIN),
+      trig(Token.Func.TAN, Token.Func.ACTAN),
+      FunctionKey(Token.Const.PI, Token.Const.PI),
+    ),
+    listOf(
+      trig(Token.Func.COSH, Token.Func.ARCOSH),
+      trig(Token.Func.SINH, Token.Func.ARSINH),
+      trig(Token.Func.TANH, Token.Func.ARTANH),
+      INVERSE_SWITCH,
+    ),
+  )
+
+// Calculus. Integral without bounds is indefinite
+private val CALCULUS_PAGE =
+  listOf(
+    listOf(
+      FunctionKey("∫ □ dx", Token.Layout.INTEGRAL),
+      FunctionKey("d/dx(□)", Token.Layout.DERIVATIVE),
+    ),
+    listOf(
+      FunctionKey(Token.Calculus.SUM + " □", Token.Layout.SUM),
+      FunctionKey(Token.Calculus.PRODUCT + " □", Token.Layout.PRODUCT),
+      FunctionKey(Token.Const.INFINITY, Token.Const.INFINITY),
     ),
   )
 
@@ -314,6 +332,8 @@ private fun MenuRow(
 
 private val KEY_SPACING = 6.dp
 internal const val PAGE_ROWS = 4
+private const val KEYS_PER_ROW = 4
+private const val KEYS_PER_PAGE = 8
 private const val DOT_ALPHA = 0.3f
 private val DOT_SIZE = 6.dp
 internal val DOTS_HEIGHT = 14.dp

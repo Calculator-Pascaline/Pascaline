@@ -103,6 +103,8 @@ internal class Evaluator(
       Node.ImaginaryUnit -> Complex(KBigDecimal.ZERO, KBigDecimal.ONE)
       Node.X -> x ?: throw SymbolicExpressionException()
       Node.N -> index ?: throw ExpressionException.BadExpression()
+      // Only in formulas of sequences, see SequenceFunction
+      is Node.SequenceTerm -> throw ExpressionException.BadExpression()
       // Only allowed in bounds, see bound()
       Node.Infinity -> throw ExpressionException.BadExpression()
       // °C and °F only in simple conversions, see Expression

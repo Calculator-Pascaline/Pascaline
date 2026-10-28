@@ -21,14 +21,18 @@ package com.sadellie.unitto.core.navigation
 
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.sadellie.unitto.core.designsystem.icons.symbols.AccessibilityNew
+import com.sadellie.unitto.core.designsystem.icons.symbols.Atom
 import com.sadellie.unitto.core.designsystem.icons.symbols.BarChart
+import com.sadellie.unitto.core.designsystem.icons.symbols.BoxPlot
 import com.sadellie.unitto.core.designsystem.icons.symbols.Calculate
 import com.sadellie.unitto.core.designsystem.icons.symbols.CalculateFill
 import com.sadellie.unitto.core.designsystem.icons.symbols.Event
 import com.sadellie.unitto.core.designsystem.icons.symbols.EventFill
 import com.sadellie.unitto.core.designsystem.icons.symbols.LineAxis
+import com.sadellie.unitto.core.designsystem.icons.symbols.ScatterPlot
 import com.sadellie.unitto.core.designsystem.icons.symbols.Schedule
 import com.sadellie.unitto.core.designsystem.icons.symbols.ScheduleFill
+import com.sadellie.unitto.core.designsystem.icons.symbols.Sequence
 import com.sadellie.unitto.core.designsystem.icons.symbols.Settings
 import com.sadellie.unitto.core.designsystem.icons.symbols.SettingsFill
 import com.sadellie.unitto.core.designsystem.icons.symbols.SwapHoriz
@@ -39,9 +43,13 @@ import unitto.core.common.generated.resources.body_mass_title
 import unitto.core.common.generated.resources.calculator_title
 import unitto.core.common.generated.resources.converter_title
 import unitto.core.common.generated.resources.date_calculator_title
+import unitto.core.common.generated.resources.elements_title
 import unitto.core.common.generated.resources.functions_title
 import unitto.core.common.generated.resources.probability_title
+import unitto.core.common.generated.resources.regression_title
+import unitto.core.common.generated.resources.sequences_title
 import unitto.core.common.generated.resources.settings_title
+import unitto.core.common.generated.resources.statistics_title
 import unitto.core.common.generated.resources.time_zone_title
 
 sealed interface DrawerItem {
@@ -77,6 +85,34 @@ data object ProbabilityDrawerItem : DrawerItem {
   override val name = Res.string.probability_title
   override val selectedIcon = Symbols.BarChart
   override val defaultIcon = Symbols.BarChart
+}
+
+data object SequencesDrawerItem : DrawerItem {
+  override val topLevelRoute = SequencesStartRoute
+  override val name = Res.string.sequences_title
+  override val selectedIcon = Symbols.Sequence
+  override val defaultIcon = Symbols.Sequence
+}
+
+data object StatisticsDrawerItem : DrawerItem {
+  override val topLevelRoute = StatisticsStartRoute
+  override val name = Res.string.statistics_title
+  override val selectedIcon = Symbols.BoxPlot
+  override val defaultIcon = Symbols.BoxPlot
+}
+
+data object RegressionDrawerItem : DrawerItem {
+  override val topLevelRoute = RegressionStartRoute
+  override val name = Res.string.regression_title
+  override val selectedIcon = Symbols.ScatterPlot
+  override val defaultIcon = Symbols.ScatterPlot
+}
+
+data object ElementsDrawerItem : DrawerItem {
+  override val topLevelRoute = ElementsStartRoute
+  override val name = Res.string.elements_title
+  override val selectedIcon = Symbols.Atom
+  override val defaultIcon = Symbols.Atom
 }
 
 data object DateCalculatorDrawerItem : DrawerItem {

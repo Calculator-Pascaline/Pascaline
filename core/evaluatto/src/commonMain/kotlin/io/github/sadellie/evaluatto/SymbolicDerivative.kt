@@ -455,6 +455,7 @@ internal class NodeFormatter(private val precision: Int, private val outputForma
       Node.ImaginaryUnit -> Token.Const.I
       Node.X -> Token.Calculus.X
       Node.N -> Token.Calculus.N
+      is Node.SequenceTerm -> Token.Sequence.term(node.name, node.shift)
       Node.Infinity -> Token.Const.INFINITY
       is Node.Unit -> node.unit.token
       is Node.Convert -> format(node.value) + Token.Operator.CONVERT + format(node.target)

@@ -66,7 +66,7 @@ class GraphFunction(input: String, private val radianMode: Boolean = true) {
   init {
     val tree = Parser(input.tokenize(), KRoundingMode.HALF_EVEN).parse()
     if (tree is Node.Convert || tree.units().isNotEmpty()) throw ExpressionException.BadExpression()
-    compiled = compile(tree)
+    compiled = DoubleCompiler<Double>(radianMode, ::compileOther).compile(tree)
   }
 
   /** f(x), NaN when it is not defined or not a real number. */
@@ -77,17 +77,9 @@ class GraphFunction(input: String, private val radianMode: Boolean = true) {
       Double.NaN
     }
 
-  private fun compile(node: Node): (Double) -> Double =
+  private fun compileOther(node: Node): (Double) -> Double =
     when (node) {
-      is Node.Number -> node.value.toDouble().let { value -> { _: Double -> value } }
-      Node.Pi -> { _ -> PI }
-      Node.Euler -> { _ -> E }
       Node.X -> { x -> x }
-      is Node.Negate -> compile(node.node).let { f -> { x -> -f(x) } }
-      is Node.Binary -> compileBinary(node)
-      is Node.Function -> compileFunction(node.function, compile(node.argument))
-      is Node.Log -> compileLog(compile(node.base), compile(node.argument))
-      is Node.Factorial -> compile(node.node).let { f -> { x -> factorial(f(x)) } }
       // Value of the derivative at x
       is Node.Derivative -> exact(if (node.at == null) Node.Derivative(node.body, Node.X) else node)
       // Antiderivative that is 0 at x = 0
@@ -96,47 +88,6 @@ class GraphFunction(input: String, private val radianMode: Boolean = true) {
       else -> exact(node)
     }
 
-  private fun compileLog(base: (Double) -> Double, argument: (Double) -> Double): (Double) -> Double =
-    { x -> ln(argument(x)) / ln(base(x)) }
-
-  private fun compileBinary(node: Node.Binary): (Double) -> Double {
-    val left = compile(node.left)
-    val right = compile(node.right)
-    return when (node.operator) {
-      BinaryOperator.PLUS -> { x -> left(x) + right(x) }
-      BinaryOperator.MINUS -> { x -> left(x) - right(x) }
-      BinaryOperator.MULTIPLY -> { x -> left(x) * right(x) }
-      BinaryOperator.DIVIDE -> { x -> left(x) / right(x) }
-      BinaryOperator.POWER -> { x -> power(left(x), right(x)) }
-      BinaryOperator.MODULO -> { x -> left(x).mod(right(x)) }
-    }
-  }
-
-  private fun compileFunction(function: FunctionType, f: (Double) -> Double): (Double) -> Double {
-    // Angles in degrees when radian mode is off
-    val toRadians = if (radianMode) 1.0 else PI / DEGREES_IN_HALF_TURN
-    val fromRadians = 1 / toRadians
-    return when (function) {
-      FunctionType.SQRT -> { x -> sqrt(f(x)) }
-      FunctionType.SIN -> { x -> sin(f(x) * toRadians) }
-      FunctionType.COS -> { x -> cos(f(x) * toRadians) }
-      FunctionType.TAN -> { x -> tan(f(x) * toRadians) }
-      FunctionType.ARSIN -> { x -> asin(f(x)) * fromRadians }
-      FunctionType.ARCOS -> { x -> acos(f(x)) * fromRadians }
-      FunctionType.ARTAN -> { x -> atan(f(x)) * fromRadians }
-      FunctionType.LN -> { x -> ln(f(x)) }
-      FunctionType.LOG -> { x -> log10(f(x)) }
-      FunctionType.EXP -> { x -> exp(f(x)) }
-      FunctionType.SINH -> { x -> sinh(f(x)) }
-      FunctionType.COSH -> { x -> cosh(f(x)) }
-      FunctionType.TANH -> { x -> tanh(f(x)) }
-      FunctionType.ARSINH -> { x -> asinh(f(x)) }
-      FunctionType.ARCOSH -> { x -> acosh(f(x)) }
-      FunctionType.ARTANH -> { x -> atanh(f(x)) }
-      FunctionType.ABS -> { x -> abs(f(x)) }
-    }
-  }
-
   /** Slow, but exact: for integrals, derivatives and series. */
   private fun exact(node: Node): (Double) -> Double {
     isFast = false
@@ -144,7 +95,70 @@ class GraphFunction(input: String, private val radianMode: Boolean = true) {
   }
 }
 
-/** Real powers of negative numbers where they exist: (−8)^(1/3) = −2, (−2)^3 = −8. */
+/**
+ * Turns an expression into a fast floating point function of [V] (the values of its variables).
+ * Numbers, constants, operators and functions are compiled here, everything else (variables,
+ * integrals) by [compileOther].
+ */
+internal class DoubleCompiler<V>(
+  private val radianMode: Boolean,
+  private val compileOther: (Node) -> (V) -> Double,
+) {
+  fun compile(node: Node): (V) -> Double =
+    when (node) {
+      is Node.Number -> node.value.toDouble().let { value -> { _: V -> value } }
+      Node.Pi -> { _ -> PI }
+      Node.Euler -> { _ -> E }
+      is Node.Negate -> compile(node.node).let { f -> { v -> -f(v) } }
+      is Node.Binary -> compileBinary(node)
+      is Node.Function -> compileFunction(node.function, compile(node.argument))
+      is Node.Log -> compileLog(compile(node.base), compile(node.argument))
+      is Node.Factorial -> compile(node.node).let { f -> { v -> factorial(f(v)) } }
+      else -> compileOther(node)
+    }
+
+  private fun compileLog(base: (V) -> Double, argument: (V) -> Double): (V) -> Double =
+    { v -> ln(argument(v)) / ln(base(v)) }
+
+  private fun compileBinary(node: Node.Binary): (V) -> Double {
+    val left = compile(node.left)
+    val right = compile(node.right)
+    return when (node.operator) {
+      BinaryOperator.PLUS -> { v -> left(v) + right(v) }
+      BinaryOperator.MINUS -> { v -> left(v) - right(v) }
+      BinaryOperator.MULTIPLY -> { v -> left(v) * right(v) }
+      BinaryOperator.DIVIDE -> { v -> left(v) / right(v) }
+      BinaryOperator.POWER -> { v -> power(left(v), right(v)) }
+      BinaryOperator.MODULO -> { v -> left(v).mod(right(v)) }
+    }
+  }
+
+  private fun compileFunction(function: FunctionType, f: (V) -> Double): (V) -> Double {
+    // Angles in degrees when radian mode is off
+    val toRadians = if (radianMode) 1.0 else PI / DEGREES_IN_HALF_TURN
+    val fromRadians = 1 / toRadians
+    return when (function) {
+      FunctionType.SQRT -> { v -> sqrt(f(v)) }
+      FunctionType.SIN -> { v -> sin(f(v) * toRadians) }
+      FunctionType.COS -> { v -> cos(f(v) * toRadians) }
+      FunctionType.TAN -> { v -> tan(f(v) * toRadians) }
+      FunctionType.ARSIN -> { v -> asin(f(v)) * fromRadians }
+      FunctionType.ARCOS -> { v -> acos(f(v)) * fromRadians }
+      FunctionType.ARTAN -> { v -> atan(f(v)) * fromRadians }
+      FunctionType.LN -> { v -> ln(f(v)) }
+      FunctionType.LOG -> { v -> log10(f(v)) }
+      FunctionType.EXP -> { v -> exp(f(v)) }
+      FunctionType.SINH -> { v -> sinh(f(v)) }
+      FunctionType.COSH -> { v -> cosh(f(v)) }
+      FunctionType.TANH -> { v -> tanh(f(v)) }
+      FunctionType.ARSINH -> { v -> asinh(f(v)) }
+      FunctionType.ARCOSH -> { v -> acosh(f(v)) }
+      FunctionType.ARTANH -> { v -> atanh(f(v)) }
+      FunctionType.ABS -> { v -> abs(f(v)) }
+    }
+  }
+}
+
 private fun power(base: Double, exponent: Double): Double {
   if (base >= 0 || exponent == floor(exponent)) return base.pow(exponent)
   // Odd roots: exponent is p/q with odd q

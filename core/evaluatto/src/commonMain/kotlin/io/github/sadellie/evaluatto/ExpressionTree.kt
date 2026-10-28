@@ -39,8 +39,11 @@ internal sealed interface Node {
   /** Variable for integrals, derivatives and polynomials. */
   data object X : Node
 
-  /** Index of sums and products. */
+  /** Index of sums and products, rank of sequences. */
   data object N : Node
+
+  /** Term of a sequence: `uₙ` has [shift] 0, `uₙ₊₁` has 1. Only in [SequenceFunction]. */
+  data class SequenceTerm(val name: String, val shift: Int) : Node
 
   /** Only allowed as a bound of integrals, sums and products. */
   data object Infinity : Node
@@ -116,6 +119,7 @@ internal fun Node.dependsOnX(): Boolean =
     Node.ImaginaryUnit,
     Node.N,
     Node.Infinity,
+    is Node.SequenceTerm,
     is Node.Unit -> false
     is Node.Convert -> value.dependsOnX()
     is Node.Negate -> node.dependsOnX()
@@ -157,6 +161,13 @@ internal class Parser(private val tokens: List<String>, private val roundingMode
 
   // Null when at the end of expression
   private fun peek() = tokens.getOrNull(cursorPosition) ?: ""
+
+  private fun sequenceTerm(): Node {
+    val token = peek()
+    cursorPosition++
+    val name = Token.Sequence.names.first { token.startsWith(it) }
+    return Node.SequenceTerm(name, if (token == Token.Sequence.term(name, 1)) 1 else 0)
+  }
 
   private fun moveIfMatched(token: String): Boolean {
     if (peek() == token) {
@@ -244,6 +255,7 @@ internal class Parser(private val tokens: List<String>, private val roundingMode
         moveIfMatched(Token.Const.I) -> Node.ImaginaryUnit
         moveIfMatched(Token.Calculus.X) -> Node.X
         moveIfMatched(Token.Calculus.N) -> Node.N
+        peek() in Token.Sequence.all -> sequenceTerm()
         possibleNumber.startsWith(Token.Units.PREFIX) -> {
           cursorPosition++
           Node.Unit(PhysicalUnits.bySymbol(possibleNumber.removePrefix(Token.Units.PREFIX)) ?: throw ExpressionException.BadExpression())
