@@ -120,6 +120,9 @@ private sealed interface LayoutNode {
   /** Σ or ∏ before its bounds, drawn big with bounds above and below. */
   class BigOperator(val index: Int, val symbol: String) : LayoutNode
 
+  /** ∫, drawn taller than text around it. */
+  class IntegralSign(val index: Int) : LayoutNode
+
   /**
    * @property start Index of slot start marker.
    * @property end Index of slot end marker (text length if slot is not closed).
@@ -165,6 +168,14 @@ private fun String.parseLayout(from: Int): Pair<List<LayoutNode>, Int> {
       flushText()
       nodes.add(LayoutNode.UnitToken(index, unit))
       index += unit.token.length
+      textStart = index
+      continue
+    }
+
+    if (char == INTEGRAL_CHAR) {
+      flushText()
+      nodes.add(LayoutNode.IntegralSign(index))
+      index++
       textStart = index
       continue
     }
@@ -291,6 +302,13 @@ private class LayoutBuilder(
           previousDescent = box.descent
         }
         is LayoutNode.Hidden -> carets += Caret(node.index, x, caretTop, caretBottom)
+        is LayoutNode.IntegralSign -> {
+          val box = layoutIntegralSign(node, size, caretTop, caretBottom)
+          add(box)
+          // bounds go to the top and the bottom of the sign
+          previousAscent = box.ascent
+          previousDescent = box.descent
+        }
         is LayoutNode.BigOperator -> {
           carets += Caret(node.index, x, caretTop, caretBottom)
           val lower = nodes.getOrNull(nodeIndex + 1) as? LayoutNode.Slot
@@ -337,12 +355,20 @@ private class LayoutBuilder(
                 layoutFraction(node, next, size)
               }
               node.kind == SlotKind.SUBSCRIPT && next?.kind == SlotKind.SUPERSCRIPT -> {
-                // integral bounds, one above the other. Both empty: small, they are optional
+                // integral bounds, one above the other. Empty ones are bigger, easy to tap
                 last = next
                 nodeIndex++
-                val scale =
-                  if (node.content.isEmpty() && next.content.isEmpty()) EMPTY_BOUNDS_SCALE else SCRIPT_SCALE
-                layoutScripts(next, node, size, previousAscent, previousDescent, scale)
+                fun boundScale(bound: LayoutNode.Slot) =
+                  if (bound.content.isEmpty()) EMPTY_BOUND_SCALE else SCRIPT_SCALE
+                layoutScripts(
+                  next,
+                  node,
+                  size,
+                  previousAscent,
+                  previousDescent,
+                  superscriptScale = boundScale(next),
+                  subscriptScale = boundScale(node),
+                )
               }
               node.kind == SlotKind.SUPERSCRIPT ->
                 layoutScripts(node, null, size, previousAscent, previousDescent)
@@ -411,6 +437,34 @@ private class LayoutBuilder(
     )
   }
 
+  /**
+   * ∫ taller than the text and centered on it like on paper, so that its bounds are further apart
+   * and easy to tap.
+   */
+  private fun layoutIntegralSign(
+    node: LayoutNode.IntegralSign,
+    size: Float,
+    caretTop: Float,
+    caretBottom: Float,
+  ): Box {
+    val signSize = size * INTEGRAL_SCALE
+    val sign = layoutText(LayoutNode.Text(node.index, Token.Calculus.INTEGRAL), signSize, caretTop, caretBottom)
+    // Scaled from the baseline, so it is moved down to keep the middle of the text
+    val moved = sign.moved(0f, (signSize - size) * INTEGRAL_CENTER)
+    return Box(
+      width = moved.width,
+      ascent = moved.ascent,
+      descent = moved.descent,
+      texts = moved.texts,
+      // Cursor stays as tall as the text
+      carets =
+        listOf(
+          Caret(node.index, 0f, caretTop, caretBottom),
+          Caret(node.index + 1, moved.width, caretTop, caretBottom),
+        ),
+    )
+  }
+
   /** Position of every raw offset in formatted text (grouping symbols are inserted). */
   private fun displayOffsets(raw: String, display: String): List<Int> {
     val grouping = formatterSymbols.grouping.firstOrNull()
@@ -436,19 +490,19 @@ private class LayoutBuilder(
     size: Float,
     previousAscent: Float,
     previousDescent: Float,
-    scale: Float = SCRIPT_SCALE,
+    superscriptScale: Float = SCRIPT_SCALE,
+    subscriptScale: Float = SCRIPT_SCALE,
   ): Box {
-    val scriptSize = size * scale
     val superBox =
       superscript?.let {
-        val box = layoutRow(it.content, it.start + 1, it.end, scriptSize)
+        val box = layoutRow(it.content, it.start + 1, it.end, size * superscriptScale)
         // above the middle of the previous element
         val shift = max(size * SUPERSCRIPT_SHIFT, previousAscent - box.ascent * SCRIPT_OVERLAP)
         box.moved(0f, -shift)
       }
     val subBox =
       subscript?.let {
-        val box = layoutRow(it.content, it.start + 1, it.end, scriptSize)
+        val box = layoutRow(it.content, it.start + 1, it.end, size * subscriptScale)
         val shift = max(size * SUBSCRIPT_SHIFT, previousDescent - box.descent * SCRIPT_OVERLAP)
         box.moved(0f, shift)
       }
@@ -638,6 +692,7 @@ private fun Caret.copy(x: Float) = Caret(index, x, top, bottom)
 
 private val POWER_CHAR = Token.Operator.POWER.first()
 private val SQRT_CHAR = Token.Operator.SQRT.first()
+private val INTEGRAL_CHAR = Token.Calculus.INTEGRAL.first()
 private val BIG_OPERATORS = listOf(Token.Calculus.SUM.first(), Token.Calculus.PRODUCT.first())
 private const val DERIVATIVE_NUMERATOR = "d"
 private val DOT_CHAR = Token.Digit.DOT.first()
@@ -648,8 +703,8 @@ private const val TEXT_DESCENT = 0.22f
 private const val CARET_ASCENT = 0.82f
 private const val CARET_DESCENT = 0.22f
 private const val SCRIPT_SCALE = 0.65f
-/** Empty integral bounds are smaller than filled ones */
-private const val EMPTY_BOUNDS_SCALE = 0.45f
+/** Empty integral bound is as big as the text, so that it is easy to tap */
+private const val EMPTY_BOUND_SCALE = 1f
 private const val SUPERSCRIPT_SHIFT = 0.45f
 private const val SUBSCRIPT_SHIFT = 0.22f
 private const val SCRIPT_OVERLAP = 0.55f
@@ -660,6 +715,9 @@ private const val FRACTION_GAP = 0.1f
 private const val DERIVATIVE_SCALE = 0.7f
 private const val UNIT_GAP = 0.12f
 private const val BIG_OPERATOR_SCALE = 1.4f
+private const val INTEGRAL_SCALE = 1.8f
+/** Middle of text above the baseline, in text sizes */
+private const val INTEGRAL_CENTER = 0.35f
 /** Baseline of big operator, so that it is centered around the middle of a line */
 private const val BIG_OPERATOR_BASELINE = 0.25f
 private const val RADICAL_STROKE = 0.06f

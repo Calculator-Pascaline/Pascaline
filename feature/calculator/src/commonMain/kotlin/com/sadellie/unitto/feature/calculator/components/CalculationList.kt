@@ -193,8 +193,7 @@ private fun CalculationListItem(
   val background = MaterialTheme.colorScheme.surfaceContainer
   val textColor = MaterialTheme.colorScheme.onSurface
   val resultColor = MaterialTheme.colorScheme.primary
-  val style =
-    LocalNumberTypography.current.displaySmall.let { it.copy(fontSize = it.fontSize * ITEM_FONT_SCALE) }
+  val style = historyTextStyle()
   val extraStyle = style.copy(fontSize = style.fontSize * EXTRA_LINE_SCALE)
 
   Column(modifier = Modifier.fillMaxWidth().background(background)) {
@@ -622,6 +621,11 @@ private const val AXIS_EPSILON = 1e-9
 private const val SMALL_ANGLE = 0.6
 private const val ANGLE_ARC_ALPHA = 0.7f
 private val MENU_CONTENT_WIDTH = 288.dp
+/** Size of expressions and results in history, the input uses it too. */
+@Composable
+internal fun historyTextStyle(): TextStyle =
+  LocalNumberTypography.current.displaySmall.let { it.copy(fontSize = it.fontSize * ITEM_FONT_SCALE) }
+
 private const val ITEM_FONT_SCALE = 0.8f
 private const val EXTRA_LINE_SCALE = 0.75f
 private const val MIN_SCALE = 0.8f

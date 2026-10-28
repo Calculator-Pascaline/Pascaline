@@ -83,6 +83,8 @@ import kotlinx.coroutines.delay
  * the cursor. A hidden [BasicTextField] keeps focus for hardware keyboard input.
  *
  * @param textStyle Text size, null for the big calculator input size.
+ * @param wrapHeight Height follows the expression (taller for fractions and integrals), within the
+ *   height [modifier] allows. Otherwise all the given height is used.
  */
 @Composable
 fun ExpressionLayoutTextField(
@@ -95,6 +97,7 @@ fun ExpressionLayoutTextField(
   keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
   onKeyboardAction: KeyboardActionHandler? = null,
   textStyle: TextStyle? = null,
+  wrapHeight: Boolean = false,
 ) {
   val measurer = rememberTextMeasurer()
   val density = LocalDensity.current
@@ -121,7 +124,17 @@ fun ExpressionLayoutTextField(
 
   LaunchedEffect(text) { focusRequester.requestFocus() }
 
-  BoxWithConstraints(modifier = modifier.clipToBounds()) {
+  val sizedModifier =
+    if (!wrapHeight) {
+      modifier
+    } else {
+      modifier.layout { measurable, constraints ->
+        val height = ceil(layout.height).toInt().coerceIn(constraints.minHeight, constraints.maxHeight)
+        val placeable = measurable.measure(constraints.copy(minHeight = height, maxHeight = height))
+        layout(placeable.width, height) { placeable.place(0, 0) }
+      }
+    }
+  BoxWithConstraints(modifier = sizedModifier.clipToBounds()) {
     val availableWidth = constraints.maxWidth.toFloat()
     val availableHeight = constraints.maxHeight.toFloat()
     val scale = layout.fitScale(availableWidth, availableHeight, minRatio)

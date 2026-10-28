@@ -20,6 +20,7 @@
 package com.sadellie.unitto.feature.calculator
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -35,6 +36,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
@@ -62,6 +64,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalFocusManager
@@ -75,7 +78,6 @@ import com.sadellie.unitto.core.common.FormatterSymbols
 import com.sadellie.unitto.core.common.OutputFormat
 import com.sadellie.unitto.core.common.Token
 import com.sadellie.unitto.core.common.collectAsStateWithLifecycleKMP
-import com.sadellie.unitto.core.designsystem.theme.LocalNumberTypography
 import com.sadellie.unitto.core.designsystem.LocalWindowSize
 import com.sadellie.unitto.core.designsystem.icons.symbols.Delete
 import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
@@ -90,6 +92,7 @@ import com.sadellie.unitto.feature.calculator.components.CalculationList
 import com.sadellie.unitto.feature.calculator.components.CalculatorHistoryList
 import com.sadellie.unitto.feature.calculator.components.CalculatorKeyboard
 import com.sadellie.unitto.feature.calculator.components.TextBox
+import com.sadellie.unitto.feature.calculator.components.historyTextStyle
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import unitto.core.common.generated.resources.Res
@@ -215,12 +218,14 @@ private fun ReadyCompact(
           addTokens = onAddTokenClick,
           onDelete = onDeleteHistoryItemClick,
         )
-        // Rounded input box
+        // Rounded input box, as tall as what is in it: taller for fractions and integrals
         ExpressionLayoutTextField(
           modifier =
             Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
               .fillMaxWidth()
-              .height(INPUT_HEIGHT)
+              // Grows upward: the keyboard stays where it is
+              .animateContentSize(alignment = Alignment.BottomCenter)
+              .heightIn(min = INPUT_MIN_HEIGHT, max = INPUT_MAX_HEIGHT)
               .clip(INPUT_SHAPE)
               .background(MaterialTheme.colorScheme.surfaceContainerHigh)
               .border(INPUT_BORDER, MaterialTheme.colorScheme.primary.copy(alpha = INPUT_BORDER_ALPHA), INPUT_SHAPE)
@@ -228,8 +233,9 @@ private fun ReadyCompact(
           state = uiState.input,
           formatterSymbols = uiState.formatterSymbols,
           textColor = MaterialTheme.colorScheme.onSurface,
-          // A bit smaller than the default displayLarge, closer to the history
-          textStyle = LocalNumberTypography.current.displayMedium,
+          // Same size as the history
+          textStyle = historyTextStyle(),
+          wrapHeight = true,
           minRatio = INPUT_MIN_RATIO,
           alignStart = true,
           keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -417,7 +423,9 @@ private const val TEXT_BOX_HEIGHT_FACTOR_COMPACT = 0.4f
 private const val KEYBOARD_HEIGHT_FACTOR = 0.5f
 private const val INPUT_MIN_RATIO = 0.35f
 // Tall enough for Σ with both bounds
-private val INPUT_HEIGHT = 96.dp
+private val INPUT_MIN_HEIGHT = 56.dp
+// Taller expressions are scaled down
+private val INPUT_MAX_HEIGHT = 160.dp
 private val INPUT_SHAPE = RoundedCornerShape(20.dp)
 private val INPUT_BORDER = 1.5.dp
 private const val INPUT_BORDER_ALPHA = 0.5f
