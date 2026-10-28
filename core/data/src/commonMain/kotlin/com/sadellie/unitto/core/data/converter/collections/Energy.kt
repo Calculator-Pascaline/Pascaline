@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2023-2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +39,8 @@ import unitto.core.common.generated.resources.unit_gigajoule
 import unitto.core.common.generated.resources.unit_gigajoule_short
 import unitto.core.common.generated.resources.unit_gigaton
 import unitto.core.common.generated.resources.unit_gigaton_short
+import unitto.core.common.generated.resources.unit_gigawatt_hour
+import unitto.core.common.generated.resources.unit_gigawatt_hour_short
 import unitto.core.common.generated.resources.unit_joule
 import unitto.core.common.generated.resources.unit_joule_short
 import unitto.core.common.generated.resources.unit_kilocalorie_th
@@ -46,10 +49,18 @@ import unitto.core.common.generated.resources.unit_kilojoule
 import unitto.core.common.generated.resources.unit_kilojoule_short
 import unitto.core.common.generated.resources.unit_kiloton
 import unitto.core.common.generated.resources.unit_kiloton_short
+import unitto.core.common.generated.resources.unit_kilowatt_hour
+import unitto.core.common.generated.resources.unit_kilowatt_hour_short
 import unitto.core.common.generated.resources.unit_megajoule
 import unitto.core.common.generated.resources.unit_megajoule_short
 import unitto.core.common.generated.resources.unit_megaton
 import unitto.core.common.generated.resources.unit_megaton_short
+import unitto.core.common.generated.resources.unit_megawatt_hour
+import unitto.core.common.generated.resources.unit_megawatt_hour_short
+import unitto.core.common.generated.resources.unit_milliwatt_hour
+import unitto.core.common.generated.resources.unit_milliwatt_hour_short
+import unitto.core.common.generated.resources.unit_watt_hour
+import unitto.core.common.generated.resources.unit_watt_hour_short
 
 internal val energyCollection: List<BasicUnit> by lazy {
   listOf(
@@ -94,6 +105,41 @@ internal val energyCollection: List<BasicUnit> by lazy {
       UnitGroup.ENERGY,
       Res.string.unit_gigajoule,
       Res.string.unit_gigajoule_short,
+    ),
+    NormalUnit(
+      UnitID.milliwatt_hour,
+      KBigDecimal("3600000000000000000"),
+      UnitGroup.ENERGY,
+      Res.string.unit_milliwatt_hour,
+      Res.string.unit_milliwatt_hour_short,
+    ),
+    NormalUnit(
+      UnitID.watt_hour,
+      KBigDecimal("3600000000000000000000"),
+      UnitGroup.ENERGY,
+      Res.string.unit_watt_hour,
+      Res.string.unit_watt_hour_short,
+    ),
+    NormalUnit(
+      UnitID.kilowatt_hour,
+      KBigDecimal("3600000000000000000000000"),
+      UnitGroup.ENERGY,
+      Res.string.unit_kilowatt_hour,
+      Res.string.unit_kilowatt_hour_short,
+    ),
+    NormalUnit(
+      UnitID.megawatt_hour,
+      KBigDecimal("3600000000000000000000000000"),
+      UnitGroup.ENERGY,
+      Res.string.unit_megawatt_hour,
+      Res.string.unit_megawatt_hour_short,
+    ),
+    NormalUnit(
+      UnitID.gigawatt_hour,
+      KBigDecimal("3600000000000000000000000000000"),
+      UnitGroup.ENERGY,
+      Res.string.unit_gigawatt_hour,
+      Res.string.unit_gigawatt_hour_short,
     ),
     NormalUnit(
       UnitID.energy_ton,

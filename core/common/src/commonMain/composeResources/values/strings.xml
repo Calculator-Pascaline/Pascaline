@@ -984,6 +984,8 @@
     <string name="unit_gigapascal_short">GPa</string>
     <string name="unit_gigaton">Gigaton of TNT</string>
     <string name="unit_gigaton_short">Gt</string>
+    <string name="unit_gigawatt_hour">Gigawatt-hour</string>
+    <string name="unit_gigawatt_hour_short">GWh</string>
     <string name="unit_gigaweber">Gigaweber</string>
     <string name="unit_gigaweber_short">GWb</string>
     <string name="unit_grain">Grain</string>
@@ -1137,6 +1139,8 @@
     <string name="unit_kiloton">Kiloton of TNT</string>
     <string name="unit_kiloton_short">kt</string>
     <string name="unit_kilowatt">Kilowatt</string>
+    <string name="unit_kilowatt_hour">Kilowatt-hour</string>
+    <string name="unit_kilowatt_hour_short">kWh</string>
     <string name="unit_kilowatt_short">kW</string>
     <string name="unit_kiloweber">Kiloweber</string>
     <string name="unit_kiloweber_short">kWb</string>
@@ -1207,6 +1211,8 @@
     <string name="unit_megaton">Megaton of TNT</string>
     <string name="unit_megaton_short">Mt</string>
     <string name="unit_megawatt">Megawatt</string>
+    <string name="unit_megawatt_hour">Megawatt-hour</string>
+    <string name="unit_megawatt_hour_short">MWh</string>
     <string name="unit_megawatt_short">MW</string>
     <string name="unit_megaweber">Megaweber</string>
     <string name="unit_megaweber_short">MWb</string>
@@ -1294,6 +1300,8 @@
     <string name="unit_millipascal_short">mPa</string>
     <string name="unit_millisecond">Millisecond</string>
     <string name="unit_millisecond_short">ms</string>
+    <string name="unit_milliwatt_hour">Milliwatt-hour</string>
+    <string name="unit_milliwatt_hour_short">mWh</string>
     <string name="unit_milliweber">Milliweber</string>
     <string name="unit_milliweber_short">mWb</string>
     <string name="unit_minute">Minute</string>
@@ -1541,6 +1549,8 @@
     <string name="unit_venus_surface_gravity">Venus surface gravity</string>
     <string name="unit_venus_surface_gravity_short">Venus g</string>
     <string name="unit_watt">Watt</string>
+    <string name="unit_watt_hour">Watt-hour</string>
+    <string name="unit_watt_hour_short">Wh</string>
     <string name="unit_watt_per_square_centimeter_per_steradian">Watt/square centimeter/steradian</string>
     <string name="unit_watt_per_square_centimeter_per_steradian_short">W/cm²/sr</string>
     <string name="unit_watt_short">W</string>

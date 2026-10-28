@@ -55,6 +55,15 @@ class ExpressionUnitsTest {
 
   @Test fun convert() = assertEquals("3000" to "_m", withUnit("3_km→_m"))
 
+  @Test fun kilowattHourToJoules() = assertEquals("3600000" to "_J", withUnit("1_kWh→_J"))
+
+  @Test fun powerTimesTime() = assertEquals("6" to "_kWh", withUnit("2_kW×3_h→_kWh"))
+
+  @Test fun wattHoursAdd() = assertEquals("1.5" to "_kWh", withUnit("1_kWh+500_Wh"))
+
+  // _mWh is one unit, not _mW followed by h
+  @Test fun milliwattHour() = assertEquals("3.6" to "_J", withUnit("1_mWh→_J"))
+
   @Test
   fun convertSpeed() =
     assertEquals("27.777778" to "${NUM}_m$END${DEN}_s$END", withUnit("100_km÷_h→_m÷_s"))

@@ -175,6 +175,11 @@ class AllUnitsTest {
     energy_horse_power_metric.checkWith(joule, "10", "26477955")
     calorie_th.checkWith(joule, "10", "41.84")
     kilocalorie_th.checkWith(joule, "10", "41840")
+    milliwatt_hour.checkWith(joule, "10", "36")
+    watt_hour.checkWith(joule, "10", "36000")
+    kilowatt_hour.checkWith(megajoule, "1", "3.6")
+    megawatt_hour.checkWith(kilowatt_hour, "2.5", "2500")
+    gigawatt_hour.checkWith(kilocalorie_th, "1", "860420650.0956")
   }
 
   @Test

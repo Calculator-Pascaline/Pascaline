@@ -210,6 +210,12 @@ object PhysicalUnits {
   private val electronvolt = unit("eV", "Electronvolt", "1.602176634E-19", ENERGY)
   private val kiloelectronvolt = unit("keV", "Kiloelectronvolt", "1.602176634E-16", ENERGY)
   private val megaelectronvolt = unit("MeV", "Megaelectronvolt", "1.602176634E-13", ENERGY)
+  // 1 Wh = 1 W × 3600 s
+  private val milliwattHour = unit("mWh", "Milliwatt-hour", "3.6", ENERGY)
+  private val wattHour = unit("Wh", "Watt-hour", "3600", ENERGY)
+  private val kilowattHour = unit("kWh", "Kilowatt-hour", "3.6E6", ENERGY)
+  private val megawattHour = unit("MWh", "Megawatt-hour", "3.6E9", ENERGY)
+  private val gigawattHour = unit("GWh", "Gigawatt-hour", "3.6E12", ENERGY)
   private val microwatt = unit("μW", "Microwatt", "1E-6", POWER)
   private val milliwatt = unit("mW", "Milliwatt", "0.001", POWER)
   val watt = unit("W", "Watt", "1", POWER)
@@ -321,6 +327,10 @@ object PhysicalUnits {
           category(
             "Electronvolt",
             *leaves(millielectronvolt, electronvolt, kiloelectronvolt, megaelectronvolt).toTypedArray(),
+          ),
+          category(
+            "Watt-hour",
+            *leaves(milliwattHour, wattHour, kilowattHour, megawattHour, gigawattHour).toTypedArray(),
           ),
         ),
         category(

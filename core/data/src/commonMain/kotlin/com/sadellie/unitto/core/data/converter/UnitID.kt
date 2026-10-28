@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -203,6 +204,11 @@ object UnitID {
   const val kilojoule = "kilojoule"
   const val gigajoule = "gigajoule"
   const val megajoule = "megajoule"
+  const val milliwatt_hour = "milliwatt_hour"
+  const val watt_hour = "watt_hour"
+  const val kilowatt_hour = "kilowatt_hour"
+  const val megawatt_hour = "megawatt_hour"
+  const val gigawatt_hour = "gigawatt_hour"
   const val energy_ton = "energy_ton"
   const val kiloton = "kiloton"
   const val megaton = "megaton"
