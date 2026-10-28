@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2023-2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,6 +91,15 @@ fun Modifier.squashable(
       role = role,
       enabled = enabled,
     )
+}
+
+/**
+ * Vibration of [squashable] for keys that handle clicks themselves, like a clickable `Surface`:
+ * [interactionSource] is the one of the click.
+ */
+fun Modifier.keyHaptics(interactionSource: MutableInteractionSource) = composed {
+  val isPressed by interactionSource.collectIsPressedAsState()
+  haptics(isPressed)
 }
 
 internal expect fun Modifier.haptics(isPressed: Boolean): Modifier

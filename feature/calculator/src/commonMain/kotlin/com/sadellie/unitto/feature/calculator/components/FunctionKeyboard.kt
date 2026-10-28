@@ -70,6 +70,8 @@ import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
 import org.jetbrains.compose.resources.stringResource
 import unitto.core.common.generated.resources.Res
 import unitto.core.common.generated.resources.calculator_units_and_constants
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import com.sadellie.unitto.core.ui.keyHaptics
 
 /**
  * Function key: [label] is shown, [token] is inserted. [inverse] is used instead when inverse switch
@@ -138,9 +140,12 @@ internal fun FunctionRows(modifier: Modifier, rowHeight: Dp, onAddTokenClick: (S
 
 @Composable
 private fun FunctionKeyButton(modifier: Modifier, key: FunctionKey, onClick: (String) -> Unit) {
+  // Vibrates like the icon keys
+  val interactionSource = remember { MutableInteractionSource() }
   Surface(
-    modifier = modifier,
+    modifier = modifier.keyHaptics(interactionSource),
     onClick = { onClick(key.token) },
+    interactionSource = interactionSource,
     shape = KEY_SHAPE,
     color = MaterialTheme.colorScheme.surfaceContainerHigh,
     contentColor = MaterialTheme.colorScheme.onSurface,
@@ -158,10 +163,12 @@ private fun FunctionKeyButton(modifier: Modifier, key: FunctionKey, onClick: (St
 
 @Composable
 private fun InverseSwitch(modifier: Modifier, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
+  val interactionSource = remember { MutableInteractionSource() }
   Surface(
-    modifier = modifier,
+    modifier = modifier.keyHaptics(interactionSource),
     checked = checked,
     onCheckedChange = onCheckedChange,
+    interactionSource = interactionSource,
     shape = KEY_SHAPE,
     color = MaterialTheme.colorScheme.surfaceContainerHigh,
     contentColor = MaterialTheme.colorScheme.onSurface,

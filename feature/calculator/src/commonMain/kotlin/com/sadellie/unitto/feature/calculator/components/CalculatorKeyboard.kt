@@ -116,6 +116,8 @@ import com.sadellie.unitto.core.ui.KeypadButtonLight
 import com.sadellie.unitto.core.ui.KeypadButtonTertiary
 import com.sadellie.unitto.core.ui.KeypadButtonTransparent
 import com.sadellie.unitto.core.ui.KeypadFlow
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import com.sadellie.unitto.core.ui.keyHaptics
 
 @Composable
 internal fun CalculatorKeyboard(
@@ -330,9 +332,12 @@ private fun CalculusButton(
   modifier: Modifier = Modifier,
   onClick: (String) -> Unit
 ) {
+  // Vibrates like the icon keys
+  val interactionSource = remember { MutableInteractionSource() }
   Surface(
     onClick = { onClick(token) },
-    modifier = modifier,
+    modifier = modifier.keyHaptics(interactionSource),
+    interactionSource = interactionSource,
     shape = KEY_SHAPE,
     color = MaterialTheme.colorScheme.surfaceContainerHigh,
     contentColor = MaterialTheme.colorScheme.onSurface,
