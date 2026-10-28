@@ -61,8 +61,10 @@ import kotlin.math.roundToInt
  * @param style Original style.
  * @param minRatio How small font can be. Percentage from calculated max font size.
  * @param alignment The alignment of the text within its container.
+ * @param wrapWhenSmallest Whether single line text that doesn't fit even at the smallest size goes
+ *   onto more lines instead of scrolling.
  * @param content Content in [BoxWithConstraints]. Use [LocalTextStyle] to access calculated
- *   [TextStyle].
+ *   [TextStyle]. Its parameter is true when the text has to wrap.
  */
 @Composable
 internal fun AutoSizeTextStyleBox(
@@ -74,7 +76,8 @@ internal fun AutoSizeTextStyleBox(
   style: TextStyle,
   minRatio: Float,
   alignment: Alignment,
-  content: @Composable () -> Unit,
+  wrapWhenSmallest: Boolean = false,
+  content: @Composable (wraps: Boolean) -> Unit,
 ) {
   val density = LocalDensity.current
   CompositionLocalProvider(
@@ -89,7 +92,7 @@ internal fun AutoSizeTextStyleBox(
           }
         }
 
-      val autoTextStyle =
+      val (autoTextStyle, overflows) =
         autoTextStyle(
           text = text,
           maxTextSize = maxTextSize,
@@ -101,7 +104,8 @@ internal fun AutoSizeTextStyleBox(
           minRatio = minRatio,
         )
 
-      CompositionLocalProvider(value = LocalTextStyle.provides(autoTextStyle), content = content)
+      val wraps = wrapWhenSmallest && maxLines == 1 && overflows
+      CompositionLocalProvider(value = LocalTextStyle.provides(autoTextStyle)) { content(wraps) }
     }
   }
 }
@@ -122,7 +126,7 @@ internal fun AutoSizeTextStyleBox(
  * @param density Original [Density]. This is required since [AutoSizeTextStyleBox] overrides
  *   [Density.fontScale] to `1F`.
  * @param minRatio How small font can be. Percentage from calculated max font size.
- * @return Calculated [TextStyle].
+ * @return Calculated [TextStyle], and whether the text still overflows at this size.
  */
 @Composable
 private fun BoxWithConstraintsScope.autoTextStyle(
@@ -134,7 +138,7 @@ private fun BoxWithConstraintsScope.autoTextStyle(
   alignment: Alignment,
   density: Density,
   minRatio: Float,
-): TextStyle {
+): Pair<TextStyle, Boolean> {
   val textMeasurer = rememberTextMeasurer()
   val combinedTextStyle =
     LocalTextStyle.current +
@@ -184,7 +188,7 @@ private fun BoxWithConstraintsScope.autoTextStyle(
   return combinedTextStyle.copy(
     fontSize = electedFontSize,
     lineHeight = electedFontSize * coercedLineSpacingRatio,
-  )
+  ) to shouldMoveBackward(electedFontSize)
 }
 
 private fun BoxWithConstraintsScope.shouldShrink(

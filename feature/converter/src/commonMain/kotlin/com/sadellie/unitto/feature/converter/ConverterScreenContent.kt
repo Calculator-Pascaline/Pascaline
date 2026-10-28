@@ -417,7 +417,8 @@ private fun ConverterResultTextField(
         modifier = modifier,
         state = state,
         textColor = converterTextFieldColor,
-        minRatio = 0.7f,
+        minRatio = 0.5f,
+        wrap = true,
         formatterSymbols = formatterSymbols,
         readOnly = true,
       )
@@ -428,7 +429,8 @@ private fun ConverterResultTextField(
         modifier = modifier,
         textColor = converterTextFieldColor,
         state = state,
-        minRatio = 0.7f,
+        minRatio = 0.5f,
+        wrap = true,
         readOnly = true,
       )
     }
@@ -461,7 +463,8 @@ private fun ConverterResultTextField(
         modifier = modifier,
         textColor = converterTextFieldColor,
         state = state,
-        minRatio = 0.7f,
+        minRatio = 0.5f,
+        wrap = true,
         readOnly = true,
       )
     }
@@ -484,7 +487,8 @@ private fun ConverterResultTextField(
         modifier = modifier,
         textColor = converterTextFieldColor,
         state = state,
-        minRatio = 0.7f,
+        minRatio = 0.5f,
+        wrap = true,
         readOnly = true,
       )
     }
@@ -507,7 +511,8 @@ private fun ConverterResultTextField(
         modifier = modifier,
         textColor = converterTextFieldColor,
         state = state,
-        minRatio = 0.7f,
+        minRatio = 0.5f,
+        wrap = true,
         readOnly = true,
       )
     }
@@ -516,14 +521,16 @@ private fun ConverterResultTextField(
         modifier = modifier,
         state = TextFieldState(stringResource(Res.string.common_loading)),
         textColor = converterTextFieldColor,
-        minRatio = 0.7f,
+        minRatio = 0.5f,
+        wrap = true,
         readOnly = true,
       )
     is ConverterResult.Error.DivideByZeroError ->
       SimpleTextField(
         modifier = modifier,
         state = TextFieldState(stringResource(Res.string.calculator_divide_by_zero_error)),
-        minRatio = 0.7f,
+        minRatio = 0.5f,
+        wrap = true,
         readOnly = true,
         textColor = MaterialTheme.colorScheme.error,
       )

@@ -76,6 +76,7 @@ fun ExpressionTextField(
   textColor: Color,
   formatterSymbols: FormatterSymbols,
   readOnly: Boolean = false,
+  wrap: Boolean = false,
   placeholder: String = "",
   keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
   onKeyboardAction: KeyboardActionHandler? = null,
@@ -104,6 +105,7 @@ fun ExpressionTextField(
       cursorBrush = cursorBrush,
       outputTransformation = ExpressionOutputTransformation(formatterSymbols, placeholderColor),
       minRatio = minRatio,
+      wrap = wrap,
       placeholder = placeholder,
       displayedText = displayedText,
       keyboardOptions = keyboardOptions,
@@ -119,6 +121,7 @@ fun NumberBaseTextField(
   minRatio: Float = 1f,
   textColor: Color,
   readOnly: Boolean = false,
+  wrap: Boolean = false,
   placeholder: String = "",
 ) {
   AutoSizeTextField(
@@ -131,6 +134,7 @@ fun NumberBaseTextField(
     lineLimits = TextFieldLineLimits.SingleLine,
     cursorBrush = SolidColor(textColor),
     minRatio = minRatio,
+    wrap = wrap,
     placeholder = placeholder,
   )
 }
@@ -142,6 +146,7 @@ fun SimpleTextField(
   minRatio: Float = 1f,
   textColor: Color,
   readOnly: Boolean = false,
+  wrap: Boolean = false,
   placeholder: String = "",
 ) {
   AutoSizeTextField(
@@ -152,6 +157,7 @@ fun SimpleTextField(
     lineLimits = TextFieldLineLimits.SingleLine,
     cursorBrush = SolidColor(textColor),
     minRatio = minRatio,
+    wrap = wrap,
     placeholder = placeholder,
   )
 }
@@ -159,6 +165,7 @@ fun SimpleTextField(
 /**
  * BasicTextField that adapts font size to fit it's container.
  *
+ * @param wrap Whether text that doesn't fit at the smallest size goes onto more lines.
  * @param placeholder Placeholder text, shown when [TextFieldState.text] is empty.
  * @param alignment The alignment of the text within its container.
  * @see [BasicTextField]
@@ -184,6 +191,7 @@ private fun AutoSizeTextField(
   scrollState: ScrollState = rememberScrollState(),
   maxTextSize: TextUnit = TextUnit.Unspecified,
   minRatio: Float = 1f,
+  wrap: Boolean = false,
   alignment: Alignment = Alignment.BottomEnd,
   placeholder: String? = null,
   enableSoftwareKeyboard: Boolean = false,
@@ -198,7 +206,8 @@ private fun AutoSizeTextField(
     style = textStyle,
     minRatio = minRatio,
     alignment = alignment,
-  ) {
+    wrapWhenSmallest = wrap,
+  ) { wraps ->
     InterceptPlatformTextInput(
       interceptor = { request, nextHandler ->
         if (enableSoftwareKeyboard) nextHandler.startInputMethod(request) else awaitCancellation()
@@ -235,11 +244,11 @@ private fun AutoSizeTextField(
         textStyle = style,
         keyboardOptions = keyboardOptions,
         onKeyboardAction = onKeyboardAction,
-        lineLimits = lineLimits,
+        lineLimits = if (wraps) TextFieldLineLimits.MultiLine() else lineLimits,
         onTextLayout = onTextLayout,
         interactionSource = interactionSource,
         cursorBrush = cursorBrush,
-        outputTransformation = outputTransformation,
+        outputTransformation = if (wraps) outputTransformation.breakingAtSpaces() else outputTransformation,
         decorator = { innerTextField ->
           if (state.text.isEmpty() and !placeholder.isNullOrEmpty()) {
             Text(
@@ -258,6 +267,18 @@ private fun AutoSizeTextField(
     }
   }
 
+/**
+ * Lets wrapped text break at grouping spaces: they are non-breaking, so lines would end inside of
+ * a digit group. A normal space at the end of a line also doesn't push it away from the edge.
+ */
+private fun OutputTransformation?.breakingAtSpaces() = OutputTransformation {
+  this@breakingAtSpaces?.run { transformOutput() }
+  for (index in 0..<length) {
+    if (charAt(index) == NO_BREAK_SPACE) replace(index, index + 1, " ")
+  }
+}
+
+private const val NO_BREAK_SPACE = ' '
 private const val TEXT_FIELD_PLACEHOLDER_ALPHA = 0.5f
 private const val SLOT_PLACEHOLDER_ALPHA = 0.4f
 
