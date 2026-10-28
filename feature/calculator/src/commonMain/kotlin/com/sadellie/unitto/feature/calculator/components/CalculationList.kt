@@ -105,6 +105,7 @@ import unitto.core.common.generated.resources.calculator_no_history
 import unitto.core.common.generated.resources.calculator_prime_factors
 import unitto.core.common.generated.resources.calculator_real_part
 import unitto.core.common.generated.resources.calculator_roots
+import unitto.core.common.generated.resources.calculator_other_temperatures
 import unitto.core.common.generated.resources.calculator_si_units
 import unitto.core.common.generated.resources.common_delete
 import unitto.core.common.generated.resources.common_error
@@ -355,6 +356,7 @@ private fun MenuSection.title(): StringResource =
     MenuSection.MODULUS -> Res.string.calculator_modulus
     MenuSection.ARGUMENT -> Res.string.calculator_argument
     MenuSection.SI_UNITS -> Res.string.calculator_si_units
+    MenuSection.OTHER_TEMPERATURES -> Res.string.calculator_other_temperatures
   }
 
 /**

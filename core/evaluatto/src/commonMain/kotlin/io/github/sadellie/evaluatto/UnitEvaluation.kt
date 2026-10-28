@@ -155,6 +155,10 @@ internal fun evaluateUnits(
     unit = shown.second,
     si = UnitValue(value, siUnit(dimension)),
     baseUnits = baseUnits(dimension).takeIf { it != siUnit(dimension) },
+    // Results in kelvins, like 300_K or 5_K+3_K: value is already in kelvins
+    otherTemperatures =
+      if (dimension == PhysicalUnits.kelvin.dimension) otherTemperatures(value, PhysicalUnits.kelvin)
+      else emptyList(),
   )
 }
 
@@ -229,15 +233,27 @@ private fun temperature(tree: Node, evaluator: Evaluator): ExpressionResult.Real
   val (valueNode, target) = if (tree is Node.Convert) tree.value to tree.target else tree to null
   val (number, from) = valueNode.numberTimesUnit(evaluator) ?: throw ExpressionException.BadExpression()
 
-  if (target == null) return ExpressionResult.Real(number, unit = from.token)
+  // value in kelvins, then in target unit
+  val kelvins = number.multiply(KBigDecimal(from.factor)) + KBigDecimal(from.offset ?: "0")
+  if (target == null) {
+    return ExpressionResult.Real(number, unit = from.token, otherTemperatures = otherTemperatures(kelvins, from))
+  }
   val to = (target as? Node.Unit)?.unit ?: throw ExpressionException.BadExpression()
   if (from.dimension != to.dimension) throw ExpressionException.BadExpression()
 
-  // value in kelvins, then in target unit
-  val kelvins = number.multiply(KBigDecimal(from.factor)) + KBigDecimal(from.offset ?: "0")
-  val result = (kelvins - KBigDecimal(to.offset ?: "0")).divide(KBigDecimal(to.factor), mathContext)
-  return ExpressionResult.Real(result, unit = to.token)
+  return ExpressionResult.Real(
+    kelvins.inTemperature(to),
+    unit = to.token,
+    otherTemperatures = otherTemperatures(kelvins, to),
+  )
 }
+
+/** [kelvins] in K, °C and °F, without [shown]: 328.15 K shown in °C ==> 328.15 K and 131 °F. */
+private fun otherTemperatures(kelvins: KBigDecimal, shown: PhysicalUnit): List<UnitValue> =
+  PhysicalUnits.temperatureUnits.filter { it != shown }.map { UnitValue(kelvins.inTemperature(it), it.token) }
+
+private fun KBigDecimal.inTemperature(unit: PhysicalUnit): KBigDecimal =
+  (this - KBigDecimal(unit.offset ?: "0")).divide(KBigDecimal(unit.factor), mathContext)
 
 /** `20_°C`, `−4×_°F`, `_K` ==> number and unit. */
 private fun Node.numberTimesUnit(evaluator: Evaluator): Pair<KBigDecimal, PhysicalUnit>? =

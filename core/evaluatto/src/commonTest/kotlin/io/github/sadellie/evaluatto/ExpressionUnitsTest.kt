@@ -38,7 +38,27 @@ private fun withUnit(expr: String): Pair<String, String?> {
   return result.value.toFormattedString(6, OutputFormat.PLAIN) to result.unit
 }
 
+/** Same temperature in the other units, values with 6 digits */
+private fun otherTemperatures(expr: String): List<Pair<String, String>> =
+  (Expression(expr).evaluate(6, OutputFormat.PLAIN) as ExpressionResult.Real).otherTemperatures.map {
+    it.value.toFormattedString(6, OutputFormat.PLAIN) to it.unit
+  }
+
 class ExpressionUnitsTest {
+  @Test
+  fun celsiusInOtherUnits() =
+    assertEquals(listOf("328.15" to "_K", "131" to "_°F"), otherTemperatures("55_°C"))
+
+  @Test
+  fun convertedInOtherUnits() =
+    assertEquals(listOf("293.15" to "_K", "20" to "_°C"), otherTemperatures("68_°F→_°F"))
+
+  @Test
+  fun kelvinsInOtherUnits() =
+    assertEquals(listOf("26.85" to "_°C", "80.33" to "_°F"), otherTemperatures("300_K"))
+
+  @Test fun notForOtherUnits() = assertEquals(emptyList(), otherTemperatures("3_km"))
+
   @Test fun sameUnit() = assertEquals("5" to "_km", withUnit("3_km+2_km"))
 
   @Test fun usedUnit() = assertEquals("3.002" to "_km", withUnit("3_km+2_m"))

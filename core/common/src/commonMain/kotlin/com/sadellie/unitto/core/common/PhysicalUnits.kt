@@ -427,6 +427,9 @@ object PhysicalUnits {
 
   val timeUnits: List<PhysicalUnit> by lazy { listOf(year, day, hour, minute, second) }
 
+  /** Temperatures are also shown in the other two: 55 °C = 328.15 K = 131 °F. */
+  val temperatureUnits: List<PhysicalUnit> by lazy { listOf(kelvin, celsius, fahrenheit) }
+
   /** Symbol, name and power of ten. Centi, deci and hecto are only used where Epsilon has them. */
   private val SI_PREFIXES =
     listOf(

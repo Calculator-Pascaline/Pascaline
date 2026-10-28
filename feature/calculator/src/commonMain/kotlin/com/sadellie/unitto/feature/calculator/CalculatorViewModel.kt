@@ -45,6 +45,7 @@ import com.sadellie.unitto.core.ui.textfield.placeCursorAtTheEnd
 import io.github.sadellie.evaluatto.Expression
 import io.github.sadellie.evaluatto.ExpressionException
 import io.github.sadellie.evaluatto.ExpressionResult
+import io.github.sadellie.evaluatto.UnitValue
 import io.github.sadellie.evaluatto.integerInfo
 import kotlin.math.PI
 import kotlin.math.atan2
@@ -307,11 +308,20 @@ internal class CalculatorViewModel(
           MenuSection.ROOTS to roots,
           MenuSection.DISCRIMINANT to listOfNotNull(discriminant),
         )
-      is ExpressionResult.Real if si != null -> {
+      is ExpressionResult.Real if si != null || otherTemperatures.isNotEmpty() -> {
         val prefs = _prefs.value ?: return emptyList()
-        val siValue = si ?: return emptyList()
-        val value = siValue.value.toScientific(prefs.precision, prefs.outputFormat)
-        listOf(MenuSection.SI_UNITS to listOfNotNull(value + siValue.unit, baseUnits?.let { value + it }))
+        fun UnitValue.line() = value.toScientific(prefs.precision, prefs.outputFormat) + unit
+        buildList {
+          if (otherTemperatures.isNotEmpty()) {
+            add(MenuSection.OTHER_TEMPERATURES to otherTemperatures.map { it.line() })
+          }
+          // 300 K in SI is 300 K again
+          val siValue = si?.takeIf { otherTemperatures.isEmpty() || it.unit != unit }
+          if (siValue != null) {
+            val value = siValue.value.toScientific(prefs.precision, prefs.outputFormat)
+            add(MenuSection.SI_UNITS to listOfNotNull(value + siValue.unit, baseUnits?.let { value + it }))
+          }
+        }
       }
       is ExpressionResult.Real -> {
         val info = if (unit == null) integerInfo(value) else null

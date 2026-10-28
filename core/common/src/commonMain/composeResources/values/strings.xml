@@ -56,6 +56,7 @@
     <string name="calculator_category_units">Units</string>
     <string name="calculator_units_and_constants">Units and constants</string>
     <string name="calculator_si_units">SI units</string>
+    <string name="calculator_other_temperatures">Other units</string>
     <string name="functions_title">Functions</string>
     <string name="functions_expressions">Expressions</string>
     <string name="functions_graph">Graph</string>
