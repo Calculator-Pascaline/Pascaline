@@ -22,10 +22,8 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -36,7 +34,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sadellie.unitto.core.common.FormatterSymbols
 import com.sadellie.unitto.core.common.KBigDecimal
@@ -80,13 +77,11 @@ private fun DateDifferenceView(
   var dialogState by remember { mutableStateOf(DialogState.NONE) }
 
   Column(
-    modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+    modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(Sizes.large),
     verticalArrangement = Arrangement.spacedBy(Sizes.small),
   ) {
-    Spacer(modifier = Modifier.height(Sizes.large))
-
     Row(
-      modifier = Modifier.padding(horizontal = Sizes.large).fillMaxWidth(),
+      modifier = Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.spacedBy(Sizes.small),
     ) {
       DateTimeBlock(
@@ -111,7 +106,7 @@ private fun DateDifferenceView(
     AnimatedContent(
       targetState = uiState.result,
       label = "Result reveal",
-      modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+      modifier = Modifier.fillMaxWidth(),
     ) { result ->
       when (result) {
         is ZonedDateTimeDifference.Default -> {

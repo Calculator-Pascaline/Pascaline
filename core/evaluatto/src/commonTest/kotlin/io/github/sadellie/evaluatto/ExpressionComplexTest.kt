@@ -51,4 +51,14 @@ class ExpressionComplexTest {
   @Test fun expression14() = assertExpr("4160×3.1%", "128.96", scale = 3)
 
   @Test fun expression15() = assertExpr("4160×3.13%", "130.208", scale = 3)
+
+  @Test fun expression16() = assertExpr("1+(2+3)%", "1.05")
+
+  @Test fun expression17() = assertExpr("1000×20%+30%", "260")
+
+  @Test fun expression18() = assertExpr("1000÷20%−30%", "3500")
+
+  @Test fun expression19() = assertExpr("123×456+1+2+3%+4+5+6", "57788.73")
+
+  @Test fun expression20() = assertExpr("1+2−3%+4−5+6", "7.91")
 }

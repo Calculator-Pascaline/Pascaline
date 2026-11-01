@@ -180,7 +180,7 @@ fun TextFieldState.addBracket() {
       Token.Operator.MINUS,
       Token.Operator.POWER,
       Token.Operator.LEFT_BRACKET,
-    )
+    ) + Token.Func.allWithOpeningBracket
   if (text.toString().tokenAhead(selection.min) in openAfterOperators) {
     addTokens(Token.Operator.LEFT_BRACKET)
     return
@@ -226,7 +226,7 @@ private fun TextFieldState.addBracketInSlot(slotStart: Int) {
       Token.Operator.MINUS,
       Token.Operator.POWER,
       Token.Operator.LEFT_BRACKET,
-    )
+    ) + Token.Func.allWithOpeningBracket
 
   if (textBeforeCursor.isEmpty() || tokenAhead in openAfter) {
     addTokens(Token.Operator.LEFT_BRACKET)

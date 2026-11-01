@@ -284,9 +284,15 @@ private fun MutableList<String>.unpackPercentAt(percentIndex: Int): MutableList<
   cursor -= 1
   val operator = this.getOrNull(cursor)
 
+  // Get the base: everything that is added or subtracted before the operator
+  // 1+2+|3% -> 1+2
+  val base =
+    if (operator in listOf(Token.Operator.PLUS, Token.Operator.MINUS)) getSumBefore(cursor - 1)
+    else emptyList()
+
   // Don't go further. Percentage doesn't follow anything. Fallback: wrap expression with division
   // by 100: 123% -> (123/100)
-  if ((operator == null) or (operator !in listOf(Token.Operator.PLUS, Token.Operator.MINUS))) {
+  if (!base.endsWithOperand()) {
     val mutList = this.toMutableList()
 
     // Remove percentage
@@ -307,11 +313,6 @@ private fun MutableList<String>.unpackPercentAt(percentIndex: Int): MutableList<
     return mutList
   }
 
-  // move cursor to jump over operator
-  // 123+|345% -> 123|+345%
-  cursor -= 1
-  // Get the base
-  val base = this.getExpressionBefore(cursor)
   val mutList = this.toMutableList()
 
   // Remove percentage
@@ -375,6 +376,41 @@ internal fun List<String>.getExpressionBefore(pos: Int): List<String> {
 
   // +1 because subList end is exclusive
   return this.subList(cursor.coerceAtLeast(0), pos + 1)
+}
+
+/**
+ * Extracts everything that is added or subtracted together before [pos] (inclusive), so that
+ * percentage is taken from all of it, not only from the last number.
+ *
+ * Example ([pos] is indicated with '|'):
+ * - 123×456+1+2|+3% -> 123×456+1+2
+ * - 5+(1+2|−3%) -> 1+2
+ */
+private fun List<String>.getSumBefore(pos: Int): List<String> {
+  var cursor = pos
+  var depth = 0
+  while (cursor >= 0) {
+    val token = this[cursor]
+    val isGroupStart =
+      token.endsWith(Token.Operator.LEFT_BRACKET) ||
+        token == Token.Layout.SUPERSCRIPT_START ||
+        token == Token.Layout.SUBSCRIPT_START
+    when {
+      token == Token.Operator.RIGHT_BRACKET || token == Token.Layout.END -> depth++
+      isGroupStart -> if (depth == 0) break else depth--
+      depth == 0 && token == Token.Operator.CONVERT -> break
+    }
+    cursor--
+  }
+  return this.subList(cursor + 1, pos + 1)
+}
+
+/** `1+2` or `(1+2)!` can be a base for percentage, empty or `2×` can't. */
+private fun List<String>.endsWithOperand(): Boolean {
+  val last = lastOrNull() ?: return false
+  return last !in Token.Operator.all ||
+    last == Token.Operator.RIGHT_BRACKET ||
+    last == Token.Operator.FACTORIAL
 }
 
 /**

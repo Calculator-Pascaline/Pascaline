@@ -21,7 +21,10 @@ package com.sadellie.unitto
 
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
@@ -50,9 +53,6 @@ import com.sadellie.unitto.core.navigation.additionalDrawerItems
 import com.sadellie.unitto.core.ui.BackHandler
 import com.sadellie.unitto.core.ui.LocalPhoneKeypad
 import com.sadellie.unitto.core.ui.NavigationDrawer
-import com.sadellie.unitto.core.ui.UnittoDrawerState
-import com.sadellie.unitto.core.ui.UnittoDrawerValue
-import com.sadellie.unitto.core.ui.rememberUnittoDrawerState
 import com.sadellie.unitto.feature.settings.navigation.LocalThemmoController
 import com.sadellie.unitto.feature.settings.navigation.navigateToUnitGroups
 import io.github.sadellie.themmo.ThemmoController
@@ -69,12 +69,12 @@ fun MainAppContent(
   themmoController: ThemmoController,
 ) {
   val drawerScope = rememberCoroutineScope()
-  val drawerState = rememberUnittoDrawerState(UnittoDrawerValue.Closed)
+  val drawerState = rememberDrawerState(DrawerValue.Closed)
 
   val currentRoute = backStack.lastOrNull()
   val currentTopLevelRoute = remember(currentRoute) { backStack.currentTopLevelRoute() }
   // allow opening drawer only when at top level route
-  val gesturesEnabled = remember(currentRoute) { currentRoute is TopLevelRoute }
+  val edgeGesture = remember(currentRoute) { currentRoute is TopLevelRoute }
   val userPrefsRepository = koinInject<UserPreferencesRepository>()
   val savedLayout by
     remember(userPrefsRepository) { userPrefsRepository.appData(DRAWER_LAYOUT_KEY) }
@@ -92,7 +92,7 @@ fun MainAppContent(
     NavigationDrawer(
       modifier = Modifier,
       state = drawerState,
-      gesturesEnabled = gesturesEnabled,
+      edgeGesture = edgeGesture,
       mainTabs = drawerItems,
       additionalTabs = additionalDrawerItems,
       currentDestination = currentTopLevelRoute,
@@ -116,7 +116,7 @@ fun MainAppContent(
 private fun UnittoNavigation(
   backStack: NavBackStack<NavKey>,
   themmoController: ThemmoController,
-  drawerState: UnittoDrawerState,
+  drawerState: DrawerState,
 ) {
   val drawerScope = rememberCoroutineScope()
   val navigator =
@@ -153,7 +153,7 @@ private fun NavBackStack<NavKey>.currentTopLevelRoute(): TopLevelRoute? =
 
 @Composable
 private fun <T : Any> rememberDrawerCloseGestureNavEntryDecorator(
-  drawerState: UnittoDrawerState,
+  drawerState: DrawerState,
   coroutineScope: CoroutineScope,
 ): DrawerCloseGestureNavEntryDecorator<T> =
   remember(drawerState, coroutineScope) {
@@ -161,7 +161,7 @@ private fun <T : Any> rememberDrawerCloseGestureNavEntryDecorator(
   }
 
 private class DrawerCloseGestureNavEntryDecorator<T : Any>(
-  drawerState: UnittoDrawerState,
+  drawerState: DrawerState,
   coroutineScope: CoroutineScope,
 ) :
   NavEntryDecorator<T>(

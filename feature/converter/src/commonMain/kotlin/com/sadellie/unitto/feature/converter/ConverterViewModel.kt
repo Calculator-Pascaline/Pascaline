@@ -196,8 +196,8 @@ internal class ConverterViewModel(
             unitsRepo.convert(
               unitFromId = unitFromIdValue ?: return@launch,
               unitToId = unitToIdValue ?: return@launch,
-              value1 = input1Value,
-              value2 = input2Value,
+              value1 = input1Value.ifEmpty { "0" },
+              value2 = input2Value.ifEmpty { "0" },
               formatTime = prefs.formatTime,
             )
           } catch (e: ExpressionException) {
