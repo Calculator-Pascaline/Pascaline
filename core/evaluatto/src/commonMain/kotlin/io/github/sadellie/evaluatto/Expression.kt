@@ -147,10 +147,10 @@ class Expression(
         return evaluateSymbolic(precision, outputFormat)
       }
     val exact =
-      tree.exactValue()?.takeIf { it.hasSurd }?.let { SymbolicFormatter(precision, outputFormat).exact(it) }
+      tree.exactValue(radianMode)?.takeIf { it.hasSurd }?.let { SymbolicFormatter(precision, outputFormat).exact(it) }
         // Σ1/n² = π²/6
         ?: if (value.isReal && tree.hasNumericCalculus()) recognizeConstant(value.re) else null
-    val exactValue = tree.exactValue()
+    val exactValue = tree.exactValue(radianMode)
     val fractions =
       exactValue
         ?.takeIf { it.re.isRational && it.im.isRational }

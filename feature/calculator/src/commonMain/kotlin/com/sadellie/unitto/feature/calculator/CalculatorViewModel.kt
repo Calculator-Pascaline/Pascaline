@@ -36,7 +36,10 @@ import com.sadellie.unitto.core.common.toFormattedString
 import com.sadellie.unitto.core.data.calculator.CalculatorHistoryRepository
 import com.sadellie.unitto.core.datastore.UserPreferencesRepository
 import com.sadellie.unitto.core.model.calculator.CalculatorHistoryItem
+import com.sadellie.unitto.core.ui.textfield.ANGLE_BOX_FUNCTIONS
 import com.sadellie.unitto.core.ui.textfield.addBracket
+import com.sadellie.unitto.core.ui.textfield.addFunctionWithAngleBox
+import com.sadellie.unitto.core.ui.textfield.chooseAngleUnit
 import com.sadellie.unitto.core.ui.textfield.addTokens
 import com.sadellie.unitto.core.ui.textfield.deleteTokens
 import com.sadellie.unitto.core.ui.textfield.getTextFieldState
@@ -182,7 +185,13 @@ internal class CalculatorViewModel(
         ?.let { HistoryResult.decode(it.result).operandFor(tokens) }
         ?.let { _input.addTokens(it) }
     }
-    _input.addTokens(tokens)
+    if (tokens in ANGLE_BOX_FUNCTIONS) {
+      // sin(|deg): angle unit box in the angle mode, can be switched by tapping it
+      _input.addFunctionWithAngleBox(tokens, radians = _prefs.value?.radianMode ?: true)
+    } else {
+      _input.addTokens(tokens)
+      _input.chooseAngleUnit(tokens)
+    }
     _equalClicked.update { false }
   }
 

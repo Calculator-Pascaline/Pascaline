@@ -80,6 +80,7 @@ private fun peekTokenAfter(streamOfTokens: String, cursor: Int): String? {
 
 private fun MutableList<String>.repairLexicon(): List<String> {
   return this.missingClosingBrackets()
+    .wrapAngleArguments()
     .unpackNotation()
     .missingMultiply()
     .unpackAllPercents()
@@ -141,6 +142,42 @@ private fun MutableList<String>.unpackSlots(): MutableList<String> {
   }
   return result
 }
+
+/**
+ * Angle unit at the end of a trigonometric function is for the whole argument, not only for the
+ * number before it: `sin(π÷2_rad)` ==> `sin((π÷2)_rad)`.
+ */
+private fun MutableList<String>.wrapAngleArguments(): MutableList<String> {
+  val angleTokens = PhysicalUnits.angles.map { it.token }
+  var index = lastIndex - 1
+  while (index > 0) {
+    if (this[index] in angleTokens && this[index + 1] == Token.Operator.RIGHT_BRACKET) {
+      val open = openingBracketBefore(index)
+      val isTrigonometric = getOrNull(open - 1) in TRIGONOMETRIC_FUNCTIONS
+      // Nothing to wrap when the unit is alone: sin(_°)
+      if (open != -1 && isTrigonometric && open + 1 < index) {
+        add(index, Token.Operator.RIGHT_BRACKET)
+        add(open + 1, Token.Operator.LEFT_BRACKET)
+      }
+    }
+    index--
+  }
+  return this
+}
+
+/** Index of the bracket that [pos] is in, -1 when it is not in brackets. */
+private fun List<String>.openingBracketBefore(pos: Int): Int {
+  var depth = 0
+  for (index in pos - 1 downTo 0) {
+    when (this[index]) {
+      Token.Operator.RIGHT_BRACKET -> depth++
+      Token.Operator.LEFT_BRACKET -> if (depth == 0) return index else depth--
+    }
+  }
+  return -1
+}
+
+private val TRIGONOMETRIC_FUNCTIONS = listOf(Token.Func.SIN, Token.Func.COS, Token.Func.TAN)
 
 private fun MutableList<String>.missingClosingBrackets(): MutableList<String> {
   val leftBracket = this.count { it == Token.Operator.LEFT_BRACKET }

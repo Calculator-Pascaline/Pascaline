@@ -57,6 +57,12 @@ internal class ExpressionLayout(
     carets.firstOrNull { it.index == index }
       ?: carets.minByOrNull { abs(it.index - index) }
 
+  /** Index in raw text of the angle box at [x], [y], `null` when there is none. */
+  fun angleBoxAt(x: Float, y: Float): Int? =
+    placeholders
+      .firstOrNull { it.angleBoxIndex != null && it.rect.inflate(it.rect.height * BOX_TAP_MARGIN).contains(Offset(x, y)) }
+      ?.angleBoxIndex
+
   /** Index in raw text for a tap at [x], [y]. */
   fun indexAt(x: Float, y: Float): Int? =
     carets
@@ -74,7 +80,11 @@ internal class ExpressionLayout(
 
 internal class PlacedText(val layout: TextLayoutResult, val x: Float, val baseline: Float)
 
-internal class PlacedPlaceholder(val rect: Rect, val strokeWidth: Float)
+/**
+ * Outlined box: empty slot, or angle box of a trigonometric function when [angleBoxIndex] is the
+ * index of its unit in raw text.
+ */
+internal class PlacedPlaceholder(val rect: Rect, val strokeWidth: Float, val angleBoxIndex: Int? = null)
 
 /** Line through [points], for example square root sign. */
 internal class PlacedStroke(val points: List<Offset>, val width: Float)
@@ -224,7 +234,8 @@ private class Box(
       descent = descent + dy,
       texts = texts.map { PlacedText(it.layout, it.x + dx, it.baseline + dy) },
       bars = bars.map { it.translate(dx, dy) },
-      placeholders = placeholders.map { PlacedPlaceholder(it.rect.translate(dx, dy), it.strokeWidth) },
+      placeholders =
+        placeholders.map { PlacedPlaceholder(it.rect.translate(dx, dy), it.strokeWidth, it.angleBoxIndex) },
       strokes = strokes.map { stroke -> PlacedStroke(stroke.points.map { it + Offset(dx, dy) }, stroke.width) },
       carets = carets.map { Caret(it.index, it.x + dx, it.top + dy, it.bottom + dy) },
     )
@@ -329,7 +340,7 @@ private class LayoutBuilder(
         }
         is LayoutNode.UnitToken -> {
           carets += Caret(node.index, x, caretTop, caretBottom)
-          val box = layoutUnit(node.unit, size)
+          val box = layoutUnit(node.unit, size, node.index)
           add(box)
           carets += Caret(node.index + node.unit.token.length, x, caretTop, caretBottom)
           previousAscent = box.ascent
@@ -642,7 +653,8 @@ private class LayoutBuilder(
   }
 
   /** Unit symbol with a small gap before it: 3 km. */
-  private fun layoutUnit(unit: PhysicalUnit, size: Float): Box {
+  private fun layoutUnit(unit: PhysicalUnit, size: Float, index: Int): Box {
+    if (unit == PhysicalUnits.degree || unit == PhysicalUnits.radian) return layoutAngleBox(unit, size, index)
     val layout = measure(unit.symbol, size)
     val gap = size * UNIT_GAP
     return Box(
@@ -650,6 +662,31 @@ private class LayoutBuilder(
       ascent = size * TEXT_ASCENT,
       descent = size * TEXT_DESCENT,
       texts = listOf(PlacedText(layout, gap, 0f)),
+    )
+  }
+
+  /** Degrees and radians in a small rounded box, `deg` or `rad`, that can be tapped to switch. */
+  private fun layoutAngleBox(unit: PhysicalUnit, size: Float, index: Int): Box {
+    val labelSize = size * ANGLE_BOX_TEXT_SCALE
+    val label = measure(if (unit == PhysicalUnits.degree) ANGLE_BOX_DEGREES else ANGLE_BOX_RADIANS, labelSize)
+    val gap = size * UNIT_GAP
+    val padding = labelSize * ANGLE_BOX_PADDING
+    val height = labelSize * ANGLE_BOX_HEIGHT
+    // Centered on the middle of digits, like operators
+    val center = -size * FRACTION_BAR_POSITION
+    val rect =
+      Rect(
+        left = gap,
+        top = center - height / 2,
+        right = gap + label.size.width + padding * 2,
+        bottom = center + height / 2,
+      )
+    return Box(
+      width = rect.right + gap,
+      ascent = maxOf(size * TEXT_ASCENT, -rect.top),
+      descent = maxOf(size * TEXT_DESCENT, rect.bottom),
+      texts = listOf(PlacedText(label, gap + padding, center + labelSize * ANGLE_BOX_BASELINE)),
+      placeholders = listOf(PlacedPlaceholder(rect, size * ANGLE_BOX_STROKE, angleBoxIndex = index)),
     )
   }
 
@@ -714,6 +751,17 @@ private const val FRACTION_BAR_POSITION = 0.3f
 private const val FRACTION_GAP = 0.1f
 private const val DERIVATIVE_SCALE = 0.7f
 private const val UNIT_GAP = 0.12f
+/** Angle box can be tapped a bit outside of it, it is small */
+private const val BOX_TAP_MARGIN = 0.3f
+// Angle box: label size compared to text, padding and height compared to label
+private const val ANGLE_BOX_TEXT_SCALE = 0.55f
+private const val ANGLE_BOX_PADDING = 0.35f
+private const val ANGLE_BOX_HEIGHT = 1.35f
+/** Baseline of the label under the middle of the box */
+private const val ANGLE_BOX_BASELINE = 0.36f
+private const val ANGLE_BOX_STROKE = 0.04f
+private const val ANGLE_BOX_DEGREES = "deg"
+private const val ANGLE_BOX_RADIANS = "rad"
 private const val BIG_OPERATOR_SCALE = 1.4f
 private const val INTEGRAL_SCALE = 1.8f
 /** Middle of text above the baseline, in text sizes */

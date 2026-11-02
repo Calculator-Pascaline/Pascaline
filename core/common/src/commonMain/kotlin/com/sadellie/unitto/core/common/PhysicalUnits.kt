@@ -127,11 +127,14 @@ object PhysicalUnits {
   private val foot = unit("ft", "Foot", "0.3048", LENGTH)
   private val yard = unit("yd", "Yard", "0.9144", LENGTH)
   private val mile = unit("mi", "Mile", "1609.344", LENGTH)
-  private val degree =
+  val degree =
     unit("°", "Degree", "0.017453292519943295769236907684886127134428718885417", Dimension.NONE)
-  private val radian = unit("rad", "Radian", "1", Dimension.NONE)
+  val radian = unit("rad", "Radian", "1", Dimension.NONE)
   private val gradian =
     unit("gon", "Gradian", "0.015707963267948966192313216916397514420985846996876", Dimension.NONE)
+
+  /** Units of angles: sin(45°) is calculated in degrees whatever the angle mode is. */
+  val angles: List<PhysicalUnit> by lazy { listOf(degree, radian, gradian) }
 
   // Time and frequency
   private val nanosecond = unit("ns", "Nanosecond", "1E-9", TIME)

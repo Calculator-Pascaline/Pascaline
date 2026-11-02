@@ -52,7 +52,11 @@ internal sealed interface Node {
 
   class Binary(val operator: BinaryOperator, val left: Node, val right: Node) : Node
 
-  class Function(val function: FunctionType, val argument: Node) : Node
+  /**
+   * @property angle Unit of the argument of sin, cos or tan from its angle box: sin(45°) is in
+   *   degrees whatever the angle mode is. `null` when the angle mode is used.
+   */
+  class Function(val function: FunctionType, val argument: Node, val angle: PhysicalUnit? = null) : Node
 
   class Log(val base: Node, val argument: Node) : Node
 
@@ -307,7 +311,16 @@ internal class Parser(private val tokens: List<String>, private val roundingMode
     return expr ?: throw ExpressionException.BadExpression()
   }
 
-  private fun function(type: FunctionType) = Node.Function(type, parseFuncParentheses())
+  private fun function(type: FunctionType): Node.Function {
+    val argument = parseFuncParentheses()
+    // Angle box at the end of sin, cos, tan: (45)×_° ==> 45 in degrees
+    val isTrigonometric = type == FunctionType.SIN || type == FunctionType.COS || type == FunctionType.TAN
+    if (isTrigonometric && argument is Node.Binary && argument.operator == BinaryOperator.MULTIPLY) {
+      val unit = (argument.right as? Node.Unit)?.unit
+      if (unit != null && unit in PhysicalUnits.angles) return Node.Function(type, argument.left, unit)
+    }
+    return Node.Function(type, argument)
+  }
 
   private fun parseLog(): Node {
     if (!moveIfMatched(Token.Layout.SUBSCRIPT_START)) return function(FunctionType.LOG)

@@ -175,7 +175,21 @@ internal class SymbolicFormatter(private val precision: Int, private val outputF
       } else {
         ""
       }
-    return sign + coefficientText + root + if (imaginary) Token.Const.I else ""
+    val i = if (imaginary) Token.Const.I else ""
+    // Root over the denominator like on paper: √2/2 instead of 0.5√2
+    if (hasRoot && !magnitude.isInteger) {
+      val numerator = if (magnitude.numerator.isEqualTo(KBigDecimal.ONE)) "" else number(magnitude.numerator)
+      return sign +
+        Token.Layout.NUMERATOR_START +
+        numerator +
+        root +
+        Token.Layout.END +
+        Token.Layout.DENOMINATOR_START +
+        number(magnitude.denominator) +
+        Token.Layout.END +
+        i
+    }
+    return sign + coefficientText + root + i
   }
 
   /** Rational with sign. Empty for zero when not [first]. */

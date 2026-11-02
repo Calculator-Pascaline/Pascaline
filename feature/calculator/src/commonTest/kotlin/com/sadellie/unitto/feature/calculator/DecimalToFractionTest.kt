@@ -43,6 +43,8 @@ class DecimalToFractionTest {
 
   @Test fun testRepeating5() = assertFractional("333/500", "0.666000")
 
+  @Test fun repeatingNinesAreWhole() = assertFractional("", "0.99999999999999999999")
+
   @Test fun exactFraction() = assertExact("1/225", "1", "225")
 
   @Test fun exactMixedNumber() = assertExact("4 2/3", "14", "3")

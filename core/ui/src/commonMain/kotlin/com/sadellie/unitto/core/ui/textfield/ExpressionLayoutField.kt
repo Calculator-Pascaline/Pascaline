@@ -44,6 +44,7 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
@@ -169,9 +170,16 @@ fun ExpressionLayoutTextField(
       modifier =
         Modifier.fillMaxSize().pointerInput(layout, scale, offsetX, baseline) {
           detectTapGestures { position ->
-            val index =
-              layout.indexAt((position.x - offsetX) / scale, (position.y - baseline) / scale)
-                ?: return@detectTapGestures
+            val x = (position.x - offsetX) / scale
+            val y = (position.y - baseline) / scale
+            // Tap on deg or rad switches it
+            val boxIndex = layout.angleBoxAt(x, y)
+            if (boxIndex != null) {
+              val box = listOf(DEGREE_BOX, RADIAN_BOX).firstOrNull { state.text.startsWith(it, boxIndex) }
+              if (box != null) state.switchAngleBox(boxIndex until boxIndex + box.length)
+              return@detectTapGestures
+            }
+            val index = layout.indexAt(x, y) ?: return@detectTapGestures
             focusRequester.requestFocus()
             state.edit { selection = TextRange(index) }
           }
@@ -458,6 +466,17 @@ private fun DrawScope.drawExpression(layout: ExpressionLayout, color: Color) {
     )
   }
   layout.placeholders.forEach {
+    if (it.angleBoxIndex != null) {
+      // deg or rad: rounded like a chip, not like an empty slot
+      drawRoundRect(
+        color = color.copy(alpha = color.alpha * ANGLE_BOX_ALPHA),
+        topLeft = it.rect.topLeft,
+        size = it.rect.size,
+        cornerRadius = CornerRadius(it.rect.height * ANGLE_BOX_CORNER),
+        style = Stroke(it.strokeWidth),
+      )
+      return@forEach
+    }
     drawRect(
       color = color.copy(alpha = color.alpha * PLACEHOLDER_ALPHA),
       topLeft = it.rect.topLeft,
@@ -505,3 +524,5 @@ private val CARET_WIDTH = 2.dp
 private val CARET_SCROLL_MARGIN = 4.dp
 private const val CARET_BLINK_MS = 500L
 private const val PLACEHOLDER_ALPHA = 0.4f
+private const val ANGLE_BOX_ALPHA = 0.6f
+private const val ANGLE_BOX_CORNER = 0.35f

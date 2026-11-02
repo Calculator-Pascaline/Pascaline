@@ -115,7 +115,16 @@ internal class Evaluator(
       is Node.Convert -> throw ExpressionException.BadExpression()
       is Node.Negate -> -evaluate(node.node, x)
       is Node.Binary -> evaluateBinary(node, x)
-      is Node.Function -> evaluateFunction(node.function, evaluate(node.argument, x))
+      // Angle box makes radians of the argument: sin(45°) is the same in both angle modes
+      is Node.Function -> {
+        val angle = node.angle
+        if (angle == null) {
+          evaluateFunction(node.function, evaluate(node.argument, x))
+        } else {
+          val radians = evaluate(node.argument, x) * Complex(KBigDecimal(angle.factor))
+          evaluateFunction(node.function, radians, inRadians = true)
+        }
+      }
       is Node.Log -> evaluateLog(evaluate(node.base, x).real(), evaluate(node.argument, x).real())
       is Node.Factorial -> {
         if (node.isNegated) throw ExpressionException.FactorialCalculation()
@@ -171,7 +180,11 @@ internal class Evaluator(
     return if (n < 0) Complex(KBigDecimal.ONE).divide(result, scale, roundingMode) else result
   }
 
-  private fun evaluateFunction(function: FunctionType, argument: Complex): Complex {
+  private fun evaluateFunction(
+    function: FunctionType,
+    argument: Complex,
+    inRadians: Boolean = radianMode,
+  ): Complex {
     if (function == FunctionType.SQRT) return sqrt(argument)
     if (function == FunctionType.ABS) {
       if (argument.isReal) return Complex(argument.re.abs())
@@ -184,9 +197,9 @@ internal class Evaluator(
       when (function) {
         FunctionType.SQRT,
         FunctionType.ABS -> error("handled above")
-        FunctionType.SIN -> value.sin(radianMode, mathContext).rescaleTrig()
-        FunctionType.COS -> value.cos(radianMode, mathContext).rescaleTrig()
-        FunctionType.TAN -> value.tan(radianMode, mathContext).rescaleTrig()
+        FunctionType.SIN -> value.sin(inRadians, mathContext).rescaleTrig()
+        FunctionType.COS -> value.cos(inRadians, mathContext).rescaleTrig()
+        FunctionType.TAN -> value.tan(inRadians, mathContext).rescaleTrig()
         FunctionType.ARSIN -> value.arsin(radianMode, mathContext).rescaleTrig()
         FunctionType.ARCOS -> value.arcos(radianMode, mathContext).rescaleTrig()
         FunctionType.ARTAN -> value.artan(radianMode, mathContext).rescaleTrig()

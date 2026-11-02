@@ -19,6 +19,7 @@
 package io.github.sadellie.evaluatto
 
 import com.sadellie.unitto.core.common.KBigDecimal
+import com.sadellie.unitto.core.common.PhysicalUnits
 
 /** `coefficient·√radicand`, radicand is square free. Radicand 1 means rational number. */
 internal class Surd(val coefficient: Rational, val radicand: Long) {
@@ -129,17 +130,20 @@ internal class ExactValue(val re: Surd, val im: Surd = Surd.ZERO) {
 }
 
 /**
- * Exact value of [this] when it uses only numbers, `i`, + − × ÷, whole powers and square roots.
- * null otherwise (π, functions, x and so on).
+ * Exact value of [this] when it uses only numbers, `i`, + − × ÷, whole powers, square roots and
+ * sin, cos, tan of special angles (multiples of 30° and 45°). null otherwise (π alone, other
+ * functions, x and so on).
+ *
+ * @param radianMode Angle mode for sin, cos and tan without an angle box.
  */
-internal fun Node.exactValue(): ExactValue? =
+internal fun Node.exactValue(radianMode: Boolean = true): ExactValue? =
   when (this) {
     is Node.Number -> ExactValue(Surd.rational(Rational.fromDecimal(value)))
     Node.ImaginaryUnit -> ExactValue(Surd.ZERO, Surd.rational(Rational.ONE))
-    is Node.Negate -> node.exactValue()?.let { -it }
+    is Node.Negate -> node.exactValue(radianMode)?.let { -it }
     is Node.Binary -> {
-      val left = left.exactValue()
-      val right = right.exactValue()
+      val left = left.exactValue(radianMode)
+      val right = right.exactValue(radianMode)
       if (left == null || right == null) {
         null
       } else {
@@ -154,9 +158,89 @@ internal fun Node.exactValue(): ExactValue? =
       }
     }
     is Node.Function ->
-      if (function == FunctionType.SQRT) argument.exactValue()?.sqrt() else null
+      when (function) {
+        FunctionType.SQRT -> argument.exactValue(radianMode)?.sqrt()
+        FunctionType.SIN,
+        FunctionType.COS,
+        FunctionType.TAN -> exactTrigonometric(radianMode)
+        else -> null
+      }
     else -> null
   }
+
+/** sin, cos and tan of multiples of 30° and 45°: cos(45°) = √2/2, sin(π/6) = 1/2. */
+private fun Node.Function.exactTrigonometric(radianMode: Boolean): ExactValue? {
+  val degrees =
+    when {
+      angle == PhysicalUnits.degree -> argument.exactRational(radianMode)
+      angle == PhysicalUnits.radian -> argument.piMultiple(radianMode)?.times(HALF_TURN)
+      angle != null -> null
+      radianMode -> argument.piMultiple(radianMode)?.times(HALF_TURN)
+      else -> argument.exactRational(radianMode)
+    } ?: return null
+  if (!degrees.isInteger) return null
+  val whole = degrees.numerator.toLongOrNull() ?: return null
+  val sin = exactSine(whole) ?: return null
+  val cos = exactSine(whole + RIGHT_ANGLE) ?: return null
+  return when (function) {
+    FunctionType.SIN -> sin
+    FunctionType.COS -> cos
+    // tan(90°) does not exist
+    else -> if (cos.re.isZero) null else sin.divide(cos)
+  }
+}
+
+/** sin of [degrees] when it is a multiple of 30° or 45°. */
+private fun exactSine(degrees: Long): ExactValue? {
+  val angle = ((degrees % FULL_TURN) + FULL_TURN) % FULL_TURN
+  // sin(180°+a) = −sin(a), sin(180°−a) = sin(a)
+  val sign = if (angle >= 180) -1 else 1
+  val inHalf = angle % 180
+  val firstQuadrant = if (inHalf > RIGHT_ANGLE) 180 - inHalf else inHalf
+  val surd =
+    when (firstQuadrant) {
+      0L -> Surd.ZERO
+      30L -> Surd.rational(Rational.ONE / TWO)
+      45L -> Surd(Rational.ONE / TWO, 2)
+      60L -> Surd(Rational.ONE / TWO, 3)
+      90L -> Surd.rational(Rational.ONE)
+      else -> return null
+    }
+  return ExactValue(if (sign < 0) -surd else surd)
+}
+
+/** Rational value, null when it is not one. */
+private fun Node.exactRational(radianMode: Boolean): Rational? =
+  exactValue(radianMode)?.takeIf { it.isRealRational }?.re?.coefficient
+
+/** k when [this] is k·π with a rational k: π/2, 2π, π+π/3. */
+private fun Node.piMultiple(radianMode: Boolean): Rational? =
+  when (this) {
+    Node.Pi -> Rational.ONE
+    is Node.Negate -> node.piMultiple(radianMode)?.let { -it }
+    is Node.Binary ->
+      when (operator) {
+        BinaryOperator.MULTIPLY ->
+          left.piMultiple(radianMode)?.let { pi -> right.exactRational(radianMode)?.let { pi * it } }
+            ?: right.piMultiple(radianMode)?.let { pi -> left.exactRational(radianMode)?.let { pi * it } }
+        BinaryOperator.DIVIDE -> {
+          val pi = left.piMultiple(radianMode)
+          val divisor = right.exactRational(radianMode)
+          if (pi == null || divisor == null || divisor.isZero) null else pi / divisor
+        }
+        BinaryOperator.PLUS ->
+          left.piMultiple(radianMode)?.let { a -> right.piMultiple(radianMode)?.let { a + it } }
+        BinaryOperator.MINUS ->
+          left.piMultiple(radianMode)?.let { a -> right.piMultiple(radianMode)?.let { a - it } }
+        else -> null
+      }
+    else -> null
+  }
+
+private val HALF_TURN = Rational.of(KBigDecimal("180"))
+private val TWO = Rational.of(KBigDecimal("2"))
+private const val RIGHT_ANGLE = 90L
+private const val FULL_TURN = 360L
 
 private fun ExactValue.sqrt(): ExactValue? {
   if (!isRealRational) return null

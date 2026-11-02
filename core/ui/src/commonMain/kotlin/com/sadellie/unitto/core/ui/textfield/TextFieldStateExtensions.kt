@@ -194,6 +194,8 @@ fun TextFieldState.addBracket() {
  * one more. After `d/dx(...)` cursor goes into the point slot.
  */
 private fun TextFieldState.closeBracket() {
+  // sin(45|_°) ==> sin(45_°)|
+  if (skipAngleBox()) return
   val cursor = selection.min
   // Unclosed brackets: this one belongs to them, add a new one: d/dx(cos(x|) ==> d/dx(cos(x)|)
   val unclosed =
@@ -258,6 +260,7 @@ private fun TextFieldState.addBracketInSlot(slotStart: Int) {
 
 fun TextFieldState.deleteTokens() {
   if (selection.collapsed && deleteInSlot()) return
+  if (selection.collapsed && deleteFunctionWithEmptyAngleBox()) return
 
   val deleteRangeStart =
     when (selection.max) {

@@ -56,6 +56,8 @@ suspend fun KBigDecimal.toFractionalString(): String =
         fractional.repeatingFractional(repeatingDecimals.length)
       }
     if (finalDenominator > maxDenominator) return@withContext ""
+    // 0.999… is 9⁄9: a whole number, not a fraction
+    if (finalDenominator == KBigInteger.ONE) return@withContext ""
     return@withContext "$res$finalNumerator⁄$finalDenominator"
   }
 
