@@ -1,16 +1,17 @@
 :root {
-  --bg-color: #edefe2;
-  --text-color: #303429;
-  --bar-color: #4f6632;
-  --track-color: #e1e4d4;
+  /* Pascaline colors */
+  --bg-color: #fafafc;
+  --text-color: #1a1c20;
+  --bar-color: #2f5da8;
+  --track-color: #e8eaf1;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg-color: #181b13;
-    --text-color: #e4e7d7;
-    --bar-color: #b9ce9b;
-    --track-color: #23271d;
+    --bg-color: #111318;
+    --text-color: #e3e5ec;
+    --bar-color: #adc6ff;
+    --track-color: #1e2026;
   }
 }
 

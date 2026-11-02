@@ -29,6 +29,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -39,6 +40,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.TextFieldState
@@ -67,7 +69,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.input.ImeAction
@@ -81,7 +82,6 @@ import com.sadellie.unitto.core.common.collectAsStateWithLifecycleKMP
 import com.sadellie.unitto.core.designsystem.LocalWindowSize
 import com.sadellie.unitto.core.designsystem.icons.symbols.Delete
 import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
-import com.sadellie.unitto.core.designsystem.shapes.Sizes
 import com.sadellie.unitto.core.model.calculator.CalculatorHistoryItem
 import com.sadellie.unitto.core.ui.DrawerButton
 import com.sadellie.unitto.core.ui.EmptyScreen
@@ -89,9 +89,7 @@ import com.sadellie.unitto.core.ui.ScaffoldWithTopBar
 import com.sadellie.unitto.core.ui.textfield.ExpressionLayoutTextField
 import com.sadellie.unitto.core.ui.textfield.isInSeries
 import com.sadellie.unitto.feature.calculator.components.CalculationList
-import com.sadellie.unitto.feature.calculator.components.CalculatorHistoryList
 import com.sadellie.unitto.feature.calculator.components.CalculatorKeyboard
-import com.sadellie.unitto.feature.calculator.components.TextBox
 import com.sadellie.unitto.feature.calculator.components.historyTextStyle
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -218,33 +216,7 @@ private fun ReadyCompact(
           addTokens = onAddTokenClick,
           onDelete = onDeleteHistoryItemClick,
         )
-        // Rounded input box, as tall as what is in it: taller for fractions and integrals
-        ExpressionLayoutTextField(
-          modifier =
-            Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-              .fillMaxWidth()
-              // Grows upward: the keyboard stays where it is
-              .animateContentSize(alignment = Alignment.BottomCenter)
-              .heightIn(min = INPUT_MIN_HEIGHT, max = INPUT_MAX_HEIGHT)
-              .clip(INPUT_SHAPE)
-              .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-              .border(INPUT_BORDER, MaterialTheme.colorScheme.primary.copy(alpha = INPUT_BORDER_ALPHA), INPUT_SHAPE)
-              .padding(horizontal = 12.dp, vertical = 6.dp),
-          state = uiState.input,
-          formatterSymbols = uiState.formatterSymbols,
-          textColor = MaterialTheme.colorScheme.onSurface,
-          // Same size as the history
-          textStyle = historyTextStyle(),
-          wrapHeight = true,
-          minRatio = INPUT_MIN_RATIO,
-          alignStart = true,
-          keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-          onKeyboardAction =
-            KeyboardActionHandler {
-              onEqualClick()
-              it()
-            },
-        )
+        CalculatorInput(uiState = uiState, onEqualClick = onEqualClick)
         CalculatorKeyboard(
           modifier =
             Modifier.semantics { testTag = "ready" }
@@ -297,60 +269,53 @@ private fun ReadyExpanded(
   onDeleteHistoryItemClick: (CalculatorHistoryItem) -> Unit,
 ) {
   var showClearHistoryDialog by rememberSaveable { mutableStateOf(false) }
-  Scaffold(containerColor = MaterialTheme.colorScheme.surfaceContainer) { paddingValues ->
-    Row(
+  // Wide screens (tablets, browsers): calculations on the left, input and keyboard on the right.
+  // Drawer is always open on the left of it.
+  Scaffold(containerColor = MaterialTheme.colorScheme.surface) { paddingValues ->
+    BoxWithConstraints(
       modifier = Modifier.padding(paddingValues).consumeWindowInsets(paddingValues).fillMaxSize()
     ) {
-      CalculatorHistoryList(
-        modifier = Modifier.weight(2f).fillMaxHeight(),
-        calculatorHistoryItems = uiState.history,
+     val keyboardWidth = minOf(maxWidth / 2, EXPANDED_KEYBOARD_MAX_WIDTH)
+     Row(modifier = Modifier.fillMaxSize()) {
+      CalculationList(
+        modifier = Modifier.weight(1f).fillMaxHeight(),
+        items = uiState.history,
         formatterSymbols = uiState.formatterSymbols,
         addTokens = onAddTokenClick,
         onDelete = onDeleteHistoryItemClick,
-        showDeleteButtons = true,
       )
-      ScaffoldWithTopBar(
-        modifier = Modifier.weight(3f),
-        title = {},
-        navigationIcon = {},
-        colors =
-          TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-          ),
-        actions = { ClearHistoryButton(onClick = { showClearHistoryDialog = true }, isOpen = true) },
-      ) { paddingValues ->
-        Column(modifier = Modifier.padding(paddingValues).fillMaxHeight()) {
-          TextBox(
-            modifier = Modifier.fillMaxHeight(TEXT_BOX_HEIGHT_FACTOR_COMPACT).fillMaxWidth(),
-            formatterSymbols = uiState.formatterSymbols,
-            state = uiState.input,
-            output = uiState.output,
-            onEnter = onEqualClick,
-            showHandle = false,
-          )
-          val focusManager = LocalFocusManager.current
-          CalculatorKeyboard(
-            modifier = Modifier.padding(Sizes.large).weight(1f).fillMaxWidth(),
-            onAddTokenClick = onAddTokenClick,
-            onBracketsClick = onBracketsClick,
-            onDeleteClick = onDeleteClick,
-            onClearClick = onClearClick,
-            onEqualClick = {
-              focusManager.clearFocus()
-              onEqualClick()
-            },
-            radianMode = uiState.radianMode,
-            onRadianModeClick = onRadianModeClick,
-            additionalButtons = uiState.additionalButtons,
-            onAdditionalButtonsClick = onAdditionalButtonsClick,
-            inverseMode = uiState.inverseMode,
-            onInverseModeClick = onInverseModeClick,
-            showAcButton = uiState.acButton,
-            middleZero = uiState.middleZero,
-            fractional = uiState.formatterSymbols.fractional,
+      Column(modifier = Modifier.width(keyboardWidth).fillMaxHeight()) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+          ClearHistoryButton(
+            onClick = { showClearHistoryDialog = true },
+            isOpen = uiState.history.isNotEmpty(),
           )
         }
+        CalculatorInput(uiState = uiState, onEqualClick = onEqualClick)
+        CalculatorKeyboard(
+          modifier =
+            Modifier.semantics { testTag = "ready" }
+              .weight(1f)
+              .fillMaxWidth()
+              .padding(horizontal = 8.dp, vertical = 4.dp),
+          onAddTokenClick = onAddTokenClick,
+          onBracketsClick = onBracketsClick,
+          onDeleteClick = onDeleteClick,
+          onClearClick = onClearClick,
+          onEqualClick = onEqualClick,
+          radianMode = uiState.radianMode,
+          onRadianModeClick = onRadianModeClick,
+          additionalButtons = uiState.additionalButtons,
+          onAdditionalButtonsClick = onAdditionalButtonsClick,
+          inverseMode = uiState.inverseMode,
+          onInverseModeClick = onInverseModeClick,
+          showAcButton = uiState.acButton,
+          middleZero = uiState.middleZero,
+          fractional = uiState.formatterSymbols.fractional,
+          isInSeries = isInSeries(uiState.input),
+        )
       }
+     }
     }
   }
 
@@ -363,6 +328,37 @@ private fun ReadyExpanded(
       onDismiss = { showClearHistoryDialog = false },
     )
   }
+}
+
+/** Rounded input box, as tall as what is in it: taller for fractions and integrals. */
+@Composable
+private fun CalculatorInput(uiState: CalculatorUIState.Ready, onEqualClick: () -> Unit) {
+  ExpressionLayoutTextField(
+    modifier =
+      Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+        .fillMaxWidth()
+        // Grows upward: the keyboard stays where it is
+        .animateContentSize(alignment = Alignment.BottomCenter)
+        .heightIn(min = INPUT_MIN_HEIGHT, max = INPUT_MAX_HEIGHT)
+        .clip(INPUT_SHAPE)
+        .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+        .border(INPUT_BORDER, MaterialTheme.colorScheme.primary.copy(alpha = INPUT_BORDER_ALPHA), INPUT_SHAPE)
+        .padding(horizontal = 12.dp, vertical = 6.dp),
+    state = uiState.input,
+    formatterSymbols = uiState.formatterSymbols,
+    textColor = MaterialTheme.colorScheme.onSurface,
+    // Same size as the history
+    textStyle = historyTextStyle(),
+    wrapHeight = true,
+    minRatio = INPUT_MIN_RATIO,
+    alignStart = true,
+    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+    onKeyboardAction =
+      KeyboardActionHandler {
+        onEqualClick()
+        it()
+      },
+  )
 }
 
 /** x,n,t key types n in Σ and ∏. */
@@ -419,7 +415,8 @@ private fun ClearHistoryButton(onClick: () -> Unit, isOpen: Boolean) {
   }
 }
 
-private const val TEXT_BOX_HEIGHT_FACTOR_COMPACT = 0.4f
+/** Keyboard on wide screens is not wider than this, calculations take the rest. */
+private val EXPANDED_KEYBOARD_MAX_WIDTH = 480.dp
 private const val KEYBOARD_HEIGHT_FACTOR = 0.5f
 private const val INPUT_MIN_RATIO = 0.35f
 // Tall enough for Σ with both bounds

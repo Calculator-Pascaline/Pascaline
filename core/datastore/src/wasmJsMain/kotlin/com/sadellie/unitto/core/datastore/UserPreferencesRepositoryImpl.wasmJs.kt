@@ -20,6 +20,7 @@
 package com.sadellie.unitto.core.datastore
 
 import com.sadellie.unitto.core.common.FormatterSymbols
+import com.sadellie.unitto.core.common.WebStorage
 import com.sadellie.unitto.core.datastore.UserPreferencesRepository.Defaults
 import com.sadellie.unitto.core.model.converter.UnitGroup
 import com.sadellie.unitto.core.model.converter.UnitsListSorting
@@ -31,8 +32,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 
+/** Settings of the web app, saved in the browser. */
 class UserPreferencesRepositoryImpl : UserPreferencesRepository {
-  private val _data = MutableStateFlow(emptyMap<String, Any>())
+  private val _data = MutableStateFlow(loadPreferences())
   override val appPrefs: Flow<AppPreferences> =
     _data.map { preferences ->
       AppPreferences(
@@ -375,12 +377,54 @@ class UserPreferencesRepositoryImpl : UserPreferencesRepository {
 
   private inline fun <reified T> Preferences.getTyped(key: String) = this[key] as? T
 
-  private fun updateData(key: String, newValue: Any) =
+  private fun updateData(key: String, newValue: Any) {
     _data.update { oldData ->
       val newData = oldData.toMutableMap()
       newData[key] = newValue
       newData
     }
+    savePreferences(_data.value)
+  }
 }
+
+/** Each setting is saved as key, type and value: Boolean, Int, Long or String. */
+private fun savePreferences(preferences: Preferences) {
+  val fields =
+    preferences.flatMap { (key, value) ->
+      val type =
+        when (value) {
+          is Boolean -> TYPE_BOOLEAN
+          is Int -> TYPE_INT
+          is Long -> TYPE_LONG
+          else -> TYPE_STRING
+        }
+      listOf(key, type, value.toString())
+    }
+  WebStorage.set(PREFERENCES_KEY, WebStorage.encode(fields))
+}
+
+private fun loadPreferences(): Preferences =
+  WebStorage.decode(WebStorage.get(PREFERENCES_KEY) ?: "")
+    .chunked(PREFERENCE_FIELDS)
+    .mapNotNull { fields ->
+      if (fields.size != PREFERENCE_FIELDS) return@mapNotNull null
+      val (key, type, text) = fields
+      val value: Any =
+        when (type) {
+          TYPE_BOOLEAN -> text == "true"
+          TYPE_INT -> text.toIntOrNull() ?: return@mapNotNull null
+          TYPE_LONG -> text.toLongOrNull() ?: return@mapNotNull null
+          else -> text
+        }
+      key to value
+    }
+    .toMap()
+
+private const val PREFERENCES_KEY = "preferences"
+private const val PREFERENCE_FIELDS = 3
+private const val TYPE_BOOLEAN = "b"
+private const val TYPE_INT = "i"
+private const val TYPE_LONG = "l"
+private const val TYPE_STRING = "s"
 
 private typealias Preferences = Map<String, Any>
