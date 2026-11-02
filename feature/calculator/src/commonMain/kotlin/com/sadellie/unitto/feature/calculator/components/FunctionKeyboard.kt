@@ -72,6 +72,7 @@ import unitto.core.common.generated.resources.Res
 import unitto.core.common.generated.resources.calculator_units_and_constants
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import com.sadellie.unitto.core.ui.keyHaptics
+import com.sadellie.unitto.core.ui.animatePressedWeight
 
 /**
  * Function key: [label] is shown, [token] is inserted. [inverse] is used instead when inverse switch
@@ -121,12 +122,16 @@ internal fun FunctionRows(
             horizontalArrangement = Arrangement.spacedBy(KEY_SPACING),
           ) {
             row.forEach { key ->
-              val keyModifier = Modifier.weight(1f).fillMaxHeight()
+              // Wider while pressed, like keys of the keypad
+              val interactionSource = remember { MutableInteractionSource() }
+              val growth by animatePressedWeight(interactionSource)
+              val keyModifier = Modifier.weight(growth).fillMaxHeight()
               if (key === INVERSE_SWITCH) {
-                InverseSwitch(keyModifier, inverse) { inverse = it }
+                InverseSwitch(keyModifier, interactionSource, inverse) { inverse = it }
               } else {
                 FunctionKeyButton(
                   modifier = keyModifier,
+                  interactionSource = interactionSource,
                   key = key.inverse?.takeIf { inverse } ?: key,
                   onClick = onAddTokenClick,
                 )
@@ -155,9 +160,13 @@ internal fun FunctionRows(
 }
 
 @Composable
-private fun FunctionKeyButton(modifier: Modifier, key: FunctionKey, onClick: (String) -> Unit) {
+private fun FunctionKeyButton(
+  modifier: Modifier,
+  interactionSource: MutableInteractionSource,
+  key: FunctionKey,
+  onClick: (String) -> Unit,
+) {
   // Vibrates like the icon keys
-  val interactionSource = remember { MutableInteractionSource() }
   Surface(
     modifier = modifier.keyHaptics(interactionSource),
     onClick = { onClick(key.token) },
@@ -178,8 +187,12 @@ private fun FunctionKeyButton(modifier: Modifier, key: FunctionKey, onClick: (St
 }
 
 @Composable
-private fun InverseSwitch(modifier: Modifier, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
-  val interactionSource = remember { MutableInteractionSource() }
+private fun InverseSwitch(
+  modifier: Modifier,
+  interactionSource: MutableInteractionSource,
+  checked: Boolean,
+  onCheckedChange: (Boolean) -> Unit,
+) {
   Surface(
     modifier = modifier.keyHaptics(interactionSource),
     checked = checked,

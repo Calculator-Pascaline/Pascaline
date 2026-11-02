@@ -19,8 +19,6 @@
 
 package com.sadellie.unitto.core.ui
 
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.sadellie.unitto.core.common.Token
 import com.sadellie.unitto.core.designsystem.icons.iconpack.AcTan
@@ -74,7 +72,6 @@ import com.sadellie.unitto.core.designsystem.icons.iconpack.Root
 import com.sadellie.unitto.core.designsystem.icons.iconpack.Sin
 import com.sadellie.unitto.core.designsystem.icons.iconpack.Tan
 import org.jetbrains.compose.resources.StringResource
-import org.jetbrains.compose.resources.stringResource
 import unitto.core.common.generated.resources.Res
 import unitto.core.common.generated.resources.common_clear
 import unitto.core.common.generated.resources.common_comma
@@ -206,161 +203,3 @@ sealed interface KeypadButton {
     val TanKey = KeypadButtonAdd(IconPack.Tan, Res.string.keyboard_tan, Token.Func.TAN_BRACKET)
   }
 }
-
-@Composable
-fun KeypadButtonTransparent(
-  modifier: Modifier,
-  button: KeypadButton.KeypadButtonAdd,
-  height: Float,
-  onClick: (String) -> Unit,
-) =
-  KeyboardButtonTransparent(
-    modifier = modifier,
-    icon = button.icon,
-    contentDescription = button.description?.let { stringResource(it) },
-    contentHeight = height,
-  ) {
-    onClick(button.token)
-  }
-
-@Composable
-fun KeypadButtonTransparent(
-  modifier: Modifier,
-  button: KeypadButton.KeypadButtonSimple,
-  height: Float,
-  onClick: () -> Unit,
-) =
-  KeyboardButtonTransparent(
-    modifier = modifier,
-    icon = button.icon,
-    contentDescription = button.description?.let { stringResource(it) },
-    contentHeight = height,
-    onClick = onClick,
-  )
-
-@Composable
-fun KeypadButtonTransparent(
-  modifier: Modifier,
-  button: KeypadButton.KeypadButtonSimple,
-  height: Float,
-  onLongClick: () -> Unit,
-  onClick: () -> Unit,
-) =
-  KeyboardButtonTransparent(
-    modifier = modifier,
-    icon = button.icon,
-    contentDescription = button.description?.let { stringResource(it) },
-    contentHeight = height,
-    onLongClick = onLongClick,
-    onClick = onClick,
-  )
-
-@Composable
-fun KeypadButtonTertiary(
-  modifier: Modifier,
-  button: KeypadButton.KeypadButtonSimple,
-  height: Float,
-  onClick: () -> Unit,
-) =
-  KeyboardButtonTertiary(
-    modifier = modifier,
-    icon = button.icon,
-    contentDescription = button.description?.let { stringResource(it) },
-    contentHeight = height,
-    onClick = onClick,
-  )
-
-@Composable
-fun KeypadButtonFilled(
-  modifier: Modifier,
-  button: KeypadButton.KeypadButtonSimple,
-  height: Float,
-  onClick: () -> Unit,
-) =
-  KeyboardButtonFilled(
-    modifier = modifier,
-    icon = button.icon,
-    contentDescription = button.description?.let { stringResource(it) },
-    contentHeight = height,
-    onClick = onClick,
-  )
-
-@Composable
-fun KeypadButtonFilled(
-  modifier: Modifier,
-  button: KeypadButton.KeypadButtonAdd,
-  height: Float,
-  onClick: (String) -> Unit,
-) =
-  KeyboardButtonFilled(
-    modifier = modifier,
-    icon = button.icon,
-    contentDescription = button.description?.let { stringResource(it) },
-    contentHeight = height,
-  ) {
-    onClick(button.token)
-  }
-
-@Composable
-fun KeypadButtonFilledPrimary(
-  modifier: Modifier,
-  button: KeypadButton.KeypadButtonSimple,
-  height: Float,
-  onClick: () -> Unit,
-) =
-  KeyboardButtonFilledPrimary(
-    modifier = modifier,
-    icon = button.icon,
-    contentDescription = button.description?.let { stringResource(it) },
-    contentHeight = height,
-    onClick = onClick,
-  )
-
-@Composable
-fun KeypadButtonFilledPrimary(
-  modifier: Modifier,
-  button: KeypadButton.KeypadButtonAdd,
-  height: Float,
-  onClick: (String) -> Unit,
-) =
-  KeyboardButtonFilledPrimary(
-    modifier = modifier,
-    icon = button.icon,
-    contentDescription = button.description?.let { stringResource(it) },
-    contentHeight = height,
-  ) {
-    onClick(button.token)
-  }
-
-@Composable
-fun KeypadButtonLight(
-  modifier: Modifier,
-  button: KeypadButton.KeypadButtonAdd,
-  height: Float,
-  onClick: (String) -> Unit,
-) =
-  KeyboardButtonLight(
-    modifier = modifier,
-    icon = button.icon,
-    contentDescription = button.description?.let { stringResource(it) },
-    contentHeight = height,
-  ) {
-    onClick(button.token)
-  }
-
-@Composable
-fun KeypadButtonLight(
-  modifier: Modifier,
-  button: KeypadButton.KeypadButtonSimple,
-  height: Float,
-  onLongClick: () -> Unit,
-  onClick: () -> Unit,
-) =
-  KeyboardButtonLight(
-    modifier = modifier,
-    icon = button.icon,
-    contentDescription = button.description?.let { stringResource(it) },
-    contentHeight = height,
-    onLongClick = onLongClick,
-    onClick = onClick,
-  )
