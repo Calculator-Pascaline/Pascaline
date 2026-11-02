@@ -105,6 +105,7 @@ import com.sadellie.unitto.core.ui.KeypadButton.Companion.RightBracketKey
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.SinKey
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.TanKey
 import com.sadellie.unitto.core.ui.KeypadFlow
+import com.sadellie.unitto.core.ui.KEYPAD_SPACING_FRACTION
 import com.sadellie.unitto.core.ui.inKeypadRow
 
 @Composable
@@ -132,13 +133,16 @@ internal fun CalculatorKeyboard(
   if (LocalWindowSize.current.heightSizeClass >= WindowHeightSizeClass.Medium) {
     var showUnits by remember { mutableStateOf(false) }
     ColumnWithConstraints(modifier = modifier) { constraints ->
-      // Function rows are half as tall as digit rows
+      // Function rows are lower than digit rows: digits get most of the height
       val rowHeight =
         (constraints.maxHeight - DOTS_HEIGHT) / (BOTTOM_ROWS + PAGE_ROWS * FUNCTION_ROW_SCALE)
       FunctionRows(
         modifier = Modifier.fillMaxWidth(),
         rowHeight = rowHeight * FUNCTION_ROW_SCALE,
         onAddTokenClick = onAddTokenClick,
+        // Same gaps as the keypad under it
+        spacing = constraints.maxWidth * KEYPAD_SPACING_FRACTION,
+        rowGap = rowHeight * BOTTOM_ROWS * KEYPAD_SPACING_FRACTION,
         firstKeys = firstFunctionKeys,
         showCalculus = showCalculus,
       )
@@ -672,7 +676,8 @@ private const val KEYBOARD_PAGES = 3
 /** Function keys height compared to digits */
 private const val BOTTOM_ROWS = 5
 private const val BOTTOM_COLUMNS = 5
-private const val FUNCTION_ROW_SCALE = 0.5f
+/** Pages of function keys are 1.6 digit rows high */
+private const val FUNCTION_ROW_SCALE = 0.4f
 private val GRID_SPACING = 8.dp
 private const val EXPANDED_ADDITIONAL_BUTTON_HEIGHT_FACTOR = 0.09f
 private const val EXPANDED_ADDITIONAL_ROWS_COUNT = 3

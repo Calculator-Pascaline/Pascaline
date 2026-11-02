@@ -103,6 +103,7 @@ private val INVERSE_SWITCH = FunctionKey("inv", "")
  * @param rowHeight Height of one row when page has [PAGE_ROWS] rows.
  * @param firstKeys Label and token of keys for the first pages, like terms of sequences.
  * @param showCalculus `false` hides the page of integrals, derivatives and sums.
+ * @param spacing Space between keys of a row, [rowGap] between rows.
  */
 @Composable
 internal fun FunctionRows(
@@ -111,6 +112,8 @@ internal fun FunctionRows(
   onAddTokenClick: (String) -> Unit,
   firstKeys: List<Pair<String, String>> = emptyList(),
   showCalculus: Boolean = true,
+  spacing: Dp = KEY_SPACING,
+  rowGap: Dp = KEY_SPACING,
 ) {
   val functionPages =
     remember(firstKeys, showCalculus) {
@@ -126,13 +129,13 @@ internal fun FunctionRows(
     HorizontalPager(
       state = pagerState,
       modifier = Modifier.fillMaxWidth().height(rowHeight * PAGE_ROWS),
-      pageSpacing = KEY_SPACING,
+      pageSpacing = spacing,
     ) { page ->
       Column(modifier = Modifier.fillMaxSize()) {
         functionPages[page].forEach { row ->
           Row(
-            modifier = Modifier.fillMaxWidth().weight(1f).padding(vertical = KEY_SPACING / 2),
-            horizontalArrangement = Arrangement.spacedBy(KEY_SPACING),
+            modifier = Modifier.fillMaxWidth().weight(1f).padding(vertical = rowGap / 2),
+            horizontalArrangement = Arrangement.spacedBy(spacing),
           ) {
             row.forEach { key ->
               // Wider and squashed while pressed, like keys of the keypad. Pressed right away:

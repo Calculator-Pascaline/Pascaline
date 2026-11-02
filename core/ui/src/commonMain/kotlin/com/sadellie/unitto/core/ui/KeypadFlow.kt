@@ -78,13 +78,13 @@ fun KeypadFlow(
       if (maxHeight == Constraints.Infinity) {
         0
       } else {
-        (maxHeight * DEFAULT_PADDING_FRACTION).roundToInt()
+        (maxHeight * KEYPAD_SPACING_FRACTION).roundToInt()
       }
     val horizontalSpacingPx =
       if (maxWidth == Constraints.Infinity) {
         0
       } else {
-        (maxWidth * DEFAULT_PADDING_FRACTION).roundToInt()
+        (maxWidth * KEYPAD_SPACING_FRACTION).roundToInt()
       }
 
     val measurables =
@@ -574,4 +574,5 @@ object KeyboardButtonToken {
 
 /** How many times wider a key gets while it is pressed. */
 private const val PRESSED_WEIGHT_FACTOR = 1.5f
-private const val DEFAULT_PADDING_FRACTION = 0.02f
+/** Space between keys: this part of the keypad width (between columns) or height (between rows) */
+const val KEYPAD_SPACING_FRACTION = 0.02f
