@@ -40,6 +40,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
@@ -87,6 +88,8 @@ import com.sadellie.unitto.core.designsystem.icons.symbols.MoreVert
 import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
 import com.sadellie.unitto.core.designsystem.theme.LocalNumberTypography
 import com.sadellie.unitto.core.model.calculator.CalculatorHistoryItem
+import com.sadellie.unitto.core.ui.LocalPlatform
+import com.sadellie.unitto.core.ui.Platform
 import com.sadellie.unitto.core.ui.textfield.ExpressionLayoutText
 import com.sadellie.unitto.core.ui.textfield.LocalExpressionTextMeasurer
 import com.sadellie.unitto.core.ui.textfield.WrappedExpressionLayoutText
@@ -251,11 +254,23 @@ private fun CalculationListItem(
   val extraStyle = style.copy(fontSize = style.fontSize * EXTRA_LINE_SCALE)
 
   Column(modifier = Modifier.fillMaxWidth().background(background)) {
+    // Same height with or without the "…" button, same space on both sides without it
     Row(
-      modifier = Modifier.padding(start = 16.dp, top = 10.dp, bottom = 10.dp, end = 4.dp),
+      modifier =
+        Modifier.heightIn(min = CARD_ROW_MIN_HEIGHT)
+          .padding(
+            start = CARD_PADDING,
+            top = CARD_VERTICAL_PADDING,
+            bottom = CARD_VERTICAL_PADDING,
+            end = if (result.hasMenu) 4.dp else CARD_PADDING - 8.dp,
+          ),
       verticalAlignment = Alignment.CenterVertically,
     ) {
-      Column(modifier = Modifier.weight(1f).padding(end = 8.dp)) {
+      // Lines keep room under digits for letters like g and for subscripts: digits look too high
+      // without this. Fonts are drawn a bit differently on the web
+      val shift = if (LocalPlatform.current == Platform.Wasm) TEXT_CENTER_SHIFT_WEB else TEXT_CENTER_SHIFT
+      val centerShift = with(LocalDensity.current) { style.fontSize.toDp() } * shift
+      Column(modifier = Modifier.weight(1f).padding(end = 8.dp).offset(y = centerShift)) {
         ExpressionAndResult(
           expression = {
             WrappedExpressionLayoutText(
@@ -324,7 +339,7 @@ private fun MoreMenu(
 ) {
   var expanded by remember { mutableStateOf(false) }
   Box {
-    IconButton(onClick = { expanded = true }) {
+    IconButton(modifier = Modifier.size(MENU_BUTTON_SIZE), onClick = { expanded = true }) {
       Icon(
         modifier = Modifier.rotate(90f),
         imageVector = Symbols.MoreVert,
@@ -683,8 +698,16 @@ internal fun historyTextStyle(): TextStyle =
   LocalNumberTypography.current.displaySmall.let { it.copy(fontSize = it.fontSize * ITEM_FONT_SCALE) }
 
 private const val ITEM_FONT_SCALE = 0.8f
+/** Part of the font size that text is moved down to look centered in its card */
+private const val TEXT_CENTER_SHIFT = 0.065f
+private const val TEXT_CENTER_SHIFT_WEB = 0.13f
 private const val EXTRA_LINE_SCALE = 0.75f
 private const val MIN_SCALE = 0.8f
 private val CARD_SPACING = 8.dp
+private val CARD_PADDING = 16.dp
+private val CARD_VERTICAL_PADDING = 6.dp
+/** Height of the "…" button, cards without it are as high */
+private val MENU_BUTTON_SIZE = 40.dp
+private val CARD_ROW_MIN_HEIGHT = MENU_BUTTON_SIZE + CARD_VERTICAL_PADDING * 2
 private val DELETE_BUTTON_WIDTH = 88.dp
 private val CARD_SHAPE = RoundedCornerShape(20.dp)
