@@ -30,6 +30,7 @@ actual val mainDrawerItems: List<DrawerItem> by lazy {
     ProbabilityDrawerItem,
     ElementsDrawerItem,
     FinanceDrawerItem,
+    ProgrammerDrawerItem,
     ConverterDrawerItem,
     PricesDrawerItem,
     BodyMassDrawerItem,

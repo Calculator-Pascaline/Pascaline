@@ -27,6 +27,7 @@ import com.sadellie.unitto.core.designsystem.icons.symbols.BellCurve
 import com.sadellie.unitto.core.designsystem.icons.symbols.BoxPlot
 import com.sadellie.unitto.core.designsystem.icons.symbols.Calculate
 import com.sadellie.unitto.core.designsystem.icons.symbols.CalculateFill
+import com.sadellie.unitto.core.designsystem.icons.symbols.Code
 import com.sadellie.unitto.core.designsystem.icons.symbols.Event
 import com.sadellie.unitto.core.designsystem.icons.symbols.EventFill
 import com.sadellie.unitto.core.designsystem.icons.symbols.LineAxis
@@ -52,6 +53,7 @@ import unitto.core.common.generated.resources.functions_title
 import unitto.core.common.generated.resources.inference_title
 import unitto.core.common.generated.resources.prices_title
 import unitto.core.common.generated.resources.probability_title
+import unitto.core.common.generated.resources.programmer_title
 import unitto.core.common.generated.resources.regression_title
 import unitto.core.common.generated.resources.sequences_title
 import unitto.core.common.generated.resources.settings_title
@@ -133,6 +135,13 @@ data object FinanceDrawerItem : DrawerItem {
   override val name = Res.string.finance_title
   override val selectedIcon = Symbols.Percent
   override val defaultIcon = Symbols.Percent
+}
+
+data object ProgrammerDrawerItem : DrawerItem {
+  override val topLevelRoute = ProgrammerStartRoute
+  override val name = Res.string.programmer_title
+  override val selectedIcon = Symbols.Code
+  override val defaultIcon = Symbols.Code
 }
 
 data object PricesDrawerItem : DrawerItem {

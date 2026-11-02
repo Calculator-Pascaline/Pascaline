@@ -110,6 +110,7 @@
     <string name="inference_range">Interval</string>
     <string name="inference_incomplete">Type every value to see the result.</string>
     <string name="finance_title">Finance</string>
+    <string name="programmer_title">Programmer</string>
     <string name="finance_simple">Simple interest</string>
     <string name="finance_compound">Compound interest</string>
     <string name="finance_find">Find</string>

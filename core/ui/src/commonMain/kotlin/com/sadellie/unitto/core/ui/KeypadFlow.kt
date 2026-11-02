@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -55,6 +56,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlin.math.roundToInt
 import org.jetbrains.compose.resources.stringResource
 
@@ -340,11 +342,15 @@ internal class KeypadFlowScopeImpl(override val iconHeight: Float) : KeypadFlowS
       colors = buttonLightColors(),
     ) {
       Row(verticalAlignment = Alignment.CenterVertically) {
+        val style = MaterialTheme.typography.titleLarge
         Text(
           text = label,
-          style = MaterialTheme.typography.titleLarge,
+          style = style,
           fontWeight = FontWeight.Medium,
           maxLines = 1,
+          // Long labels like NAND shrink to fit narrow keys
+          autoSize =
+            if (trailingContent == null) TextAutoSize.StepBased(MIN_LABEL_SIZE, style.fontSize) else null,
         )
         if (trailingContent != null) {
           Spacer(Modifier.width(6.dp))
@@ -571,6 +577,9 @@ object KeyboardButtonToken {
   /** Height factor for icons. Mostly for additional button in landscape mode. */
   const val ICON_HEIGHT_SHORT_SECONDARY = 1.1f
 }
+
+/** Smallest text of a key label that is too long for its key. */
+private val MIN_LABEL_SIZE = 12.sp
 
 /** How many times wider a key gets while it is pressed. */
 private const val PRESSED_WEIGHT_FACTOR = 1.5f

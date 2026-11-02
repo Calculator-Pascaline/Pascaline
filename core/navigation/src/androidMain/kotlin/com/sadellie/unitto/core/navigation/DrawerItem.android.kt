@@ -52,6 +52,7 @@ actual val mainDrawerItems: List<DrawerItem> by lazy {
       ProbabilityDrawerItem,
       ElementsDrawerItem,
       FinanceDrawerItem,
+      ProgrammerDrawerItem,
       ConverterDrawerItem,
       PricesDrawerItem,
       DateCalculatorDrawerItem,
@@ -137,6 +138,7 @@ private fun generateShortcut(drawerItem: DrawerItem): Shortcut? {
     PricesDrawerItem,
     InferenceDrawerItem,
     FinanceDrawerItem,
+    ProgrammerDrawerItem,
     SettingsDrawerItem -> null
   }
 }

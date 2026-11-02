@@ -23,6 +23,7 @@ import com.sadellie.unitto.core.data.calculatorDataModule
 import com.sadellie.unitto.feature.calculator.functions.FunctionsViewModel
 import com.sadellie.unitto.feature.calculator.navigation.calculatorNavigation
 import com.sadellie.unitto.feature.calculator.finance.FinanceViewModel
+import com.sadellie.unitto.feature.calculator.programmer.ProgrammerViewModel
 import com.sadellie.unitto.feature.calculator.inference.InferenceViewModel
 import com.sadellie.unitto.feature.calculator.prices.PricesViewModel
 import com.sadellie.unitto.feature.calculator.probability.ProbabilityViewModel
@@ -45,4 +46,5 @@ val calculatorModule = lazyModule {
   viewModelOf(::PricesViewModel)
   viewModelOf(::InferenceViewModel)
   viewModelOf(::FinanceViewModel)
+  viewModelOf(::ProgrammerViewModel)
 }
