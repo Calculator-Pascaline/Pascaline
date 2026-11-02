@@ -21,9 +21,7 @@ package com.sadellie.unitto.core.ui
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -136,12 +134,11 @@ fun KeypadFlow(
 
 /**
  * Weight of a key in a row: [defaultWeight] and more while pressed. Used by keys of [KeypadFlow] and
- * by keys in other rows that should behave the same.
+ * by keys in other rows that should behave the same. [isPressed] comes from [trackKeyPress].
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun animatePressedWeight(interactionSource: InteractionSource, defaultWeight: Float = 1f): State<Float> {
-  val isPressed by interactionSource.collectIsPressedAsState()
+fun animatePressedWeight(isPressed: Boolean, defaultWeight: Float = 1f): State<Float> {
   return animateFloatAsState(
     targetValue = if (isPressed) PRESSED_WEIGHT_FACTOR * defaultWeight else defaultWeight,
     animationSpec = MaterialTheme.motionScheme.fastSpatialSpec(),
@@ -443,7 +440,9 @@ private fun RowScope.BasicKeyboardButton(
     remember(colors, enabled) { if (enabled) colors.contentColor else colors.disabledContentColor }
 
   val interactionSource = remember { MutableInteractionSource() }
-  val weight: Float by animatePressedWeight(interactionSource, defaultWeight)
+  // Pressed right away, also on pages that are swiped
+  val keyPress = rememberKeyPress()
+  val weight: Float by animatePressedWeight(keyPress.isPressed, defaultWeight)
   val spacing = with(LocalDensity.current) { LocalKeypadSpacingPx.current.toDp() }
 
   Box(
@@ -451,6 +450,7 @@ private fun RowScope.BasicKeyboardButton(
       Modifier.weight(weight)
         .fillMaxHeight()
         .padding(horizontal = spacing / 2)
+        .trackKeyPress(keyPress)
         .squashable(
           interactionSource = interactionSource,
           onClick = { onClick() },
@@ -459,6 +459,7 @@ private fun RowScope.BasicKeyboardButton(
           cornerRadiusRange = 24..36,
           animationSpec = MaterialTheme.motionScheme.fastSpatialSpec(),
           enabled = enabled,
+          isPressed = keyPress.isPressed,
         )
         .background(containerColor),
     contentAlignment = Alignment.Center,

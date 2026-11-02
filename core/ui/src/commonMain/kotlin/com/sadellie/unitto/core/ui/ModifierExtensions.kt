@@ -28,13 +28,26 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ripple
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
 
+/**
+ * @param isPressed Pressed state from [trackKeyPress], it comes without the delay of clicks in
+ *   scrollable containers. Pressed state of [interactionSource] when null.
+ */
 fun Modifier.squashable(
   onClick: () -> Unit = {},
   onLongClick: (() -> Unit)? = null,
@@ -43,17 +56,19 @@ fun Modifier.squashable(
   cornerRadiusRange: IntRange,
   role: Role = Role.Button,
   animationSpec: AnimationSpec<Int> = tween(),
+  isPressed: Boolean? = null,
 ) = composed {
-  val isPressed by interactionSource.collectIsPressedAsState()
+  val isClickPressed by interactionSource.collectIsPressedAsState()
+  val isKeyPressed = isPressed ?: isClickPressed
   val cornerRadius: Int by
     animateIntAsState(
-      targetValue = if (isPressed) cornerRadiusRange.first else cornerRadiusRange.last,
+      targetValue = if (isKeyPressed) cornerRadiusRange.first else cornerRadiusRange.last,
       animationSpec = animationSpec,
       label = "Squashed animation",
     )
 
   this.clip(RoundedCornerShape(cornerRadius))
-    .haptics(isPressed)
+    .haptics(isKeyPressed)
     .combinedClickable(
       onClick = onClick,
       onLongClick = onLongClick,
@@ -94,12 +109,34 @@ fun Modifier.squashable(
 }
 
 /**
- * Vibration of [squashable] for keys that handle clicks themselves, like a clickable `Surface`:
- * [interactionSource] is the one of the click.
+ * Vibration of [squashable] for keys that handle clicks themselves, like a clickable `Surface`.
+ * [keyPress] is updated by [trackKeyPress].
  */
-fun Modifier.keyHaptics(interactionSource: MutableInteractionSource) = composed {
-  val isPressed by interactionSource.collectIsPressedAsState()
-  haptics(isPressed)
+fun Modifier.keyHaptics(keyPress: KeyPress) = composed { haptics(keyPress.isPressed) }
+
+/** Whether a finger is on a key, see [trackKeyPress]. */
+@Stable
+class KeyPress {
+  var isPressed by mutableStateOf(false)
+    internal set
 }
+
+@Composable fun rememberKeyPress(): KeyPress = remember { KeyPress() }
+
+/**
+ * Key is pressed as soon as a finger touches it. Clicks in scrollable containers (like pagers) are
+ * pressed only after a delay, in case it is a swipe: quick taps were too short for key animations.
+ * Touches are not consumed, clicks and swipes work as before. A swipe releases the key.
+ */
+fun Modifier.trackKeyPress(keyPress: KeyPress) =
+  pointerInput(keyPress) {
+    awaitEachGesture {
+      awaitFirstDown(requireUnconsumed = false)
+      keyPress.isPressed = true
+      // null when the touch is taken by a swipe or leaves the key
+      waitForUpOrCancellation()
+      keyPress.isPressed = false
+    }
+  }
 
 internal expect fun Modifier.haptics(isPressed: Boolean): Modifier

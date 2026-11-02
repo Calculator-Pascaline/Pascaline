@@ -36,6 +36,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -49,16 +50,25 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.BaselineShift
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.sadellie.unitto.core.common.PhysicalUnits
@@ -70,9 +80,12 @@ import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
 import org.jetbrains.compose.resources.stringResource
 import unitto.core.common.generated.resources.Res
 import unitto.core.common.generated.resources.calculator_units_and_constants
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import com.sadellie.unitto.core.ui.KeyPress
 import com.sadellie.unitto.core.ui.keyHaptics
+import com.sadellie.unitto.core.ui.rememberKeyPress
+import com.sadellie.unitto.core.ui.trackKeyPress
 import com.sadellie.unitto.core.ui.animatePressedWeight
+import kotlinx.coroutines.launch
 
 /**
  * Function key: [label] is shown, [token] is inserted. [inverse] is used instead when inverse switch
@@ -122,16 +135,17 @@ internal fun FunctionRows(
             horizontalArrangement = Arrangement.spacedBy(KEY_SPACING),
           ) {
             row.forEach { key ->
-              // Wider while pressed, like keys of the keypad
-              val interactionSource = remember { MutableInteractionSource() }
-              val growth by animatePressedWeight(interactionSource)
-              val keyModifier = Modifier.weight(growth).fillMaxHeight()
+              // Wider and squashed while pressed, like keys of the keypad. Pressed right away:
+              // clicks on pages that are swiped come too late for that
+              val keyPress = rememberKeyPress()
+              val growth by animatePressedWeight(keyPress.isPressed)
+              val keyModifier = Modifier.weight(growth).fillMaxHeight().trackKeyPress(keyPress)
               if (key === INVERSE_SWITCH) {
-                InverseSwitch(keyModifier, interactionSource, inverse) { inverse = it }
+                InverseSwitch(keyModifier, keyPress, inverse) { inverse = it }
               } else {
                 FunctionKeyButton(
                   modifier = keyModifier,
-                  interactionSource = interactionSource,
+                  keyPress = keyPress,
                   key = key.inverse?.takeIf { inverse } ?: key,
                   onClick = onAddTokenClick,
                 )
@@ -141,19 +155,35 @@ internal fun FunctionRows(
         }
       }
     }
-    Row(
-      modifier = Modifier.fillMaxWidth().height(DOTS_HEIGHT),
-      horizontalArrangement = Arrangement.Center,
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
-      repeat(functionPages.size) { index ->
-        val color =
-          if (pagerState.currentPage == index) MaterialTheme.colorScheme.primary
-          else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = DOT_ALPHA)
-        Box(
-          modifier =
-            Modifier.padding(horizontal = 3.dp).size(DOT_SIZE).clip(CircleShape).background(color)
-        )
+    PageDots(modifier = Modifier.fillMaxWidth().height(DOTS_HEIGHT), pagerState = pagerState)
+  }
+}
+
+/**
+ * Dots under pages, current one is colored. Clicking a dot opens its page: mouse can't swipe pages
+ * in the web app.
+ */
+@Composable
+internal fun PageDots(modifier: Modifier, pagerState: PagerState) {
+  val scope = rememberCoroutineScope()
+  Row(
+    modifier = modifier,
+    horizontalArrangement = Arrangement.Center,
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    repeat(pagerState.pageCount) { index ->
+      val color =
+        if (pagerState.currentPage == index) MaterialTheme.colorScheme.primary
+        else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = DOT_ALPHA)
+      Box(
+        modifier =
+          Modifier.fillMaxHeight()
+            .width(DOT_TARGET_WIDTH)
+            .clip(CircleShape)
+            .clickable { scope.launch { pagerState.animateScrollToPage(index) } },
+        contentAlignment = Alignment.Center,
+      ) {
+        Box(Modifier.size(DOT_SIZE).clip(CircleShape).background(color))
       }
     }
   }
@@ -162,22 +192,21 @@ internal fun FunctionRows(
 @Composable
 private fun FunctionKeyButton(
   modifier: Modifier,
-  interactionSource: MutableInteractionSource,
+  keyPress: KeyPress,
   key: FunctionKey,
   onClick: (String) -> Unit,
 ) {
   // Vibrates like the icon keys
   Surface(
-    modifier = modifier.keyHaptics(interactionSource),
+    modifier = modifier.keyHaptics(keyPress),
     onClick = { onClick(key.token) },
-    interactionSource = interactionSource,
-    shape = KEY_SHAPE,
+    shape = squashedKeyShape(keyPress.isPressed),
     color = MaterialTheme.colorScheme.surfaceContainerHigh,
     contentColor = MaterialTheme.colorScheme.onSurface,
   ) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
       Text(
-        text = key.label,
+        text = key.label.withSuperscript(),
         style = MaterialTheme.typography.titleLarge,
         fontWeight = FontWeight.Medium,
         maxLines = 1,
@@ -189,16 +218,15 @@ private fun FunctionKeyButton(
 @Composable
 private fun InverseSwitch(
   modifier: Modifier,
-  interactionSource: MutableInteractionSource,
+  keyPress: KeyPress,
   checked: Boolean,
   onCheckedChange: (Boolean) -> Unit,
 ) {
   Surface(
-    modifier = modifier.keyHaptics(interactionSource),
+    modifier = modifier.keyHaptics(keyPress),
     checked = checked,
     onCheckedChange = onCheckedChange,
-    interactionSource = interactionSource,
-    shape = KEY_SHAPE,
+    shape = squashedKeyShape(keyPress.isPressed),
     color = MaterialTheme.colorScheme.surfaceContainerHigh,
     contentColor = MaterialTheme.colorScheme.onSurface,
   ) {
@@ -214,6 +242,30 @@ private fun InverseSwitch(
   }
 }
 
+/**
+ * Label with what is after [SUPERSCRIPT] small and raised: `e^x` ==> eˣ. Drawn as a real
+ * superscript, the ˣ character is missing from fonts on the web.
+ */
+private fun String.withSuperscript(): AnnotatedString {
+  val (base, exponent) = split(SUPERSCRIPT, limit = 2).let { it.first() to it.getOrNull(1) }
+  return buildAnnotatedString {
+    append(base)
+    if (exponent != null) {
+      // Digits are taller than letters like e: the exponent goes higher after them
+      val shift = if (base.lastOrNull()?.isDigit() == true) SUPERSCRIPT_SHIFT_DIGIT else SUPERSCRIPT_SHIFT
+      withStyle(SpanStyle(fontSize = SUPERSCRIPT_SIZE.em, baselineShift = BaselineShift(shift))) {
+        append(exponent)
+      }
+    }
+  }
+}
+
+private const val SUPERSCRIPT = '^'
+private const val SUPERSCRIPT_SIZE = 0.75f
+/** About as high as ² on the x² key, Superscript (0.5) is too low */
+private const val SUPERSCRIPT_SHIFT = 0.7f
+private const val SUPERSCRIPT_SHIFT_DIGIT = 1f
+
 private fun function(name: String) = FunctionKey(name, "$name(")
 
 /** cos, and acos when inverse switch is on. */
@@ -224,10 +276,10 @@ private fun trig(name: String, inverseName: String) =
 private val EXPONENTS_PAGE =
   listOf(
     listOf(
-      FunctionKey("eˣ", Token.Layout.EXP),
+      FunctionKey("e${SUPERSCRIPT}x", Token.Layout.EXP),
       FunctionKey(Token.Func.LN, Token.Func.LN_BRACKET),
       FunctionKey(Token.Func.LOG, Token.Layout.LOG_10),
-      FunctionKey("×10ˣ", Token.Operator.MULTIPLY + Token.Layout.POWER_10),
+      FunctionKey("×10${SUPERSCRIPT}x", Token.Operator.MULTIPLY + Token.Layout.POWER_10),
     ),
     listOf(
       FunctionKey(Token.Operator.SQRT, Token.Layout.SQRT),
@@ -349,8 +401,24 @@ private const val KEYS_PER_ROW = 4
 private const val KEYS_PER_PAGE = 8
 private const val DOT_ALPHA = 0.3f
 private val DOT_SIZE = 6.dp
+/** Width that can be clicked around a dot */
+private val DOT_TARGET_WIDTH = 16.dp
 internal val DOTS_HEIGHT = 14.dp
 private const val DIVIDER_ALPHA = 0.5f
 
 /** Same corners as the other keys. */
-internal val KEY_SHAPE = RoundedCornerShape(percent = 24)
+/** Corners of keys like on the keypad: a bit less round while pressed. */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun squashedKeyShape(isPressed: Boolean): RoundedCornerShape {
+  val corner by
+    animateIntAsState(
+      targetValue = if (isPressed) KEY_PRESSED_CORNER else KEY_CORNER,
+      animationSpec = MaterialTheme.motionScheme.fastSpatialSpec(),
+      label = "Squashed key",
+    )
+  return RoundedCornerShape(percent = corner)
+}
+
+private const val KEY_CORNER = 36
+private const val KEY_PRESSED_CORNER = 24
