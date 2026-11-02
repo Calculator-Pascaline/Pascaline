@@ -53,6 +53,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
@@ -87,6 +88,7 @@ import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
 import com.sadellie.unitto.core.designsystem.theme.LocalNumberTypography
 import com.sadellie.unitto.core.model.calculator.CalculatorHistoryItem
 import com.sadellie.unitto.core.ui.textfield.ExpressionLayoutText
+import com.sadellie.unitto.core.ui.textfield.LocalExpressionTextMeasurer
 import com.sadellie.unitto.core.ui.textfield.WrappedExpressionLayoutText
 import com.sadellie.unitto.feature.calculator.HistoryResult
 import com.sadellie.unitto.feature.calculator.MenuSection
@@ -154,16 +156,20 @@ internal fun CalculationList(
     newestId = items.first().id
   }
 
-  LazyColumn(
-    modifier = modifier,
-    state = state,
-    reverseLayout = true,
-    contentPadding = PaddingValues(horizontal = CARD_SPACING, vertical = CARD_SPACING),
-    verticalArrangement = Arrangement.spacedBy(CARD_SPACING, Alignment.Bottom),
-  ) {
-    items(items, { item -> item.id }) { item ->
-      SwipeToDelete(modifier = Modifier.animateItem(), onDelete = { onDelete(item) }) {
-        CalculationListItem(item = item, formatterSymbols = formatterSymbols, addTokens = addTokens)
+  // Cards that scroll back into view don't measure their texts again
+  val measurer = rememberTextMeasurer(cacheSize = LIST_MEASURER_CACHE)
+  CompositionLocalProvider(LocalExpressionTextMeasurer provides measurer) {
+    LazyColumn(
+      modifier = modifier,
+      state = state,
+      reverseLayout = true,
+      contentPadding = PaddingValues(horizontal = CARD_SPACING, vertical = CARD_SPACING),
+      verticalArrangement = Arrangement.spacedBy(CARD_SPACING, Alignment.Bottom),
+    ) {
+      items(items, { item -> item.id }) { item ->
+        SwipeToDelete(modifier = Modifier.animateItem(), onDelete = { onDelete(item) }) {
+          CalculationListItem(item = item, formatterSymbols = formatterSymbols, addTokens = addTokens)
+        }
       }
     }
   }
@@ -649,6 +655,8 @@ private fun ExpressionAndResult(
 }
 
 private val ROW_GAP = 16.dp
+/** Measured texts kept for the whole list, a card has about ten */
+private const val LIST_MEASURER_CACHE = 512
 private val MENU_PADDING = 16.dp
 private val COMPLEX_PLANE_SIZE = 340.dp
 /** Space between unit circle and edges for labels */

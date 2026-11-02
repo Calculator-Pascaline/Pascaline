@@ -24,7 +24,6 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -36,6 +35,7 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -65,6 +65,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.constrainHeight
+import androidx.compose.ui.unit.constrainWidth
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -194,6 +196,19 @@ fun ExpressionLayoutTextField(
 }
 
 /**
+ * [TextMeasurer] shared by many expressions, like the cards of a list: texts measured for a card
+ * are reused when it scrolls back into view. Each expression has its own measurer without it.
+ */
+val LocalExpressionTextMeasurer = staticCompositionLocalOf<TextMeasurer?> { null }
+
+@Composable
+private fun expressionTextMeasurer(): TextMeasurer {
+  val shared = LocalExpressionTextMeasurer.current
+  val own = rememberTextMeasurer(cacheSize = if (shared == null) DEFAULT_MEASURER_CACHE else 0)
+  return shared ?: own
+}
+
+/**
  * Read only version of [ExpressionLayoutTextField] that wraps its content.
  *
  * @param minScale When content is wider than available space it is scaled down, but not below this.
@@ -207,7 +222,7 @@ fun ExpressionLayoutText(
   textColor: Color,
   minScale: Float = 1f,
 ) {
-  val measurer = rememberTextMeasurer()
+  val measurer = expressionTextMeasurer()
   val density = LocalDensity.current
   val layout =
     remember(value, formatterSymbols, style, density) {
@@ -228,9 +243,7 @@ fun ExpressionLayoutText(
         }
         .drawBehind {
           val scale = if (layout.width > 0f) size.width / layout.width else 1f
-          scale(scale, scale, pivot = Offset.Zero) {
-            translate(0f, layout.ascent) { drawExpression(layout, textColor) }
-          }
+          drawExpressionLine(layout, textColor, 0f, 0f, scale)
         }
   )
 }
@@ -239,8 +252,11 @@ fun ExpressionLayoutText(
  * Read only expression that goes onto several lines instead of getting too small. Lines are split
  * between terms (before + and −), between factors `(...)(...)` and after commas.
  *
+ * One node measures, wraps and draws all lines: it is cheap to show in lists.
+ *
  * @param minScale Lines are scaled down to fit, but not below this. Too long lines are split.
  * @param alignEnd Align lines to the end, otherwise to the start.
+ * @param maxWidth Known width for components that use intrinsic measurements, like menus.
  */
 @Composable
 fun WrappedExpressionLayoutText(
@@ -253,78 +269,110 @@ fun WrappedExpressionLayoutText(
   alignEnd: Boolean,
   maxWidth: Dp? = null,
 ) {
-  // Known width is needed inside of components that use intrinsic measurements, like menus
-  if (maxWidth != null) {
-    val width = with(LocalDensity.current) { maxWidth.toPx() }
-    WrappedLines(modifier, value, formatterSymbols, style, textColor, minScale, alignEnd, width)
-    return
-  }
-  BoxWithConstraints(
-    modifier = modifier,
-    contentAlignment = if (alignEnd) Alignment.TopEnd else Alignment.TopStart,
-  ) {
-    val width =
-      if (constraints.hasBoundedWidth) constraints.maxWidth.toFloat() else Float.POSITIVE_INFINITY
-    WrappedLines(Modifier, value, formatterSymbols, style, textColor, minScale, alignEnd, width)
-  }
-}
-
-@Composable
-private fun WrappedLines(
-  modifier: Modifier,
-  value: String,
-  formatterSymbols: FormatterSymbols,
-  style: TextStyle,
-  textColor: Color,
-  minScale: Float,
-  alignEnd: Boolean,
-  maxWidth: Float,
-) {
-  val measurer = rememberTextMeasurer()
+  val measurer = expressionTextMeasurer()
   val density = LocalDensity.current
-  val lines =
-    remember(value, formatterSymbols, style, density, maxWidth, minScale) {
-      measurer.wrapExpression(value, style, formatterSymbols, density, maxWidth / minScale)
+  val wrapped =
+    remember(value, formatterSymbols, style, density, minScale) {
+      WrappedExpression(measurer, value, style, formatterSymbols, density, minScale)
     }
-  Column(modifier = modifier, horizontalAlignment = if (alignEnd) Alignment.End else Alignment.Start) {
-    lines.forEach { line ->
-      ExpressionLayoutText(
-        value = line,
-        formatterSymbols = formatterSymbols,
-        style = style,
-        textColor = textColor,
-        minScale = minScale,
-      )
+  val fixedWidth = maxWidth?.let { with(density) { it.toPx() } }
+  Spacer(
+    modifier =
+      modifier
+        .layout { measurable, constraints ->
+          val available =
+            fixedWidth
+              ?: if (constraints.hasBoundedWidth) constraints.maxWidth.toFloat()
+              else Float.POSITIVE_INFINITY
+          val lines = wrapped.linesFor(available)
+          val contentWidth = ceil(lines.maxOfOrNull { it.width } ?: 0f).toInt()
+          val width = constraints.constrainWidth(contentWidth)
+          val height = constraints.constrainHeight(ceil(lines.sumOf { it.height.toDouble() }).toInt())
+          val placeable = measurable.measure(Constraints.fixed(width, height))
+          layout(width, height) { placeable.place(0, 0) }
+        }
+        .drawBehind {
+          var top = 0f
+          wrapped.lines.forEach { line ->
+            val left = if (alignEnd) size.width - line.width else 0f
+            drawExpressionLine(line.layout, textColor, left, top, line.scale)
+            top += line.height
+          }
+        }
+  )
+}
+
+/** Line of [WrappedExpressionLayoutText], scaled down to fit. */
+private class WrappedLine(val layout: ExpressionLayout, val scale: Float) {
+  val width = layout.width * scale
+  val height = layout.height * scale
+}
+
+/** Lines of an expression for a width, measured once and kept until width changes. */
+private class WrappedExpression(
+  private val measurer: TextMeasurer,
+  private val text: String,
+  private val style: TextStyle,
+  private val formatterSymbols: FormatterSymbols,
+  private val density: Density,
+  private val minScale: Float,
+) {
+  private var linesWidth = Float.NaN
+  var lines: List<WrappedLine> = emptyList()
+    private set
+
+  fun linesFor(maxWidth: Float): List<WrappedLine> {
+    if (maxWidth != linesWidth) {
+      lines =
+        wrap(maxWidth / minScale).map { layout ->
+          val scale =
+            if (layout.width > maxWidth) (maxWidth / layout.width).coerceAtLeast(minScale) else 1f
+          WrappedLine(layout, scale)
+        }
+      linesWidth = maxWidth
+    }
+    return lines
+  }
+
+  private fun wrap(maxWidth: Float): List<ExpressionLayout> {
+    val measured = mutableMapOf<String, ExpressionLayout>()
+    fun layout(part: String) =
+      measured.getOrPut(part) { measurer.layoutExpression(part, style, formatterSymbols, density) }
+    fun width(start: Int, end: Int) = layout(text.substring(start, end)).width
+
+    if (width(0, text.length) <= maxWidth) return listOf(layout(text))
+    val breaks = text.lineBreaks()
+    val lines = mutableListOf<ExpressionLayout>()
+    var start = 0
+    while (start < text.length) {
+      var end = text.length
+      if (width(start, end) > maxWidth) {
+        val candidates = breaks.filter { it > start }
+        // longest line that fits, or the shortest possible one
+        end = candidates.lastOrNull { width(start, it) <= maxWidth } ?: candidates.firstOrNull() ?: end
+      }
+      lines += layout(text.substring(start, end).trim())
+      start = end
+    }
+    return lines
+  }
+}
+
+private fun DrawScope.drawExpressionLine(
+  layout: ExpressionLayout,
+  color: Color,
+  left: Float,
+  top: Float,
+  scale: Float,
+) {
+  translate(left, top) {
+    scale(scale, scale, pivot = Offset.Zero) {
+      translate(0f, layout.ascent) { drawExpression(layout, color) }
     }
   }
 }
 
-private fun TextMeasurer.wrapExpression(
-  text: String,
-  style: TextStyle,
-  formatterSymbols: FormatterSymbols,
-  density: Density,
-  maxWidth: Float,
-): List<String> {
-  fun width(start: Int, end: Int) =
-    layoutExpression(text.substring(start, end), style, formatterSymbols, density).width
-
-  if (width(0, text.length) <= maxWidth) return listOf(text)
-  val breaks = text.lineBreaks()
-  val lines = mutableListOf<String>()
-  var start = 0
-  while (start < text.length) {
-    var end = text.length
-    if (width(start, end) > maxWidth) {
-      val candidates = breaks.filter { it > start }
-      // longest line that fits, or the shortest possible one
-      end = candidates.lastOrNull { width(start, it) <= maxWidth } ?: candidates.firstOrNull() ?: end
-    }
-    lines += text.substring(start, end).trim()
-    start = end
-  }
-  return lines
-}
+private const val DEFAULT_MEASURER_CACHE = 8
 
 /** Positions where expression can be split into lines: outside of slots and brackets. */
 private fun String.lineBreaks(): List<Int> {
