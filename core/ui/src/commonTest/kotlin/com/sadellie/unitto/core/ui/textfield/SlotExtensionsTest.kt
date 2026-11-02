@@ -132,7 +132,12 @@ class SlotExtensionsTest {
     compareSlots("N1}D2}[]", "N1}D2[]}") { it.addBracket() }
     // power right before a fraction: don't jump into it
     compareSlots("2^{3}[]N}D}", "2^{3[]}N}D}") { it.addBracket() }
-    compareSlots("N1[]}D}", "N1}D[]}") { it.deleteTokens() }
+    // Empty denominator removes fraction, numerator stays
+    compareSlots("1[]", "N1}D[]}") { it.deleteTokens() }
+    compareSlots("2+12[]", "2+N12}D[]}") { it.deleteTokens() }
+    compareSlots("[]", "N}D[]}") { it.deleteTokens() }
+    // Denominator with something in it, go to numerator
+    compareSlots("N1[]}D2}", "N1}D[]2}") { it.deleteTokens() }
     compareSlots("[]", "N[]}D}") { it.deleteTokens() }
     compareSlots("[]N1}D}", "N[]1}D}") { it.deleteTokens() }
     compareSlots("N1}D[]}", "N1}D2}[]") { it.deleteTokens() }

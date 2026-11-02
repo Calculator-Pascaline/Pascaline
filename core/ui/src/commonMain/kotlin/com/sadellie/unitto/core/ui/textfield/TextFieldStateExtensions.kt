@@ -322,6 +322,19 @@ private fun TextFieldState.deleteAtSlotStart(slotStart: Int) {
   val isEmpty = slotEnd == slotStart + 1
   val charBefore = text.getOrNull(slotStart - 1)
 
+  // Empty denominator: fraction goes away, numerator stays. ⟨5⟩⟨|⟩ ==> 5|
+  if (charBefore == SLOT_END && text[slotStart] == SLOT_DEN && isEmpty) {
+    val numeratorStart = text.slotStart(slotStart - 1)
+    if (numeratorStart != -1) {
+      edit {
+        delete(slotStart - 1, slotEnd + 1)
+        delete(numeratorStart, numeratorStart + 1)
+        selection = TextRange(slotStart - 2)
+      }
+      return
+    }
+  }
+
   // Integral upper bound or denominator, go to the end of previous slot
   if (charBefore == SLOT_END && text[slotStart].isSecondSlot()) {
     edit { selection = TextRange(slotStart - 1) }
