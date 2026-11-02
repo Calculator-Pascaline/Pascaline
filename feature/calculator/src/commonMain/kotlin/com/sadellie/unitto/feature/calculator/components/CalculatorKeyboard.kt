@@ -354,8 +354,8 @@ private fun BottomGrid(
       ButtonFilled(MinusKey, onAddTokenClick)
     }
     KeypadRow {
-      ButtonLight(fractionalKey, onAddTokenClick)
       ButtonLight(Key0, onAddTokenClick)
+      ButtonLight(fractionalKey, onAddTokenClick)
       ButtonFilled(FactorialKey, onAddTokenClick)
       ButtonFilledPrimary(EqualKey, onEqualClick, weight = 2f)
     }
