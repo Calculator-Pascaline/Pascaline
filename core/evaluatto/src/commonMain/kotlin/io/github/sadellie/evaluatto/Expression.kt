@@ -50,6 +50,19 @@ data class ComplexParts(
 /** Number with unit (layout slots), like 5000 and `_m`. */
 data class UnitValue(val value: KBigDecimal, val unit: String)
 
+/** Exact rational result: [numerator]/[denominator], both whole numbers. */
+data class ExactFraction(val numerator: KBigDecimal, val denominator: KBigDecimal) {
+  /** [decimal] is exactly this fraction. */
+  fun isEqualTo(decimal: KBigDecimal): Boolean = decimal.multiply(denominator).compareTo(numerator) == 0
+}
+
+/**
+ * [shown] (result rounded for display) is exactly the result, no ≈ is needed. Rational results are
+ * compared with their [fraction]: 1÷3×3 is calculated as 0.999…, but it is 1. 20÷4500 is not 0.004.
+ */
+fun isShownExactly(value: KBigDecimal, fraction: ExactFraction?, shown: KBigDecimal): Boolean =
+  fraction?.isEqualTo(shown) ?: (value.compareTo(shown) == 0)
+
 /** Result of [Expression.evaluate]. */
 sealed interface ExpressionResult {
   /** @property exact Exact value with square roots, like `2√2`. null when value is rational. */
@@ -64,6 +77,8 @@ sealed interface ExpressionResult {
     val baseUnits: String? = null,
     /** Same value in other usual units: 55 °C ==> 328.15 K and 131 °F, 55 J ==> 15.28 mWh. */
     val otherUnits: List<UnitValue> = emptyList(),
+    /** Exact value when it is rational, null for functions like cos and for units. */
+    val fraction: ExactFraction? = null,
   ) : ExpressionResult
 
   /** @property exact Exact value with square roots, like `√5i`. */
@@ -72,6 +87,8 @@ sealed interface ExpressionResult {
     val imaginary: KBigDecimal,
     val exact: String? = null,
     val parts: ComplexParts? = null,
+    /** Exact real and imaginary parts when both are rational. */
+    val fractions: Pair<ExactFraction, ExactFraction>? = null,
   ) : ExpressionResult
 
   /**
@@ -133,12 +150,18 @@ class Expression(
       tree.exactValue()?.takeIf { it.hasSurd }?.let { SymbolicFormatter(precision, outputFormat).exact(it) }
         // Σ1/n² = π²/6
         ?: if (value.isReal && tree.hasNumericCalculus()) recognizeConstant(value.re) else null
-    if (value.isReal) return ExpressionResult.Real(value.re, exact)
+    val exactValue = tree.exactValue()
+    val fractions =
+      exactValue
+        ?.takeIf { it.re.isRational && it.im.isRational }
+        ?.let { it.re.coefficient.toFraction() to it.im.coefficient.toFraction() }
+    if (value.isReal) return ExpressionResult.Real(value.re, exact, fraction = fractions?.first)
     return ExpressionResult.Complex(
       real = value.re,
       imaginary = value.im,
       exact = exact,
-      parts = complexParts(tree.exactValue(), value, SymbolicFormatter(precision, outputFormat)),
+      parts = complexParts(exactValue, value, SymbolicFormatter(precision, outputFormat)),
+      fractions = fractions,
     )
   }
 
@@ -178,3 +201,5 @@ class Expression(
     )
   }
 }
+
+private fun Rational.toFraction() = ExactFraction(numerator, denominator)

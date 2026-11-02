@@ -42,11 +42,13 @@ import com.sadellie.unitto.core.ui.textfield.deleteTokens
 import com.sadellie.unitto.core.ui.textfield.getTextFieldState
 import com.sadellie.unitto.core.ui.textfield.observe
 import com.sadellie.unitto.core.ui.textfield.placeCursorAtTheEnd
+import io.github.sadellie.evaluatto.ExactFraction
 import io.github.sadellie.evaluatto.Expression
 import io.github.sadellie.evaluatto.ExpressionException
 import io.github.sadellie.evaluatto.ExpressionResult
 import io.github.sadellie.evaluatto.UnitValue
 import io.github.sadellie.evaluatto.integerInfo
+import io.github.sadellie.evaluatto.isShownExactly
 import kotlin.math.PI
 import kotlin.math.atan2
 import kotlinx.coroutines.Dispatchers
@@ -91,9 +93,16 @@ private fun KBigDecimal.scientificMantissa(): Pair<KBigDecimal, Int> {
   return multiply(KBigDecimal("1E${-exponent}")) to exponent
 }
 
-/** True when the power of ten form loses digits: 55! ==> ≈1.27×10⁷³, but 5.5×10⁵⁶ is exact. */
-private fun KBigDecimal.isRoundedAsScientific(precision: Int): Boolean =
-  isScientific() && scientificMantissa().first.stripTrailingZeros().scale() > precision
+/** Value as [toScientific] shows it: rounded to [precision] digits, of the mantissa for powers of ten. */
+private fun KBigDecimal.shownValue(precision: Int): KBigDecimal {
+  if (!isScientific()) return KBigDecimal(toFormattedString(precision, OutputFormat.PLAIN))
+  val (mantissa, exponent) = scientificMantissa()
+  return KBigDecimal(mantissa.toFormattedString(precision, OutputFormat.PLAIN)).multiply(KBigDecimal("1E$exponent"))
+}
+
+/** ≈ when the shown value is rounded: 20÷4500 ==> ≈0.004, 55! ==> ≈1.27×10⁷³, but 1÷8 ==> 0.125. */
+private fun KBigDecimal.roundingSign(precision: Int, fraction: ExactFraction? = null): String =
+  if (isShownExactly(this, fraction, shownValue(precision))) "" else APPROXIMATELY
 
 /** 5.5×10¹⁶ (layout slots) when value is too big or too small to read, plain number otherwise. */
 private fun KBigDecimal.toScientific(precision: Int, outputFormat: Int): String {
@@ -257,12 +266,18 @@ internal class CalculatorViewModel(
 
         // Complex numbers and expressions with x can't be fractions
         if (prefs.fractionalOutput && evaluated is ExpressionResult.Real) {
+          // Exact fraction when the result is rational: 1÷3×3 is 1, not 0.999… as 1⁄1
+          val exactFraction = evaluated.fraction
           val fractional =
-            try {
-              // Different rounding mode to properly calculate fractional
-              calculate(inputValue, prefs.radianMode, KRoundingMode.DOWN).toFractionalString()
-            } catch (e: Exception) {
-              ""
+            if (exactFraction != null) {
+              exactFraction.toFractionalString()
+            } else {
+              try {
+                // Different rounding mode to properly calculate fractional
+                calculate(inputValue, prefs.radianMode, KRoundingMode.DOWN).toFractionalString()
+              } catch (e: Exception) {
+                ""
+              }
             }
           if (fractional.isNotEmpty()) lines += fractional.toFractionSlots()
         }
@@ -332,7 +347,8 @@ internal class CalculatorViewModel(
         )
       is ExpressionResult.Real if si != null || otherUnits.isNotEmpty() -> {
         val prefs = _prefs.value ?: return emptyList()
-        fun UnitValue.line() = value.toScientific(prefs.precision, prefs.outputFormat) + unit
+        fun UnitValue.line() =
+          value.roundingSign(prefs.precision) + value.toScientific(prefs.precision, prefs.outputFormat) + unit
         buildList {
           if (otherUnits.isNotEmpty()) {
             add(MenuSection.OTHER_UNITS to otherUnits.map { it.line() })
@@ -340,7 +356,9 @@ internal class CalculatorViewModel(
           // 300 K in SI is 300 K again, nothing new to show
           val siValue = si?.takeIf { it.unit != unit || baseUnits != null }
           if (siValue != null) {
-            val value = siValue.value.toScientific(prefs.precision, prefs.outputFormat)
+            val value =
+              siValue.value.roundingSign(prefs.precision) +
+                siValue.value.toScientific(prefs.precision, prefs.outputFormat)
             add(MenuSection.SI_UNITS to listOfNotNull(value + siValue.unit, baseUnits?.let { value + it }))
           }
         }
@@ -422,12 +440,15 @@ internal class CalculatorViewModel(
 
   private fun ExpressionResult.format(precision: Int, outputFormat: Int): String =
     when (this) {
-      // 55! ==> ≈1.27×10⁷³ instead of every digit
+      // ≈ when digits are lost: 20÷4500 ==> ≈0.004, 55! ==> ≈1.27×10⁷³
       is ExpressionResult.Real ->
-        (if (value.isRoundedAsScientific(precision)) APPROXIMATELY else "") +
-          value.toScientific(precision, outputFormat) +
-          (unit ?: "")
-      is ExpressionResult.Complex -> formatComplex(real, imaginary, precision, outputFormat)
+        value.roundingSign(precision, fraction) + value.toScientific(precision, outputFormat) + (unit ?: "")
+      is ExpressionResult.Complex -> {
+        val isRounded =
+          real.roundingSign(precision, fractions?.first).isNotEmpty() ||
+            imaginary.roundingSign(precision, fractions?.second).isNotEmpty()
+        (if (isRounded) APPROXIMATELY else "") + formatComplex(real, imaginary, precision, outputFormat)
+      }
       is ExpressionResult.Symbolic -> expression
     }
 

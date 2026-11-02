@@ -22,6 +22,7 @@ import com.sadellie.unitto.core.common.KBigDecimal
 import com.sadellie.unitto.core.common.KBigInteger
 import com.sadellie.unitto.core.common.KRoundingMode
 import com.sadellie.unitto.core.common.isEqualTo
+import io.github.sadellie.evaluatto.ExactFraction
 import kotlin.math.min
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -57,6 +58,19 @@ suspend fun KBigDecimal.toFractionalString(): String =
     if (finalDenominator > maxDenominator) return@withContext ""
     return@withContext "$res$finalNumerator⁄$finalDenominator"
   }
+
+/**
+ * Exact fraction in the same form as [KBigDecimal.toFractionalString]: `123 1⁄2`, empty string for
+ * whole numbers and too big denominators.
+ */
+fun ExactFraction.toFractionalString(): String {
+  if (denominator.isEqualTo(KBigDecimal.ONE)) return ""
+  if (denominator.toBigInteger() > maxDenominator) return ""
+  val (whole, rest) = numerator.abs().divideAndRemainder(denominator)
+  val sign = if (numerator < KBigDecimal.ZERO) "-" else ""
+  val wholeText = if (whole.isEqualTo(KBigDecimal.ZERO)) "" else "${whole.toBigInteger()} "
+  return "$sign$wholeText${rest.toBigInteger()}⁄${denominator.toBigInteger()}"
+}
 
 private fun KBigDecimal.notRepeatingFractional(): Pair<KBigInteger, KBigInteger> {
   val fractionalPrecision = KBigInteger.TEN.pow(scale())

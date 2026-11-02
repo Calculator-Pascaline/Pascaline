@@ -19,6 +19,7 @@
 package com.sadellie.unitto.feature.calculator
 
 import com.sadellie.unitto.core.common.KBigDecimal
+import io.github.sadellie.evaluatto.ExactFraction
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlinx.coroutines.test.runTest
@@ -41,6 +42,20 @@ class DecimalToFractionTest {
   @Test fun testRepeating4() = assertFractional("66 11/14", "66.78571428571428571428")
 
   @Test fun testRepeating5() = assertFractional("333/500", "0.666000")
+
+  @Test fun exactFraction() = assertExact("1/225", "1", "225")
+
+  @Test fun exactMixedNumber() = assertExact("4 2/3", "14", "3")
+
+  @Test fun exactNegative() = assertExact("-1 1/2", "-3", "2")
+
+  @Test fun exactWholeNumberHasNoFraction() = assertExact("", "1", "1")
+
+  private fun assertExact(expected: String, numerator: String, denominator: String) =
+    assertEquals(
+      expected,
+      ExactFraction(KBigDecimal(numerator), KBigDecimal(denominator)).toFractionalString().replace("⁄", "/"),
+    )
 
   private fun assertFractional(expected: String, actual: String) = runTest {
     assertEquals(expected, KBigDecimal(actual).toFractionalString().replace("⁄", "/"))
