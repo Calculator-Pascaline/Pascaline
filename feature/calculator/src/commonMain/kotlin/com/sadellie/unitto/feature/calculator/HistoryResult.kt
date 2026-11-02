@@ -119,6 +119,29 @@ internal data class HistoryResult(
 }
 
 /** Removes things that can't be calculated: ≈ and integration constant. */
+/**
+ * Previous result that goes before [operator] typed on empty input, like Ans on NumWorks:
+ * `12` ==> `12+`. Multiplying and dividing take whole result in brackets: `1+√2` ==> `(1+√2)×`.
+ *
+ * @return `null` if [operator] doesn't use previous result or there is no result (error).
+ */
+internal fun HistoryResult.operandFor(operator: String): String? {
+  if (operator !in OPERATORS_ON_PREVIOUS_RESULT) return null
+  val result = insertable?.takeIf { it.isNotBlank() } ?: return null
+  val isNumber = result.removePrefix(Token.Operator.MINUS).all { it.toString() in Token.Digit.allWithDot }
+  val needsBrackets = !isNumber && operator != Token.Operator.PLUS && operator != Token.Operator.MINUS
+  return if (needsBrackets) Token.Operator.LEFT_BRACKET + result + Token.Operator.RIGHT_BRACKET else result
+}
+
+private val OPERATORS_ON_PREVIOUS_RESULT =
+  listOf(
+    Token.Operator.PLUS,
+    Token.Operator.MINUS,
+    Token.Operator.MULTIPLY,
+    Token.Operator.DIVIDE,
+    Token.Layout.FRACTION,
+  )
+
 internal fun String.toInsertable(): String =
   removePrefix(APPROXIMATELY).removeSuffix(Token.Operator.PLUS + Token.DisplayOnly.INTEGRATION_CONSTANT)
 

@@ -165,6 +165,14 @@ internal class CalculatorViewModel(
       // Equal was clicked and user tries to add operator or something
       _equalClicked.value -> _input.placeCursorAtTheEnd()
     }
+    // Operator on empty input works on previous result: 12 in history, "+" ==> 12+
+    if (_input.text.isEmpty()) {
+      val history = (uiState.value as? CalculatorUIState.Ready)?.history
+      history
+        ?.firstOrNull()
+        ?.let { HistoryResult.decode(it.result).operandFor(tokens) }
+        ?.let { _input.addTokens(it) }
+    }
     _input.addTokens(tokens)
     _equalClicked.update { false }
   }
