@@ -92,6 +92,8 @@ body {
   white-space: pre-wrap;
   word-break: break-word;
   font-size: 0.8rem;
+  max-height: 40vh;
+  overflow: auto;
 }
 
 .start-error a {

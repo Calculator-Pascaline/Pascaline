@@ -22,39 +22,56 @@
         );
       }
 
-      // An error shows what went wrong instead of a white page
+      // Errors show what went wrong instead of a white page: the first few, the first one is often
+      // only a consequence
+      const startErrors = [];
+      function describe(value) {
+        if (value instanceof Error) return value.name + ": " + value.message + "\n" + (value.stack || "");
+        if (typeof WebAssembly !== "undefined" && value instanceof WebAssembly.Exception) {
+          return "WebAssembly exception " + (value.stack || "");
+        }
+        return String(value);
+      }
       function showStartError(reason) {
-        if (document.getElementById("start-error")) return;
-        const box = document.createElement("div");
-        box.id = "start-error";
-        box.className = "start-error";
-        box.innerHTML =
-          "<b>Something went wrong</b><p>Please report this on GitHub with your device and browser:</p>";
-        const details = document.createElement("code");
-        details.textContent = String(reason).slice(0, 500);
-        box.appendChild(details);
-        const link = document.createElement("a");
-        link.href = "https://github.com/Calculator-Pascaline/Pascaline/issues/new";
-        link.textContent = "Report the problem";
-        box.appendChild(link);
-        // Not in body: the app puts its own content there and hides the rest
-        document.documentElement.appendChild(box);
+        const text = String(reason).slice(0, 400);
+        if (startErrors.length >= 5 || startErrors.includes(text)) return;
+        startErrors.push(text);
+        let box = document.getElementById("start-error");
+        if (!box) {
+          box = document.createElement("div");
+          box.id = "start-error";
+          box.className = "start-error";
+          box.innerHTML =
+            "<b>Something went wrong</b><p>Please report this on GitHub with your device and browser:</p><code></code>";
+          const link = document.createElement("a");
+          link.href = "https://github.com/Calculator-Pascaline/Pascaline/issues/new";
+          link.textContent = "Report the problem";
+          box.appendChild(link);
+          // Not in body: the app puts its own content there and hides the rest
+          document.documentElement.appendChild(box);
+        }
+        box.querySelector("code").textContent = startErrors.join("\n\n");
       }
       // The app reports some of its errors only to the console
       const consoleError = console.error.bind(console);
       console.error = (...args) => {
         consoleError(...args);
-        showStartError(args.map((a) => (a && a.stack) || String(a)).join(" "));
+        showStartError(args.map(describe).join(" "));
       };
-      window.addEventListener("error", (e) => showStartError(e.message || e.error));
-      window.addEventListener("unhandledrejection", (e) => showStartError(e.reason));
+      window.addEventListener("error", (e) =>
+        showStartError(
+          (e.error ? describe(e.error) : e.message) +
+            (e.filename ? " (" + e.filename.split("/").pop() + ":" + e.lineno + ":" + e.colno + ")" : ""),
+        ),
+      );
+      window.addEventListener("unhandledrejection", (e) => showStartError(describe(e.reason)));
       document.addEventListener(
         "webglcontextlost",
         () => showStartError("Graphics were stopped by the browser (WebGL context lost)"),
         true,
       );
     </script>
-    <script type="application/javascript" src="sharedApp.js"></script>
+    <script type="application/javascript" src="sharedApp.js" crossorigin="anonymous"></script>
   </head>
   <body>
     <div class="loading-container">
