@@ -10,8 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Calculator-Pascaline/Pascaline/releases/latest"><img src="docs/buttons/download-android.svg" height="38" alt="Download for Android" /></a>
-  <a href="https://calculator-pascaline.github.io/Pascaline/"><img src="docs/buttons/open-web-app.svg" height="38" alt="Open the web app" /></a>
+  <a href="https://github.com/Calculator-Pascaline/Pascaline/releases/latest"><img src="docs/buttons/download-android.svg" height="44" alt="Download for Android" /></a>&nbsp;&nbsp;<a href="https://calculator-pascaline.github.io/Pascaline/"><img src="docs/buttons/open-web-app.svg" height="44" alt="Open the web app" /></a>
 </p>
 
 ## 📲 Install
@@ -49,7 +48,7 @@
 Ideas, bugs or anything that could make Pascaline better are welcome.
 
 <p>
-  <a href="https://github.com/Calculator-Pascaline/Pascaline/issues/new"><img src="docs/buttons/open-issue.svg" height="34" alt="Open an issue" /></a>
+  <a href="https://github.com/Calculator-Pascaline/Pascaline/issues/new"><img src="docs/buttons/open-issue.svg" height="44" alt="Open an issue" /></a>
 </p>
 
 ## 🙏 Credits

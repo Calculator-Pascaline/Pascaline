@@ -1,9 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="272" height="56" viewBox="0 0 272 56" role="img" aria-label="Download for Android">
-  <rect width="272" height="56" rx="28" fill="#2F5DA8"/>
-  <g fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M38 18v15"/>
-    <path d="M31.5 27l6.5 6.5 6.5-6.5"/>
-    <path d="M29 38.5h18"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="264" height="52" viewBox="0 0 264 52" role="img" aria-label="Download for Android">
+  <rect width="264" height="52" rx="26" fill="#2F5DA8"/>
+  <g transform="translate(29.6 16)" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M10 1v13"/>
+    <path d="M4.5 9l5.5 5.5 5.5-5.5"/>
+    <path d="M2 19.5h16"/>
   </g>
-  <text x="62" y="35" fill="#FFFFFF" font-family="Segoe UI, -apple-system, Helvetica, Arial, sans-serif" font-size="18" font-weight="600">Download for Android</text>
+  <text x="61.6" y="32.5" fill="#FFFFFF" font-family="Segoe UI, -apple-system, Helvetica, Arial, sans-serif" font-size="17" font-weight="600">Download for Android</text>
 </svg>
