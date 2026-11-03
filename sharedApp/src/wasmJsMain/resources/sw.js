@@ -13,7 +13,8 @@ self.addEventListener("install", (event) => {
   event.waitUntil(
     (async () => {
       const cache = await caches.open(CACHE_NAME);
-      await cache.addAll(PRECACHED_ASSETS);
+      // One file at a time: all at once uses too much memory on phones while the app starts
+      for (const asset of PRECACHED_ASSETS) await cache.add(asset);
       await self.skipWaiting();
     })(),
   );

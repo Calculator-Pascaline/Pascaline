@@ -14,10 +14,39 @@
     <link type="text/css" rel="stylesheet" href="styles.css" />
     <link rel="manifest" href="manifest.json" />
     <script>
-      // Works offline once loaded, and can be installed like an app
+      // Works offline once loaded, and can be installed like an app. Files are saved for offline use
+      // a while after the app has started: on phones, doing both at once can use too much memory
       if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => navigator.serviceWorker.register("sw.js"));
+        window.addEventListener("load", () =>
+          setTimeout(() => navigator.serviceWorker.register("sw.js"), 15000),
+        );
       }
+
+      // An error shows what went wrong instead of a white page
+      function showStartError(reason) {
+        if (document.getElementById("start-error")) return;
+        const box = document.createElement("div");
+        box.id = "start-error";
+        box.className = "start-error";
+        box.innerHTML =
+          "<b>Something went wrong</b><p>Please report this on GitHub with your device and browser:</p>";
+        const details = document.createElement("code");
+        details.textContent = String(reason).slice(0, 500);
+        box.appendChild(details);
+        const link = document.createElement("a");
+        link.href = "https://github.com/Calculator-Pascaline/Pascaline/issues/new";
+        link.textContent = "Report the problem";
+        box.appendChild(link);
+        // Not in body: the app puts its own content there and hides the rest
+        document.documentElement.appendChild(box);
+      }
+      window.addEventListener("error", (e) => showStartError(e.message || e.error));
+      window.addEventListener("unhandledrejection", (e) => showStartError(e.reason));
+      document.addEventListener(
+        "webglcontextlost",
+        () => showStartError("Graphics were stopped by the browser (WebGL context lost)"),
+        true,
+      );
     </script>
     <script type="application/javascript" src="sharedApp.js"></script>
   </head>
