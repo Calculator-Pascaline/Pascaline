@@ -1,0 +1,22 @@
+# Opens pull requests when Gradle, the libraries in gradle/libs.versions.toml or the GitHub
+# Actions have new versions. The web workflow builds each one for Android and the web, so a
+# broken update shows up there before it is merged.
+version: 2
+updates:
+  - package-ecosystem: gradle
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      # Small updates together in one pull request, big ones on their own
+      libraries:
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]

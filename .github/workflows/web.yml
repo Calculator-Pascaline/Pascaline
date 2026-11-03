@@ -1,10 +1,12 @@
 # Builds the web app and publishes it on GitHub Pages:
 # https://calculator-pascaline.github.io/Pascaline/
+# Pull requests (like Dependabot updates) are built for Android and the web but not published.
 name: Web app
 
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -12,9 +14,10 @@ permissions:
   pages: write
   id-token: write
 
-# One deployment at a time, a newer push replaces the one that is still building
+# One deployment at a time, a newer push replaces the one that is still building. Pull requests
+# have their own group so that they never cancel a deployment
 concurrency:
-  group: pages
+  group: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.ref) || 'pages' }}
   cancel-in-progress: true
 
 jobs:
@@ -32,15 +35,21 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v6
 
+      - name: Build Android app
+        if: github.event_name == 'pull_request'
+        run: ./gradlew :androidApp:assembleDebug
+
       - name: Build web app
         run: ./gradlew :sharedApp:wasmJsBrowserDistribution
 
       - uses: actions/upload-pages-artifact@v5
+        if: github.event_name != 'pull_request'
         with:
           path: sharedApp/build/dist/wasmJs/productionExecutable
 
   deploy:
     needs: build
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-24.04
     environment:
       name: github-pages
