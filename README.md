@@ -11,15 +11,13 @@
 
 <p align="center">
   <a href="https://github.com/Calculator-Pascaline/Pascaline/releases/latest">
-    <img src="docs/buttons/download-android.svg" height="56" alt="Download for Android" />
+    <img src="docs/buttons/download-android.svg" height="44" alt="Download for Android" />
   </a>
   &nbsp;
   <a href="https://calculator-pascaline.github.io/Pascaline/">
-    <img src="docs/buttons/open-web-app.svg" height="56" alt="Open the web app" />
+    <img src="docs/buttons/open-web-app.svg" height="44" alt="Open the web app" />
   </a>
 </p>
-
-<br />
 
 ## 📲 Install
 
@@ -51,19 +49,15 @@
 
 <p align="center"><sub>Added to the home screen, the web app opens in its own window and works without internet.</sub></p>
 
-<br />
-
 ## 💬 Feedback
 
 Ideas, bugs or anything that could make Pascaline better are welcome.
 
 <p>
   <a href="https://github.com/Calculator-Pascaline/Pascaline/issues/new">
-    <img src="docs/buttons/open-issue.svg" height="48" alt="Open an issue" />
+    <img src="docs/buttons/open-issue.svg" height="36" alt="Open an issue" />
   </a>
 </p>
-
-<br />
 
 ## 🙏 Credits
 
