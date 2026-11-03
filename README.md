@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="sharedApp/src/wasmJsMain/resources/icon.png" width="120" alt="Pascaline icon" />
+  <img src="docs/icon-round.png" width="120" alt="Pascaline icon" />
 </p>
 
 <h1 align="center">Pascaline</h1>
