@@ -40,6 +40,12 @@
         // Not in body: the app puts its own content there and hides the rest
         document.documentElement.appendChild(box);
       }
+      // The app reports some of its errors only to the console
+      const consoleError = console.error.bind(console);
+      console.error = (...args) => {
+        consoleError(...args);
+        showStartError(args.map((a) => (a && a.stack) || String(a)).join(" "));
+      };
       window.addEventListener("error", (e) => showStartError(e.message || e.error));
       window.addEventListener("unhandledrejection", (e) => showStartError(e.reason));
       document.addEventListener(
