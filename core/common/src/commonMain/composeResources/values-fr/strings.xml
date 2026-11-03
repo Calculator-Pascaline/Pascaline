@@ -130,10 +130,12 @@
     <string name="settings_additional">Supplémentaire</string>
     <string name="settings_amoled_dark">AMOLED sombre</string>
     <string name="settings_amoled_dark_support">Utiliser un fond noir pour les thèmes sombres</string>
+    <string name="settings_apps">Applications</string>
     <string name="settings_auto">Automatique</string>
     <string name="settings_back_up">Sauvegarder</string>
     <string name="settings_backup">Sauvegarde</string>
     <string name="settings_backup_support">Sauvegarder et restaurer vos données</string>
+    <string name="settings_based_on_unitto">Basé sur Unitto d'Elshan Agaev</string>
     <string name="settings_calculator_support">Sortie fractionnaire et calcul de constantes</string>
     <string name="settings_clear_cache">Vider le cache</string>
     <string name="settings_color_theme">Thème de couleur</string>
@@ -161,6 +163,7 @@
     <string name="settings_formatting_support">Précision et apparence des nombres</string>
     <string name="settings_fractional_output">Sortie fractionnaire</string>
     <string name="settings_fractional_output_support">Afficher les résultats sous forme de fractions</string>
+    <string name="settings_general">Général</string>
     <string name="settings_history_view_button">Bouton de vue de l'historique</string>
     <string name="settings_history_view_button_support">Afficher le bouton pour basculer la vue de l'historique</string>
     <string name="settings_indian_numbering_system">Système de numération indien</string>
@@ -175,10 +178,13 @@
     <string name="settings_partial_history_view">Vue partielle de l'historique</string>
     <string name="settings_partial_history_view_support">Aperçu de la dernière entrée dans l'historique</string>
     <string name="settings_period">Point</string>
+    <string name="settings_phone">Téléphone</string>
     <string name="settings_precision">Précision</string>
     <string name="settings_precision_max">%1$s (Max)</string>
     <string name="settings_precision_support">Nombre de décimales. Augmente le temps de calcul et l'utilisation de la batterie.</string>
     <string name="settings_reorder_unit_group_description">Réorganiser le groupe d'unités</string>
+    <string name="settings_report_issue">Signaler un problème</string>
+    <string name="settings_report_issue_support">Idées et bugs sont les bienvenus sur GitHub</string>
     <string name="settings_restore">Restaurer</string>
     <string name="settings_saved_expressions">Expressions sauvegardées</string>
     <string name="settings_selected_color">Couleur sélectionnée</string>

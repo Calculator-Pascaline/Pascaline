@@ -18,13 +18,7 @@
 
 package com.sadellie.unitto.feature.settings.calculator
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -41,9 +35,6 @@ import com.sadellie.unitto.core.datastore.CalculatorPreferences
 import com.sadellie.unitto.core.designsystem.icons.iconpack.Fraction
 import com.sadellie.unitto.core.designsystem.icons.iconpack.IconPack
 import com.sadellie.unitto.core.designsystem.icons.symbols.AddRowBelow
-import com.sadellie.unitto.core.designsystem.icons.symbols.History
-import com.sadellie.unitto.core.designsystem.icons.symbols.MoveSelectionDown
-import com.sadellie.unitto.core.designsystem.icons.symbols.SplitscreenBottom
 import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
 import com.sadellie.unitto.core.designsystem.shapes.Sizes
 import com.sadellie.unitto.core.ui.EmptyScreen
@@ -59,12 +50,6 @@ import unitto.core.common.generated.resources.settings_constant_calculation
 import unitto.core.common.generated.resources.settings_constant_calculation_support
 import unitto.core.common.generated.resources.settings_fractional_output
 import unitto.core.common.generated.resources.settings_fractional_output_support
-import unitto.core.common.generated.resources.settings_history_view_button
-import unitto.core.common.generated.resources.settings_history_view_button_support
-import unitto.core.common.generated.resources.settings_partial_history_view
-import unitto.core.common.generated.resources.settings_partial_history_view_support
-import unitto.core.common.generated.resources.settings_stepped_drag_gesture
-import unitto.core.common.generated.resources.settings_stepped_drag_gesture_support
 
 @Composable
 internal fun CalculatorSettingsRoute(navigateUpAction: () -> Unit) {
@@ -75,11 +60,8 @@ internal fun CalculatorSettingsRoute(navigateUpAction: () -> Unit) {
       CalculatorSettingsScreen(
         prefs = prefs,
         navigateUpAction = navigateUpAction,
-        updatePartialHistoryView = viewModel::updatePartialHistoryView,
-        updateSteppedPartialHistoryView = viewModel::updateSteppedPartialHistoryView,
         updateFractionalOutput = viewModel::updateFractionalOutput,
         updateConstantCalculation = viewModel::updateConstantCalculation,
-        updateOpenHistoryViewButton = viewModel::updateOpenHistoryViewButton,
       )
     }
   }
@@ -89,9 +71,6 @@ internal fun CalculatorSettingsRoute(navigateUpAction: () -> Unit) {
 private fun CalculatorSettingsScreen(
   prefs: CalculatorPreferences,
   navigateUpAction: () -> Unit,
-  updatePartialHistoryView: (Boolean) -> Unit,
-  updateSteppedPartialHistoryView: (Boolean) -> Unit,
-  updateOpenHistoryViewButton: (Boolean) -> Unit,
   updateFractionalOutput: (Boolean) -> Unit,
   updateConstantCalculation: (Boolean) -> Unit,
 ) {
@@ -106,21 +85,12 @@ private fun CalculatorSettingsScreen(
       verticalArrangement = ListItemExpressiveDefaults.ListArrangement,
     ) {
       ListItemExpressive(
-        headlineText = stringResource(Res.string.settings_history_view_button),
-        icon = Symbols.History,
-        supportingText = stringResource(Res.string.settings_history_view_button_support),
-        switchState = prefs.openHistoryViewButton,
-        onSwitchChange = updateOpenHistoryViewButton,
-        shape = ListItemExpressiveDefaults.firstShape,
-      )
-
-      ListItemExpressive(
         headlineText = stringResource(Res.string.settings_fractional_output),
         icon = IconPack.Fraction,
         supportingText = stringResource(Res.string.settings_fractional_output_support),
         switchState = prefs.fractionalOutput,
         onSwitchChange = updateFractionalOutput,
-        shape = ListItemExpressiveDefaults.middleShape,
+        shape = ListItemExpressiveDefaults.firstShape,
       )
 
       ListItemExpressive(
@@ -129,35 +99,8 @@ private fun CalculatorSettingsScreen(
         supportingText = stringResource(Res.string.settings_constant_calculation_support),
         switchState = prefs.constantCalculation,
         onSwitchChange = updateConstantCalculation,
-        shape = ListItemExpressiveDefaults.middleShape,
+        shape = ListItemExpressiveDefaults.lastShape,
       )
-
-      ListItemExpressive(
-        headlineText = stringResource(Res.string.settings_partial_history_view),
-        icon = Symbols.SplitscreenBottom,
-        supportingText = stringResource(Res.string.settings_partial_history_view_support),
-        switchState = prefs.partialHistoryView,
-        onSwitchChange = updatePartialHistoryView,
-        shape =
-          if (prefs.partialHistoryView) ListItemExpressiveDefaults.middleShape
-          else ListItemExpressiveDefaults.lastShape,
-      )
-
-      AnimatedVisibility(
-        visible = prefs.partialHistoryView,
-        enter = expandVertically() + fadeIn(),
-        exit = shrinkVertically() + fadeOut(),
-        modifier = Modifier.fillMaxWidth(),
-      ) {
-        ListItemExpressive(
-          headlineText = stringResource(Res.string.settings_stepped_drag_gesture),
-          icon = Symbols.MoveSelectionDown,
-          supportingText = stringResource(Res.string.settings_stepped_drag_gesture_support),
-          switchState = prefs.steppedPartialHistoryView,
-          onSwitchChange = updateSteppedPartialHistoryView,
-          shape = ListItemExpressiveDefaults.lastShape,
-        )
-      }
     }
   }
 }
@@ -188,10 +131,7 @@ private fun PreviewCalculatorSettingsScreenStandard() {
   CalculatorSettingsScreen(
     prefs = prefs,
     navigateUpAction = {},
-    updatePartialHistoryView = { prefs = prefs.copy(partialHistoryView = it) },
-    updateSteppedPartialHistoryView = { prefs = prefs.copy(steppedPartialHistoryView = it) },
     updateFractionalOutput = { prefs = prefs.copy(fractionalOutput = it) },
     updateConstantCalculation = { prefs = prefs.copy(constantCalculation = it) },
-    updateOpenHistoryViewButton = { prefs = prefs.copy(openHistoryViewButton = it) },
   )
 }

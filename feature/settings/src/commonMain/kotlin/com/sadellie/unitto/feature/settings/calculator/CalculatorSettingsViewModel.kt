@@ -29,15 +29,6 @@ internal class CalculatorSettingsViewModel(
 ) : ViewModel() {
   val prefs = userPrefsRepository.calculatorPrefs.stateIn(viewModelScope, null)
 
-  fun updatePartialHistoryView(enabled: Boolean) =
-    viewModelScope.launch { userPrefsRepository.updatePartialHistoryView(enabled) }
-
-  fun updateSteppedPartialHistoryView(enabled: Boolean) =
-    viewModelScope.launch { userPrefsRepository.updateSteppedPartialHistoryView(enabled) }
-
-  fun updateOpenHistoryViewButton(enabled: Boolean) =
-    viewModelScope.launch { userPrefsRepository.updateOpenHistoryViewButton(enabled) }
-
   fun updateFractionalOutput(enabled: Boolean) =
     viewModelScope.launch { userPrefsRepository.updateFractionalOutput(enabled) }
 

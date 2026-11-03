@@ -130,10 +130,12 @@
     <string name="settings_additional">Aanvullend</string>
     <string name="settings_amoled_dark">AMOLED Donker</string>
     <string name="settings_amoled_dark_support">Zwarte achtergrond gebruiken voor donkere thema's</string>
+    <string name="settings_apps">Apps</string>
     <string name="settings_auto">Automatisch</string>
     <string name="settings_back_up">Back-up maken</string>
     <string name="settings_backup">Back-up</string>
     <string name="settings_backup_support">Maak een back-up van en herstel uw gegevens</string>
+    <string name="settings_based_on_unitto">Gebaseerd op Unitto van Elshan Agaev</string>
     <string name="settings_calculator_support">Breukuitvoer en constante berekening</string>
     <string name="settings_clear_cache">Cache wissen</string>
     <string name="settings_color_theme">Kleurthema</string>
@@ -161,6 +163,7 @@
     <string name="settings_formatting_support">Precisie en weergave van getallen</string>
     <string name="settings_fractional_output">Breukuitvoer</string>
     <string name="settings_fractional_output_support">Resultaten weergeven als breuken</string>
+    <string name="settings_general">Algemeen</string>
     <string name="settings_history_view_button">Geschiedenisweergaveknop</string>
     <string name="settings_history_view_button_support">Knop weergeven om geschiedenisweergave in/uit te schakelen</string>
     <string name="settings_indian_numbering_system">Indiaas telsysteem</string>
@@ -175,10 +178,13 @@
     <string name="settings_partial_history_view">Gedeeltelijke geschiedenisweergave</string>
     <string name="settings_partial_history_view_support">Bekijk de laatste invoer in de geschiedenis</string>
     <string name="settings_period">Punt</string>
+    <string name="settings_phone">Telefoon</string>
     <string name="settings_precision">Precisie</string>
     <string name="settings_precision_max">%1$s (Max)</string>
     <string name="settings_precision_support">Aantal decimalen. Verhoogt de rekentijd en het batterijgebruik.</string>
     <string name="settings_reorder_unit_group_description">Eenheidsgroep opnieuw ordenen</string>
+    <string name="settings_report_issue">Probleem melden</string>
+    <string name="settings_report_issue_support">Ideeën en bugs zijn welkom op GitHub</string>
     <string name="settings_restore">Herstellen</string>
     <string name="settings_saved_expressions">Opgeslagen expressies</string>
     <string name="settings_selected_color">Geselecteerde kleur</string>

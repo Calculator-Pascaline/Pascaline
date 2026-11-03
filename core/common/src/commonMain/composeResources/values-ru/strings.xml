@@ -130,10 +130,12 @@
     <string name="settings_additional">Дополнительно</string>
     <string name="settings_amoled_dark">AMOLED темный</string>
     <string name="settings_amoled_dark_support">Использовать черный фон для темных тем</string>
+    <string name="settings_apps">Приложения</string>
     <string name="settings_auto">Автоматически</string>
     <string name="settings_back_up">Сделать резервную копию</string>
     <string name="settings_backup">Резервное копирование</string>
     <string name="settings_backup_support">Создание и восстановление резервных копий данных</string>
+    <string name="settings_based_on_unitto">Основано на Unitto от Elshan Agaev</string>
     <string name="settings_calculator_support">Дробный вывод и расчет констант</string>
     <string name="settings_clear_cache">Очистить кэш</string>
     <string name="settings_color_theme">Цветовая тема</string>
@@ -161,6 +163,7 @@
     <string name="settings_formatting_support">Точность и вид чисел</string>
     <string name="settings_fractional_output">Дробный вывод</string>
     <string name="settings_fractional_output_support">Показывать результаты в виде дробей</string>
+    <string name="settings_general">Общие</string>
     <string name="settings_history_view_button">Кнопка просмотра истории</string>
     <string name="settings_history_view_button_support">Показывать кнопку переключения просмотра истории</string>
     <string name="settings_indian_numbering_system">Индийская система счисления</string>
@@ -175,10 +178,13 @@
     <string name="settings_partial_history_view">Частичный просмотр истории</string>
     <string name="settings_partial_history_view_support">Показывать последнюю запись в истории</string>
     <string name="settings_period">Точка</string>
+    <string name="settings_phone">Телефон</string>
     <string name="settings_precision">Точность</string>
     <string name="settings_precision_max">%1$s (Макс.)</string>
     <string name="settings_precision_support">Количество знаков после запятой. Увеличивает время расчета и расход батареи.</string>
     <string name="settings_reorder_unit_group_description">Изменить порядок группы единиц</string>
+    <string name="settings_report_issue">Сообщить о проблеме</string>
+    <string name="settings_report_issue_support">Идеи и ошибки ждём на GitHub</string>
     <string name="settings_restore">Восстановить</string>
     <string name="settings_saved_expressions">Сохраненные выражения</string>
     <string name="settings_selected_color">Выбранный цвет</string>

@@ -77,7 +77,7 @@
     <string name="settings_dark_mode">Dark</string>
     <string name="settings_disable_unit_group_description">Disable unit group</string>
     <string name="settings_display">Display</string>
-    <string name="settings_display_support">App look and feel</string>
+    <string name="settings_display_support">Themes, keypad and languages</string>
     <string name="settings_dynamic_colors">Dynamic colours</string>
     <string name="settings_dynamic_colors_support">Use colours from your wallpaper</string>
     <string name="settings_enable_unit_group_description">Enable unit group</string>

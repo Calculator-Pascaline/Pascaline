@@ -130,10 +130,12 @@
     <string name="settings_additional">Zusätzlich</string>
     <string name="settings_amoled_dark">AMOLED-Dunkel</string>
     <string name="settings_amoled_dark_support">Schwarzen Hintergrund für dunkle Designs verwenden</string>
+    <string name="settings_apps">Apps</string>
     <string name="settings_auto">Automatisch</string>
     <string name="settings_back_up">Sichern</string>
     <string name="settings_backup">Backup</string>
     <string name="settings_backup_support">Sichern und Wiederherstellen Ihrer Daten</string>
+    <string name="settings_based_on_unitto">Basiert auf Unitto von Elshan Agaev</string>
     <string name="settings_calculator_support">Bruchausgabe und Konstantenberechnung</string>
     <string name="settings_clear_cache">Cache leeren</string>
     <string name="settings_color_theme">Farbdesign</string>
@@ -161,6 +163,7 @@
     <string name="settings_formatting_support">Genauigkeit und Zahlendarstellung</string>
     <string name="settings_fractional_output">Bruchausgabe</string>
     <string name="settings_fractional_output_support">Ergebnisse als Brüche anzeigen</string>
+    <string name="settings_general">Allgemein</string>
     <string name="settings_history_view_button">Schaltfläche für Verlaufansicht</string>
     <string name="settings_history_view_button_support">Schaltfläche zum Umschalten der Verlaufansicht anzeigen</string>
     <string name="settings_indian_numbering_system">Indisches Zahlensystem</string>
@@ -175,10 +178,13 @@
     <string name="settings_partial_history_view">Teilweise Verlaufansicht</string>
     <string name="settings_partial_history_view_support">Letzten Eintrag im Verlauf anzeigen</string>
     <string name="settings_period">Punkt</string>
+    <string name="settings_phone">Telefon</string>
     <string name="settings_precision">Genauigkeit</string>
     <string name="settings_precision_max">%1$s (Max.)</string>
     <string name="settings_precision_support">Anzahl der Dezimalstellen. Erhöht die Berechnungszeit und den Akkuverbrauch.</string>
     <string name="settings_reorder_unit_group_description">Einheitengruppe neu anordnen</string>
+    <string name="settings_report_issue">Problem melden</string>
+    <string name="settings_report_issue_support">Ideen und Fehler sind auf GitHub willkommen</string>
     <string name="settings_restore">Wiederherstellen</string>
     <string name="settings_saved_expressions">Gespeicherte Ausdrücke</string>
     <string name="settings_selected_color">Ausgewählte Farbe</string>

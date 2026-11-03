@@ -130,10 +130,12 @@
     <string name="settings_additional">Adicional</string>
     <string name="settings_amoled_dark">Oscuro AMOLED</string>
     <string name="settings_amoled_dark_support">Usar fondo negro para temas oscuros</string>
+    <string name="settings_apps">Aplicaciones</string>
     <string name="settings_auto">Automático</string>
     <string name="settings_back_up">Hacer copia de seguridad</string>
     <string name="settings_backup">Copia de seguridad</string>
     <string name="settings_backup_support">Respaldar y restaurar sus datos</string>
+    <string name="settings_based_on_unitto">Basado en Unitto de Elshan Agaev</string>
     <string name="settings_calculator_support">Salida fraccionaria y cálculo de constantes</string>
     <string name="settings_clear_cache">Vaciar caché</string>
     <string name="settings_color_theme">Tema de color</string>
@@ -161,6 +163,7 @@
     <string name="settings_formatting_support">Precisión y apariencia de los números</string>
     <string name="settings_fractional_output">Salida fraccionaria</string>
     <string name="settings_fractional_output_support">Mostrar resultados como fracciones</string>
+    <string name="settings_general">General</string>
     <string name="settings_history_view_button">Botón de vista del historial</string>
     <string name="settings_history_view_button_support">Mostrar botón para alternar la vista del historial</string>
     <string name="settings_indian_numbering_system">Sistema numérico indio</string>
@@ -175,10 +178,13 @@
     <string name="settings_partial_history_view">Vista parcial del historial</string>
     <string name="settings_partial_history_view_support">Ver el último registro en el historial</string>
     <string name="settings_period">Punto</string>
+    <string name="settings_phone">Teléfono</string>
     <string name="settings_precision">Precisión</string>
     <string name="settings_precision_max">%1$s (Máx.)</string>
     <string name="settings_precision_support">Número de decimales. Aumenta el tiempo de cálculo y el consumo de batería.</string>
     <string name="settings_reorder_unit_group_description">Reordenar grupo de unidades</string>
+    <string name="settings_report_issue">Informar de un problema</string>
+    <string name="settings_report_issue_support">Ideas y errores son bienvenidos en GitHub</string>
     <string name="settings_restore">Restaurar</string>
     <string name="settings_saved_expressions">Expresiones guardadas</string>
     <string name="settings_selected_color">Color seleccionado</string>

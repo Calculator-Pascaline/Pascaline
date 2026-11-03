@@ -130,10 +130,12 @@
     <string name="settings_additional">其他</string>
     <string name="settings_amoled_dark">AMOLED 深色</string>
     <string name="settings_amoled_dark_support">在深色主题中使用纯黑背景</string>
+    <string name="settings_apps">应用</string>
     <string name="settings_auto">自动</string>
     <string name="settings_back_up">备份</string>
     <string name="settings_backup">备份与恢复</string>
     <string name="settings_backup_support">备份和恢复您的数据</string>
+    <string name="settings_based_on_unitto">基于 Elshan Agaev 的 Unitto</string>
     <string name="settings_calculator_support">分数输出和常量计算</string>
     <string name="settings_clear_cache">清除缓存</string>
     <string name="settings_color_theme">颜色主题</string>
@@ -161,6 +163,7 @@
     <string name="settings_formatting_support">精度和数字外观</string>
     <string name="settings_fractional_output">分数输出</string>
     <string name="settings_fractional_output_support">以分数形式显示结果</string>
+    <string name="settings_general">通用</string>
     <string name="settings_history_view_button">历史视图按钮</string>
     <string name="settings_history_view_button_support">显示切换历史视图的按钮</string>
     <string name="settings_indian_numbering_system">印度计数系统</string>
@@ -175,10 +178,13 @@
     <string name="settings_partial_history_view">部分历史视图</string>
     <string name="settings_partial_history_view_support">预览历史记录中的最新条目</string>
     <string name="settings_period">句点</string>
+    <string name="settings_phone">手机</string>
     <string name="settings_precision">精度</string>
     <string name="settings_precision_max">%1$s（最大）</string>
     <string name="settings_precision_support">小数位数。增加计算时间和电池消耗。</string>
     <string name="settings_reorder_unit_group_description">重新排序单位组</string>
+    <string name="settings_report_issue">报告问题</string>
+    <string name="settings_report_issue_support">欢迎在 GitHub 上提出想法和错误</string>
     <string name="settings_restore">恢复</string>
     <string name="settings_saved_expressions">已保存的表达式</string>
     <string name="settings_selected_color">所选颜色</string>

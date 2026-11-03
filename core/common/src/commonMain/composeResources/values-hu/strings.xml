@@ -130,10 +130,12 @@
     <string name="settings_additional">Továbbiak</string>
     <string name="settings_amoled_dark">AMOLED sötét</string>
     <string name="settings_amoled_dark_support">Fekete háttér használata sötét témákhoz</string>
+    <string name="settings_apps">Alkalmazások</string>
     <string name="settings_auto">Automatikus</string>
     <string name="settings_back_up">Biztonsági mentés</string>
     <string name="settings_backup">Biztonsági mentés</string>
     <string name="settings_backup_support">Adatok biztonsági mentése és visszaállítása</string>
+    <string name="settings_based_on_unitto">Elshan Agaev Unitto alkalmazásán alapul</string>
     <string name="settings_calculator_support">Tört kimenet és állandók számítása</string>
     <string name="settings_clear_cache">Gyorsítótár törlése</string>
     <string name="settings_color_theme">Színtéma</string>
@@ -161,6 +163,7 @@
     <string name="settings_formatting_support">Pontosság és számok megjelenése</string>
     <string name="settings_fractional_output">Tört kimenet</string>
     <string name="settings_fractional_output_support">Eredmények megjelenítése törtként</string>
+    <string name="settings_general">Általános</string>
     <string name="settings_history_view_button">Előzménynézet gomb</string>
     <string name="settings_history_view_button_support">Gomb megjelenítése az előzménynézet váltásához</string>
     <string name="settings_indian_numbering_system">Indiai számozási rendszer</string>
@@ -175,10 +178,13 @@
     <string name="settings_partial_history_view">Részleges előzménynézet</string>
     <string name="settings_partial_history_view_support">Legutóbbi bejegyzés megtekintése az előzményekben</string>
     <string name="settings_period">Pont</string>
+    <string name="settings_phone">Telefon</string>
     <string name="settings_precision">Pontosság</string>
     <string name="settings_precision_max">%1$s (Max)</string>
     <string name="settings_precision_support">Tizedesjegyek száma. Növeli a számítási időt és az akkumulátor használatát.</string>
     <string name="settings_reorder_unit_group_description">Mértékegység-csoport átrendezése</string>
+    <string name="settings_report_issue">Hiba bejelentése</string>
+    <string name="settings_report_issue_support">Ötleteket és hibákat szívesen fogadunk a GitHubon</string>
     <string name="settings_restore">Visszaállítás</string>
     <string name="settings_saved_expressions">Mentett kifejezések</string>
     <string name="settings_selected_color">Kiválasztott szín</string>

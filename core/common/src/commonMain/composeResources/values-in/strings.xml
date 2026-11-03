@@ -59,7 +59,9 @@
     <string name="date_calculator_years">Tahun</string>
     <string name="settings_amoled_dark">Gelap AMOLED</string>
     <string name="settings_amoled_dark_support">Gunakan latar hitam untuk tema gelap</string>
+    <string name="settings_apps">Aplikasi</string>
     <string name="settings_auto">Otomatis</string>
+    <string name="settings_based_on_unitto">Berdasarkan Unitto oleh Elshan Agaev</string>
     <string name="settings_clear_cache">Hapus cache</string>
     <string name="settings_color_theme">Tema warna</string>
     <string name="settings_color_theme_support">Pilih mode tema</string>
@@ -79,6 +81,7 @@
     <string name="settings_format_time_support">Contoh: Tampilkan 130 menit sebagagai 2j 10m</string>
     <string name="settings_formatting">Pemformatan</string>
     <string name="settings_formatting_support">Tampilan angka dan kepresisian</string>
+    <string name="settings_general">Umum</string>
     <string name="settings_language">Bahasa</string>
     <string name="settings_language_support">Ubah bahasa aplikasi</string>
     <string name="settings_light_mode">Terang</string>
@@ -88,9 +91,12 @@
     <string name="settings_partial_history_view">Tampilan sebagian riwayat</string>
     <string name="settings_partial_history_view_support">Lihat masukan terbaru dalam riwayat</string>
     <string name="settings_period">Titik</string>
+    <string name="settings_phone">Ponsel</string>
     <string name="settings_precision">Presisi</string>
     <string name="settings_precision_max">%1$s (Maks)</string>
     <string name="settings_reorder_unit_group_description">Urutkan grup unit</string>
+    <string name="settings_report_issue">Laporkan masalah</string>
+    <string name="settings_report_issue_support">Ide dan bug diterima di GitHub</string>
     <string name="settings_selected_color">Warna terpilih</string>
     <string name="settings_selected_style">Gaya terpilih</string>
     <string name="settings_sort_by_alphabetical">Abjad</string>

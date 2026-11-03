@@ -35,7 +35,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -54,6 +53,7 @@ import com.sadellie.unitto.core.designsystem.icons.symbols.LockScreen
 import com.sadellie.unitto.core.designsystem.icons.symbols.Menu
 import com.sadellie.unitto.core.designsystem.icons.symbols.NewReleases
 import com.sadellie.unitto.core.designsystem.icons.symbols.Palette
+import com.sadellie.unitto.core.designsystem.icons.symbols.RateReview
 import com.sadellie.unitto.core.designsystem.icons.symbols.RestorePage
 import com.sadellie.unitto.core.designsystem.icons.symbols.SwapHoriz
 import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
@@ -61,7 +61,6 @@ import com.sadellie.unitto.core.designsystem.icons.symbols.Vibration
 import com.sadellie.unitto.core.designsystem.icons.symbols._123
 import com.sadellie.unitto.core.designsystem.shapes.Sizes
 import com.sadellie.unitto.core.navigation.Route
-import com.sadellie.unitto.core.ui.AndroidExclusiveDialog
 import com.sadellie.unitto.core.ui.DrawerButton
 import com.sadellie.unitto.core.ui.EmptyScreen
 import com.sadellie.unitto.core.ui.ListHeader
@@ -87,21 +86,24 @@ import unitto.core.common.generated.resources.app_name
 import unitto.core.common.generated.resources.calculator_title
 import unitto.core.common.generated.resources.converter_title
 import unitto.core.common.generated.resources.settings_about
-import unitto.core.common.generated.resources.settings_additional
+import unitto.core.common.generated.resources.settings_apps
 import unitto.core.common.generated.resources.settings_backup
 import unitto.core.common.generated.resources.settings_backup_support
 import unitto.core.common.generated.resources.settings_based_on_unitto
-import unitto.core.common.generated.resources.settings_based_on_unitto_support
 import unitto.core.common.generated.resources.settings_calculator_support
 import unitto.core.common.generated.resources.settings_converter_support
 import unitto.core.common.generated.resources.settings_display
 import unitto.core.common.generated.resources.settings_display_support
 import unitto.core.common.generated.resources.settings_formatting
 import unitto.core.common.generated.resources.settings_formatting_support
+import unitto.core.common.generated.resources.settings_general
 import unitto.core.common.generated.resources.settings_keep_screen_on
 import unitto.core.common.generated.resources.settings_keep_screen_on_support
 import unitto.core.common.generated.resources.settings_menu
 import unitto.core.common.generated.resources.settings_menu_support
+import unitto.core.common.generated.resources.settings_phone
+import unitto.core.common.generated.resources.settings_report_issue
+import unitto.core.common.generated.resources.settings_report_issue_support
 import unitto.core.common.generated.resources.settings_show_on_lock_screen
 import unitto.core.common.generated.resources.settings_show_on_lock_screen_support
 import unitto.core.common.generated.resources.settings_starting_screen
@@ -118,8 +120,6 @@ import unitto.core.common.generated.resources.settings_view_source_code
 @Composable
 internal fun SettingsRoute(openDrawer: () -> Unit, navControllerAction: (route: Route) -> Unit) {
   val viewModel: SettingsViewModel = koinViewModel()
-  var showAndroidExclusiveDialog by rememberSaveable { mutableStateOf(false) }
-  val platform = LocalPlatform.current
 
   when (val uiState: SettingsUIState = viewModel.uiState.collectAsStateWithLifecycleKMP().value) {
     SettingsUIState.Loading -> EmptyScreen()
@@ -129,22 +129,10 @@ internal fun SettingsRoute(openDrawer: () -> Unit, navControllerAction: (route: 
         openDrawer = openDrawer,
         navControllerAction = navControllerAction,
         updateLastReadChangelog = viewModel::updateLastReadChangelog,
-        updateVibrations = {
-          if (platform == Platform.Android) viewModel.updateVibrations(it)
-          else showAndroidExclusiveDialog = true
-        },
-        updateKeepScreenOn = {
-          if (platform == Platform.Android) viewModel.updateEnableKeepScreenOn(it)
-          else showAndroidExclusiveDialog = true
-        },
-        updateShowOnLockScreen = {
-          if (platform == Platform.Android) viewModel.updateShowOnLockScreen(it)
-          else showAndroidExclusiveDialog = true
-        },
+        updateVibrations = viewModel::updateVibrations,
+        updateKeepScreenOn = viewModel::updateEnableKeepScreenOn,
+        updateShowOnLockScreen = viewModel::updateShowOnLockScreen,
       )
-  }
-  if (showAndroidExclusiveDialog) {
-    AndroidExclusiveDialog { showAndroidExclusiveDialog = false }
   }
 }
 
@@ -194,6 +182,7 @@ private fun SettingsScreen(
           support = stringResource(Res.string.settings_updated_support, Config.VERSION_NAME),
         )
       }
+      ListHeader(stringResource(Res.string.settings_general))
       ListItemExpressive(
         icon = Symbols.Palette,
         headlineText = stringResource(Res.string.settings_display),
@@ -202,10 +191,10 @@ private fun SettingsScreen(
         shape = ListItemExpressiveDefaults.firstShape,
       )
       ListItemExpressive(
-        icon = Symbols.Home,
-        headlineText = stringResource(Res.string.settings_starting_screen),
-        supportingText = stringResource(Res.string.settings_starting_screen_support),
-        onClick = { navControllerAction(StartingScreenRoute) },
+        icon = Symbols._123,
+        headlineText = stringResource(Res.string.settings_formatting),
+        supportingText = stringResource(Res.string.settings_formatting_support),
+        onClick = { navControllerAction(FormattingRoute) },
         shape = ListItemExpressiveDefaults.middleShape,
       )
       ListItemExpressive(
@@ -216,18 +205,20 @@ private fun SettingsScreen(
         shape = ListItemExpressiveDefaults.middleShape,
       )
       ListItemExpressive(
-        icon = Symbols._123,
-        headlineText = stringResource(Res.string.settings_formatting),
-        supportingText = stringResource(Res.string.settings_formatting_support),
-        onClick = { navControllerAction(FormattingRoute) },
-        shape = ListItemExpressiveDefaults.middleShape,
+        icon = Symbols.Home,
+        headlineText = stringResource(Res.string.settings_starting_screen),
+        supportingText = stringResource(Res.string.settings_starting_screen_support),
+        onClick = { navControllerAction(StartingScreenRoute) },
+        shape = ListItemExpressiveDefaults.lastShape,
       )
+
+      ListHeader(stringResource(Res.string.settings_apps))
       ListItemExpressive(
         icon = Symbols.Calculate,
         headlineText = stringResource(Res.string.calculator_title),
         supportingText = stringResource(Res.string.settings_calculator_support),
         onClick = { navControllerAction(CalculatorSettingsRoute) },
-        shape = ListItemExpressiveDefaults.middleShape,
+        shape = ListItemExpressiveDefaults.firstShape,
       )
       ListItemExpressive(
         icon = Symbols.SwapHoriz,
@@ -236,50 +227,61 @@ private fun SettingsScreen(
         onClick = { navControllerAction(ConverterSettingsRoute) },
         shape = ListItemExpressiveDefaults.lastShape,
       )
-      ListHeader(stringResource(Res.string.settings_additional))
+
+      // Vibrations, screen and backup only exist in the Android app
+      if (LocalPlatform.current == Platform.Android) {
+        ListHeader(stringResource(Res.string.settings_phone))
+        ListItemExpressive(
+          icon = Symbols.Vibration,
+          headlineText = stringResource(Res.string.settings_vibrations),
+          supportingText = stringResource(Res.string.settings_vibrations_support),
+          switchState = uiState.enableVibrations,
+          onSwitchChange = updateVibrations,
+          shape = ListItemExpressiveDefaults.firstShape,
+        )
+        ListItemExpressive(
+          icon = Symbols.BacklightHigh,
+          headlineText = stringResource(Res.string.settings_keep_screen_on),
+          supportingText = stringResource(Res.string.settings_keep_screen_on_support),
+          switchState = uiState.enableKeepScreenOn,
+          onSwitchChange = updateKeepScreenOn,
+          shape = ListItemExpressiveDefaults.middleShape,
+        )
+        ListItemExpressive(
+          icon = Symbols.LockScreen,
+          headlineText = stringResource(Res.string.settings_show_on_lock_screen),
+          supportingText = stringResource(Res.string.settings_show_on_lock_screen_support),
+          switchState = uiState.showOnLockScreen,
+          onSwitchChange = updateShowOnLockScreen,
+          shape = ListItemExpressiveDefaults.middleShape,
+        )
+        ListItemExpressive(
+          icon = Symbols.RestorePage,
+          headlineText = stringResource(Res.string.settings_backup),
+          supportingText = stringResource(Res.string.settings_backup_support),
+          onClick = { navControllerAction(BackupRoute) },
+          shape = ListItemExpressiveDefaults.lastShape,
+        )
+      }
+
+      // Feedback, source code for the GPL, credits and licenses of the libraries
+      ListHeader(stringResource(Res.string.settings_about))
       ListItemExpressive(
-        icon = Symbols.Vibration,
-        headlineText = stringResource(Res.string.settings_vibrations),
-        supportingText = stringResource(Res.string.settings_vibrations_support),
-        switchState = uiState.enableVibrations,
-        onSwitchChange = updateVibrations,
+        icon = Symbols.RateReview,
+        headlineText = stringResource(Res.string.settings_report_issue),
+        supportingText = stringResource(Res.string.settings_report_issue_support),
+        onClick = { linkOpener.launch(REPORT_ISSUE_LINK) },
         shape = ListItemExpressiveDefaults.firstShape,
       )
-      ListItemExpressive(
-        icon = Symbols.BacklightHigh,
-        headlineText = stringResource(Res.string.settings_keep_screen_on),
-        supportingText = stringResource(Res.string.settings_keep_screen_on_support),
-        switchState = uiState.enableKeepScreenOn,
-        onSwitchChange = updateKeepScreenOn,
-        shape = ListItemExpressiveDefaults.middleShape,
-      )
-      ListItemExpressive(
-        icon = Symbols.LockScreen,
-        headlineText = stringResource(Res.string.settings_show_on_lock_screen),
-        supportingText = stringResource(Res.string.settings_show_on_lock_screen_support),
-        switchState = uiState.showOnLockScreen,
-        onSwitchChange = updateShowOnLockScreen,
-        shape = ListItemExpressiveDefaults.middleShape,
-      )
-      ListItemExpressive(
-        icon = Symbols.RestorePage,
-        headlineText = stringResource(Res.string.settings_backup),
-        supportingText = stringResource(Res.string.settings_backup_support),
-        onClick = { navControllerAction(BackupRoute) },
-        shape = ListItemExpressiveDefaults.lastShape,
-      )
-      // Source code for the GPL, credits and licenses of the libraries
-      ListHeader(stringResource(Res.string.settings_about))
       ListItemExpressive(
         icon = Symbols.Code,
         headlineText = stringResource(Res.string.settings_view_source_code),
         onClick = { linkOpener.launch(Config.SOURCE_CODE_LINK) },
-        shape = ListItemExpressiveDefaults.firstShape,
+        shape = ListItemExpressiveDefaults.middleShape,
       )
       ListItemExpressive(
         icon = Symbols.Favorite,
         headlineText = stringResource(Res.string.settings_based_on_unitto),
-        supportingText = stringResource(Res.string.settings_based_on_unitto_support),
         onClick = { linkOpener.launch(Config.UNITTO_LINK) },
         shape = ListItemExpressiveDefaults.middleShape,
       )
@@ -324,3 +326,5 @@ private fun PreviewSettingsScreen() {
     updateShowOnLockScreen = { uiState = uiState.copy(showOnLockScreen = it) },
   )
 }
+
+private const val REPORT_ISSUE_LINK = "https://github.com/Calculator-Pascaline/Pascaline/issues/new"

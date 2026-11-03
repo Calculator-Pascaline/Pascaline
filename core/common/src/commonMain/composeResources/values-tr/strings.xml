@@ -130,10 +130,12 @@
     <string name="settings_additional">Ek</string>
     <string name="settings_amoled_dark">AMOLED Koyu</string>
     <string name="settings_amoled_dark_support">Koyu temalar için siyah arka plan kullan</string>
+    <string name="settings_apps">Uygulamalar</string>
     <string name="settings_auto">Otomatik</string>
     <string name="settings_back_up">Yedekle</string>
     <string name="settings_backup">Yedekleme</string>
     <string name="settings_backup_support">Verilerinizi yedekleyin ve geri yükleyin</string>
+    <string name="settings_based_on_unitto">Elshan Agaev'in Unitto uygulamasına dayanır</string>
     <string name="settings_calculator_support">Kesirli çıktı ve sabit hesaplama</string>
     <string name="settings_clear_cache">Önbelleği temizle</string>
     <string name="settings_color_theme">Renk teması</string>
@@ -161,6 +163,7 @@
     <string name="settings_formatting_support">Hassasiyet ve sayıların görünümü</string>
     <string name="settings_fractional_output">Kesirli çıktı</string>
     <string name="settings_fractional_output_support">Sonuçları kesir olarak göster</string>
+    <string name="settings_general">Genel</string>
     <string name="settings_history_view_button">Geçmiş görünümü düğmesi</string>
     <string name="settings_history_view_button_support">Geçmiş görünümünü değiştirmek için düğmeyi göster</string>
     <string name="settings_indian_numbering_system">Hint sayı sistemi</string>
@@ -175,10 +178,13 @@
     <string name="settings_partial_history_view">Kısmi geçmiş görünümü</string>
     <string name="settings_partial_history_view_support">Geçmişteki son girdiye göz at</string>
     <string name="settings_period">Nokta</string>
+    <string name="settings_phone">Telefon</string>
     <string name="settings_precision">Hassasiyet</string>
     <string name="settings_precision_max">%1$s (Maks)</string>
     <string name="settings_precision_support">Ondalık basamak sayısı. Hesaplama süresini ve pil kullanımını artırır.</string>
     <string name="settings_reorder_unit_group_description">Birim grubunu yeniden sırala</string>
+    <string name="settings_report_issue">Sorun bildir</string>
+    <string name="settings_report_issue_support">Fikirler ve hatalar GitHub\'da memnuniyetle karşılanır</string>
     <string name="settings_restore">Geri yükle</string>
     <string name="settings_saved_expressions">Kaydedilmiş ifadeler</string>
     <string name="settings_selected_color">Seçili renk</string>

@@ -130,10 +130,12 @@
     <string name="settings_additional">Adicional</string>
     <string name="settings_amoled_dark">AMOLED Escuro</string>
     <string name="settings_amoled_dark_support">Usar fundo preto para temas escuros</string>
+    <string name="settings_apps">Apps</string>
     <string name="settings_auto">Automático</string>
     <string name="settings_back_up">Backup</string>
     <string name="settings_backup">Backup</string>
     <string name="settings_backup_support">Faça backup e restaure seus dados</string>
+    <string name="settings_based_on_unitto">Baseado no Unitto de Elshan Agaev</string>
     <string name="settings_calculator_support">Saída fracionária e cálculo de constantes</string>
     <string name="settings_clear_cache">Limpar cache</string>
     <string name="settings_color_theme">Tema de cor</string>
@@ -161,6 +163,7 @@
     <string name="settings_formatting_support">Precisão e aparência dos números</string>
     <string name="settings_fractional_output">Saída fracionária</string>
     <string name="settings_fractional_output_support">Mostrar resultados como frações</string>
+    <string name="settings_general">Geral</string>
     <string name="settings_history_view_button">Botão de visualização do histórico</string>
     <string name="settings_history_view_button_support">Mostrar botão para alternar a visualização do histórico</string>
     <string name="settings_indian_numbering_system">Sistema de numeração indiano</string>
@@ -175,10 +178,13 @@
     <string name="settings_partial_history_view">Visualização parcial do histórico</string>
     <string name="settings_partial_history_view_support">Ver a última entrada no histórico</string>
     <string name="settings_period">Ponto</string>
+    <string name="settings_phone">Telefone</string>
     <string name="settings_precision">Precisão</string>
     <string name="settings_precision_max">%1$s (Máx.)</string>
     <string name="settings_precision_support">Número de casas decimais. Aumenta o tempo de cálculo e o uso da bateria.</string>
     <string name="settings_reorder_unit_group_description">Reordenar grupo de unidades</string>
+    <string name="settings_report_issue">Relatar um problema</string>
+    <string name="settings_report_issue_support">Ideias e bugs são bem-vindos no GitHub</string>
     <string name="settings_restore">Restaurar</string>
     <string name="settings_saved_expressions">Expressões salvas</string>
     <string name="settings_selected_color">Cor selecionada</string>

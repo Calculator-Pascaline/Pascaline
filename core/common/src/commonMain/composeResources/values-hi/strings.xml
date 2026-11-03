@@ -130,10 +130,12 @@
     <string name="settings_additional">अतिरिक्त</string>
     <string name="settings_amoled_dark">AMOLED डार्क</string>
     <string name="settings_amoled_dark_support">डार्क थीम के लिए काली पृष्ठभूमि का उपयोग करें</string>
+    <string name="settings_apps">ऐप्स</string>
     <string name="settings_auto">स्वचालित</string>
     <string name="settings_back_up">बैकअप लें</string>
     <string name="settings_backup">बैकअप</string>
     <string name="settings_backup_support">अपने डेटा का बैकअप लें और उसे पुनर्स्थापित करें</string>
+    <string name="settings_based_on_unitto">Elshan Agaev के Unitto पर आधारित</string>
     <string name="settings_calculator_support">भिन्नात्मक परिणाम और स्थिरांक की गणना</string>
     <string name="settings_clear_cache">कैश साफ़ करें</string>
     <string name="settings_color_theme">रंग थीम</string>
@@ -161,6 +163,7 @@
     <string name="settings_formatting_support">परिशुद्धता और संख्याओं का रूप</string>
     <string name="settings_fractional_output">भिन्नात्मक परिणाम</string>
     <string name="settings_fractional_output_support">परिणामों को भिन्न के रूप में दिखाएँ</string>
+    <string name="settings_general">सामान्य</string>
     <string name="settings_history_view_button">इतिहास दृश्य बटन</string>
     <string name="settings_history_view_button_support">इतिहास दृश्य बदलने के लिए बटन दिखाएँ</string>
     <string name="settings_indian_numbering_system">भारतीय संख्या पद्धति</string>
@@ -175,10 +178,13 @@
     <string name="settings_partial_history_view">आंशिक इतिहास दृश्य</string>
     <string name="settings_partial_history_view_support">इतिहास में सबसे हाल की प्रविष्टि की झलक देखें</string>
     <string name="settings_period">अवधि</string>
+    <string name="settings_phone">फ़ोन</string>
     <string name="settings_precision">परिशुद्धता</string>
     <string name="settings_precision_max">%1$s (अधिकतम)</string>
     <string name="settings_precision_support">दशमलव स्थानों की संख्या। गणना का समय और बैटरी की खपत बढ़ाता है।</string>
     <string name="settings_reorder_unit_group_description">इकाई समूह का क्रम बदलें</string>
+    <string name="settings_report_issue">समस्या की रिपोर्ट करें</string>
+    <string name="settings_report_issue_support">GitHub पर सुझाव और बग का स्वागत है</string>
     <string name="settings_restore">पुनर्स्थापित करें</string>
     <string name="settings_saved_expressions">सहेजे गए व्यंजक</string>
     <string name="settings_selected_color">चुना गया रंग</string>

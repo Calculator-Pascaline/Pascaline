@@ -18,19 +18,13 @@
 
 package com.sadellie.unitto
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.DpSize
@@ -107,20 +101,12 @@ private fun App() {
   }
   val themmoController = rememberUnittoThemmoController(appPreferences)
   Themmo(themmoController = themmoController) {
-    Column(Modifier.fillMaxSize()) {
-      ExperimentalBar(modifier = Modifier.fillMaxWidth())
-      HorizontalDivider(
-        modifier = Modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.outlineVariant,
-      )
-
-      val backStack = rememberNavBackStack(navBackStackConfig, appPreferences.startingScreen)
-      MainAppContent(
-        backStack = backStack,
-        onDrawerItemClick = {},
-        themmoController = themmoController,
-      )
-    }
+    val backStack = rememberNavBackStack(navBackStackConfig, appPreferences.startingScreen)
+    MainAppContent(
+      backStack = backStack,
+      onDrawerItemClick = {},
+      themmoController = themmoController,
+    )
   }
 }
 
