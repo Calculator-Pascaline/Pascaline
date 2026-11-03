@@ -41,6 +41,8 @@
     <string name="calculator_roots">Roots</string>
     <string name="calculator_more">More</string>
     <string name="calculator_discriminant">Discriminant</string>
+    <string name="calculator_delete_history_entry">Delete history entry?</string>
+    <string name="calculator_delete_history_entry_support">Your favorite history entry will be deleted.</string>
     <string name="calculator_decimal">Decimal</string>
     <string name="calculator_hexadecimal">Hexadecimal</string>
     <string name="calculator_binary">Binary</string>
@@ -352,6 +354,7 @@
     <string name="common_search_text_field_placeholder">Search…</string>
     <string name="common_select_time">Select time</string>
     <string name="common_selected_item">Selected item</string>
+    <string name="common_today">Today</string>
     <string name="common_tomorrow">Tomorrow</string>
     <string name="common_yesterday">Yesterday</string>
     <string name="converter_favorite_button_description">Add or remove unit from favorites</string>
@@ -375,6 +378,7 @@
     <string name="date_calculator_start">Start</string>
     <string name="date_calculator_subtract">Subtract</string>
     <string name="date_calculator_title">Date calculator</string>
+    <string name="date_calculator_weeks">Weeks</string>
     <string name="date_calculator_years">Years</string>
     <string name="graphing_add_function">Add function</string>
     <string name="graphing_edit_function">Edit function</string>
@@ -414,6 +418,7 @@
     <string name="locale_en_rGB" translatable="false">English (UK)</string>
     <string name="locale_es" translatable="false">Español</string>
     <string name="locale_fr" translatable="false">Français</string>
+    <string name="locale_hi" translatable="false">हिन्दी</string>
     <string name="locale_hu" translatable="false">Magyar</string>
     <string name="locale_in" translatable="false">Indonesia</string>
     <string name="locale_it" translatable="false">Italiano</string>
@@ -441,6 +446,8 @@
     <string name="settings_converter_support">Unit groups, sorting, formatting</string>
     <string name="settings_currency_rates_note_text">Currency rates are updated daily. There's no real-time market monitoring in the app</string>
     <string name="settings_currency_rates_note_title">Wrong currency rates?</string>
+    <string name="settings_constant_calculation">Constant calculation</string>
+    <string name="settings_constant_calculation_support">Tap equals button again to apply last operation. Only applicable to simple operations.</string>
     <string name="settings_dark_mode">Dark</string>
     <string name="settings_decimal_separator">Decimal separator</string>
     <string name="settings_disable_unit_group_description">Disable unit group</string>
@@ -485,6 +492,8 @@
     <string name="settings_saved_expressions">Saved expressions</string>
     <string name="settings_selected_color">Selected color</string>
     <string name="settings_selected_style">Selected style</string>
+    <string name="settings_show_unit_group_icons">Unit group icons</string>
+    <string name="settings_show_unit_group_icons_support">Show icons when selecting a unit</string>
     <string name="settings_sort_by_alphabetical">Alphabetical</string>
     <string name="settings_sort_by_scale_asc">Scale (Asc.)</string>
     <string name="settings_sort_by_scale_desc">Scale (Desc.)</string>
@@ -1581,7 +1590,7 @@
     <string name="unit_pound_force_per_square_inch">Pound-force/square inch</string>
     <string name="unit_pound_force_per_square_inch_short">pf/in²</string>
     <string name="unit_pound_force_short">lbf</string>
-    <string name="unit_pound_short">lbs</string>
+    <string name="unit_pound_short">lb</string>
     <string name="unit_prefix_atto">Atto</string>
     <string name="unit_prefix_atto_short">a</string>
     <string name="unit_prefix_base">Base</string>

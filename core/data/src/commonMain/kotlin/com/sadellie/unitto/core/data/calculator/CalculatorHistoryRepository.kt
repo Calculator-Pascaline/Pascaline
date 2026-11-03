@@ -34,6 +34,9 @@ interface CalculatorHistoryRepository {
   /** Delete [CalculatorHistoryItem] by id from calculator history */
   suspend fun delete(itemId: Int)
 
+  /** Sets label of [CalculatorHistoryItem], empty label removes it. */
+  suspend fun updateLabel(itemId: Int, label: String)
+
   /** Deletes all entries from calculator history. */
   suspend fun clear()
 }

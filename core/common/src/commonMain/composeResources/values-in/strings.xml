@@ -693,7 +693,7 @@
     <string name="unit_pound_force_foot_short">lbf*ft</string>
     <string name="unit_pound_force_inch_short">lbf*in</string>
     <string name="unit_pound_force_short">lbf</string>
-    <string name="unit_pound_short">lbs</string>
+    <string name="unit_pound_short">lb</string>
     <string name="unit_prefix_atto">Ato</string>
     <string name="unit_prefix_atto_short">a</string>
     <string name="unit_prefix_centi">Senti</string>

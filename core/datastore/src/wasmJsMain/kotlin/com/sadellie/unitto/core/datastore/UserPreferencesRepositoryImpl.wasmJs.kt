@@ -75,6 +75,7 @@ class UserPreferencesRepositoryImpl : UserPreferencesRepository {
         additionalButtons = preferences.getAdditionalButtons(),
         inverseMode = preferences.getInverseMode(),
         fractionalOutput = preferences.getFractionalOutput(),
+        constantCalculation = preferences.getConstantCalculation(),
       )
     }
 
@@ -92,6 +93,7 @@ class UserPreferencesRepositoryImpl : UserPreferencesRepository {
         favoritesOnly = preferences.getUnitConverterFavoritesOnly(),
         latestLeftSideUnit = preferences.getLatestLeftSide(),
         latestRightSideUnit = preferences.getLatestRightSide(),
+        showIcons = preferences.getUnitConverterShowIcons(),
       )
     }
 
@@ -234,6 +236,10 @@ class UserPreferencesRepositoryImpl : UserPreferencesRepository {
   override suspend fun updateUnitConverterSorting(sorting: UnitsListSorting) =
     updateData(PrefKeys.UNIT_CONVERTER_SORTING_PREF_KEY, sorting.name)
 
+  override suspend fun updateUnitConverterShowIcons(enabled: Boolean) {
+    updateData(PrefKeys.UNIT_CONVERTER_SHOW_ICONS_PREF_KEY, enabled)
+  }
+
   override suspend fun updatePartialHistoryView(enabled: Boolean) =
     updateData(PrefKeys.PARTIAL_HISTORY_VIEW_PREF_KEY, enabled)
 
@@ -248,6 +254,9 @@ class UserPreferencesRepositoryImpl : UserPreferencesRepository {
 
   override suspend fun updateFractionalOutput(enabled: Boolean) =
     updateData(PrefKeys.FRACTIONAL_OUTPUT_PREF_KEY, enabled)
+
+  override suspend fun updateConstantCalculation(enabled: Boolean) =
+    updateData(PrefKeys.CONSTANT_CALCULATION_PREF_KEY, enabled)
 
   override suspend fun updateAcButton(enabled: Boolean) =
     updateData(PrefKeys.AC_BUTTON_PREF_KEY, enabled)
@@ -356,6 +365,10 @@ class UserPreferencesRepositoryImpl : UserPreferencesRepository {
     this.getTyped<Boolean>(PrefKeys.UNIT_CONVERTER_FAVORITES_ONLY_PREF_KEY)
       ?: Defaults.unitConverterFavoritesOnly
 
+  private fun Preferences.getUnitConverterShowIcons() =
+    this.getTyped<Boolean>(PrefKeys.UNIT_CONVERTER_SHOW_ICONS_PREF_KEY)
+      ?: Defaults.unitConverterShowIcons
+
   private fun Preferences.getLatestLeftSide() =
     this.getTyped<String>(PrefKeys.LATEST_LEFT_SIDE_PREF_KEY) ?: Defaults.latestLeftSide
 
@@ -370,6 +383,9 @@ class UserPreferencesRepositoryImpl : UserPreferencesRepository {
 
   private fun Preferences.getFractionalOutput() =
     this.getTyped<Boolean>(PrefKeys.FRACTIONAL_OUTPUT_PREF_KEY) ?: Defaults.fractionalOutput
+
+  private fun Preferences.getConstantCalculation() =
+    this.getTyped<Boolean>(PrefKeys.CONSTANT_CALCULATION_PREF_KEY) ?: Defaults.constantCalculation
 
   private fun Preferences.getInverseMode() =
     this.getTyped<Boolean>(PrefKeys.INVERSE_MODE_PREF_KEY) ?: Defaults.inverseMode

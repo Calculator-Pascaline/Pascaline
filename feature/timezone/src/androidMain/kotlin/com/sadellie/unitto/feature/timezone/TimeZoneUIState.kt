@@ -39,6 +39,9 @@ internal sealed class TimeZoneDialogState {
 
   data class UserTimePicker(val time: ZonedDateTime) : TimeZoneDialogState()
 
+  /** Comes after [UserTimePicker], to change the day too. */
+  data object UserDatePicker : TimeZoneDialogState()
+
   data class FavoriteTimePicker(val timeZone: FavoriteZone, val time: ZonedDateTime) :
     TimeZoneDialogState()
 

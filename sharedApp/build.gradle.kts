@@ -40,6 +40,7 @@ kotlin {
     implementation(project(":core:datastore"))
     implementation(project(":core:designsystem"))
     implementation(project(":core:ui"))
+    implementation(libs.org.jetbrains.kotlinx.kotlinx.datetime)
     implementation(project(":feature:calculator"))
     implementation(project(":feature:converter"))
     implementation(project(":feature:bodymass"))
@@ -53,3 +54,35 @@ kotlin {
     implementation(libs.io.insert.koin.koin.core.coroutines)
   }
 }
+
+// Offline web app: the service worker gets the list of files to keep and a new cache version
+val wasmPrecache by
+  tasks.registering {
+    group = "pwa"
+    description = "Puts the built files and a cache version into sw.js"
+    val distDir = layout.buildDirectory.dir("dist/wasmJs/productionExecutable")
+    doLast {
+      val dist = distDir.get().asFile
+      val sw = dist.resolve("sw.js")
+      if (!sw.exists()) throw GradleException("sw.js not found in $dist")
+      val assets =
+        dist
+          .walkTopDown()
+          .filter { it.isFile && it.name != "sw.js" && !it.isHidden }
+          // Source map and licence are not needed to run
+          .filter { !it.name.endsWith(".map") && !it.name.endsWith(".LICENSE.txt") }
+          .map { it.relativeTo(dist).path.replace(File.separatorChar, '/') }
+          .sorted()
+          .joinToString(",") { "\"$it\"" }
+      val placeholder = "[/*__PRECACHED_ASSETS__*/]"
+      val content = sw.readText()
+      if (placeholder !in content) throw GradleException("$placeholder not found in sw.js")
+      sw.writeText(
+        content
+          .replace(placeholder, "[\"./\",$assets]")
+          .replace("{VERSION}", System.currentTimeMillis().toString())
+      )
+    }
+  }
+
+tasks.matching { it.name == "wasmJsBrowserDistribution" }.configureEach { finalizedBy(wasmPrecache) }

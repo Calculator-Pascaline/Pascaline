@@ -28,4 +28,6 @@ data class CalculatorHistoryEntity(
   @ColumnInfo(name = "timestamp") val timestamp: Long,
   @ColumnInfo(name = "expression") val expression: String,
   @ColumnInfo(name = "result") val result: String,
+  @ColumnInfo(name = "is_favorite", defaultValue = "false") val isFavorite: Boolean = false,
+  @ColumnInfo(name = "label") val label: String? = null,
 )

@@ -81,6 +81,7 @@ class UserPreferencesRepositoryImpl(private val dataStore: DataStore<Preferences
         additionalButtons = preferences.getAdditionalButtons(),
         inverseMode = preferences.getInverseMode(),
         fractionalOutput = preferences.getFractionalOutput(),
+        constantCalculation = preferences.getConstantCalculation(),
       )
     }
 
@@ -98,6 +99,7 @@ class UserPreferencesRepositoryImpl(private val dataStore: DataStore<Preferences
         favoritesOnly = preferences.getUnitConverterFavoritesOnly(),
         latestLeftSideUnit = preferences.getLatestLeftSide(),
         latestRightSideUnit = preferences.getLatestRightSide(),
+        showIcons = preferences.getUnitConverterShowIcons(),
       )
     }
 
@@ -275,6 +277,12 @@ class UserPreferencesRepositoryImpl(private val dataStore: DataStore<Preferences
     }
   }
 
+  override suspend fun updateUnitConverterShowIcons(enabled: Boolean) {
+    dataStore.edit { preferences ->
+      preferences[DatastorePrefKeys.UNIT_CONVERTER_SHOW_ICONS] = enabled
+    }
+  }
+
   override suspend fun updatePartialHistoryView(enabled: Boolean) {
     dataStore.edit { preferences -> preferences[DatastorePrefKeys.PARTIAL_HISTORY_VIEW] = enabled }
   }
@@ -299,6 +307,10 @@ class UserPreferencesRepositoryImpl(private val dataStore: DataStore<Preferences
 
   override suspend fun updateFractionalOutput(enabled: Boolean) {
     dataStore.edit { preferences -> preferences[DatastorePrefKeys.FRACTIONAL_OUTPUT] = enabled }
+  }
+
+  override suspend fun updateConstantCalculation(enabled: Boolean) {
+    dataStore.edit { preferences -> preferences[DatastorePrefKeys.CONSTANT_CALCULATION] = enabled }
   }
 
   override suspend fun updateAcButton(enabled: Boolean) {
@@ -405,6 +417,9 @@ class UserPreferencesRepositoryImpl(private val dataStore: DataStore<Preferences
   private fun Preferences.getUnitConverterFavoritesOnly() =
     this[DatastorePrefKeys.UNIT_CONVERTER_FAVORITES_ONLY] ?: Defaults.unitConverterFavoritesOnly
 
+  private fun Preferences.getUnitConverterShowIcons() =
+    this[DatastorePrefKeys.UNIT_CONVERTER_SHOW_ICONS] ?: Defaults.unitConverterShowIcons
+
   private fun Preferences.getLatestLeftSide() =
     this[DatastorePrefKeys.LATEST_LEFT_SIDE] ?: Defaults.latestLeftSide
 
@@ -418,6 +433,9 @@ class UserPreferencesRepositoryImpl(private val dataStore: DataStore<Preferences
 
   private fun Preferences.getFractionalOutput() =
     this[DatastorePrefKeys.FRACTIONAL_OUTPUT] ?: Defaults.fractionalOutput
+
+  private fun Preferences.getConstantCalculation() =
+    this[DatastorePrefKeys.CONSTANT_CALCULATION] ?: Defaults.constantCalculation
 
   private fun Preferences.getInverseMode() =
     this[DatastorePrefKeys.INVERSE_MODE] ?: Defaults.inverseMode

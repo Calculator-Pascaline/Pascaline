@@ -18,7 +18,14 @@
 
 package com.sadellie.unitto.feature.datecalculator
 
+import com.sadellie.unitto.feature.datecalculator.addsubtract.AddSubtractViewModel
+import com.sadellie.unitto.feature.datecalculator.difference.DateDifferenceViewModel
 import com.sadellie.unitto.feature.datecalculator.navigation.dateCalculatorNavigation
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
-val dateCalculatorModule = module { dateCalculatorNavigation() }
+val dateCalculatorModule = module {
+  dateCalculatorNavigation()
+  viewModelOf(::AddSubtractViewModel)
+  viewModelOf(::DateDifferenceViewModel)
+}

@@ -35,5 +35,20 @@ interface CalculatorHistoryDao {
   @Query("DELETE FROM calculator_history WHERE entityId = :entityId")
   suspend fun delete(entityId: Int)
 
+  /** Entry with a label is a favorite, empty label removes it. */
+  @Query(
+    """
+    UPDATE calculator_history
+    SET
+        label = :label,
+        is_favorite = CASE
+            WHEN :label IS NULL OR :label = '' THEN false
+            ELSE true
+        END
+    WHERE entityId = :entityId
+  """
+  )
+  suspend fun updateLabel(entityId: Int, label: String)
+
   @Query("DELETE FROM calculator_history") suspend fun clear()
 }

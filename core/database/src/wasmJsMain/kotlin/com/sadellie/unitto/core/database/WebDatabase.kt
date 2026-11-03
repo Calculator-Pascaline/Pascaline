@@ -58,6 +58,10 @@ private class WebCalculatorHistoryDao : CalculatorHistoryDao {
     current.filter { it.entityId != entityId }
   }
 
+  override suspend fun updateLabel(entityId: Int, label: String) = update { current ->
+    current.map { it.withLabel(entityId, label) }
+  }
+
   override suspend fun clear() = update { emptyList() }
 
   private fun update(change: (List<CalculatorHistoryEntity>) -> List<CalculatorHistoryEntity>) {
@@ -67,18 +71,32 @@ private class WebCalculatorHistoryDao : CalculatorHistoryDao {
         listOf(it.entityId.toString(), it.timestamp.toString(), it.expression, it.result)
       }
     WebStorage.set(HISTORY_KEY, WebStorage.encode(fields))
+    // Labels are apart so that history saved before labels still loads: id, label
+    val labels =
+      entries.value.mapNotNull { entry -> entry.label?.takeIf { it.isNotEmpty() }?.let { entry.entityId to it } }
+        .flatMap { (id, label) -> listOf(id.toString(), label) }
+    WebStorage.set(HISTORY_LABELS_KEY, WebStorage.encode(labels))
   }
 
-  private fun load(): List<CalculatorHistoryEntity> =
-    WebStorage.decode(WebStorage.get(HISTORY_KEY) ?: "").chunked(HISTORY_FIELDS).mapNotNull {
+  private fun load(): List<CalculatorHistoryEntity> {
+    val labels =
+      WebStorage.decode(WebStorage.get(HISTORY_LABELS_KEY) ?: "")
+        .chunked(2)
+        .filter { it.size == 2 }
+        .associate { it[0] to it[1] }
+    return WebStorage.decode(WebStorage.get(HISTORY_KEY) ?: "").chunked(HISTORY_FIELDS).mapNotNull {
       if (it.size != HISTORY_FIELDS) return@mapNotNull null
+      val label = labels[it[0]]
       CalculatorHistoryEntity(
         entityId = it[0].toIntOrNull() ?: return@mapNotNull null,
         timestamp = it[1].toLongOrNull() ?: return@mapNotNull null,
         expression = it[2],
         result = it[3],
+        isFavorite = label != null,
+        label = label,
       )
     }
+  }
 }
 
 /** Favorite units, pairs and how often units are used. */
@@ -128,5 +146,6 @@ private class WebUnitsDao : UnitsDao {
 
 private const val HISTORY_KEY = "history"
 private const val HISTORY_FIELDS = 4
+private const val HISTORY_LABELS_KEY = "history_labels"
 private const val UNITS_KEY = "units"
 private const val UNITS_FIELDS = 4

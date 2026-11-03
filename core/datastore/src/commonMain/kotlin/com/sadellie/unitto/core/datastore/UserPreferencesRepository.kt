@@ -122,6 +122,9 @@ interface UserPreferencesRepository {
     val unitConverterFavoritesOnly: Boolean
       get() = false
 
+    val unitConverterShowIcons: Boolean
+      get() = true
+
     val latestLeftSide: String
       get() = UnitID.kilometer
 
@@ -132,6 +135,9 @@ interface UserPreferencesRepository {
       get() = true
 
     val additionButtons: Boolean
+      get() = false
+
+    val constantCalculation: Boolean
       get() = false
 
     val fractionalOutput: Boolean
@@ -189,6 +195,8 @@ interface UserPreferencesRepository {
 
   suspend fun updateUnitConverterSorting(sorting: UnitsListSorting)
 
+  suspend fun updateUnitConverterShowIcons(enabled: Boolean)
+
   suspend fun updatePartialHistoryView(enabled: Boolean)
 
   suspend fun updateSteppedPartialHistoryView(enabled: Boolean)
@@ -198,6 +206,8 @@ interface UserPreferencesRepository {
   suspend fun updateOpenHistoryViewButton(enabled: Boolean)
 
   suspend fun updateFractionalOutput(enabled: Boolean)
+
+  suspend fun updateConstantCalculation(enabled: Boolean)
 
   suspend fun updateAcButton(enabled: Boolean)
 

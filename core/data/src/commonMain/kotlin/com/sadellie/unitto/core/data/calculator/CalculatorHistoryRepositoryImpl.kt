@@ -53,11 +53,16 @@ class CalculatorHistoryRepositoryImpl(private val calculatorHistoryDao: Calculat
   override suspend fun delete(itemId: Int) =
     withContext(defaultIODispatcher) { calculatorHistoryDao.delete(itemId) }
 
+  override suspend fun updateLabel(itemId: Int, label: String) =
+    withContext(defaultIODispatcher) { calculatorHistoryDao.updateLabel(itemId, label.trim()) }
+
   override suspend fun clear() = withContext(defaultIODispatcher) { calculatorHistoryDao.clear() }
 
   private suspend fun List<CalculatorHistoryEntity>.toHistoryItemList():
     List<CalculatorHistoryItem> =
     withContext(Dispatchers.Default) {
-      this@toHistoryItemList.map { CalculatorHistoryItem(it.entityId, it.expression, it.result) }
+      this@toHistoryItemList.map {
+        CalculatorHistoryItem(it.entityId, it.expression, it.result, it.timestamp, it.label)
+      }
     }
 }

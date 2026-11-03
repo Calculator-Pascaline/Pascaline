@@ -12,6 +12,13 @@
     <link rel="icon" type="image/png" href="icon.png" />
     <link rel="apple-touch-icon" href="icon.png" />
     <link type="text/css" rel="stylesheet" href="styles.css" />
+    <link rel="manifest" href="manifest.json" />
+    <script>
+      // Works offline once loaded, and can be installed like an app
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => navigator.serviceWorker.register("sw.js"));
+      }
+    </script>
     <script type="application/javascript" src="sharedApp.js"></script>
   </head>
   <body>

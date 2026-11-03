@@ -142,6 +142,22 @@ private val OPERATORS_ON_PREVIOUS_RESULT =
     Token.Layout.FRACTION,
   )
 
+/**
+ * Last operation of a simple expression, to repeat it with equal: 2+3 ==> +3, then 5+3 ==> +3.
+ * Null for other expressions: 2+3×4.
+ */
+internal fun String.repeatableOperation(): String? {
+  val match = SIMPLE_OPERATION.matchEntire(this) ?: return null
+  return match.groupValues[1] + match.groupValues[2]
+}
+
+private val SIMPLE_OPERATION =
+  Regex(
+    "${Regex.escape(Token.Operator.MINUS)}?[0-9.]+" +
+      "([${Token.Operator.PLUS}${Token.Operator.MINUS}${Token.Operator.MULTIPLY}${Token.Operator.DIVIDE}])" +
+      "([0-9.]+)"
+  )
+
 internal fun String.toInsertable(): String =
   removePrefix(APPROXIMATELY).removeSuffix(Token.Operator.PLUS + Token.DisplayOnly.INTEGRATION_CONSTANT)
 

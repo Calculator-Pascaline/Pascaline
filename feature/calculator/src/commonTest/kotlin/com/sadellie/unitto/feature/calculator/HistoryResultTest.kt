@@ -57,4 +57,15 @@ class HistoryResultTest {
   @Test
   fun errorHasNoResult() =
     assertNull(HistoryResult(lines = emptyList()).operandFor(Token.Operator.PLUS))
+
+  @Test
+  fun repeatableOperation() {
+    assertEquals("+3", "2+3".repeatableOperation())
+    assertEquals("−0.5", "−12−0.5".repeatableOperation())
+    assertEquals("×2", "5×2".repeatableOperation())
+    assertEquals("÷4", "10÷4".repeatableOperation())
+    assertNull("2+3×4".repeatableOperation())
+    assertNull("12".repeatableOperation())
+    assertNull("√2+3".repeatableOperation())
+  }
 }

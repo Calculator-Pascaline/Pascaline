@@ -104,5 +104,12 @@ class CalculatorHistoryDaoInMemory : CalculatorHistoryDao {
   override suspend fun delete(entityId: Int) =
     entries.update { currentEntries -> currentEntries.filter { it.entityId != entityId } }
 
+  override suspend fun updateLabel(entityId: Int, label: String) =
+    entries.update { currentEntries -> currentEntries.map { it.withLabel(entityId, label) } }
+
   override suspend fun clear() = entries.update { emptyList() }
 }
+
+/** Label of entry with [entityId] set like in [CalculatorHistoryDao.updateLabel]. */
+internal fun CalculatorHistoryEntity.withLabel(entityId: Int, label: String) =
+  if (this.entityId == entityId) copy(label = label, isFavorite = label.isNotEmpty()) else this

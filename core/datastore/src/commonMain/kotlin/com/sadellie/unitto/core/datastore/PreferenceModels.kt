@@ -57,6 +57,7 @@ data class CalculatorPreferences(
   val initialPartialHistoryView: Boolean,
   val openHistoryViewButton: Boolean,
   val fractionalOutput: Boolean,
+  val constantCalculation: Boolean,
   val precision: Int,
   val outputFormat: Int,
 )
@@ -73,6 +74,7 @@ data class ConverterPreferences(
   val favoritesOnly: Boolean,
   val latestLeftSideUnit: String,
   val latestRightSideUnit: String,
+  val showIcons: Boolean,
 )
 
 data class DisplayPreferences(val middleZero: Boolean, val acButton: Boolean)

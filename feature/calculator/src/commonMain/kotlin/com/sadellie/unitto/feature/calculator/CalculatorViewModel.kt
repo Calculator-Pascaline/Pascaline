@@ -239,6 +239,9 @@ internal class CalculatorViewModel(
   fun deleteHistoryItem(item: CalculatorHistoryItem) =
     viewModelScope.launch { calculatorHistoryRepository.delete(item.id) }
 
+  fun updateHistoryItemLabel(item: CalculatorHistoryItem, label: String) =
+    viewModelScope.launch { calculatorHistoryRepository.updateLabel(item.id, label) }
+
   /**
    * Adds calculation to history (errors too, with empty result) and clears input, like NumWorks.
    * Result is saved as lines: result, then fraction and roots if there are any.
@@ -246,7 +249,9 @@ internal class CalculatorViewModel(
   fun onEqualClick() =
     viewModelScope.launch {
       val prefs = _prefs.value ?: return@launch
-      val inputValue = _input.text.toString()
+      var inputValue = _input.text.toString()
+      // Equal again repeats last operation on the result: 2+3=5, = ==> 5+3=8
+      if (inputValue.isBlank() && prefs.constantCalculation) inputValue = repeatLastOperation().orEmpty()
       if (inputValue.isBlank()) return@launch
 
       val evaluated =
@@ -303,6 +308,14 @@ internal class CalculatorViewModel(
       _input.clearText()
       _result.update { CalculationResult.Empty }
     }
+
+  /** Previous result with the operation of previous expression: 5+3 for 2+3=5. */
+  private fun repeatLastOperation(): String? {
+    val last = (uiState.value as? CalculatorUIState.Ready)?.history?.firstOrNull() ?: return null
+    val operation = last.expression.repeatableOperation() ?: return null
+    val operand = HistoryResult.decode(last.result).operandFor(operation.take(1)) ?: return null
+    return operand + operation
+  }
 
   private fun calculateInput() {
     _calculationJob?.cancel()

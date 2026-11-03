@@ -40,4 +40,7 @@ internal class CalculatorSettingsViewModel(
 
   fun updateFractionalOutput(enabled: Boolean) =
     viewModelScope.launch { userPrefsRepository.updateFractionalOutput(enabled) }
+
+  fun updateConstantCalculation(enabled: Boolean) =
+    viewModelScope.launch { userPrefsRepository.updateConstantCalculation(enabled) }
 }

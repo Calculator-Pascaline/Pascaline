@@ -57,7 +57,11 @@ import com.sadellie.unitto.feature.timezone.timeZoneModule
 import io.github.sadellie.themmo.Themmo
 import io.github.sadellie.themmo.core.MonetMode
 import io.github.sadellie.themmo.core.ThemingMode
+import androidx.compose.ui.text.intl.Locale
+import com.sadellie.unitto.core.ui.datetime.LocalPlatformDateFormatSettings
+import com.sadellie.unitto.core.ui.datetime.PlatformDateFormatSettings
 import kotlinx.browser.document
+import kotlinx.datetime.TimeZone
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import org.koin.core.context.startKoin
@@ -73,6 +77,12 @@ fun main() {
     CompositionLocalProvider(
       LocalWindowSize provides rememberWindowSizeClass(),
       LocalNumberTypography provides numberTypographyUnitto(),
+      LocalPlatformDateFormatSettings provides
+        PlatformDateFormatSettings(
+          is24Hour = true,
+          timeZone = TimeZone.currentSystemDefault(),
+          locale = Locale.current,
+        ),
     ) {
       App()
     }

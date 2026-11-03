@@ -52,9 +52,9 @@ class CalculatorHistoryRepositoryImplTest {
     // get back same data but converted and in right order
     val expected =
       listOf(
-        CalculatorHistoryItem(2, "expression 2", "result 2"),
-        CalculatorHistoryItem(1, "expression 1", "result 1"),
-        CalculatorHistoryItem(0, "expression 0", "result 0"),
+        CalculatorHistoryItem(2, "expression 2", "result 2", timestamp = 2),
+        CalculatorHistoryItem(1, "expression 1", "result 1", timestamp = 1),
+        CalculatorHistoryItem(0, "expression 0", "result 0", timestamp = 0),
       )
     val actual = calculatorHistoryRepository.historyFlow.first()
 
@@ -99,8 +99,8 @@ class CalculatorHistoryRepositoryImplTest {
     // make sure it is removed and other entries are in place
     val expected =
       listOf(
-        CalculatorHistoryItem(2, "expression 2", "result 2"),
-        CalculatorHistoryItem(0, "expression 0", "result 0"),
+        CalculatorHistoryItem(2, "expression 2", "result 2", timestamp = 2),
+        CalculatorHistoryItem(0, "expression 0", "result 0", timestamp = 0),
       )
     val actual = calculatorHistoryRepository.historyFlow.first()
 
@@ -126,5 +126,19 @@ class CalculatorHistoryRepositoryImplTest {
     val actual = calculatorHistoryRepository.historyFlow.first()
 
     assertEquals(expected, actual)
+  }
+
+  @Test
+  fun updateLabel_makesFavorite() = runTest {
+    calculatorHistoryDao.insert(CalculatorHistoryEntity(0, 0, "expression 0", "result 0"))
+
+    calculatorHistoryRepository.updateLabel(0, " Rent ")
+    val labeled = calculatorHistoryRepository.historyFlow.first().first()
+    assertEquals("Rent", labeled.label)
+    assertEquals(true, labeled.isFavorite)
+
+    // empty label removes favorite
+    calculatorHistoryRepository.updateLabel(0, "")
+    assertEquals(false, calculatorHistoryRepository.historyFlow.first().first().isFavorite)
   }
 }

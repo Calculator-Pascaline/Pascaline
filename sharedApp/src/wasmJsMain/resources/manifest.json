@@ -1,0 +1,31 @@
+{
+  "name": "Pascaline",
+  "id": "./",
+  "short_name": "Pascaline",
+  "description": "Pascaline: a scientific calculator with exact results, fractions, functions, statistics and a unit converter.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FCFCF7",
+  "theme_color": "#2F5DA8",
+  "icons": [
+    {
+      "src": "pwa-icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "pwa-icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "pwa-icon-512x512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

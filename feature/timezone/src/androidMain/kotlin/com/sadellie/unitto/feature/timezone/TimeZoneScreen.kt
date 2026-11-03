@@ -41,6 +41,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
@@ -48,6 +50,7 @@ import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
@@ -79,6 +82,9 @@ import com.sadellie.unitto.core.ui.datetimepicker.TimePickerDialog
 import com.sadellie.unitto.core.ui.plus
 import com.sadellie.unitto.feature.timezone.components.FavoriteTimeZoneItem
 import com.sadellie.unitto.feature.timezone.components.UserTimeZone
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.delay
@@ -90,6 +96,7 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 import unitto.core.common.generated.resources.Res
 import unitto.core.common.generated.resources.common_cancel
 import unitto.core.common.generated.resources.common_label
+import unitto.core.common.generated.resources.common_next
 import unitto.core.common.generated.resources.common_ok
 import unitto.core.common.generated.resources.time_zone_add_title
 import unitto.core.common.generated.resources.time_zone_title
@@ -263,9 +270,21 @@ private fun TimeZoneDialog(
         minute = currentUserTime.minute,
         onConfirm = { hour, minute ->
           setSelectedTime(currentUserTime.withHour(hour).withMinute(minute))
-          setDialogState(TimeZoneDialogState.Nothing)
+          setDialogState(TimeZoneDialogState.UserDatePicker)
         },
         onCancel = { setDialogState(TimeZoneDialogState.Nothing) },
+        confirmLabel = stringResource(Res.string.common_next),
+      )
+    }
+
+    is TimeZoneDialogState.UserDatePicker -> {
+      UserDatePickerDialog(
+        time = currentUserTime,
+        onConfirm = {
+          setSelectedTime(it)
+          setDialogState(TimeZoneDialogState.Nothing)
+        },
+        onDismiss = { setDialogState(TimeZoneDialogState.Nothing) },
       )
     }
 
@@ -332,6 +351,39 @@ private fun TimeZoneDialog(
 private enum class ContentType {
   USER_TIME,
   ITEM,
+}
+
+/** Day of [time], the time of day stays. */
+@Composable
+private fun UserDatePickerDialog(
+  time: ZonedDateTime,
+  onConfirm: (ZonedDateTime) -> Unit,
+  onDismiss: () -> Unit,
+) {
+  val pickerState =
+    rememberDatePickerState(
+      initialSelectedDateMillis = time.withZoneSameLocal(ZoneOffset.UTC).toEpochSecond() * 1_000,
+      yearRange = 0..9_999,
+    )
+  DatePickerDialog(
+    onDismissRequest = onDismiss,
+    confirmButton = {
+      TextButton(
+        onClick = {
+          val millis = pickerState.selectedDateMillis ?: return@TextButton
+          val date = LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneOffset.UTC)
+          onConfirm(time.withYear(date.year).withMonth(date.monthValue).withDayOfMonth(date.dayOfMonth))
+        }
+      ) {
+        Text(stringResource(Res.string.common_ok))
+      }
+    },
+    dismissButton = {
+      TextButton(onClick = onDismiss) { Text(stringResource(Res.string.common_cancel)) }
+    },
+  ) {
+    DatePicker(pickerState)
+  }
 }
 
 private const val USER_TIME_UPDATE_FREQUENCY_MS = 5_000L

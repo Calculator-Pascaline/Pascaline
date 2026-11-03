@@ -18,4 +18,17 @@
 
 package com.sadellie.unitto.core.model.calculator
 
-data class CalculatorHistoryItem(val id: Int, val expression: String, val result: String)
+/**
+ * Calculation in history. [timestamp] is in milliseconds. An entry with a [label] is a favorite, it
+ * asks before being deleted.
+ */
+data class CalculatorHistoryItem(
+  val id: Int,
+  val expression: String,
+  val result: String,
+  val timestamp: Long = 0,
+  val label: String? = null,
+) {
+  val isFavorite: Boolean
+    get() = !label.isNullOrEmpty()
+}

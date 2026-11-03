@@ -30,6 +30,7 @@ import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
+import androidx.compose.foundation.gestures.animateTo
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,6 +38,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -48,11 +50,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -61,18 +68,22 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.platform.LocalDensity
@@ -80,22 +91,33 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.sadellie.unitto.core.common.FormatterSymbols
 import com.sadellie.unitto.core.designsystem.icons.symbols.Delete
+import com.sadellie.unitto.core.designsystem.icons.symbols.Edit
 import com.sadellie.unitto.core.designsystem.icons.symbols.MoreVert
 import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
 import com.sadellie.unitto.core.designsystem.theme.LocalNumberTypography
 import com.sadellie.unitto.core.model.calculator.CalculatorHistoryItem
 import com.sadellie.unitto.core.ui.LocalPlatform
 import com.sadellie.unitto.core.ui.Platform
+import com.sadellie.unitto.core.ui.datetime.LocalPlatformDateFormatSettings
+import com.sadellie.unitto.core.ui.datetime.formatDateWeekDayMonthYear
 import com.sadellie.unitto.core.ui.textfield.ExpressionLayoutText
 import com.sadellie.unitto.core.ui.textfield.LocalExpressionTextMeasurer
 import com.sadellie.unitto.core.ui.textfield.WrappedExpressionLayoutText
 import com.sadellie.unitto.feature.calculator.HistoryResult
 import com.sadellie.unitto.feature.calculator.MenuSection
 import com.sadellie.unitto.feature.calculator.toInsertable
+import kotlinx.coroutines.launch
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.minus
+import kotlinx.datetime.todayIn
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.atan2
@@ -104,6 +126,7 @@ import kotlin.math.hypot
 import kotlin.math.roundToInt
 import kotlin.math.sin
 import kotlin.math.tan
+import kotlin.time.Clock
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import unitto.core.common.generated.resources.Res
@@ -111,6 +134,8 @@ import unitto.core.common.generated.resources.calculator_argument
 import unitto.core.common.generated.resources.calculator_binary
 import unitto.core.common.generated.resources.calculator_complex_plane
 import unitto.core.common.generated.resources.calculator_decimal
+import unitto.core.common.generated.resources.calculator_delete_history_entry
+import unitto.core.common.generated.resources.calculator_delete_history_entry_support
 import unitto.core.common.generated.resources.calculator_discriminant
 import unitto.core.common.generated.resources.calculator_factorization
 import unitto.core.common.generated.resources.calculator_hexadecimal
@@ -123,15 +148,21 @@ import unitto.core.common.generated.resources.calculator_prime_factors
 import unitto.core.common.generated.resources.calculator_real_part
 import unitto.core.common.generated.resources.calculator_roots
 import unitto.core.common.generated.resources.calculator_si_units
+import unitto.core.common.generated.resources.common_cancel
 import unitto.core.common.generated.resources.common_delete
 import unitto.core.common.generated.resources.common_error
+import unitto.core.common.generated.resources.common_label
+import unitto.core.common.generated.resources.common_ok
+import unitto.core.common.generated.resources.common_today
+import unitto.core.common.generated.resources.common_yesterday
 
 /**
  * Calculations like on NumWorks: newest at the bottom, expression on the left and result on the
  * right (or below it when there is not enough space). Long lines are split into several lines.
  *
- * Tap expression or result to insert it. Swipe from right to left to delete. Polynomials have a
- * "…" menu with factorization and roots.
+ * Tap expression or result to insert it. Swipe from right to left to delete or label it, labeled
+ * ones ask before being deleted. Polynomials have a "…" menu with factorization and roots. Days are
+ * above their calculations.
  */
 @Composable
 internal fun CalculationList(
@@ -140,6 +171,7 @@ internal fun CalculationList(
   formatterSymbols: FormatterSymbols,
   addTokens: (String) -> Unit,
   onDelete: (CalculatorHistoryItem) -> Unit,
+  onUpdateLabel: (CalculatorHistoryItem, String) -> Unit,
 ) {
   if (items.isEmpty()) {
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
@@ -159,6 +191,7 @@ internal fun CalculationList(
     newestId = items.first().id
   }
 
+  val rows = remember(items) { items.withDays(TimeZone.currentSystemDefault()) }
   // Cards that scroll back into view don't measure their texts again
   val measurer = rememberTextMeasurer(cacheSize = LIST_MEASURER_CACHE)
   CompositionLocalProvider(LocalExpressionTextMeasurer provides measurer) {
@@ -169,28 +202,68 @@ internal fun CalculationList(
       contentPadding = PaddingValues(horizontal = CARD_SPACING, vertical = CARD_SPACING),
       verticalArrangement = Arrangement.spacedBy(CARD_SPACING, Alignment.Bottom),
     ) {
-      items(items, { item -> item.id }) { item ->
-        SwipeToDelete(modifier = Modifier.animateItem(), onDelete = { onDelete(item) }) {
-          CalculationListItem(item = item, formatterSymbols = formatterSymbols, addTokens = addTokens)
+      items(rows, { row -> row.key }) { row ->
+        when (row) {
+          is HistoryRow.Day -> DayTitle(modifier = Modifier.animateItem(), date = row.date)
+          is HistoryRow.Calculation -> {
+            val item = row.item
+            SwipeActions(
+              modifier = Modifier.animateItem(),
+              label = item.label,
+              onDelete = { onDelete(item) },
+              onUpdateLabel = { onUpdateLabel(item, it) },
+            ) {
+              CalculationListItem(item = item, formatterSymbols = formatterSymbols, addTokens = addTokens)
+            }
+          }
         }
       }
     }
   }
 }
 
-/** Where a history card is: in place, or slid left to show its delete button. */
+/** Today, Yesterday or the date: Tue, Jan 31, 2022. */
+@Composable
+private fun DayTitle(modifier: Modifier, date: LocalDate) {
+  val dateFormat = LocalPlatformDateFormatSettings.current
+  val today = remember(dateFormat) { Clock.System.todayIn(dateFormat.timeZone) }
+  val text =
+    when (date) {
+      today -> stringResource(Res.string.common_today)
+      today.minus(1, DateTimeUnit.DAY) -> stringResource(Res.string.common_yesterday)
+      else ->
+        remember(date, dateFormat) {
+          date.atStartOfDayIn(dateFormat.timeZone).formatDateWeekDayMonthYear(dateFormat)
+        }
+    }
+  Text(
+    modifier = modifier.fillMaxWidth().padding(start = CARD_PADDING, top = 4.dp),
+    text = text,
+    style = MaterialTheme.typography.labelLarge,
+    color = MaterialTheme.colorScheme.onSurfaceVariant,
+  )
+}
+
+/** Where a history card is: in place, or slid left to show its buttons. */
 private enum class CardSwipe {
   CLOSED,
   OPEN,
 }
 
 /**
- * Swiping right to left slides the card open on a delete button, swiping back closes it. Only the
- * button deletes, so a scroll that drifts sideways can't delete a calculation by mistake.
+ * Swiping right to left slides the card open on label and delete buttons, swiping back closes it.
+ * Only the button deletes, so a scroll that drifts sideways can't delete a calculation by mistake. A
+ * calculation with a [label] asks first.
  */
 @Composable
-private fun SwipeToDelete(modifier: Modifier, onDelete: () -> Unit, content: @Composable () -> Unit) {
-  val revealPx = with(LocalDensity.current) { DELETE_BUTTON_WIDTH.toPx() }
+private fun SwipeActions(
+  modifier: Modifier,
+  label: String?,
+  onDelete: () -> Unit,
+  onUpdateLabel: (String) -> Unit,
+  content: @Composable () -> Unit,
+) {
+  val revealPx = with(LocalDensity.current) { (DELETE_BUTTON_WIDTH * 2).toPx() }
   val swipe = remember { AnchoredDraggableState(initialValue = CardSwipe.CLOSED) }
   SideEffect {
     swipe.updateAnchors(
@@ -211,22 +284,30 @@ private fun SwipeToDelete(modifier: Modifier, onDelete: () -> Unit, content: @Co
     enter = EnterTransition.None,
     exit = shrinkVertically(),
   ) {
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var showLabelDialog by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
     Box(modifier = Modifier.clip(CARD_SHAPE)) {
-      Box(
-        modifier = Modifier.matchParentSize().background(MaterialTheme.colorScheme.errorContainer),
-        contentAlignment = Alignment.CenterEnd,
-      ) {
-        IconButton(
-          modifier = Modifier.width(DELETE_BUTTON_WIDTH),
-          onClick = { visibility.targetState = false },
-          enabled = swipe.currentValue == CardSwipe.OPEN,
-        ) {
-          Icon(
-            imageVector = Symbols.Delete,
-            contentDescription = stringResource(Res.string.common_delete),
-            tint = MaterialTheme.colorScheme.onErrorContainer,
-          )
-        }
+      Row(modifier = Modifier.matchParentSize(), horizontalArrangement = Arrangement.End) {
+        val isOpen = swipe.currentValue == CardSwipe.OPEN
+        SwipeButton(
+          icon = Symbols.Edit,
+          description = stringResource(Res.string.common_label),
+          background = MaterialTheme.colorScheme.secondaryContainer,
+          tint = MaterialTheme.colorScheme.onSecondaryContainer,
+          enabled = isOpen,
+          onClick = { showLabelDialog = true },
+        )
+        SwipeButton(
+          icon = Symbols.Delete,
+          description = stringResource(Res.string.common_delete),
+          background = MaterialTheme.colorScheme.errorContainer,
+          tint = MaterialTheme.colorScheme.onErrorContainer,
+          enabled = isOpen,
+          onClick = {
+            if (label.isNullOrEmpty()) visibility.targetState = false else showDeleteDialog = true
+          },
+        )
       }
       Box(
         modifier =
@@ -236,7 +317,93 @@ private fun SwipeToDelete(modifier: Modifier, onDelete: () -> Unit, content: @Co
         content()
       }
     }
+    if (showDeleteDialog) {
+      DeleteLabeledDialog(
+        onConfirm = {
+          showDeleteDialog = false
+          visibility.targetState = false
+        },
+        onDismiss = { showDeleteDialog = false },
+      )
+    }
+    if (showLabelDialog) {
+      LabelDialog(
+        label = label,
+        onConfirm = {
+          onUpdateLabel(it)
+          scope.launch { swipe.animateTo(CardSwipe.CLOSED) }
+        },
+        onDismiss = { showLabelDialog = false },
+      )
+    }
   }
+}
+
+@Composable
+private fun SwipeButton(
+  icon: ImageVector,
+  description: String,
+  background: Color,
+  tint: Color,
+  enabled: Boolean,
+  onClick: () -> Unit,
+) {
+  Box(
+    modifier = Modifier.width(DELETE_BUTTON_WIDTH).fillMaxHeight().background(background),
+    contentAlignment = Alignment.Center,
+  ) {
+    IconButton(onClick = onClick, enabled = enabled) {
+      Icon(imageVector = icon, contentDescription = description, tint = tint)
+    }
+  }
+}
+
+@Composable
+private fun DeleteLabeledDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
+  AlertDialog(
+    icon = { Icon(Symbols.Delete, null) },
+    title = { Text(stringResource(Res.string.calculator_delete_history_entry)) },
+    text = { Text(stringResource(Res.string.calculator_delete_history_entry_support)) },
+    confirmButton = {
+      TextButton(onClick = onConfirm) { Text(stringResource(Res.string.common_delete)) }
+    },
+    dismissButton = {
+      TextButton(onClick = onDismiss) { Text(stringResource(Res.string.common_cancel)) }
+    },
+    onDismissRequest = onDismiss,
+  )
+}
+
+/** Name of a calculation, like "Rent". Empty label removes it. */
+@Composable
+private fun LabelDialog(label: String?, onConfirm: (String) -> Unit, onDismiss: () -> Unit) {
+  val focusRequester = remember { FocusRequester() }
+  val state = rememberTextFieldState(label.orEmpty())
+  AlertDialog(
+    title = { Text(stringResource(Res.string.common_label)) },
+    text = {
+      OutlinedTextField(
+        state = state,
+        modifier = Modifier.focusRequester(focusRequester),
+        lineLimits = TextFieldLineLimits.SingleLine,
+      )
+      LaunchedEffect(Unit) { focusRequester.requestFocus() }
+    },
+    confirmButton = {
+      TextButton(
+        onClick = {
+          onConfirm(state.text.toString())
+          onDismiss()
+        }
+      ) {
+        Text(stringResource(Res.string.common_ok))
+      }
+    },
+    dismissButton = {
+      TextButton(onClick = onDismiss) { Text(stringResource(Res.string.common_cancel)) }
+    },
+    onDismissRequest = onDismiss,
+  )
 }
 
 @Composable
@@ -266,11 +433,16 @@ private fun CalculationListItem(
           ),
       verticalAlignment = Alignment.CenterVertically,
     ) {
-      // Lines keep room under digits for letters like g and for subscripts: digits look too high
-      // without this. Fonts are drawn a bit differently on the web
-      val shift = if (LocalPlatform.current == Platform.Wasm) TEXT_CENTER_SHIFT_WEB else TEXT_CENTER_SHIFT
-      val centerShift = with(LocalDensity.current) { style.fontSize.toDp() } * shift
+      val centerShift = historyTextCenterShift()
       Column(modifier = Modifier.weight(1f).padding(end = 8.dp).offset(y = centerShift)) {
+        val label = item.label
+        if (!label.isNullOrEmpty()) {
+          Text(
+            text = label,
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+          )
+        }
         ExpressionAndResult(
           expression = {
             WrappedExpressionLayoutText(
@@ -696,6 +868,17 @@ private val MENU_CONTENT_WIDTH = 288.dp
 @Composable
 internal fun historyTextStyle(): TextStyle =
   LocalNumberTypography.current.displaySmall.let { it.copy(fontSize = it.fontSize * ITEM_FONT_SCALE) }
+
+/**
+ * How far history text is moved down to look centered, the input uses it too. Lines keep room under
+ * digits for letters like g and for subscripts: digits look too high without this. Fonts are drawn a
+ * bit differently on the web.
+ */
+@Composable
+internal fun historyTextCenterShift(): Dp {
+  val shift = if (LocalPlatform.current == Platform.Wasm) TEXT_CENTER_SHIFT_WEB else TEXT_CENTER_SHIFT
+  return with(LocalDensity.current) { historyTextStyle().fontSize.toDp() } * shift
+}
 
 private const val ITEM_FONT_SCALE = 0.8f
 /** Part of the font size that text is moved down to look centered in its card */

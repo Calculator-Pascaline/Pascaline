@@ -18,10 +18,9 @@
 
 package com.sadellie.unitto.core.ui.datetime
 
-import java.time.LocalDate
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
-import java.util.*
+import java.util.Locale
 import kotlin.math.absoluteValue
 
 /**
@@ -40,23 +39,6 @@ fun ZonedDateTime.formatTime(locale: Locale, is24Hour: Boolean): String =
     format(UnittoDateTimeFormatter.time24(locale))
   } else {
     format(UnittoDateTimeFormatter.time12Full(locale))
-  }
-
-/**
- * Formats date time into something like:
- *
- * 23:59 or 11:59
- *
- * Depends on system preferences
- *
- * @see UnittoDateTimeFormatter.time24
- * @see UnittoDateTimeFormatter.time12Short
- */
-fun ZonedDateTime.formatTimeShort(locale: Locale, is24Hour: Boolean): String =
-  if (is24Hour) {
-    format(UnittoDateTimeFormatter.time24(locale))
-  } else {
-    format(UnittoDateTimeFormatter.time12Short(locale))
   }
 
 /**
@@ -84,10 +66,6 @@ fun ZonedDateTime.formatTimeMinutes(locale: Locale): String =
 /** @see UnittoDateTimeFormatter.time12AmPm */
 fun ZonedDateTime.formatTimeAmPm(locale: Locale): String =
   format(UnittoDateTimeFormatter.time12AmPm(locale))
-
-/** @see UnittoDateTimeFormatter.dateWeekDayMonthYear */
-fun ZonedDateTime.formatDateWeekDayMonthYear(locale: Locale): String =
-  format(UnittoDateTimeFormatter.dateWeekDayMonthYear(locale))
 
 /** @see UnittoDateTimeFormatter.zone */
 fun ZonedDateTime.formatZone(locale: Locale): String = format(UnittoDateTimeFormatter.zone(locale))

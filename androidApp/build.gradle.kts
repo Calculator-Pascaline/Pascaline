@@ -34,6 +34,8 @@ kotlin {
     implementation(project(":core:datastore"))
     implementation(project(":core:designsystem"))
     implementation(project(":core:navigation"))
+    implementation(project(":core:ui"))
+    implementation(libs.org.jetbrains.kotlinx.kotlinx.datetime)
     implementation(libs.androidx.core.core.ktx)
     implementation(libs.androidx.appcompat.appcompat)
     implementation(libs.com.eygraber.uri.kmp)
@@ -81,6 +83,7 @@ android {
         "de",
         "es",
         "fr",
+        "hi",
         "hu",
         "in",
         "it",

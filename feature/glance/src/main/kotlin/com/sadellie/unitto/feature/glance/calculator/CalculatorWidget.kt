@@ -259,6 +259,7 @@ private fun PreviewWidget() {
         radianMode = false,
         formatterSymbols = FormatterSymbols(Token.SPACE, Token.PERIOD, false),
         fractionalOutput = false,
+        constantCalculation = false,
         middleZero = true,
         inverseMode = false,
         acButton = true,

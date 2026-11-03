@@ -20,6 +20,7 @@
 package com.sadellie.unitto
 
 import android.os.Build
+import android.text.format.DateFormat
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.compose.setContent
@@ -28,6 +29,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.text.intl.Locale
+import com.sadellie.unitto.core.ui.datetime.LocalPlatformDateFormatSettings
+import com.sadellie.unitto.core.ui.datetime.PlatformDateFormatSettings
+import kotlinx.datetime.TimeZone
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalView
@@ -84,6 +89,12 @@ internal class MainActivity : AppCompatActivity(), KoinComponent {
         LocalNumberTypography provides numberTypography,
         LocalWindowSize provides calculateWindowSizeClass(this@MainActivity),
         LocalHapticFeedbackManager provides hapticFeedbackManager,
+        LocalPlatformDateFormatSettings provides
+          PlatformDateFormatSettings(
+            is24Hour = DateFormat.is24HourFormat(this@MainActivity),
+            timeZone = TimeZone.currentSystemDefault(),
+            locale = Locale.current,
+          ),
       ) {
         App(deepLinkRoute, prefs)
       }

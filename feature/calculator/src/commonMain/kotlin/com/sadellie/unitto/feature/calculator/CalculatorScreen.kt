@@ -36,6 +36,8 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -90,6 +92,7 @@ import com.sadellie.unitto.core.ui.textfield.ExpressionLayoutTextField
 import com.sadellie.unitto.core.ui.textfield.isInSeries
 import com.sadellie.unitto.feature.calculator.components.CalculationList
 import com.sadellie.unitto.feature.calculator.components.CalculatorKeyboard
+import com.sadellie.unitto.feature.calculator.components.historyTextCenterShift
 import com.sadellie.unitto.feature.calculator.components.historyTextStyle
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -120,6 +123,7 @@ internal fun CalculatorRoute(openDrawer: () -> Unit) {
         onInverseModeClick = viewModel::updateInverseMode,
         onClearHistoryClick = viewModel::clearHistory,
         onDeleteHistoryItemClick = viewModel::deleteHistoryItem,
+        onUpdateHistoryLabel = viewModel::updateHistoryItemLabel,
       )
   }
 }
@@ -138,6 +142,7 @@ internal fun Ready(
   onInverseModeClick: (Boolean) -> Unit,
   onClearHistoryClick: () -> Unit,
   onDeleteHistoryItemClick: (CalculatorHistoryItem) -> Unit,
+  onUpdateHistoryLabel: (CalculatorHistoryItem, String) -> Unit,
 ) {
   val windowSizeClass = LocalWindowSize.current
   if (
@@ -156,6 +161,7 @@ internal fun Ready(
       onInverseModeClick = onInverseModeClick,
       onClearHistoryClick = onClearHistoryClick,
       onDeleteHistoryItemClick = onDeleteHistoryItemClick,
+      onUpdateHistoryLabel = onUpdateHistoryLabel,
     )
   } else {
     ReadyCompact(
@@ -171,6 +177,7 @@ internal fun Ready(
       onInverseModeClick = onInverseModeClick,
       onClearHistoryClick = onClearHistoryClick,
       onDeleteHistoryItemClick = onDeleteHistoryItemClick,
+      onUpdateHistoryLabel = onUpdateHistoryLabel,
     )
   }
 }
@@ -189,6 +196,7 @@ private fun ReadyCompact(
   onInverseModeClick: (Boolean) -> Unit,
   onClearHistoryClick: () -> Unit,
   onDeleteHistoryItemClick: (CalculatorHistoryItem) -> Unit,
+  onUpdateHistoryLabel: (CalculatorHistoryItem, String) -> Unit,
 ) {
   var showClearHistoryDialog by rememberSaveable { mutableStateOf(false) }
 
@@ -215,6 +223,7 @@ private fun ReadyCompact(
           formatterSymbols = uiState.formatterSymbols,
           addTokens = onAddTokenClick,
           onDelete = onDeleteHistoryItemClick,
+          onUpdateLabel = onUpdateHistoryLabel,
         )
         CalculatorInput(uiState = uiState, onEqualClick = onEqualClick)
         CalculatorKeyboard(
@@ -267,6 +276,7 @@ private fun ReadyExpanded(
   onInverseModeClick: (Boolean) -> Unit,
   onClearHistoryClick: () -> Unit,
   onDeleteHistoryItemClick: (CalculatorHistoryItem) -> Unit,
+  onUpdateHistoryLabel: (CalculatorHistoryItem, String) -> Unit,
 ) {
   var showClearHistoryDialog by rememberSaveable { mutableStateOf(false) }
   // Wide screens (tablets, browsers): calculations on the left, input and keyboard on the right.
@@ -283,6 +293,7 @@ private fun ReadyExpanded(
         formatterSymbols = uiState.formatterSymbols,
         addTokens = onAddTokenClick,
         onDelete = onDeleteHistoryItemClick,
+        onUpdateLabel = onUpdateHistoryLabel,
       )
       Column(modifier = Modifier.width(keyboardWidth).fillMaxHeight()) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
@@ -333,7 +344,8 @@ private fun ReadyExpanded(
 /** Rounded input box, as tall as what is in it: taller for fractions and integrals. */
 @Composable
 private fun CalculatorInput(uiState: CalculatorUIState.Ready, onEqualClick: () -> Unit) {
-  ExpressionLayoutTextField(
+  // Text is centered in the box like in the history cards
+  Box(
     modifier =
       Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
         .fillMaxWidth()
@@ -344,21 +356,26 @@ private fun CalculatorInput(uiState: CalculatorUIState.Ready, onEqualClick: () -
         .background(MaterialTheme.colorScheme.surfaceContainerHigh)
         .border(INPUT_BORDER, MaterialTheme.colorScheme.primary.copy(alpha = INPUT_BORDER_ALPHA), INPUT_SHAPE)
         .padding(horizontal = 12.dp, vertical = 6.dp),
-    state = uiState.input,
-    formatterSymbols = uiState.formatterSymbols,
-    textColor = MaterialTheme.colorScheme.onSurface,
-    // Same size as the history
-    textStyle = historyTextStyle(),
-    wrapHeight = true,
-    minRatio = INPUT_MIN_RATIO,
-    alignStart = true,
-    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-    onKeyboardAction =
-      KeyboardActionHandler {
-        onEqualClick()
-        it()
-      },
-  )
+    contentAlignment = Alignment.CenterStart,
+  ) {
+    ExpressionLayoutTextField(
+      modifier = Modifier.fillMaxWidth().offset(y = historyTextCenterShift()),
+      state = uiState.input,
+      formatterSymbols = uiState.formatterSymbols,
+      textColor = MaterialTheme.colorScheme.onSurface,
+      // Same size as the history
+      textStyle = historyTextStyle(),
+      wrapHeight = true,
+      minRatio = INPUT_MIN_RATIO,
+      alignStart = true,
+      keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+      onKeyboardAction =
+        KeyboardActionHandler {
+          onEqualClick()
+          it()
+        },
+    )
+  }
 }
 
 /** x,n,t key types n in Σ and ∏. */
@@ -485,6 +502,7 @@ private fun PreviewCalculatorScreen() {
         onInverseModeClick = {},
         onClearHistoryClick = {},
         onDeleteHistoryItemClick = {},
+        onUpdateHistoryLabel = { _, _ -> },
       )
     }
   }

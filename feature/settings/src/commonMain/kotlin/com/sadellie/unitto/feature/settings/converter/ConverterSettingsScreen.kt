@@ -41,6 +41,7 @@ import com.sadellie.unitto.core.common.OutputFormat
 import com.sadellie.unitto.core.common.Token
 import com.sadellie.unitto.core.common.collectAsStateWithLifecycleKMP
 import com.sadellie.unitto.core.datastore.ConverterPreferences
+import com.sadellie.unitto.core.designsystem.icons.symbols.DrawAbstract
 import com.sadellie.unitto.core.designsystem.icons.symbols.Rule
 import com.sadellie.unitto.core.designsystem.icons.symbols.Sort
 import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
@@ -63,6 +64,8 @@ import unitto.core.common.generated.resources.Res
 import unitto.core.common.generated.resources.converter_title
 import unitto.core.common.generated.resources.settings_format_time
 import unitto.core.common.generated.resources.settings_format_time_support
+import unitto.core.common.generated.resources.settings_show_unit_group_icons
+import unitto.core.common.generated.resources.settings_show_unit_group_icons_support
 import unitto.core.common.generated.resources.settings_unit_groups_support
 import unitto.core.common.generated.resources.settings_unit_groups_title
 import unitto.core.common.generated.resources.settings_units_sorting
@@ -83,6 +86,7 @@ internal fun ConverterSettingsRoute(
         navigateToUnitsGroup = navigateToUnitsGroup,
         updateUnitConverterFormatTime = viewModel::updateUnitConverterFormatTime,
         updateUnitConverterSorting = viewModel::updateUnitConverterSorting,
+        updateUnitConverterShowIcons = viewModel::updateUnitConverterShowIcons,
       )
     }
   }
@@ -96,6 +100,7 @@ private fun ConverterSettingsScreen(
   navigateToUnitsGroup: () -> Unit,
   updateUnitConverterFormatTime: (Boolean) -> Unit,
   updateUnitConverterSorting: (UnitsListSorting) -> Unit,
+  updateUnitConverterShowIcons: (Boolean) -> Unit,
 ) {
   ScaffoldWithLargeTopBar(
     title = stringResource(Res.string.converter_title),
@@ -126,6 +131,14 @@ private fun ConverterSettingsScreen(
             currentSorting = prefs.sorting,
           )
         },
+      )
+      ListItemExpressive(
+        icon = Symbols.DrawAbstract,
+        headlineText = stringResource(Res.string.settings_show_unit_group_icons),
+        supportingText = stringResource(Res.string.settings_show_unit_group_icons_support),
+        switchState = prefs.showIcons,
+        onSwitchChange = updateUnitConverterShowIcons,
+        shape = ListItemExpressiveDefaults.middleShape,
       )
       ListItemExpressive(
         icon = Symbols.Timer,
@@ -194,10 +207,12 @@ private fun PreviewConverterSettingsScreen() =
           favoritesOnly = false,
           latestLeftSideUnit = "kilometer",
           latestRightSideUnit = "mile",
+          showIcons = true,
         ),
       navigateUpAction = {},
       navigateToUnitsGroup = {},
       updateUnitConverterFormatTime = {},
       updateUnitConverterSorting = {},
+      updateUnitConverterShowIcons = {},
     )
   }

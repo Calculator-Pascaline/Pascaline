@@ -44,11 +44,10 @@ kotlin {
     implementation(libs.org.jetbrains.compose.material3.material3.window.size)
     implementation(libs.org.jetbrains.androidx.navigation3.navigation3.ui)
     implementation(libs.org.jetbrains.kotlinx.kotlinx.serialization.json)
-  }
-  sourceSets.androidMain.dependencies {
-    implementation(libs.io.insert.koin.koin.core.coroutines)
+    implementation(libs.org.jetbrains.kotlinx.kotlinx.datetime)
     implementation(libs.org.jetbrains.compose.ui.ui.tooling.preview)
   }
+  sourceSets.androidMain.dependencies { implementation(libs.io.insert.koin.koin.core.coroutines) }
 
   sourceSets.commonTest.dependencies { implementation(libs.org.jetbrains.kotlin.kotlin.test) }
 }
