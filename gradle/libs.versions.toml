@@ -56,7 +56,7 @@ devIurysouzaModulegraph = "0.13.0"
 # https://github.com/detekt/detekt/releases
 detekt = "1.23.8"
 # https://github.com/jordond/MaterialKolor/releases
-materialKolor = "5.0.0-alpha06"
+materialKolor = "6.0.0"
 # https://github.com/JetBrains/compose-multiplatform/releases
 composeMultiplatform = "1.10.0"
 # https://github.com/JetBrains/compose-multiplatform/releases
