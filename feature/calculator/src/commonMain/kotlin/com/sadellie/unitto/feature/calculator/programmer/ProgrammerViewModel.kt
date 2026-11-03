@@ -33,13 +33,17 @@ import io.github.sadellie.evaluatto.programmer.WordSize
 import io.github.sadellie.evaluatto.programmer.digits
 import io.github.sadellie.evaluatto.programmer.programmerCalculate
 import io.github.sadellie.evaluatto.programmer.programmerConvertNumber
-import io.github.sadellie.evaluatto.programmer.programmerFormat
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlin.time.Clock
 
 /**
  * Integer calculator: input in one base, result in all of them. Input is a list of tokens (numbers,
- * operators, brackets), the cursor is always at the end. Base and word size are saved.
+ * operators, brackets), the cursor is always at the end. Base, word size and history are saved.
  */
 internal class ProgrammerViewModel(private val userPrefsRepository: UserPreferencesRepository) : ViewModel() {
   var base by mutableStateOf(NumberBase.DEC)
@@ -49,6 +53,13 @@ internal class ProgrammerViewModel(private val userPrefsRepository: UserPreferen
     private set
 
   val tokens = mutableStateListOf<String>()
+
+  /** Calculations, newest first. */
+  val history: StateFlow<List<ProgrammerHistoryEntry>> =
+    userPrefsRepository
+      .appData(HISTORY_KEY)
+      .map(::decodeProgrammerHistory)
+      .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), emptyList())
 
   init {
     viewModelScope.launch {
@@ -143,13 +154,57 @@ internal class ProgrammerViewModel(private val userPrefsRepository: UserPreferen
 
   fun clear() = tokens.clear()
 
-  /** Result becomes the input, to keep calculating with it. */
+  /** Calculation goes to history and its result becomes the input, to keep calculating with it. */
   fun equal() {
     val value = result ?: return
-    val text = programmerFormat(value, base, wordSize)
+    val entry =
+      ProgrammerHistoryEntry(
+        timestamp = Clock.System.now().toEpochMilliseconds(),
+        tokens = tokens.toList(),
+        base = base,
+        wordSize = wordSize,
+        result = value,
+      )
+    // A plain number is not a calculation
+    if (tokens.any { !it.isProgrammerNumber() }) updateHistory { listOf(entry) + it }
     tokens.clear()
-    if (text.startsWith(Token.Operator.MINUS)) tokens.add(Token.Operator.MINUS)
-    tokens.add(text.removePrefix(Token.Operator.MINUS))
+    tokens.addAll(entry.resultTokensIn(base))
+  }
+
+  /** Expression of [entry] replaces the input, written in the current base. */
+  fun useExpression(entry: ProgrammerHistoryEntry) {
+    tokens.clear()
+    tokens.addAll(entry.tokensIn(base))
+  }
+
+  /** Result of [entry] is added like a typed number: 5+ and result 3 ==> 5+3. */
+  fun useResult(entry: ProgrammerHistoryEntry) {
+    val last = tokens.lastOrNull()
+    when {
+      last == null -> Unit
+      last.isProgrammerNumber() || last == Token.Operator.RIGHT_BRACKET -> tokens.clear()
+    }
+    tokens.addAll(entry.resultTokensIn(base))
+  }
+
+  fun deleteHistoryEntry(entry: ProgrammerHistoryEntry) = updateHistory { history ->
+    history.filter { it.timestamp != entry.timestamp }
+  }
+
+  /** Empty label removes it. */
+  fun updateHistoryLabel(entry: ProgrammerHistoryEntry, label: String) = updateHistory { history ->
+    history.map {
+      if (it.timestamp == entry.timestamp) it.copy(label = label.trim().ifEmpty { null }) else it
+    }
+  }
+
+  fun clearHistory() = updateHistory { emptyList() }
+
+  private fun updateHistory(change: (List<ProgrammerHistoryEntry>) -> List<ProgrammerHistoryEntry>) {
+    viewModelScope.launch {
+      val current = decodeProgrammerHistory(userPrefsRepository.appData(HISTORY_KEY).first())
+      userPrefsRepository.updateAppData(HISTORY_KEY, change(current).encode())
+    }
   }
 
   /** Numbers that are already typed are written in [newBase]. */
@@ -172,7 +227,7 @@ internal class ProgrammerViewModel(private val userPrefsRepository: UserPreferen
     viewModelScope.launch { userPrefsRepository.updateAppData(WORD_SIZE_KEY, newWordSize.name) }
   }
 
-  private fun String.isNumber() = isNotEmpty() && all { it.isLetterOrDigit() } && this !in WORD_OPERATORS
+  private fun String.isNumber() = isProgrammerNumber()
 
   private fun String.isOperator() = this in ProgrammerOperator.binary || this == ProgrammerOperator.NOT
 
@@ -180,19 +235,7 @@ internal class ProgrammerViewModel(private val userPrefsRepository: UserPreferen
     wordSize.bits == ULong.SIZE_BITS || this < (1uL shl wordSize.bits)
 }
 
-/** Operators written with letters, they are not numbers. */
-private val WORD_OPERATORS =
-  listOf(
-    ProgrammerOperator.AND,
-    ProgrammerOperator.OR,
-    ProgrammerOperator.XOR,
-    ProgrammerOperator.NOT,
-    ProgrammerOperator.NAND,
-    ProgrammerOperator.NOR,
-    ProgrammerOperator.MOD,
-    ProgrammerOperator.ROTATE_LEFT,
-    ProgrammerOperator.ROTATE_RIGHT,
-  )
-
 private const val BASE_KEY = "programmer_base"
 private const val WORD_SIZE_KEY = "programmer_word_size"
+private const val HISTORY_KEY = "programmer_history"
+private const val STOP_TIMEOUT_MS = 5_000L

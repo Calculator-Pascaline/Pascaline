@@ -89,6 +89,9 @@ class ProgrammerTest {
   fun convertNumbers() {
     assertEquals("FF", programmerConvertNumber("255", NumberBase.DEC, NumberBase.HEX, WordSize.QWORD))
     assertEquals("1010", programmerConvertNumber("A", NumberBase.HEX, NumberBase.BIN, WordSize.QWORD))
+    // Sign bit set: digits stay positive, the value in a calculation is the same
+    assertEquals("255", programmerConvertNumber("FF", NumberBase.HEX, NumberBase.DEC, WordSize.BYTE))
+    assertEquals(-1, calc("255", wordSize = WordSize.BYTE))
   }
 
   @Test

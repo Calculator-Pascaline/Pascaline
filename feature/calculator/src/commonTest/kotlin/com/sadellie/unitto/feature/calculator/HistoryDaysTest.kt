@@ -38,10 +38,10 @@ class HistoryDaysTest {
     val rows = listOf(newest, sameDay, dayBefore).withDays(TimeZone.UTC)
     assertEquals(
       listOf(
-        HistoryRow.Calculation(newest),
-        HistoryRow.Calculation(sameDay),
+        HistoryRow.Calculation(newest, newest.id),
+        HistoryRow.Calculation(sameDay, sameDay.id),
         HistoryRow.Day(LocalDate(2026, 11, 2)),
-        HistoryRow.Calculation(dayBefore),
+        HistoryRow.Calculation(dayBefore, dayBefore.id),
         HistoryRow.Day(LocalDate(2026, 11, 1)),
       ),
       rows,

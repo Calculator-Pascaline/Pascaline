@@ -24,16 +24,13 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Instant
 
-/** Row of the history list: a calculation or the day of calculations above it. */
-internal sealed interface HistoryRow {
+/** Row of a history list: a calculation or the day of calculations above it. */
+internal sealed interface HistoryRow<out T> {
   val key: Any
 
-  data class Calculation(val item: CalculatorHistoryItem) : HistoryRow {
-    override val key: Any
-      get() = item.id
-  }
+  data class Calculation<T>(val item: T, override val key: Any) : HistoryRow<T>
 
-  data class Day(val date: LocalDate) : HistoryRow {
+  data class Day(val date: LocalDate) : HistoryRow<Nothing> {
     override val key: Any
       get() = "day_$date"
   }
@@ -41,17 +38,23 @@ internal sealed interface HistoryRow {
 
 /**
  * History (newest first) with a [HistoryRow.Day] after the oldest calculation of each day. The list
- * is shown reversed, so the day is above its calculations.
+ * is shown reversed, so the day is above its calculations. [timestamp] is in milliseconds.
  */
-internal fun List<CalculatorHistoryItem>.withDays(timeZone: TimeZone): List<HistoryRow> {
-  val rows = mutableListOf<HistoryRow>()
+internal fun <T> List<T>.withDays(
+  timeZone: TimeZone,
+  timestamp: (T) -> Long,
+  key: (T) -> Any,
+): List<HistoryRow<T>> {
+  fun T.date(): LocalDate = Instant.fromEpochMilliseconds(timestamp(this)).toLocalDateTime(timeZone).date
+
+  val rows = mutableListOf<HistoryRow<T>>()
   forEachIndexed { index, item ->
-    rows += HistoryRow.Calculation(item)
-    val date = item.date(timeZone)
-    if (getOrNull(index + 1)?.date(timeZone) != date) rows += HistoryRow.Day(date)
+    rows += HistoryRow.Calculation(item, key(item))
+    val date = item.date()
+    if (getOrNull(index + 1)?.date() != date) rows += HistoryRow.Day(date)
   }
   return rows
 }
 
-private fun CalculatorHistoryItem.date(timeZone: TimeZone): LocalDate =
-  Instant.fromEpochMilliseconds(timestamp).toLocalDateTime(timeZone).date
+internal fun List<CalculatorHistoryItem>.withDays(timeZone: TimeZone): List<HistoryRow<CalculatorHistoryItem>> =
+  withDays(timeZone, { it.timestamp }, { it.id })

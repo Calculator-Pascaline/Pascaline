@@ -91,10 +91,13 @@ fun programmerFormat(value: Long, base: NumberBase, wordSize: WordSize): String 
   return bits.toString(base.radix).uppercase()
 }
 
-/** Number [text] in [from] written in [to], for switching base of the input. */
+/**
+ * Number [text] in [from] written in [to], for switching base of the input. Bits of the word stay:
+ * FF in a byte is 255 in decimal, which is −1 in a calculation like FF is.
+ */
 fun programmerConvertNumber(text: String, from: NumberBase, to: NumberBase, wordSize: WordSize): String {
-  val value = text.toULongOrNull(from.radix)?.toLong() ?: return text
-  return programmerFormat(value.wrap(wordSize), to, wordSize).removePrefix(Token.Operator.MINUS)
+  val bits = text.toULongOrNull(from.radix)?.and(wordSize.mask) ?: return text
+  return bits.toString(to.radix).uppercase()
 }
 
 /** Digits that can be typed in [base]. */

@@ -19,6 +19,37 @@
 package com.sadellie.unitto.feature.calculator.programmer
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import com.sadellie.unitto.core.common.collectAsStateWithLifecycleKMP
+import com.sadellie.unitto.core.designsystem.LocalWindowSize
+import com.sadellie.unitto.core.designsystem.icons.symbols.Delete
+import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
+import com.sadellie.unitto.feature.calculator.components.DayTitle
+import com.sadellie.unitto.feature.calculator.components.HistoryRow
+import com.sadellie.unitto.feature.calculator.components.SwipeActions
+import com.sadellie.unitto.feature.calculator.components.withDays
+import kotlinx.datetime.TimeZone
+import unitto.core.common.generated.resources.calculator_clear_history
+import unitto.core.common.generated.resources.calculator_clear_history_support
+import unitto.core.common.generated.resources.calculator_no_history
+import unitto.core.common.generated.resources.common_cancel
+import unitto.core.common.generated.resources.common_clear
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -95,32 +126,202 @@ internal fun ProgrammerRoute(openDrawer: () -> Unit) {
 
 /**
  * Integer calculator for programmers: input in one base, result in hexadecimal, decimal, octal and
- * binary. Tap a result to type in its base. Word size makes results wrap like in a CPU.
+ * binary. Tap a result to type in its base. Word size makes results wrap like in a CPU. History is
+ * above on phones and next to the keypad on wide screens.
  */
 @Composable
 private fun ProgrammerScreen(openDrawer: () -> Unit, viewModel: ProgrammerViewModel) {
+  val history = viewModel.history.collectAsStateWithLifecycleKMP().value
+  var showClearDialog by remember { mutableStateOf(false) }
   ScaffoldWithTopBar(
     title = { Text(stringResource(Res.string.programmer_title)) },
     navigationIcon = { DrawerButton(onClick = openDrawer) },
+    actions = {
+      if (history.isNotEmpty()) {
+        IconButton(onClick = { showClearDialog = true }) {
+          Icon(Symbols.Delete, stringResource(Res.string.calculator_clear_history))
+        }
+      }
+    },
     colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
   ) { paddingValues ->
-    Box(modifier = Modifier.padding(paddingValues).fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-      Column(
-        modifier = Modifier.widthIn(max = MAX_WIDTH).fillMaxSize().padding(horizontal = 8.dp, vertical = 4.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-      ) {
-        WordSizeSelector(selected = viewModel.wordSize, onSelect = viewModel::selectWordSize)
-        Input(tokens = viewModel.tokens)
-        Results(
-          value = viewModel.result,
-          isError = viewModel.isError,
-          wordSize = viewModel.wordSize,
-          selected = viewModel.base,
-          onSelect = viewModel::selectBase,
+    val historyList =
+      @Composable { modifier: Modifier ->
+        ProgrammerHistoryList(
+          modifier = modifier,
+          history = history,
+          onUseExpression = viewModel::useExpression,
+          onUseResult = viewModel::useResult,
+          onDelete = viewModel::deleteHistoryEntry,
+          onUpdateLabel = viewModel::updateHistoryLabel,
         )
-        ProgrammerKeypad(modifier = Modifier.fillMaxWidth().weight(1f), viewModel = viewModel)
+      }
+    if (LocalWindowSize.current.widthSizeClass == WindowWidthSizeClass.Expanded) {
+      // History and results on the left, keypad on the whole height on the right
+      BoxWithConstraints(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
+        val keypadWidth = minOf(maxWidth * WIDE_KEYPAD_WIDTH_FACTOR, WIDE_KEYPAD_MAX_WIDTH)
+        Row(
+          modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp, vertical = 4.dp),
+          horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+          Column(
+            modifier = Modifier.weight(1f).fillMaxHeight(),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+          ) {
+            historyList(Modifier.fillMaxWidth().weight(1f))
+            Controls(viewModel)
+          }
+          ProgrammerKeypad(modifier = Modifier.width(keypadWidth).fillMaxHeight(), viewModel = viewModel)
+        }
+      }
+    } else {
+      BoxWithConstraints(
+        modifier = Modifier.padding(paddingValues).fillMaxSize(),
+        contentAlignment = Alignment.TopCenter,
+      ) {
+        val keypadHeight = maxHeight * KEYPAD_HEIGHT_FACTOR
+        Column(
+          modifier = Modifier.widthIn(max = MAX_WIDTH).fillMaxSize().padding(horizontal = 8.dp, vertical = 4.dp),
+          verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+          historyList(Modifier.fillMaxWidth().weight(1f))
+          Controls(viewModel)
+          ProgrammerKeypad(modifier = Modifier.fillMaxWidth().height(keypadHeight), viewModel = viewModel)
+        }
       }
     }
+  }
+  if (showClearDialog) {
+    AlertDialog(
+      icon = { Icon(Symbols.Delete, null) },
+      title = { Text(stringResource(Res.string.calculator_clear_history)) },
+      text = { Text(stringResource(Res.string.calculator_clear_history_support)) },
+      confirmButton = {
+        TextButton(
+          onClick = {
+            viewModel.clearHistory()
+            showClearDialog = false
+          }
+        ) {
+          Text(stringResource(Res.string.common_clear))
+        }
+      },
+      dismissButton = {
+        TextButton(onClick = { showClearDialog = false }) { Text(stringResource(Res.string.common_cancel)) }
+      },
+      onDismissRequest = { showClearDialog = false },
+    )
+  }
+}
+
+/** Word size, input and the result in every base. */
+@Composable
+private fun Controls(viewModel: ProgrammerViewModel) {
+  Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    WordSizeSelector(selected = viewModel.wordSize, onSelect = viewModel::selectWordSize)
+    Input(tokens = viewModel.tokens)
+    Results(
+      value = viewModel.result,
+      isError = viewModel.isError,
+      wordSize = viewModel.wordSize,
+      selected = viewModel.base,
+      onSelect = viewModel::selectBase,
+    )
+  }
+}
+
+/**
+ * Calculations with days, newest at the bottom. Tap the expression to type it again, or the result
+ * to use it. Swipe left to label or delete.
+ */
+@Composable
+private fun ProgrammerHistoryList(
+  modifier: Modifier,
+  history: List<ProgrammerHistoryEntry>,
+  onUseExpression: (ProgrammerHistoryEntry) -> Unit,
+  onUseResult: (ProgrammerHistoryEntry) -> Unit,
+  onDelete: (ProgrammerHistoryEntry) -> Unit,
+  onUpdateLabel: (ProgrammerHistoryEntry, String) -> Unit,
+) {
+  if (history.isEmpty()) {
+    Box(modifier = modifier, contentAlignment = Alignment.Center) {
+      Text(
+        text = stringResource(Res.string.calculator_no_history),
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+      )
+    }
+    return
+  }
+  val state = rememberLazyListState()
+  LaunchedEffect(history.first().timestamp) { state.scrollToItem(0) }
+  val rows =
+    remember(history) {
+      history.withDays(TimeZone.currentSystemDefault(), { it.timestamp }, { it.timestamp })
+    }
+  LazyColumn(
+    modifier = modifier,
+    state = state,
+    reverseLayout = true,
+    verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Bottom),
+  ) {
+    items(rows, { it.key }) { row ->
+      when (row) {
+        is HistoryRow.Day -> DayTitle(modifier = Modifier.animateItem(), date = row.date)
+        is HistoryRow.Calculation -> {
+          val entry = row.item
+          SwipeActions(
+            modifier = Modifier.animateItem(),
+            label = entry.label,
+            onDelete = { onDelete(entry) },
+            onUpdateLabel = { onUpdateLabel(entry, it) },
+          ) {
+            HistoryCard(
+              entry = entry,
+              onUseExpression = { onUseExpression(entry) },
+              onUseResult = { onUseResult(entry) },
+            )
+          }
+        }
+      }
+    }
+  }
+}
+
+/** Label, base and expression, then the result in that base. */
+@Composable
+private fun HistoryCard(entry: ProgrammerHistoryEntry, onUseExpression: () -> Unit, onUseResult: () -> Unit) {
+  Column(
+    modifier =
+      Modifier.fillMaxWidth()
+        .background(MaterialTheme.colorScheme.surfaceContainer)
+        .padding(horizontal = 16.dp, vertical = 8.dp)
+  ) {
+    val label = entry.label
+    if (!label.isNullOrEmpty()) {
+      Text(text = label, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+    Row(verticalAlignment = Alignment.CenterVertically) {
+      Text(
+        modifier = Modifier.padding(end = 8.dp),
+        text = "${entry.base.name} · ${entry.wordSize.bits}",
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.primary,
+      )
+      Text(
+        modifier = Modifier.weight(1f).clickable(onClick = onUseExpression),
+        text = entry.expressionText,
+        style = MaterialTheme.typography.titleLarge,
+        maxLines = 2,
+      )
+    }
+    Text(
+      modifier = Modifier.fillMaxWidth().clickable(onClick = onUseResult),
+      text = entry.resultText.groupedFor(entry.base),
+      style = MaterialTheme.typography.titleLarge,
+      fontFamily = FontFamily.Monospace,
+      color = MaterialTheme.colorScheme.primary,
+      textAlign = TextAlign.End,
+    )
   }
 }
 
@@ -141,16 +342,7 @@ private fun WordSizeSelector(selected: WordSize, onSelect: (WordSize) -> Unit) {
 /** Typed expression, words are spaced: 12 AND FF. */
 @Composable
 private fun Input(tokens: List<String>) {
-  val text =
-    tokens
-      .joinToString("") {
-        when (it) {
-          in SPACED_OPERATORS -> " $it "
-          ProgrammerOperator.NOT -> "$it "
-          else -> it
-        }
-      }
-      .replace("  ", " ").trim().ifEmpty { "0" }
+  val text = tokens.toProgrammerText().ifEmpty { "0" }
   Text(
     modifier =
       Modifier.fillMaxWidth()
@@ -181,8 +373,7 @@ private fun Results(
         when {
           isError -> stringResource(Res.string.common_error)
           value == null -> ""
-          base == NumberBase.BIN || base == NumberBase.HEX -> programmerFormat(value, base, wordSize).grouped(4)
-          else -> programmerFormat(value, base, wordSize).grouped(3)
+          else -> programmerFormat(value, base, wordSize).groupedFor(base)
         }
       Row(
         modifier =
@@ -211,6 +402,10 @@ private fun Results(
     }
   }
 }
+
+/** Hexadecimal and binary digits in groups of 4, others of 3. */
+private fun String.groupedFor(base: NumberBase) =
+  grouped(if (base == NumberBase.BIN || base == NumberBase.HEX) 4 else 3)
 
 /** Digits from the right in groups: 1111 0000, 65 535. */
 private fun String.grouped(size: Int): String {
@@ -289,21 +484,11 @@ private fun KeypadFlowScope.Digit(
   viewModel: ProgrammerViewModel,
 ) = with(row) { ButtonLight(key, viewModel::addDigit, enabled = key.token in digits) }
 
-/** Operators drawn with spaces around them in the input. */
-private val SPACED_OPERATORS =
-  listOf(
-    ProgrammerOperator.AND,
-    ProgrammerOperator.OR,
-    ProgrammerOperator.XOR,
-    ProgrammerOperator.NAND,
-    ProgrammerOperator.NOR,
-    ProgrammerOperator.MOD,
-    ProgrammerOperator.SHIFT_LEFT,
-    ProgrammerOperator.SHIFT_RIGHT,
-    ProgrammerOperator.ROTATE_LEFT,
-    ProgrammerOperator.ROTATE_RIGHT,
-  )
-
 private val MAX_WIDTH = 600.dp
+/** Keypad next to history and results on wide screens: this part of the width, at most the max */
+private const val WIDE_KEYPAD_WIDTH_FACTOR = 0.5f
+private val WIDE_KEYPAD_MAX_WIDTH = 520.dp
+/** Part of the screen height for the keypad on phones, history gets what is left */
+private const val KEYPAD_HEIGHT_FACTOR = 0.5f
 private val INPUT_MIN_HEIGHT = 64.dp
 private val CARD_SHAPE = RoundedCornerShape(20.dp)

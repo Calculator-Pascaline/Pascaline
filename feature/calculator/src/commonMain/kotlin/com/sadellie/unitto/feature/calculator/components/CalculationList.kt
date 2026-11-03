@@ -224,7 +224,7 @@ internal fun CalculationList(
 
 /** Today, Yesterday or the date: Tue, Jan 31, 2022. */
 @Composable
-private fun DayTitle(modifier: Modifier, date: LocalDate) {
+internal fun DayTitle(modifier: Modifier, date: LocalDate) {
   val dateFormat = LocalPlatformDateFormatSettings.current
   val today = remember(dateFormat) { Clock.System.todayIn(dateFormat.timeZone) }
   val text =
@@ -256,7 +256,7 @@ private enum class CardSwipe {
  * calculation with a [label] asks first.
  */
 @Composable
-private fun SwipeActions(
+internal fun SwipeActions(
   modifier: Modifier,
   label: String?,
   onDelete: () -> Unit,
