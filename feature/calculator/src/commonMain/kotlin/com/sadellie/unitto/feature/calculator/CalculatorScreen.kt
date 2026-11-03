@@ -36,8 +36,6 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -92,7 +90,7 @@ import com.sadellie.unitto.core.ui.textfield.ExpressionLayoutTextField
 import com.sadellie.unitto.core.ui.textfield.isInSeries
 import com.sadellie.unitto.feature.calculator.components.CalculationList
 import com.sadellie.unitto.feature.calculator.components.CalculatorKeyboard
-import com.sadellie.unitto.feature.calculator.components.historyTextCenterShift
+import com.sadellie.unitto.feature.calculator.components.historyTextCenterShiftFraction
 import com.sadellie.unitto.feature.calculator.components.historyTextStyle
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -344,8 +342,7 @@ private fun ReadyExpanded(
 /** Rounded input box, as tall as what is in it: taller for fractions and integrals. */
 @Composable
 private fun CalculatorInput(uiState: CalculatorUIState.Ready, onEqualClick: () -> Unit) {
-  // Text is centered in the box like in the history cards
-  Box(
+  ExpressionLayoutTextField(
     modifier =
       Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
         .fillMaxWidth()
@@ -356,26 +353,23 @@ private fun CalculatorInput(uiState: CalculatorUIState.Ready, onEqualClick: () -
         .background(MaterialTheme.colorScheme.surfaceContainerHigh)
         .border(INPUT_BORDER, MaterialTheme.colorScheme.primary.copy(alpha = INPUT_BORDER_ALPHA), INPUT_SHAPE)
         .padding(horizontal = 12.dp, vertical = 6.dp),
-    contentAlignment = Alignment.CenterStart,
-  ) {
-    ExpressionLayoutTextField(
-      modifier = Modifier.fillMaxWidth().offset(y = historyTextCenterShift()),
-      state = uiState.input,
-      formatterSymbols = uiState.formatterSymbols,
-      textColor = MaterialTheme.colorScheme.onSurface,
-      // Same size as the history
-      textStyle = historyTextStyle(),
-      wrapHeight = true,
-      minRatio = INPUT_MIN_RATIO,
-      alignStart = true,
-      keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-      onKeyboardAction =
-        KeyboardActionHandler {
-          onEqualClick()
-          it()
-        },
-    )
-  }
+    // Centered like the text of history cards
+    centerShift = historyTextCenterShiftFraction(),
+    state = uiState.input,
+    formatterSymbols = uiState.formatterSymbols,
+    textColor = MaterialTheme.colorScheme.onSurface,
+    // Same size as the history
+    textStyle = historyTextStyle(),
+    wrapHeight = true,
+    minRatio = INPUT_MIN_RATIO,
+    alignStart = true,
+    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+    onKeyboardAction =
+      KeyboardActionHandler {
+        onEqualClick()
+        it()
+      },
+  )
 }
 
 /** x,n,t key types n in Σ and ∏. */
@@ -392,14 +386,14 @@ private fun ClearHistoryDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
     title = { Text(stringResource(Res.string.calculator_clear_history)) },
     text = { Text(stringResource(Res.string.calculator_clear_history_support)) },
     confirmButton = {
-      TextButton(onClick = onConfirm, shapes = ButtonDefaults.shapes()) {
-        Text(stringResource(Res.string.common_clear))
-      }
+    TextButton(onClick = onConfirm, shapes = ButtonDefaults.shapes()) {
+      Text(stringResource(Res.string.common_clear))
+    }
     },
     dismissButton = {
-      TextButton(onClick = onDismiss, shapes = ButtonDefaults.shapes()) {
-        Text(stringResource(Res.string.common_cancel))
-      }
+    TextButton(onClick = onDismiss, shapes = ButtonDefaults.shapes()) {
+      Text(stringResource(Res.string.common_cancel))
+    }
     },
     onDismissRequest = onDismiss,
   )

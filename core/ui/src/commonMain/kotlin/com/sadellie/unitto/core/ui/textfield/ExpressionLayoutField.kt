@@ -102,6 +102,7 @@ fun ExpressionLayoutTextField(
   onKeyboardAction: KeyboardActionHandler? = null,
   textStyle: TextStyle? = null,
   wrapHeight: Boolean = false,
+  centerShift: Float = 0f,
 ) {
   val measurer = rememberTextMeasurer()
   val density = LocalDensity.current
@@ -153,9 +154,12 @@ fun ExpressionLayoutTextField(
     if (caret != null && caret.x * scale + offsetX < caretMargin) {
       offsetX = caretMargin - caret.x * scale
     }
+    // Digits sit high in their line (room for g and subscripts): text is moved down by this part of
+    // the font size to look centered, and the caret up so that it stays on the digits
+    val shift = with(density) { style.fontSize.toPx() } * centerShift
     // One line input (alignStart) is centered vertically, otherwise aligned to the bottom
     val baseline =
-      if (alignStart) (availableHeight - layout.height * scale) / 2 + layout.ascent * scale
+      if (alignStart) (availableHeight - layout.height * scale) / 2 + layout.ascent * scale + shift * scale
       else availableHeight - layout.descent * scale
 
     HiddenExpressionInput(
@@ -191,8 +195,8 @@ fun ExpressionLayoutTextField(
           if (caret != null) {
             drawLine(
               color = textColor,
-              start = Offset(caret.x, caret.top),
-              end = Offset(caret.x, caret.bottom),
+              start = Offset(caret.x, caret.top - shift),
+              end = Offset(caret.x, caret.bottom - shift),
               strokeWidth = CARET_WIDTH.toPx() / scale,
               alpha = caretAlpha.value,
             )

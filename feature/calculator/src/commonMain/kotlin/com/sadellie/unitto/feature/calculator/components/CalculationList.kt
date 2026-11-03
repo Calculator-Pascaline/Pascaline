@@ -875,10 +875,13 @@ internal fun historyTextStyle(): TextStyle =
  * bit differently on the web.
  */
 @Composable
-internal fun historyTextCenterShift(): Dp {
-  val shift = if (LocalPlatform.current == Platform.Wasm) TEXT_CENTER_SHIFT_WEB else TEXT_CENTER_SHIFT
-  return with(LocalDensity.current) { historyTextStyle().fontSize.toDp() } * shift
-}
+internal fun historyTextCenterShift(): Dp =
+  with(LocalDensity.current) { historyTextStyle().fontSize.toDp() } * historyTextCenterShiftFraction()
+
+/** [historyTextCenterShift] as a part of the font size. */
+@Composable
+internal fun historyTextCenterShiftFraction(): Float =
+  if (LocalPlatform.current == Platform.Wasm) TEXT_CENTER_SHIFT_WEB else TEXT_CENTER_SHIFT
 
 private const val ITEM_FONT_SCALE = 0.8f
 /** Part of the font size that text is moved down to look centered in its card */
