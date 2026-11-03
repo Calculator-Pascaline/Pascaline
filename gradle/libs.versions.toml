@@ -5,7 +5,7 @@ versionName = "1.4.0"
 # https://mvnrepository.com/artifact/androidx.browser/browser
 androidxBrowserBrowser = "1.9.0"
 # https://developer.android.com/reference/tools/gradle-api
-androidGradlePlugin = "9.0.0"
+androidGradlePlugin = "9.4.1"
 # https://mvnrepository.com/artifact/androidx.activity/activity-compose
 androidxActivityActivityCompose = "1.12.3"
 # https://mvnrepository.com/artifact/androidx.appcompat/appcompat
@@ -38,9 +38,9 @@ androidxWorkWorkRuntimeKtx = "2.11.1"
 comAndroidToolsDesugarJdkLibs = "2.1.5"
 junitJunit = "4.13.2"
 # https://kotlinlang.org/docs/releases.html#release-details
-kotlin = "2.3.20-Beta2"
+kotlin = "2.4.21"
 # https://github.com/google/ksp/releases
-ksp = "2.3.2"
+ksp = "2.3.7"
 # https://github.com/Calvin-LL/Reorderable/releases
 reorderable = "3.0.0"
 # https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-test

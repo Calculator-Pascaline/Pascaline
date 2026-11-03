@@ -56,7 +56,10 @@
       const consoleError = console.error.bind(console);
       console.error = (...args) => {
         consoleError(...args);
-        showStartError(args.map(describe).join(" "));
+        const text = args.map(describe).join(" ");
+        // Warnings about old ways of doing things are not errors
+        if (/deprecated/i.test(text)) return;
+        showStartError(text);
       };
       window.addEventListener("error", (e) =>
         showStartError(
