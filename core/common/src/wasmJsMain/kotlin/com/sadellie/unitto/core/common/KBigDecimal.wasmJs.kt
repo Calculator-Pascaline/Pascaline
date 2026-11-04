@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -122,8 +123,7 @@ actual class KBigDecimal(internal val wrapped: BigDecimal) : Comparable<KBigDeci
 
   actual fun scaleByPowerOfTen(n: Int): KBigDecimal = KBigDecimal(this.wrapped.scaleByPowerOfTen(n))
 
-  internal fun negate(): KBigDecimal =
-    KBigDecimal(this.wrapped.times(KBigDecimal("-1").wrapped)) // TODO real negate
+  internal fun negate(): KBigDecimal = -this
 
   internal val signum: Int = this.wrapped.signum
 
@@ -138,7 +138,7 @@ actual class KBigDecimal(internal val wrapped: BigDecimal) : Comparable<KBigDeci
   internal fun movePointRight(n: Int): KBigDecimal = KBigDecimal(this.wrapped.movePointRight(n))
 
   internal fun round(mc: KMathContext): KBigDecimal =
-    KBigDecimal(this.wrapped.round(mc.wrapped)!!) // TODO remove nullability
+    KBigDecimal(this.wrapped.round(mc.wrapped))
 
   internal fun multiply(bigDecimal: KBigDecimal, mc: KMathContext): KBigDecimal =
     KBigDecimal(this.wrapped.times(bigDecimal.wrapped, mc.wrapped))

@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,12 +25,10 @@ import androidx.navigation3.runtime.NavKey
 
 val LocalNavigator = staticCompositionLocalOf<Navigator> { error("No LocalNavigator provided") }
 
-// TODO separate for widget configuration
 class Navigator(
   val backStack: NavBackStack<NavKey>,
   private val openDrawerAction: () -> Unit = {},
   private val navigateToUnitGroupsAction: () -> Unit = {},
-  private val onDoneAction: () -> Unit = {},
 ) {
   fun goTo(destination: Route) {
     if (destination != backStack.lastOrNull()) backStack.add(destination)
@@ -40,6 +39,4 @@ class Navigator(
   fun openDrawer() = openDrawerAction()
 
   fun navigateToUnitGroups() = navigateToUnitGroupsAction()
-
-  fun onDone() = onDoneAction()
 }

@@ -251,7 +251,7 @@ internal class BigRational private constructor(num: BigDecimal, denom: BigDecima
      */
     get() = denominator.compareTo(BigDecimal.ONE) == 0
 
-  // TODO what is precision of a rational?
+  /** Digits of the numerator and the denominator, what converting to a decimal has to keep. */
   private fun precision(): Int {
     return countDigits(numerator.toBigInteger()) + countDigits(denominator.toBigInteger())
   }
@@ -325,7 +325,7 @@ internal class BigRational private constructor(num: BigDecimal, denom: BigDecima
   }
 
   override fun toByte(): Byte {
-    TODO("Not yet implemented")
+    return toLong().toByte()
   }
 
   override fun equals(other: Any?): Boolean {
@@ -379,7 +379,7 @@ internal class BigRational private constructor(num: BigDecimal, denom: BigDecima
   }
 
   override fun toShort(): Short {
-    TODO("Not yet implemented")
+    return toLong().toShort()
   }
 
   companion object {

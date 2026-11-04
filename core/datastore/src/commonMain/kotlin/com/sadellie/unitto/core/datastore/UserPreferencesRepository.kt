@@ -31,7 +31,6 @@ import io.github.sadellie.themmo.core.MonetMode
 import io.github.sadellie.themmo.core.ThemingMode
 import kotlinx.coroutines.flow.Flow
 
-// TODO refactor and merge implementations (this is hell)
 interface UserPreferencesRepository {
   val appPrefs: Flow<AppPreferences>
   val generalPrefs: Flow<GeneralPreferences>

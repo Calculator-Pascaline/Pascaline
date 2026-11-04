@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,47 +58,37 @@ import kotlinx.serialization.descriptors.SerialKind
  * @param uriPattern the supported deeplink's uri pattern, i.e. "abc.com/home/{pathArg}"
  */
 internal class DeepLinkPattern<T : NavKey>(val serializer: KSerializer<T>, val uriPattern: Uri) {
-  // TODO refactor, turn into methods
-
   /** Help differentiate if a path segment is an argument or a static value */
   private val regexPatternFillIn = Regex("\\{(.+?)\\}")
 
   /**
-   * parse the path into a list of [PathSegment]
+   * The path as a list of [PathSegment]
    *
    * order matters here - path segments need to match in value and order when matching requested
    * deeplink to supported deeplink
    */
-  val pathSegments: List<PathSegment> = buildList {
-    uriPattern.pathSegments.forEach { segment ->
-      // first, check if it is a path arg
-      var result = regexPatternFillIn.find(segment)
-      if (result != null) {
-        // if so, extract the path arg name (the string value within the curly braces)
-        val argName = result.groups[1]!!.value
-        // from [T], read the primitive type of this argument to get the correct type parser
-        val elementIndex = serializer.descriptor.getElementIndex(argName)
-        val elementDescriptor = serializer.descriptor.getElementDescriptor(elementIndex)
-        // finally, add the arg name and its respective type parser to the map
-        add(PathSegment(argName, true, getTypeParser(elementDescriptor.kind)))
-      } else {
-        // if its not a path arg, then its just a static string path segment
-        add(PathSegment(segment, false, getTypeParser(PrimitiveKind.STRING)))
-      }
-    }
-  }
+  val pathSegments: List<PathSegment> = uriPattern.pathSegments.map(::parsePathSegment)
 
   /**
-   * Parse supported queries into a map of queryParameterNames to [TypeParser]
+   * Supported queries as a map of queryParameterNames to [TypeParser]
    *
    * This will be used later on to parse a provided query value into the correct KType
    */
-  val queryValueParsers: Map<String, TypeParser> = buildMap {
-    uriPattern.getQueryParameterNames().forEach { paramName ->
-      val elementIndex = serializer.descriptor.getElementIndex(paramName)
-      val elementDescriptor = serializer.descriptor.getElementDescriptor(elementIndex)
-      this[paramName] = getTypeParser(elementDescriptor.kind)
-    }
+  val queryValueParsers: Map<String, TypeParser> =
+    uriPattern.getQueryParameterNames().associateWith(::elementParser)
+
+  private fun parsePathSegment(segment: String): PathSegment {
+    // the arg name is the string value within the curly braces
+    val argName = regexPatternFillIn.find(segment)?.groupValues?.get(1)
+    // not a path arg, just a static string path segment
+    if (argName == null) return PathSegment(segment, false, getTypeParser(PrimitiveKind.STRING))
+    return PathSegment(argName, true, elementParser(argName))
+  }
+
+  /** Parser for the primitive type of the argument [name] of [T]. */
+  private fun elementParser(name: String): TypeParser {
+    val elementIndex = serializer.descriptor.getElementIndex(name)
+    return getTypeParser(serializer.descriptor.getElementDescriptor(elementIndex).kind)
   }
 
   /** Metadata about a supported path segment */

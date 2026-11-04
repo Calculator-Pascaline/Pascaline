@@ -277,7 +277,6 @@ internal object BigDecimalMath {
       }
     }
 
-    // TODO optimize y=0, y=1, y=10^k, y=-1, y=-10^k
     try {
       val longValue: Long = y.longValueExact()
       return pow(x, longValue, mathContext)
@@ -322,7 +321,6 @@ internal object BigDecimalMath {
       if (mathContext.precision == 0) mathContext
       else MathContext(mathContext.precision + 10, mathContext.roundingMode)
 
-    // TODO optimize y=0, y=1, y=10^k, y=-1, y=-10^k
     if (y < 0) {
       val value: BigDecimal = reciprocal(pow(x, -y, mc), mc)
       return round(value, mathContext)

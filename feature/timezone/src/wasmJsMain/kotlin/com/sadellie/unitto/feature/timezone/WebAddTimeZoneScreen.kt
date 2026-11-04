@@ -22,6 +22,7 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.input.rememberTextFieldState
@@ -42,7 +43,6 @@ import com.sadellie.unitto.core.ui.ListItemExpressiveDefaults
 import com.sadellie.unitto.core.ui.SearchBar
 import com.sadellie.unitto.core.ui.SearchPlaceholder
 import com.sadellie.unitto.core.ui.datetime.LocalPlatformDateFormatSettings
-import com.sadellie.unitto.core.ui.plus
 import com.sadellie.unitto.core.ui.rememberLinkOpener
 import org.jetbrains.compose.resources.stringResource
 import unitto.core.common.generated.resources.Res

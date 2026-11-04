@@ -42,6 +42,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -96,7 +97,6 @@ import com.sadellie.unitto.core.ui.ProvideStyle
 import com.sadellie.unitto.core.ui.ScaffoldWithTopBar
 import com.sadellie.unitto.core.ui.datetime.LocalPlatformDateFormatSettings
 import com.sadellie.unitto.core.ui.datetimepicker.TimePickerDialog
-import com.sadellie.unitto.core.ui.plus
 import com.sadellie.unitto.core.ui.squashable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive

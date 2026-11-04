@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2024 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,11 +28,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import com.sadellie.unitto.core.common.FormatterSymbols
+import com.sadellie.unitto.core.ui.textfield.ExpressionOutputTransformation
 import com.sadellie.unitto.core.ui.textfield.OutlinedDecimalTextField
 import com.sadellie.unitto.core.ui.textfield.UnexpectedDigitsInputTransformation
 
-// formatterSymbols waits for the output transformation below (TODO)
-@Suppress("UnusedParameter")
 @Composable
 internal fun BodyMassTextField(
   modifier: Modifier,
@@ -49,8 +49,7 @@ internal fun BodyMassTextField(
         focusedTextColor = MaterialTheme.colorScheme.onSecondaryContainer,
         unfocusedTextColor = MaterialTheme.colorScheme.onSecondaryContainer,
       ),
-    outputTransformation = null,
-    // outputTransformation = ExpressionOutputTransformation(formatterSymbols), TODO 1.11.0-alpha05
+    outputTransformation = ExpressionOutputTransformation(formatterSymbols),
     inputTransformation = UnexpectedDigitsInputTransformation(MAX_BODY_MASS_INPUT_VALUE, true),
     imeAction = imeAction,
   )

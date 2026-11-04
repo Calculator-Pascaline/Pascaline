@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -44,15 +46,18 @@ import org.koin.core.module.Module
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.navigation3.navigation
 
+/** Closes the widget configuration once its units are saved. */
+private val LocalOnWidgetConfigured =
+  staticCompositionLocalOf<() -> Unit> { error("No LocalOnWidgetConfigured provided") }
+
 @OptIn(KoinExperimentalAPI::class)
 @Composable
 internal fun ConverterWidgetConfigureNavigation(
   backStack: NavBackStack<NavKey>,
   onDone: () -> Unit,
 ) {
-  val navigator =
-    remember(backStack, onDone) { Navigator(backStack = backStack, onDoneAction = onDone) }
-  CompositionLocalProvider(LocalNavigator provides navigator) {
+  val navigator = remember(backStack) { Navigator(backStack = backStack) }
+  CompositionLocalProvider(LocalNavigator provides navigator, LocalOnWidgetConfigured provides onDone) {
     NavDisplay(
       backStack = backStack,
       modifier = Modifier.background(MaterialTheme.colorScheme.background),
@@ -74,6 +79,7 @@ internal fun Module.converterWidgetNavigation() {
 
     val resultEventBus = LocalEventBus.current
     val navigator = LocalNavigator.current
+    val onWidgetConfigured = LocalOnWidgetConfigured.current
     // listen for result when adding unit pair
     ResultEffect<AddUnitPairResult>(resultEventBus) {
       viewModel.addNewPair(it.unitFromId, it.unitToId)
@@ -82,7 +88,7 @@ internal fun Module.converterWidgetNavigation() {
     val submitProgress = viewModel.submitProgress.collectAsStateWithLifecycle()
     LaunchedEffect(submitProgress.value) {
       if (submitProgress.value == ConverterWidgetConfigureSubmitProgress.FINISHED) {
-        navigator.onDone()
+        onWidgetConfigured()
       }
     }
 
