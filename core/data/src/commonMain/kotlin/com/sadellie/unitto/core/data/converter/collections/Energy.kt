@@ -27,6 +27,12 @@ import com.sadellie.unitto.core.model.converter.unit.NormalUnit
 import unitto.core.common.generated.resources.Res
 import unitto.core.common.generated.resources.unit_attojoule
 import unitto.core.common.generated.resources.unit_attojoule_short
+import unitto.core.common.generated.resources.unit_btu_it
+import unitto.core.common.generated.resources.unit_btu_it_short
+import unitto.core.common.generated.resources.unit_btu_th
+import unitto.core.common.generated.resources.unit_btu_th_short
+import unitto.core.common.generated.resources.unit_calorie_it
+import unitto.core.common.generated.resources.unit_calorie_it_short
 import unitto.core.common.generated.resources.unit_calorie_th
 import unitto.core.common.generated.resources.unit_calorie_th_short
 import unitto.core.common.generated.resources.unit_electron_volt
@@ -43,6 +49,8 @@ import unitto.core.common.generated.resources.unit_gigawatt_hour
 import unitto.core.common.generated.resources.unit_gigawatt_hour_short
 import unitto.core.common.generated.resources.unit_joule
 import unitto.core.common.generated.resources.unit_joule_short
+import unitto.core.common.generated.resources.unit_kilocalorie_it
+import unitto.core.common.generated.resources.unit_kilocalorie_it_short
 import unitto.core.common.generated.resources.unit_kilocalorie_th
 import unitto.core.common.generated.resources.unit_kilocalorie_th_short
 import unitto.core.common.generated.resources.unit_kilojoule
@@ -61,6 +69,8 @@ import unitto.core.common.generated.resources.unit_milliwatt_hour
 import unitto.core.common.generated.resources.unit_milliwatt_hour_short
 import unitto.core.common.generated.resources.unit_watt_hour
 import unitto.core.common.generated.resources.unit_watt_hour_short
+import unitto.core.common.generated.resources.unit_watt_second
+import unitto.core.common.generated.resources.unit_watt_second_short
 
 internal val energyCollection: List<BasicUnit> by lazy {
   listOf(
@@ -84,6 +94,13 @@ internal val energyCollection: List<BasicUnit> by lazy {
       UnitGroup.ENERGY,
       Res.string.unit_joule,
       Res.string.unit_joule_short,
+    ),
+    NormalUnit(
+      UnitID.watt_second,
+      KBigDecimal("1000000000000000000"),
+      UnitGroup.ENERGY,
+      Res.string.unit_watt_second,
+      Res.string.unit_watt_second_short,
     ),
     NormalUnit(
       UnitID.kilojoule,
@@ -189,6 +206,34 @@ internal val energyCollection: List<BasicUnit> by lazy {
       UnitGroup.ENERGY,
       Res.string.unit_kilocalorie_th,
       Res.string.unit_kilocalorie_th_short,
+    ),
+    NormalUnit(
+      UnitID.calorie_it,
+      KBigDecimal("4186800000000000000"),
+      UnitGroup.ENERGY,
+      Res.string.unit_calorie_it,
+      Res.string.unit_calorie_it_short,
+    ),
+    NormalUnit(
+      UnitID.kilocalorie_it,
+      KBigDecimal("4186800000000000000000"),
+      UnitGroup.ENERGY,
+      Res.string.unit_kilocalorie_it,
+      Res.string.unit_kilocalorie_it_short,
+    ),
+    NormalUnit(
+      UnitID.btu_th,
+      KBigDecimal("1054350264488888888888.888889"),
+      UnitGroup.ENERGY,
+      Res.string.unit_btu_th,
+      Res.string.unit_btu_th_short,
+    ),
+    NormalUnit(
+      UnitID.btu_it,
+      KBigDecimal("1055055852620000000000"),
+      UnitGroup.ENERGY,
+      Res.string.unit_btu_it,
+      Res.string.unit_btu_it_short,
     ),
   )
 }

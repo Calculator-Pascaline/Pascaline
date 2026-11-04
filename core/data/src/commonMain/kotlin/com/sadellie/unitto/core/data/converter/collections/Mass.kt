@@ -60,6 +60,8 @@ import unitto.core.common.generated.resources.unit_pound
 import unitto.core.common.generated.resources.unit_pound_short
 import unitto.core.common.generated.resources.unit_saturn_mass
 import unitto.core.common.generated.resources.unit_saturn_mass_short
+import unitto.core.common.generated.resources.unit_short_ton
+import unitto.core.common.generated.resources.unit_short_ton_short
 import unitto.core.common.generated.resources.unit_stone_uk
 import unitto.core.common.generated.resources.unit_stone_uk_short
 import unitto.core.common.generated.resources.unit_sun_mass
@@ -126,6 +128,13 @@ internal val massCollection: List<BasicUnit> by lazy {
       UnitGroup.MASS,
       Res.string.unit_metric_ton,
       Res.string.unit_metric_ton_short,
+    ),
+    NormalUnit(
+      UnitID.short_ton,
+      KBigDecimal("907184.74"),
+      UnitGroup.MASS,
+      Res.string.unit_short_ton,
+      Res.string.unit_short_ton_short,
     ),
     NormalUnit(
       UnitID.imperial_ton,

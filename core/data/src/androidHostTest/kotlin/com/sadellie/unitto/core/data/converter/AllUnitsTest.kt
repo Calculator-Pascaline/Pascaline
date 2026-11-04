@@ -180,6 +180,13 @@ class AllUnitsTest {
     kilowatt_hour.checkWith(megajoule, "1", "3.6")
     megawatt_hour.checkWith(kilowatt_hour, "2.5", "2500")
     gigawatt_hour.checkWith(kilocalorie_th, "1", "860420650.0956")
+    // Issue #265
+    watt_second.checkWith(joule, "10", "10")
+    calorie_it.checkWith(joule, "10", "41.868")
+    kilocalorie_it.checkWith(kilojoule, "1", "4.1868")
+    btu_th.checkWith(joule, "1", "1054.35026")
+    btu_it.checkWith(joule, "1", "1055.05585")
+    kilowatt_hour.checkWith(btu_it, "1", "3412.14163")
   }
 
   @Test
@@ -234,6 +241,11 @@ class AllUnitsTest {
     uranus_equatorial_radius.checkWith(kilometer, "1", "25362")
     neptune_equatorial_radius.checkWith(kilometer, "1", "24622")
     sun_equatorial_radius.checkWith(kilometer, "1", "695508")
+    angstrom.checkWith(nanometer, "10", "1")
+    astronomical_unit.checkWith(kilometer, "1", "149597870.7")
+    // Issue #289
+    rack_unit.checkWith(inch, "1", "1.75")
+    rack_unit.checkWith(millimeter, "2", "88.9")
   }
 
   @Test
@@ -260,6 +272,8 @@ class AllUnitsTest {
     uranus_mass.checkWith(kilogram, "1", "86810300000000000000000000")
     neptune_mass.checkWith(kilogram, "1", "102410000000000000000000000")
     sun_mass.checkWith(kilogram, "1", "1989100000000000000000000000000")
+    short_ton.checkWith(kilogram, "1", "907.18474")
+    short_ton.checkWith(pound, "1", "2000")
   }
 
   @Test
@@ -269,6 +283,7 @@ class AllUnitsTest {
     kilowatt.checkWith(horse_power_mechanical, "395", "529.70373")
     megawatt.checkWith(horse_power_mechanical, "395", "529703.72539")
     horse_power_mechanical.checkWith(kilowatt, "395", "294.55145")
+    ton_of_refrigeration.checkWith(kilowatt, "1", "3.51685")
   }
 
   @Test
@@ -373,6 +388,11 @@ class AllUnitsTest {
     kelvin.checkWith(celsius, "-36.6", "-309.75")
     kelvin.checkWith(fahrenheit, "-36.6", "-525.55")
     kelvin.checkWith(kelvin, "-36.6", "-36.6")
+    kelvin.checkWith(rankine, "100", "180")
+    rankine.checkWith(fahrenheit, "0", "-459.67")
+    celsius.checkWith(rankine, "0", "491.67")
+    rankine.checkWith(celsius, "491.67", "0")
+    fahrenheit.checkWith(rankine, "32", "491.67")
   }
 
   @Test

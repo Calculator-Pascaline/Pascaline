@@ -523,10 +523,12 @@
     <string name="unit_acre_short">ac</string>
     <string name="unit_angle_minute">Perc</string>
     <string name="unit_angle_second">Másodperc</string>
+    <string name="unit_angstrom">Ångström</string>
     <string name="unit_apostilb">Apostilb</string>
     <string name="unit_apostilb_short">asb</string>
     <string name="unit_are">Ár</string>
     <string name="unit_are_short">a</string>
+    <string name="unit_astronomical_unit">Csillagászati egység</string>
     <string name="unit_atomic_mass_unit">Dalton</string>
     <string name="unit_atomic_mass_unit_short">u</string>
     <string name="unit_attofarad">Attofarad</string>
@@ -559,10 +561,13 @@
     <string name="unit_blondel_short">blondel</string>
     <string name="unit_bril">Bril</string>
     <string name="unit_bril_short">bril</string>
+    <string name="unit_btu_it">Brit hőegység (IT)</string>
+    <string name="unit_btu_th">Brit hőegység (th)</string>
     <string name="unit_byte">Bájt</string>
     <string name="unit_byte_per_second">Bájt/másodperc</string>
     <string name="unit_byte_per_second_short">B/s</string>
     <string name="unit_byte_short">B</string>
+    <string name="unit_calorie_it">Kalória (IT)</string>
     <string name="unit_calorie_th">Kalória (th)</string>
     <string name="unit_calorie_th_short">cal</string>
     <string name="unit_candela_per_square_centimeter">Kandela/négyzetcentiméter</string>
@@ -1026,6 +1031,7 @@
     <string name="unit_kilobyte_per_second">Kilobájt/másodperc</string>
     <string name="unit_kilobyte_per_second_short">KB/s</string>
     <string name="unit_kilobyte_short">KB</string>
+    <string name="unit_kilocalorie_it">Kilokalória (IT)</string>
     <string name="unit_kilocalorie_th">Kilokalória (th)</string>
     <string name="unit_kilocalorie_th_short">kcal</string>
     <string name="unit_kilocandela_per_square_meter">Kilocandela/négyzetméter</string>
@@ -1374,8 +1380,10 @@
     <string name="unit_quaternary_short">base4</string>
     <string name="unit_quinary">Quiner</string>
     <string name="unit_quinary_short">base5</string>
+    <string name="unit_rack_unit">Rack egység</string>
     <string name="unit_radian">Radián</string>
     <string name="unit_radian_short">rad</string>
+    <string name="unit_rankine">Rankine</string>
     <string name="unit_saturn_equatorial_radius">Szaturnusz egyenlítői sugara</string>
     <string name="unit_saturn_equatorial_radius_short">Saturn R</string>
     <string name="unit_saturn_mass">Szaturnusz tömege</string>
@@ -1390,6 +1398,7 @@
     <string name="unit_septenary_short">base7</string>
     <string name="unit_sextant">Szextáns</string>
     <string name="unit_sextant_short">sxt</string>
+    <string name="unit_short_ton">Rövid tonna</string>
     <string name="unit_skot">Skot</string>
     <string name="unit_skot_short">sk</string>
     <string name="unit_square_centimeter">Négyzetcentiméter</string>
@@ -1442,6 +1451,7 @@
     <string name="unit_tetradecimal_short">base14</string>
     <string name="unit_ton_force">Tonna-erő</string>
     <string name="unit_ton_force_short">tf</string>
+    <string name="unit_ton_of_refrigeration">Hűtési tonna</string>
     <string name="unit_torr">Torr</string>
     <string name="unit_torr_short">torr</string>
     <string name="unit_tridecimal">Tridecimális</string>
@@ -1482,6 +1492,7 @@
     <string name="unit_watt_hour_short">Wh</string>
     <string name="unit_watt_per_square_centimeter_per_steradian">Watt/négyzetcentiméter/szteradián</string>
     <string name="unit_watt_per_square_centimeter_per_steradian_short">W/cm²/sr</string>
+    <string name="unit_watt_second">Wattszekundum</string>
     <string name="unit_watt_short">W</string>
     <string name="unit_weber">Weber</string>
     <string name="unit_weber_short">Wb</string>

@@ -523,10 +523,12 @@
     <string name="unit_acre_short">ac</string>
     <string name="unit_angle_minute">Угловая минута</string>
     <string name="unit_angle_second">Угловая секунда</string>
+    <string name="unit_angstrom">Ангстрем</string>
     <string name="unit_apostilb">Апостиля</string>
     <string name="unit_apostilb_short">asb</string>
     <string name="unit_are">Ар</string>
     <string name="unit_are_short">a</string>
+    <string name="unit_astronomical_unit">Астрономическая единица</string>
     <string name="unit_atomic_mass_unit">Дальтон</string>
     <string name="unit_atomic_mass_unit_short">u</string>
     <string name="unit_attofarad">Аттофарад</string>
@@ -559,10 +561,13 @@
     <string name="unit_blondel_short">blondel</string>
     <string name="unit_bril">Брил</string>
     <string name="unit_bril_short">bril</string>
+    <string name="unit_btu_it">Британская тепловая единица (IT)</string>
+    <string name="unit_btu_th">Британская тепловая единица (th)</string>
     <string name="unit_byte">Байт</string>
     <string name="unit_byte_per_second">Байт/секунда</string>
     <string name="unit_byte_per_second_short">B/s</string>
     <string name="unit_byte_short">B</string>
+    <string name="unit_calorie_it">Калория (IT)</string>
     <string name="unit_calorie_th">Калория (th)</string>
     <string name="unit_calorie_th_short">cal</string>
     <string name="unit_candela_per_square_centimeter">Кандела/см²</string>
@@ -1026,6 +1031,7 @@
     <string name="unit_kilobyte_per_second">Килобайт/секунда</string>
     <string name="unit_kilobyte_per_second_short">KB/s</string>
     <string name="unit_kilobyte_short">KB</string>
+    <string name="unit_kilocalorie_it">Килокалория (IT)</string>
     <string name="unit_kilocalorie_th">Килокалория (th)</string>
     <string name="unit_kilocalorie_th_short">kcal</string>
     <string name="unit_kilocandela_per_square_meter">Килокандела/м²</string>
@@ -1374,8 +1380,10 @@
     <string name="unit_quaternary_short">base4</string>
     <string name="unit_quinary">Пятеричная</string>
     <string name="unit_quinary_short">base5</string>
+    <string name="unit_rack_unit">Юнит (стойка)</string>
     <string name="unit_radian">Радиан</string>
     <string name="unit_radian_short">rad</string>
+    <string name="unit_rankine">Ранкин</string>
     <string name="unit_saturn_equatorial_radius">Экваториальный радиус Сатурна</string>
     <string name="unit_saturn_equatorial_radius_short">Saturn R</string>
     <string name="unit_saturn_mass">Масса Сатурна</string>
@@ -1390,6 +1398,7 @@
     <string name="unit_septenary_short">base7</string>
     <string name="unit_sextant">Секстант</string>
     <string name="unit_sextant_short">sxt</string>
+    <string name="unit_short_ton">Короткая тонна</string>
     <string name="unit_skot">Скот</string>
     <string name="unit_skot_short">sk</string>
     <string name="unit_square_centimeter">Квадратный сантиметр</string>
@@ -1442,6 +1451,7 @@
     <string name="unit_tetradecimal_short">base14</string>
     <string name="unit_ton_force">Тонна-сила</string>
     <string name="unit_ton_force_short">tf</string>
+    <string name="unit_ton_of_refrigeration">Тонна охлаждения</string>
     <string name="unit_torr">Торр</string>
     <string name="unit_torr_short">torr</string>
     <string name="unit_tridecimal">Тринадцатеричная</string>
@@ -1482,6 +1492,7 @@
     <string name="unit_watt_hour_short">Wh</string>
     <string name="unit_watt_per_square_centimeter_per_steradian">Ватт/см²/стерадиан</string>
     <string name="unit_watt_per_square_centimeter_per_steradian_short">W/cm²/sr</string>
+    <string name="unit_watt_second">Ватт-секунда</string>
     <string name="unit_watt_short">W</string>
     <string name="unit_weber">Вебер</string>
     <string name="unit_weber_short">Wb</string>

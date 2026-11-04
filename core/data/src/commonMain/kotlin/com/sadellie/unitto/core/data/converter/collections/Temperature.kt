@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2023-2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,85 +32,63 @@ import unitto.core.common.generated.resources.unit_fahrenheit
 import unitto.core.common.generated.resources.unit_fahrenheit_short
 import unitto.core.common.generated.resources.unit_kelvin
 import unitto.core.common.generated.resources.unit_kelvin_short
+import unitto.core.common.generated.resources.unit_rankine
+import unitto.core.common.generated.resources.unit_rankine_short
+
+/** Temperatures go through kelvin: each unit only says how it turns into kelvin and back. */
+private class TemperatureUnit(
+  override val id: String,
+  override val displayName: StringResource,
+  override val shortName: StringResource,
+  val toKelvin: (KBigDecimal) -> KBigDecimal,
+  val fromKelvin: (KBigDecimal) -> KBigDecimal,
+) : BasicUnit.Default {
+  override val group: UnitGroup = UnitGroup.TEMPERATURE
+  override val factor: KBigDecimal = KBigDecimal.ONE
+  override val backward: Boolean = false
+
+  override fun convert(unitTo: BasicUnit.Default, value: KBigDecimal): KBigDecimal {
+    if (unitTo.id == id || unitTo !is TemperatureUnit) return value
+    return unitTo.fromKelvin(toKelvin(value.setMaxScale()))
+  }
+}
+
+private val ABSOLUTE_ZERO_CELSIUS = KBigDecimal("273.15")
+private val ABSOLUTE_ZERO_FAHRENHEIT = KBigDecimal("459.67")
+private val FIVE = KBigDecimal("5")
+private val NINE = KBigDecimal("9")
+private val NINE_FIFTHS = KBigDecimal("1.8")
 
 internal val temperatureCollection: List<BasicUnit> by lazy {
-  val celsius =
-    object : BasicUnit.Default {
-      override val id: String = UnitID.celsius
-      override val group: UnitGroup = UnitGroup.TEMPERATURE
-      override val displayName: StringResource = Res.string.unit_celsius
-      override val shortName: StringResource = Res.string.unit_celsius_short
-      override val factor: KBigDecimal = KBigDecimal.ONE
-      override val backward: Boolean = false
-
-      override fun convert(unitTo: BasicUnit.Default, value: KBigDecimal): KBigDecimal =
-        when (unitTo.id) {
-          UnitID.fahrenheit -> {
-            value.setMaxScale().times(KBigDecimal("1.8")).plus(KBigDecimal("32"))
-          }
-
-          UnitID.kelvin -> {
-            value.setMaxScale().plus(KBigDecimal("273.15"))
-          }
-
-          else -> value
-        }
-    }
-
-  val fahrenheit =
-    object : BasicUnit.Default {
-      override val id: String = UnitID.fahrenheit
-      override val group: UnitGroup = UnitGroup.TEMPERATURE
-      override val displayName: StringResource = Res.string.unit_fahrenheit
-      override val shortName: StringResource = Res.string.unit_fahrenheit_short
-      override val factor: KBigDecimal = KBigDecimal.ONE
-      override val backward: Boolean = false
-
-      override fun convert(unitTo: BasicUnit.Default, value: KBigDecimal): KBigDecimal =
-        when (unitTo.id) {
-          UnitID.celsius -> {
-            value
-              .setMaxScale()
-              .minus(KBigDecimal("32"))
-              .times(KBigDecimal("5"))
-              .div(KBigDecimal("9"))
-          }
-          UnitID.kelvin -> {
-            value
-              .setMaxScale()
-              .minus(KBigDecimal("32"))
-              .times(KBigDecimal("5"))
-              .div(KBigDecimal("9"))
-              .add(KBigDecimal("273.15"))
-          }
-          else -> value
-        }
-    }
-
-  val kelvin =
-    object : BasicUnit.Default {
-      override val id: String = UnitID.kelvin
-      override val group: UnitGroup = UnitGroup.TEMPERATURE
-      override val displayName: StringResource = Res.string.unit_kelvin
-      override val shortName: StringResource = Res.string.unit_kelvin_short
-      override val factor: KBigDecimal = KBigDecimal.ONE
-      override val backward: Boolean = false
-
-      override fun convert(unitTo: BasicUnit.Default, value: KBigDecimal): KBigDecimal =
-        when (unitTo.id) {
-          UnitID.celsius -> {
-            value.setMaxScale().minus(KBigDecimal("273.15"))
-          }
-          UnitID.fahrenheit -> {
-            value
-              .setMaxScale()
-              .minus(KBigDecimal("273.15"))
-              .times(KBigDecimal("1.8"))
-              .plus(KBigDecimal("32"))
-          }
-          else -> value
-        }
-    }
-
-  listOf(celsius, fahrenheit, kelvin)
+  listOf(
+    TemperatureUnit(
+      id = UnitID.celsius,
+      displayName = Res.string.unit_celsius,
+      shortName = Res.string.unit_celsius_short,
+      toKelvin = { it.plus(ABSOLUTE_ZERO_CELSIUS) },
+      fromKelvin = { it.minus(ABSOLUTE_ZERO_CELSIUS) },
+    ),
+    TemperatureUnit(
+      id = UnitID.fahrenheit,
+      displayName = Res.string.unit_fahrenheit,
+      shortName = Res.string.unit_fahrenheit_short,
+      toKelvin = { it.plus(ABSOLUTE_ZERO_FAHRENHEIT).times(FIVE).div(NINE) },
+      fromKelvin = { it.times(NINE_FIFTHS).minus(ABSOLUTE_ZERO_FAHRENHEIT) },
+    ),
+    TemperatureUnit(
+      id = UnitID.kelvin,
+      displayName = Res.string.unit_kelvin,
+      shortName = Res.string.unit_kelvin_short,
+      toKelvin = { it },
+      fromKelvin = { it },
+    ),
+    // Fahrenheit degrees from absolute zero (issue #265)
+    TemperatureUnit(
+      id = UnitID.rankine,
+      displayName = Res.string.unit_rankine,
+      shortName = Res.string.unit_rankine_short,
+      toKelvin = { it.times(FIVE).div(NINE) },
+      fromKelvin = { it.times(NINE_FIFTHS) },
+    ),
+  )
 }

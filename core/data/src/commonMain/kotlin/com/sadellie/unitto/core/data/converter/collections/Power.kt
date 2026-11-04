@@ -32,6 +32,8 @@ import unitto.core.common.generated.resources.unit_kilowatt
 import unitto.core.common.generated.resources.unit_kilowatt_short
 import unitto.core.common.generated.resources.unit_megawatt
 import unitto.core.common.generated.resources.unit_megawatt_short
+import unitto.core.common.generated.resources.unit_ton_of_refrigeration
+import unitto.core.common.generated.resources.unit_ton_of_refrigeration_short
 import unitto.core.common.generated.resources.unit_watt
 import unitto.core.common.generated.resources.unit_watt_short
 
@@ -71,6 +73,13 @@ internal val powerCollection: List<BasicUnit> by lazy {
       UnitGroup.POWER,
       Res.string.unit_horse_power_mechanical,
       Res.string.unit_horse_power_mechanical_short,
+    ),
+    NormalUnit(
+      UnitID.ton_of_refrigeration,
+      KBigDecimal("3516852842066666666666.666667"),
+      UnitGroup.POWER,
+      Res.string.unit_ton_of_refrigeration,
+      Res.string.unit_ton_of_refrigeration_short,
     ),
   )
 }

@@ -27,6 +27,7 @@ package com.sadellie.unitto.core.data.converter
 object UnitID {
   // LENGTH
   const val attometer = "attometer"
+  const val angstrom = "angstrom"
   const val nanometer = "nanometer"
   const val micrometer = "micrometer"
   const val millimeter = "millimeter"
@@ -35,10 +36,12 @@ object UnitID {
   const val meter = "meter"
   const val kilometer = "kilometer"
   const val mile = "mile"
+  const val astronomical_unit = "astronomical_unit"
   const val nautical_mile = "nautical_mile"
   const val yard = "yard"
   const val foot = "foot"
   const val inch = "inch"
+  const val rack_unit = "rack_unit"
   const val light_year = "light_year"
   const val parsec = "parsec"
   const val kiloparsec = "kiloparsec"
@@ -62,6 +65,7 @@ object UnitID {
   const val gram = "gram"
   const val kilogram = "kilogram"
   const val metric_ton = "metric_ton"
+  const val short_ton = "short_ton"
   const val imperial_ton = "imperial_ton"
   const val pound = "pound"
   const val stone_uk = "stone_uk"
@@ -81,6 +85,7 @@ object UnitID {
   const val celsius = "celsius"
   const val fahrenheit = "fahrenheit"
   const val kelvin = "kelvin"
+  const val rankine = "rankine"
 
   // SPEED
   const val millimeter_per_hour = "millimeter_per_hour"
@@ -201,6 +206,7 @@ object UnitID {
   const val electron_volt = "electron_volt"
   const val attojoule = "attojoule"
   const val joule = "joule"
+  const val watt_second = "watt_second"
   const val kilojoule = "kilojoule"
   const val gigajoule = "gigajoule"
   const val megajoule = "megajoule"
@@ -216,6 +222,10 @@ object UnitID {
   const val energy_horse_power_metric = "energy_horse_power_metric"
   const val calorie_th = "calorie_th"
   const val kilocalorie_th = "kilocalorie_th"
+  const val calorie_it = "calorie_it"
+  const val kilocalorie_it = "kilocalorie_it"
+  const val btu_th = "btu_th"
+  const val btu_it = "btu_it"
 
   // POWER
   const val attowatt = "attowatt"
@@ -223,6 +233,7 @@ object UnitID {
   const val kilowatt = "kilowatt"
   const val megawatt = "megawatt"
   const val horse_power_mechanical = "horse_power_mechanical"
+  const val ton_of_refrigeration = "ton_of_refrigeration"
 
   // ANGLE
   const val angle_second = "angle_second"

@@ -523,10 +523,12 @@
     <string name="unit_acre_short">ac</string>
     <string name="unit_angle_minute">Menit</string>
     <string name="unit_angle_second">Detik</string>
+    <string name="unit_angstrom">Ångström</string>
     <string name="unit_apostilb">Apostilb</string>
     <string name="unit_apostilb_short">asb</string>
     <string name="unit_are">Are</string>
     <string name="unit_are_short">a</string>
+    <string name="unit_astronomical_unit">Satuan astronomi</string>
     <string name="unit_atomic_mass_unit">Dalton</string>
     <string name="unit_atomic_mass_unit_short">u</string>
     <string name="unit_attofarad">Atofarad</string>
@@ -559,10 +561,13 @@
     <string name="unit_blondel_short">blondel</string>
     <string name="unit_bril">Bril</string>
     <string name="unit_bril_short">bril</string>
+    <string name="unit_btu_it">Satuan termal Britania (IT)</string>
+    <string name="unit_btu_th">Satuan termal Britania (th)</string>
     <string name="unit_byte">Bita</string>
     <string name="unit_byte_per_second">Bita/detik</string>
     <string name="unit_byte_per_second_short">B/d</string>
     <string name="unit_byte_short">B</string>
+    <string name="unit_calorie_it">Kalori (IT)</string>
     <string name="unit_calorie_th">Kalori (th)</string>
     <string name="unit_calorie_th_short">kal</string>
     <string name="unit_candela_per_square_centimeter">Kandela/sentimeter persegi</string>
@@ -1026,6 +1031,7 @@
     <string name="unit_kilobyte_per_second">Kilobita/detik</string>
     <string name="unit_kilobyte_per_second_short">KB/d</string>
     <string name="unit_kilobyte_short">KB</string>
+    <string name="unit_kilocalorie_it">Kilokalori (IT)</string>
     <string name="unit_kilocalorie_th">Kilokalori</string>
     <string name="unit_kilocalorie_th_short">kkal</string>
     <string name="unit_kilocandela_per_square_meter">Kilokandela/meter persegi</string>
@@ -1374,8 +1380,10 @@
     <string name="unit_quaternary_short">basis4</string>
     <string name="unit_quinary">Kuiner</string>
     <string name="unit_quinary_short">basis5</string>
+    <string name="unit_rack_unit">Unit rak</string>
     <string name="unit_radian">Radian</string>
     <string name="unit_radian_short">rad</string>
+    <string name="unit_rankine">Rankine</string>
     <string name="unit_saturn_equatorial_radius">Radius saturnus</string>
     <string name="unit_saturn_equatorial_radius_short">R Saturnus</string>
     <string name="unit_saturn_mass">Massa saturnus</string>
@@ -1390,6 +1398,7 @@
     <string name="unit_septenary_short">basis7</string>
     <string name="unit_sextant">Sekstan</string>
     <string name="unit_sextant_short">sxt</string>
+    <string name="unit_short_ton">Ton pendek</string>
     <string name="unit_skot">Skot</string>
     <string name="unit_skot_short">sk</string>
     <string name="unit_square_centimeter">Sentimeter persegi</string>
@@ -1442,6 +1451,7 @@
     <string name="unit_tetradecimal_short">basis14</string>
     <string name="unit_ton_force">Ton-gaya</string>
     <string name="unit_ton_force_short">tf</string>
+    <string name="unit_ton_of_refrigeration">Ton refrigerasi</string>
     <string name="unit_torr">Torr</string>
     <string name="unit_torr_short">torr</string>
     <string name="unit_tridecimal">Tridesimal</string>
@@ -1482,6 +1492,7 @@
     <string name="unit_watt_hour_short">Wh</string>
     <string name="unit_watt_per_square_centimeter_per_steradian">Watt/sentimeter persegi/steradian</string>
     <string name="unit_watt_per_square_centimeter_per_steradian_short">W/cm²/sr</string>
+    <string name="unit_watt_second">Watt-detik</string>
     <string name="unit_watt_short">W</string>
     <string name="unit_weber">Weber</string>
     <string name="unit_weber_short">Wb</string>

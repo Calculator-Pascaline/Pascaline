@@ -24,6 +24,10 @@ import com.sadellie.unitto.core.model.converter.UnitGroup
 import com.sadellie.unitto.core.model.converter.unit.BasicUnit
 import com.sadellie.unitto.core.model.converter.unit.NormalUnit
 import unitto.core.common.generated.resources.Res
+import unitto.core.common.generated.resources.unit_angstrom
+import unitto.core.common.generated.resources.unit_angstrom_short
+import unitto.core.common.generated.resources.unit_astronomical_unit
+import unitto.core.common.generated.resources.unit_astronomical_unit_short
 import unitto.core.common.generated.resources.unit_attometer
 import unitto.core.common.generated.resources.unit_attometer_short
 import unitto.core.common.generated.resources.unit_centimeter
@@ -66,6 +70,8 @@ import unitto.core.common.generated.resources.unit_neptune_equatorial_radius
 import unitto.core.common.generated.resources.unit_neptune_equatorial_radius_short
 import unitto.core.common.generated.resources.unit_parsec
 import unitto.core.common.generated.resources.unit_parsec_short
+import unitto.core.common.generated.resources.unit_rack_unit
+import unitto.core.common.generated.resources.unit_rack_unit_short
 import unitto.core.common.generated.resources.unit_saturn_equatorial_radius
 import unitto.core.common.generated.resources.unit_saturn_equatorial_radius_short
 import unitto.core.common.generated.resources.unit_sun_equatorial_radius
@@ -85,6 +91,13 @@ internal val lengthCollection: List<BasicUnit> by lazy {
       UnitGroup.LENGTH,
       Res.string.unit_attometer,
       Res.string.unit_attometer_short,
+    ),
+    NormalUnit(
+      UnitID.angstrom,
+      KBigDecimal("100000000"),
+      UnitGroup.LENGTH,
+      Res.string.unit_angstrom,
+      Res.string.unit_angstrom_short,
     ),
     NormalUnit(
       UnitID.nanometer,
@@ -150,6 +163,13 @@ internal val lengthCollection: List<BasicUnit> by lazy {
       Res.string.unit_inch_short,
     ),
     NormalUnit(
+      UnitID.rack_unit,
+      KBigDecimal("44450000000000000"),
+      UnitGroup.LENGTH,
+      Res.string.unit_rack_unit,
+      Res.string.unit_rack_unit_short,
+    ),
+    NormalUnit(
       UnitID.foot,
       KBigDecimal("304800000000000000"),
       UnitGroup.LENGTH,
@@ -169,6 +189,13 @@ internal val lengthCollection: List<BasicUnit> by lazy {
       UnitGroup.LENGTH,
       Res.string.unit_mile,
       Res.string.unit_mile_short,
+    ),
+    NormalUnit(
+      UnitID.astronomical_unit,
+      KBigDecimal("149597870700000000000000000000"),
+      UnitGroup.LENGTH,
+      Res.string.unit_astronomical_unit,
+      Res.string.unit_astronomical_unit_short,
     ),
     NormalUnit(
       UnitID.light_year,
