@@ -18,7 +18,8 @@
       // a while after the app has started: on phones, doing both at once can use too much memory
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () =>
-          setTimeout(() => navigator.serviceWorker.register("sw.js"), 15000),
+          // Never sw.js from the browser's cache: a new release is found on the next visit
+          setTimeout(() => navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }), 15000),
         );
       }
 
