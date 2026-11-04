@@ -248,7 +248,6 @@ private fun TimeZoneScreen(
     currentUserTime = currentUserTime,
     setSelectedTime = setSelectedTime,
     setDialogState = setDialogState,
-    userTimeZone = uiState.userTimeZone,
     updateLabel = updateLabel,
   )
 }
@@ -260,7 +259,6 @@ private fun TimeZoneDialog(
   currentUserTime: ZonedDateTime,
   setSelectedTime: (ZonedDateTime) -> Unit,
   setDialogState: (TimeZoneDialogState) -> Unit,
-  userTimeZone: TimeZone,
   updateLabel: (FavoriteZone, String) -> Unit,
 ) {
   when (dialogState) {
@@ -294,11 +292,13 @@ private fun TimeZoneDialog(
         minute = dialogState.time.minute,
         onConfirm = { hour, minute ->
           setSelectedTime(
-            dialogState.time
-              .withHour(hour)
-              .withMinute(minute)
-              .minusSeconds(dialogState.timeZone.timeZone.offsetSeconds)
-              .plusSeconds(userTimeZone.offsetSeconds)
+            pickedInUserZone(
+              zoneTime = dialogState.time,
+              zone = dialogState.timeZone.timeZone.zoneId(),
+              hour = hour,
+              minute = minute,
+              userZone = currentUserTime.zone,
+            )
           )
           setDialogState(TimeZoneDialogState.Nothing)
         },

@@ -49,5 +49,6 @@ kotlin {
     implementation(libs.io.insert.koin.koin.core.coroutines)
     implementation(libs.org.jetbrains.compose.ui.ui.tooling.preview)
   }
+  sourceSets.androidHostTest.dependencies { implementation(libs.org.jetbrains.kotlin.kotlin.test) }
   sourceSets.androidDeviceTest.dependencies { implementation(libs.androidx.compose.ui.test.junit4) }
 }

@@ -73,6 +73,60 @@
     <string name="functions_reset_view">Reset view</string>
     <string name="functions_zoom_in">Zoom in</string>
     <string name="functions_zoom_out">Zoom out</string>
+    <string name="physical_unit_acceleration_of_gravity">Acceleration of gravity</string>
+    <string name="physical_unit_ampere">Ampere</string>
+    <string name="physical_unit_atmosphere">Atmosphere</string>
+    <string name="physical_unit_avogadro_constant">Avogadro constant</string>
+    <string name="physical_unit_boltzmann_constant">Boltzmann constant</string>
+    <string name="physical_unit_candela">Candela</string>
+    <string name="physical_unit_coulomb">Coulomb</string>
+    <string name="physical_unit_coulomb_constant">Coulomb constant</string>
+    <string name="physical_unit_cup">Cup</string>
+    <string name="physical_unit_elementary_charge">Elementary charge</string>
+    <string name="physical_unit_fluid_ounce">Fluid ounce</string>
+    <string name="physical_unit_gallon">Gallon</string>
+    <string name="physical_unit_gigahertz">Gigahertz</string>
+    <string name="physical_unit_gigawatt">Gigawatt</string>
+    <string name="physical_unit_gradian">Gradian</string>
+    <string name="physical_unit_gravitational_constant">Gravitational constant</string>
+    <string name="physical_unit_henry">Henry</string>
+    <string name="physical_unit_hertz">Hertz</string>
+    <string name="physical_unit_kiloelectronvolt">Kiloelectronvolt</string>
+    <string name="physical_unit_kilohertz">Kilohertz</string>
+    <string name="physical_unit_kiloohm">Kiloohm</string>
+    <string name="physical_unit_kilovolt">Kilovolt</string>
+    <string name="physical_unit_long_ton">Long ton</string>
+    <string name="physical_unit_megaelectronvolt">Megaelectronvolt</string>
+    <string name="physical_unit_megahertz">Megahertz</string>
+    <string name="physical_unit_microampere">Microampere</string>
+    <string name="physical_unit_micromole">Micromole</string>
+    <string name="physical_unit_microvolt">Microvolt</string>
+    <string name="physical_unit_microwatt">Microwatt</string>
+    <string name="physical_unit_milliampere">Milliampere</string>
+    <string name="physical_unit_millielectronvolt">Millielectronvolt</string>
+    <string name="physical_unit_millijoule">Millijoule</string>
+    <string name="physical_unit_millimole">Millimole</string>
+    <string name="physical_unit_millivolt">Millivolt</string>
+    <string name="physical_unit_milliwatt">Milliwatt</string>
+    <string name="physical_unit_molar_gas_constant">Molar gas constant</string>
+    <string name="physical_unit_mole">Mole</string>
+    <string name="physical_unit_month">Month</string>
+    <string name="physical_unit_neutron_mass">Neutron mass</string>
+    <string name="physical_unit_ohm">Ohm</string>
+    <string name="physical_unit_picometer">Picometer</string>
+    <string name="physical_unit_pint">Pint</string>
+    <string name="physical_unit_planck_constant">Planck constant</string>
+    <string name="physical_unit_proton_mass">Proton mass</string>
+    <string name="physical_unit_quart">Quart</string>
+    <string name="physical_unit_siemens">Siemens</string>
+    <string name="physical_unit_speed_of_light">Speed of light</string>
+    <string name="physical_unit_tablespoon">Tablespoon</string>
+    <string name="physical_unit_teaspoon">Teaspoon</string>
+    <string name="physical_unit_tesla">Tesla</string>
+    <string name="physical_unit_vacuum_permeability">Vacuum permeability</string>
+    <string name="physical_unit_vacuum_permittivity">Vacuum permittivity</string>
+    <string name="physical_unit_volt">Volt</string>
+    <string name="physical_unit_year">Year</string>
     <string name="probability_title">Probability</string>
     <string name="sequences_title">Sequences</string>
     <string name="statistics_title">Statistics</string>
@@ -423,7 +477,7 @@
     <string name="locale_hu" translatable="false">Magyar</string>
     <string name="locale_in" translatable="false">Indonesia</string>
     <string name="locale_it" translatable="false">Italiano</string>
-    <string name="locale_nl" translatable="false">Dutch</string>
+    <string name="locale_nl" translatable="false">Nederlands</string>
     <string name="locale_pt_rBR" translatable="false">Português (Brasil)</string>
     <string name="locale_ru" translatable="false">Русский</string>
     <string name="locale_tr" translatable="false">Türkçe</string>
@@ -1794,4 +1848,18 @@
     <string name="unit_yard_per_second">Yard/second</string>
     <string name="unit_yard_per_second_short">yd/s</string>
     <string name="unit_yard_short">yd</string>
+    <string name="units_menu_amount_of_substance">Amount of substance</string>
+    <string name="units_menu_area_and_volume">Area and volume</string>
+    <string name="units_menu_constants">Constants</string>
+    <string name="units_menu_current">Current</string>
+    <string name="units_menu_electricity">Electricity</string>
+    <string name="units_menu_energy_and_power">Energy and power</string>
+    <string name="units_menu_force_and_pressure">Force and pressure</string>
+    <string name="units_menu_frequency">Frequency</string>
+    <string name="units_menu_imperial">Imperial</string>
+    <string name="units_menu_length_and_angle">Length and angle</string>
+    <string name="units_menu_other_units">Other units</string>
+    <string name="units_menu_resistance">Resistance</string>
+    <string name="units_menu_time_and_frequency">Time and frequency</string>
+    <string name="units_menu_voltage">Voltage</string>
 </resources>

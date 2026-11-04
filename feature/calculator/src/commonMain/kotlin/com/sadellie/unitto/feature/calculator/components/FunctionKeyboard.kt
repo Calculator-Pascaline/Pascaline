@@ -84,6 +84,7 @@ import com.sadellie.unitto.core.common.PhysicalUnit
 import com.sadellie.unitto.core.common.PhysicalUnits
 import com.sadellie.unitto.core.common.Token
 import com.sadellie.unitto.core.common.UnitMenuItem
+import com.sadellie.unitto.core.common.physicalUnitNames
 import com.sadellie.unitto.core.designsystem.icons.symbols.ActivityZone
 import com.sadellie.unitto.core.designsystem.icons.symbols.ActivityZoneFill
 import com.sadellie.unitto.core.designsystem.icons.symbols.Airwave
@@ -424,7 +425,7 @@ internal fun UnitsSheet(onDismiss: () -> Unit, onUnitClick: (String) -> Unit) {
           ) {
             // The tiles have no text: the chosen one is named here
             Text(
-              text = selected.name,
+              text = menuName(selected.name),
               style = MaterialTheme.typography.titleMedium,
               color = categoryColor(selected.name),
               textAlign = TextAlign.Center,
@@ -447,6 +448,16 @@ internal fun UnitsSheet(onDismiss: () -> Unit, onUnitClick: (String) -> Unit) {
 }
 
 /**
+ * Name of a category, unit or constant of the units menu in the app's language. The menu's names
+ * are in English: they stay the keys, an unknown one is shown as it is.
+ */
+@Composable
+private fun menuName(name: String): String = physicalUnitNames[name]?.let { stringResource(it) } ?: name
+
+/** Between the names of a sub-menu and its own sub-menu: "Energy · Joule". */
+private const val SECTION_SEPARATOR = " · "
+
+/**
  * Units of [category] in the menu's order: its own units, then each sub-menu's under its name.
  * Deeper sub-menus are named after both: "Energy · Joule".
  */
@@ -457,7 +468,7 @@ private fun unitSections(category: UnitMenuItem.Category): List<Pair<String, Lis
     if (units.isNotEmpty()) sections += title to units
     menu.children.filterIsInstance<UnitMenuItem.Category>().forEach { child ->
       // A first level of sub-menus is named alone, Length rather than Length and angle · Length
-      walk(child, if (menu === category) child.name else "$title · ${child.name}")
+      walk(child, if (menu === category) child.name else title + SECTION_SEPARATOR + child.name)
     }
   }
   walk(category, category.name)
@@ -477,7 +488,7 @@ private fun UnitSection(
     modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    categoryIcon(title.substringAfterLast(" · "))?.let { icon ->
+    categoryIcon(title.substringAfterLast(SECTION_SEPARATOR))?.let { icon ->
       Icon(
         icon,
         contentDescription = null,
@@ -487,7 +498,7 @@ private fun UnitSection(
       Spacer(Modifier.width(8.dp))
     }
     Text(
-      text = title,
+      text = title.split(SECTION_SEPARATOR).map { menuName(it) }.joinToString(SECTION_SEPARATOR),
       style = MaterialTheme.typography.labelLarge,
       color = color,
     )
@@ -507,12 +518,13 @@ private fun UnitSection(
 @Composable
 private fun CategoryTile(category: UnitMenuItem.Category, selected: Boolean, onClick: () -> Unit) {
   val color = categoryColor(category.name)
+  val name = menuName(category.name)
   val background by
     animateColorAsState(if (selected) color else color.copy(alpha = CATEGORY_TINT_ALPHA), label = "Tile")
   val content by animateColorAsState(if (selected) Color.White else color, label = "Tile icon")
   Surface(
     onClick = onClick,
-    modifier = Modifier.size(CATEGORY_TILE_SIZE).semantics { contentDescription = category.name },
+    modifier = Modifier.size(CATEGORY_TILE_SIZE).semantics { contentDescription = name },
     shape = RoundedCornerShape(CATEGORY_TILE_CORNER),
     color = background,
     contentColor = content,
@@ -584,7 +596,7 @@ private fun UnitChip(unit: PhysicalUnit, color: Color, onClick: () -> Unit) {
     ) {
       Text(text = unit.symbol, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Medium)
       Text(
-        text = unit.name,
+        text = menuName(unit.name),
         style = MaterialTheme.typography.labelSmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         maxLines = 1,

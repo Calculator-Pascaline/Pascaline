@@ -24,8 +24,22 @@ import androidx.annotation.RequiresApi
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
-val TimeZone.offsetSeconds
-  @RequiresApi(Build.VERSION_CODES.N) get() = this.rawOffset / 1000L
+/** The same zone for java.time, short ids like "ACT" included. */
+@RequiresApi(Build.VERSION_CODES.N)
+fun TimeZone.zoneId(): ZoneId = ZoneId.of(this.id, ZoneId.SHORT_IDS)
 
 @RequiresApi(Build.VERSION_CODES.N)
-fun TimeZone.timeNow(): ZonedDateTime = ZonedDateTime.now(ZoneId.of(this.id, ZoneId.SHORT_IDS))
+fun TimeZone.timeNow(): ZonedDateTime = ZonedDateTime.now(zoneId())
+
+/**
+ * [hour]:[minute] picked on the day of [zoneTime] in [zone], as the same moment in [userZone]. Summer
+ * time is the one of that day in each zone.
+ */
+internal fun pickedInUserZone(
+  zoneTime: ZonedDateTime,
+  zone: ZoneId,
+  hour: Int,
+  minute: Int,
+  userZone: ZoneId,
+): ZonedDateTime =
+  zoneTime.toLocalDateTime().withHour(hour).withMinute(minute).atZone(zone).withZoneSameInstant(userZone)
