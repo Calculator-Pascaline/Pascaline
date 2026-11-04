@@ -675,10 +675,8 @@ private const val SPACER_HEIGHT_FACTOR = 0.025f
 private const val KEYBOARD_PAGES = 3
 /** Function keys height compared to digits */
 private const val BOTTOM_ROWS = 5
-private const val BOTTOM_COLUMNS = 5
 /** Pages of function keys are 1.6 digit rows high */
 private const val FUNCTION_ROW_SCALE = 0.4f
-private val GRID_SPACING = 8.dp
 private const val EXPANDED_ADDITIONAL_BUTTON_HEIGHT_FACTOR = 0.09f
 private const val EXPANDED_ADDITIONAL_ROWS_COUNT = 3
 

@@ -45,6 +45,17 @@ jobs:
         if: github.event_name == 'pull_request'
         run: ./gradlew testAndroidHostTest :kt-math:jvmTest
 
+      # Code checks (detekt/config.yml): new findings fail, the known ones are in detekt/baseline.xml
+      - name: Check code with Detekt
+        if: github.event_name == 'pull_request'
+        run: ./gradlew detektProjectReport
+
+      # The shared tests again on the web's code, in Firefox (installed on the runner): the web app
+      # computes with its own number library, which can differ from Android's
+      - name: Run tests in a browser
+        if: github.event_name == 'pull_request'
+        run: ./gradlew wasmJsBrowserTest --continue
+
       - name: Build web app
         run: ./gradlew :sharedApp:wasmJsBrowserDistribution
 

@@ -23,7 +23,7 @@ plugins {
 }
 
 kotlin {
-  androidLibrary { namespace = "com.sadellie.unitto.shared" }
+  android { namespace = "com.sadellie.unitto.shared" }
   sourceSets.commonMain.dependencies {
     implementation(libs.org.jetbrains.compose.material3.material3)
     implementation(libs.org.jetbrains.compose.components.components.resources)
@@ -61,8 +61,8 @@ kotlin {
 compose.resources { packageOfResClass = "com.sadellie.unitto.shared.generated.resources" }
 
 // Offline web app: the service worker gets the list of files to keep and a new cache version
-val wasmPrecache by
-  tasks.registering {
+val wasmPrecache =
+  tasks.register("wasmPrecache") {
     group = "pwa"
     description = "Puts the built files and a cache version into sw.js"
     val distDir = layout.buildDirectory.dir("dist/wasmJs/productionExecutable")

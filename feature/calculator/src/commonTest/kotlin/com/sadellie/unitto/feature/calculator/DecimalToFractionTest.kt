@@ -45,6 +45,18 @@ class DecimalToFractionTest {
 
   @Test fun repeatingNinesAreWhole() = assertFractional("", "0.99999999999999999999")
 
+  // Repeats every 96 digits, more than the 30 looked at
+  @Test fun longPeriod() = assertFractional("1/97", "0.010309278350515463917525773195876288659793814")
+
+  @Test fun repeatingSeven() = assertFractional("2/7", "0.285714285714285714285714285714")
+
+  @Test fun negativeMixedNumber() = assertFractional("-1 1/2", "-1.5")
+
+  // No fraction with a denominator up to a billion has these digits
+  @Test fun notAFraction() = assertFractional("", "0.123456789012345678901234567890")
+
+  @Test fun piIsNotAFraction() = assertFractional("", "3.141592653589793238462643383279")
+
   @Test fun exactFraction() = assertExact("1/225", "1", "225")
 
   @Test fun exactMixedNumber() = assertExact("4 2/3", "14", "3")

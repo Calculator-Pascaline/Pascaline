@@ -19,7 +19,7 @@
 plugins { id("unitto.multiplatform.library") }
 
 kotlin {
-  androidLibrary { namespace = "com.sadellie.unitto.core.datastore" }
+  android { namespace = "com.sadellie.unitto.core.datastore" }
   sourceSets.commonMain.dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:model"))
@@ -30,6 +30,10 @@ kotlin {
     implementation(libs.io.insert.koin.koin.core)
     implementation(libs.org.jetbrains.kotlinx.kotlinx.coroutines)
     implementation(libs.androidx.navigation3.navigation3.runtime)
+  }
+  sourceSets.commonTest.dependencies {
+    implementation(libs.org.jetbrains.kotlin.kotlin.test)
+    implementation(libs.org.jetbrains.kotlinx.kotlinx.coroutines.test)
   }
   sourceSets.androidMain.dependencies {
     implementation(libs.io.insert.koin.koin.android)

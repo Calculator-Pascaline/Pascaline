@@ -354,6 +354,8 @@ naming:
   MatchingDeclarationName:
     active: true
     mustBeFirst: true
+    # Files of a platform end with it: AppLanguage.wasmJs.kt
+    multiplatformTargets: ['android', 'wasmJs', 'js', 'jvm', 'native', 'ios']
   MemberNameEqualsClassName:
     active: true
     ignoreOverridden: true

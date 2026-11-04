@@ -94,6 +94,8 @@ fun SourceTask.setupDetektSources() {
     "**/*.kts",
     "**/resources/**",
     "**/build/**",
+    // Worktrees of Claude Code sessions: copies of the project
+    "**/.claude/**",
     "**/build-logic/**",
     "**/icons/symbols/**",
     "**/evaluatto/**",

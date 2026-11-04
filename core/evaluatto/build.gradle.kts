@@ -16,8 +16,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
-
 plugins {
   id("unitto.multiplatform.library")
   alias(libs.plugins.compose)
@@ -25,12 +23,7 @@ plugins {
 }
 
 kotlin {
-  androidLibrary { namespace = "io.github.sadellie.evaluatto" }
-  @OptIn(ExperimentalWasmDsl::class)
-  wasmJs {
-    browser { testTask { useKarma { useFirefoxHeadless() } } }
-    binaries.executable()
-  }
+  android { namespace = "io.github.sadellie.evaluatto" }
   sourceSets.commonMain.dependencies {
     implementation(project(":core:common"))
     implementation(libs.org.jetbrains.compose.runtime.runtime) // need skiko

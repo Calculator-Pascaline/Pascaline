@@ -526,9 +526,6 @@ private const val MAX_TREE_FLIPS = 4
 private const val MAX_LINES = 20
 private const val MAX_TRIANGLE_ROW = 12
 private const val VALUE_DECIMALS = 6
-// The check lists every P(X = k), short enough only for a few trials
-private const val MAX_CHECK_TRIALS = 6
-private const val CHECK_DECIMALS = 4
 private const val SUPERSCRIPTS = "⁰¹²³⁴⁵⁶⁷⁸⁹"
 
 // One color per number of heads, readable in light and dark

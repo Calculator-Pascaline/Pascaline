@@ -61,6 +61,7 @@ class UnittoMultiplatformLibraryPlugin : Plugin<Project> {
         }
         @OptIn(ExperimentalWasmDsl::class)
         wasmJs {
+          // Shared tests in Firefox (wasmJsBrowserTest), CI runs them
           browser { testTask { useKarma().useFirefoxHeadless() } }
           binaries.executable()
         }
@@ -155,7 +156,7 @@ private inline fun <reified T : KotlinBaseExtension> Project.configureKotlin() =
   configure<T> {
     // Treat all Kotlin warnings as errors (disabled by default)
     // Override by setting warningsAsErrors=true in your ~/.gradle/gradle.properties
-    val warningsAsErrors: String? by project
+    val warningsAsErrors = findProperty("warningsAsErrors") as String?
     val compilerOptions =
       when (this) {
         is KotlinAndroidProjectExtension -> compilerOptions

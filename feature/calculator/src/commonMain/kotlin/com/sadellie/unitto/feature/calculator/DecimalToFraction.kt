@@ -31,34 +31,23 @@ import kotlinx.coroutines.withContext
  * Tries to convert [KBigDecimal] into fractional string.
  * - 0.5 -> `1⁄2`
  * - 123.5 -> `123 1⁄2`
+ * - 0.666666666 -> `2⁄3`
  * - 123 -> `Empty string`
  *
  * @return String with fractional or empty string if fractional output is impossible for [this].
- * @receiver [KBigDecimal]. Scale doesn't matter, will be rescaled to [FRACTIONAL_ACCURACY] for
- *   performance.
- * @author
- *   https://www.khanacademy.org/math/cc-eighth-grade-math/cc-8th-numbers-operations/cc-8th-repeating-decimals/v/coverting-repeating-decimals-to-fractions-1
- * @author
- *   https://www.khanacademy.org/math/cc-eighth-grade-math/cc-8th-numbers-operations/cc-8th-repeating-decimals/v/coverting-repeating-decimals-to-fractions-2
+ * @receiver [KBigDecimal]. Digits after [FRACTIONAL_ACCURACY] are dropped.
  */
 suspend fun KBigDecimal.toFractionalString(): String =
   withContext(Dispatchers.Default) {
-    val scaledDownInput = setScale(min(scale(), FRACTIONAL_ACCURACY), KRoundingMode.DOWN)
+    val scaledDownInput = abs().setScale(min(scale(), FRACTIONAL_ACCURACY), KRoundingMode.DOWN)
     val (integral, fractional) = scaledDownInput.divideAndRemainder(KBigDecimal.ONE)
-    val integralBI = integral.toBigInteger()
     if (fractional.isEqualTo(KBigDecimal.ZERO)) return@withContext ""
-    val res: String = if (integral.isEqualTo(KBigDecimal.ZERO)) "" else "$integralBI "
-    val repeatingDecimals = fractional.repeatingDecimals()
-    val (finalNumerator, finalDenominator) =
-      if (repeatingDecimals == null) {
-        fractional.notRepeatingFractional()
-      } else {
-        fractional.repeatingFractional(repeatingDecimals.length)
-      }
-    if (finalDenominator > maxDenominator) return@withContext ""
-    // 0.999… is 9⁄9: a whole number, not a fraction
-    if (finalDenominator == KBigInteger.ONE) return@withContext ""
-    return@withContext "$res$finalNumerator⁄$finalDenominator"
+    val (numerator, denominator) = fractional.simplestFraction() ?: return@withContext ""
+    // 0.999… is 1: a whole number, not a fraction
+    if (denominator == KBigInteger.ONE) return@withContext ""
+    val sign = if (this@toFractionalString < KBigDecimal.ZERO) "-" else ""
+    val whole = if (integral.isEqualTo(KBigDecimal.ZERO)) "" else "${integral.toBigInteger()} "
+    return@withContext "$sign$whole$numerator⁄$denominator"
   }
 
 /**
@@ -74,74 +63,47 @@ fun ExactFraction.toFractionalString(): String {
   return "$sign$wholeText${rest.toBigInteger()}⁄${denominator.toBigInteger()}"
 }
 
-private fun KBigDecimal.notRepeatingFractional(): Pair<KBigInteger, KBigInteger> {
-  val fractionalPrecision = KBigInteger.TEN.pow(scale())
-
-  // 0.000123456 -> 123456
-  val fractionalBI: KBigInteger = (this * fractionalPrecision.toKBigDecimal()).toBigInteger()
-
-  val gcdVal = fractionalBI.gcd(fractionalPrecision)
-  val numerator = fractionalBI / gcdVal
-  val denominator = fractionalPrecision / gcdVal
-
-  return numerator to denominator
-}
-
-private fun KBigDecimal.repeatingFractional(repeatingLength: Int): Pair<KBigInteger, KBigInteger> {
-  val multiplier = KBigInteger.TEN.pow(repeatingLength)
-
-  val multiplied = (this * multiplier.toKBigDecimal()).stripTrailingZeros()
-
-  val numerator =
-    (multiplied - this.setScale(multiplied.scale(), KRoundingMode.DOWN)).stripTrailingZeros()
-  val denominator = multiplier - KBigInteger.ONE
-
-  // get rid of decimal in numerator
-  val bigIntegerMultiplies = KBigDecimal.TEN.pow(scale())
-  var finalNumerator = numerator.multiply(bigIntegerMultiplies).toBigInteger()
-  var finalDenominator = denominator.multiply(bigIntegerMultiplies.toBigInteger())
-
-  val gcd = finalNumerator.gcd(finalDenominator)
-  finalNumerator /= gcd
-  finalDenominator /= gcd
-
-  return finalNumerator to finalDenominator
-}
-
-private fun KBigDecimal.repeatingDecimals(): String? {
-  // turn 0.123454545 into 123454545
-  val inputString = scaleByPowerOfTen(scale()).toBigInteger().toString()
-
-  repeat(inputString.length) { index ->
-    // check string in front and drop first char each time repeating decimal is not found
-    val stringInFront = inputString.substring(index)
-    // it is a pattern only if it repeats at least 2 times
-    val maxPatternLength = stringInFront.length / 2
-    // start at 1
-    for (patternLength in 1..maxPatternLength) {
-      // build a pattern by taking a few characters
-      // increase until repeating decimal is not found
-      val pattern = stringInFront.take(patternLength)
-      // zeroes can't be repeating decimals, always trimmed
-      if (pattern.all { it == '0' }) continue
-      // how many characters to take to avoid incomplete chunks
-      val maxCheckRangeBound = stringInFront.length - stringInFront.length % pattern.length
-      val stringToCheck = stringInFront.substring(patternLength, maxCheckRangeBound)
-      // TODO check below is temporary, this algorithm is too expensive
-      // do not check against trailing zeroes. no pattern here at all
-      if (stringToCheck.all { it == '0' }) return null
-      // split the string to check
-      val checkChunks = stringToCheck.chunked(patternLength)
-      val isRepeating = checkChunks.all { it == pattern }
-      if (isRepeating) return pattern
+/**
+ * Simplest fraction whose digits start with the digits of this number (between 0 and 1): 2⁄3 for
+ * 0.666666666, 333⁄500 for 0.666000 (2⁄3 would be 0.666666). Null when it needs a denominator above
+ * [maxDenominator].
+ *
+ * The convergents of the continued fraction are the simplest fractions closer and closer to the
+ * number, the first one with the same digits is taken. Exact, with whole numbers only.
+ */
+private fun KBigDecimal.simplestFraction(): Pair<KBigInteger, KBigInteger>? {
+  val digits = scale()
+  // The number is digitsValue / power exactly: 0.666 is 666 / 1000
+  val power = KBigDecimal.TEN.pow(digits)
+  val digitsValue = scaleByPowerOfTen(digits).setScale(0, KRoundingMode.DOWN)
+  val nextDigitsValue = digitsValue + KBigDecimal.ONE
+  // Numerators and denominators of the two last convergents
+  var numeratorBefore = KBigDecimal.ZERO
+  var numerator = KBigDecimal.ONE
+  var denominatorBefore = KBigDecimal.ONE
+  var denominator = KBigDecimal.ZERO
+  var dividend = digitsValue
+  var divisor = power
+  while (divisor > KBigDecimal.ZERO) {
+    val (term, remainder) = dividend.divideAndRemainder(divisor)
+    val nextNumerator = term * numerator + numeratorBefore
+    val nextDenominator = term * denominator + denominatorBefore
+    if (nextDenominator > maxDenominator.toKBigDecimal()) return null
+    // Same digits: digitsValue / power ≤ fraction < nextDigitsValue / power
+    val scaled = nextNumerator * power
+    if (digitsValue * nextDenominator <= scaled && scaled < nextDigitsValue * nextDenominator) {
+      return nextNumerator.toBigInteger() to nextDenominator.toBigInteger()
     }
+    numeratorBefore = numerator
+    numerator = nextNumerator
+    denominatorBefore = denominator
+    denominator = nextDenominator
+    dividend = divisor
+    divisor = remainder
   }
-
   return null
 }
 
 private val maxDenominator by lazy { KBigInteger("1000000000") }
-/**
- * High values make algorithm expensive, low values increase chances of missing repeating decimals.
- */
+/** Digits looked at: more find fractions with bigger denominators, a few steps more each. */
 private const val FRACTIONAL_ACCURACY = 30
