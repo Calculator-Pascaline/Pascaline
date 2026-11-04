@@ -228,7 +228,7 @@ private fun SettingsScreen(
         shape = ListItemExpressiveDefaults.lastShape,
       )
 
-      // Vibrations, screen and backup only exist in the Android app
+      // Vibrations and the screen only exist in the Android app
       if (LocalPlatform.current == Platform.Android) {
         ListHeader(stringResource(Res.string.settings_phone))
         ListItemExpressive(
@@ -255,14 +255,17 @@ private fun SettingsScreen(
           onSwitchChange = updateShowOnLockScreen,
           shape = ListItemExpressiveDefaults.middleShape,
         )
-        ListItemExpressive(
-          icon = Symbols.RestorePage,
-          headlineText = stringResource(Res.string.settings_backup),
-          supportingText = stringResource(Res.string.settings_backup_support),
-          onClick = { navControllerAction(BackupRoute) },
-          shape = ListItemExpressiveDefaults.lastShape,
-        )
       }
+      // The web app has its own backup file, on its own after the apps
+      ListItemExpressive(
+        icon = Symbols.RestorePage,
+        headlineText = stringResource(Res.string.settings_backup),
+        supportingText = stringResource(Res.string.settings_backup_support),
+        onClick = { navControllerAction(BackupRoute) },
+        shape =
+          if (LocalPlatform.current == Platform.Android) ListItemExpressiveDefaults.lastShape
+          else ListItemExpressiveDefaults.singleShape,
+      )
 
       // Feedback, source code for the GPL, credits and licenses of the libraries
       ListHeader(stringResource(Res.string.settings_about))

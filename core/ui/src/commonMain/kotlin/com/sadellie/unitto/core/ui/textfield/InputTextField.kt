@@ -81,9 +81,9 @@ fun ExpressionTextField(
   keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
   onKeyboardAction: KeyboardActionHandler? = null,
 ) {
-  val nativeClipboard = LocalClipboard.current.nativeClipboard
+  val clipboard = LocalClipboard.current
   val clipboardManager =
-    remember(formatterSymbols) { ExpressionClipboardManager(formatterSymbols, nativeClipboard) }
+    remember(formatterSymbols, clipboard) { ExpressionClipboardManager(formatterSymbols, clipboard) }
 
   CompositionLocalProvider(LocalClipboard provides clipboardManager) {
     val placeholderColor = textColor.copy(alpha = SLOT_PLACEHOLDER_ALPHA)

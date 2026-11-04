@@ -38,6 +38,14 @@ data class ThirdParty(
             "Lato is a sans serif typeface family started in the summer of 2010 by Warsaw-based designer Łukasz Dziedzic (“Lato” means “Summer” in Polish). In December 2010 the Lato family was published under the Open Font License by his foundry tyPoland, with support from Google.",
         ),
         ThirdParty(
+          name = "Noto Sans",
+          dev = "The Noto Project Authors",
+          website = "https://notofonts.github.io",
+          license = "Open Font License",
+          description =
+            "Noto Sans, Noto Sans Math, Noto Sans Devanagari and Noto Sans SC. The web app uses them for the characters the browser can't show otherwise.",
+        ),
+        ThirdParty(
           name = "Core Kotlin Extensions",
           dev = "The Android Open Source Project",
           website = "https://developer.android.com/jetpack/androidx/releases/core",

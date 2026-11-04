@@ -52,3 +52,10 @@ kotlin {
 compose.resources { publicResClass = true }
 
 dependencies { coreLibraryDesugaring(libs.com.android.tools.desugar.jdk.libs) }
+
+// WebFontsTest checks the web app's fonts, a changed font must run it again
+tasks.withType<Test>().configureEach {
+  inputs
+    .dir(rootProject.file("sharedApp/src/wasmJsMain/composeResources/font"))
+    .withPropertyName("webFonts")
+}

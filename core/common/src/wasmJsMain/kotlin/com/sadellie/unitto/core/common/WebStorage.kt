@@ -46,6 +46,12 @@ object WebStorage {
     return fields
   }
 
+  /** Everything the web app saved, as JSON: the web app's backup file. */
+  fun exportAll(): String = storageExport(PREFIX)
+
+  /** Replaces everything with [exportAll]'s JSON, false (and nothing changed) for another file. */
+  fun importAll(json: String): Boolean = storageImport(PREFIX, json)
+
   private const val PREFIX = "pascaline."
 }
 
@@ -54,3 +60,32 @@ private external fun storageGet(key: String): String?
 
 @JsFun("(key, value) => { try { localStorage.setItem(key, value); } catch (e) {} }")
 private external fun storageSet(key: String, value: String)
+
+@JsFun(
+  """(prefix) => {
+  const data = {};
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key.startsWith(prefix)) data[key.substring(prefix.length)] = localStorage.getItem(key);
+    }
+  } catch (e) {}
+  return JSON.stringify({ app: 'pascaline-web', version: 1, data: data });
+}"""
+)
+private external fun storageExport(prefix: String): String
+
+@JsFun(
+  """(prefix, json) => {
+  try {
+    const backup = JSON.parse(json);
+    if (!backup || backup.app !== 'pascaline-web' || typeof backup.data !== 'object') return false;
+    for (const key of Object.keys(localStorage)) if (key.startsWith(prefix)) localStorage.removeItem(key);
+    for (const [key, value] of Object.entries(backup.data)) {
+      if (typeof value === 'string') localStorage.setItem(prefix + key, value);
+    }
+    return true;
+  } catch (e) { return false; }
+}"""
+)
+private external fun storageImport(prefix: String, json: String): Boolean

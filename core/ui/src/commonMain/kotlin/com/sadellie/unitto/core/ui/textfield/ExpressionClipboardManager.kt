@@ -28,12 +28,12 @@ import com.sadellie.unitto.core.common.FormatterSymbols
  * Removes grouping symbols when copying expression to clipboard.
  *
  * @property formatterSymbols Current [FormatterSymbols].
- * @property nativeClipboard [NativeClipboard] provided by system.
+ * @param clipboard The app's [Clipboard], from [androidx.compose.ui.platform.LocalClipboard].
  */
 @OptIn(ExperimentalComposeUiApi::class)
 internal expect class ExpressionClipboardManager(
   formatterSymbols: FormatterSymbols,
-  clipboard: NativeClipboard,
+  clipboard: Clipboard,
 ) : Clipboard {
   override val nativeClipboard: NativeClipboard
 

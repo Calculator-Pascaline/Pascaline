@@ -18,4 +18,7 @@
 
 package com.sadellie.unitto.feature.bodymass
 
-internal actual fun getInitialIsMetric(): Boolean = true
+import com.sadellie.unitto.core.common.BrowserLocale
+
+// The regions that use pounds and inches, like Android's MeasurementSystem.US
+internal actual fun getInitialIsMetric(): Boolean = BrowserLocale.region() !in setOf("US", "LR", "MM")

@@ -24,13 +24,14 @@ import androidx.compose.ui.platform.Clipboard
 import androidx.compose.ui.platform.NativeClipboard
 import com.sadellie.unitto.core.common.FormatterSymbols
 
-// TODO not implemented
+// The browser's clipboard as it is: a web ClipEntry doesn't give its text back to remove the grouping
 @OptIn(ExperimentalComposeUiApi::class)
 internal actual class ExpressionClipboardManager
-actual constructor(formatterSymbols: FormatterSymbols, clipboard: NativeClipboard) : Clipboard {
-  actual override val nativeClipboard: NativeClipboard = clipboard
+actual constructor(formatterSymbols: FormatterSymbols, private val clipboard: Clipboard) :
+  Clipboard {
+  actual override val nativeClipboard: NativeClipboard = clipboard.nativeClipboard
 
-  actual override suspend fun getClipEntry(): ClipEntry? = null
+  actual override suspend fun getClipEntry(): ClipEntry? = clipboard.getClipEntry()
 
-  actual override suspend fun setClipEntry(clipEntry: ClipEntry?) {}
+  actual override suspend fun setClipEntry(clipEntry: ClipEntry?) = clipboard.setClipEntry(clipEntry)
 }

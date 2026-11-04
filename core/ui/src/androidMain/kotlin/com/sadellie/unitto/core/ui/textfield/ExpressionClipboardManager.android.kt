@@ -27,8 +27,19 @@ import androidx.compose.ui.platform.toClipEntry
 import com.sadellie.unitto.core.common.FormatterSymbols
 
 internal actual class ExpressionClipboardManager
-actual constructor(private val formatterSymbols: FormatterSymbols, clipboard: NativeClipboard) :
+private constructor(private val formatterSymbols: FormatterSymbols, clipboard: NativeClipboard) :
   Clipboard {
+  actual constructor(
+    formatterSymbols: FormatterSymbols,
+    clipboard: Clipboard,
+  ) : this(formatterSymbols, clipboard.nativeClipboard)
+
+  /** For tests, with the system's clipboard. */
+  internal constructor(
+    clipboard: NativeClipboard,
+    formatterSymbols: FormatterSymbols,
+  ) : this(formatterSymbols, clipboard)
+
   actual override val nativeClipboard: NativeClipboard = clipboard
 
   actual override suspend fun getClipEntry(): ClipEntry? =

@@ -26,6 +26,7 @@ kotlin {
   androidLibrary { namespace = "com.sadellie.unitto.shared" }
   sourceSets.commonMain.dependencies {
     implementation(libs.org.jetbrains.compose.material3.material3)
+    implementation(libs.org.jetbrains.compose.components.components.resources)
     implementation(libs.org.jetbrains.compose.ui.ui.tooling.preview)
     implementation(libs.org.jetbrains.compose.material3.material3.window.size)
     implementation(libs.org.jetbrains.androidx.navigation3.navigation3.ui)
@@ -34,6 +35,7 @@ kotlin {
     implementation(project.dependencies.platform(libs.io.insert.koin.koin.bom))
     implementation(libs.io.insert.koin.koin.core)
     implementation(libs.io.insert.koin.koin.compose.navigation3)
+    implementation(project(":core:common"))
     implementation(project(":core:themmo"))
     implementation(project(":core:navigation"))
     implementation(project(":core:database"))
@@ -54,6 +56,9 @@ kotlin {
     implementation(libs.io.insert.koin.koin.core.coroutines)
   }
 }
+
+// The web app's fonts are in wasmJsMain
+compose.resources { packageOfResClass = "com.sadellie.unitto.shared.generated.resources" }
 
 // Offline web app: the service worker gets the list of files to keep and a new cache version
 val wasmPrecache by

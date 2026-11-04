@@ -47,7 +47,7 @@ fun FixedExpressionInputTextField(
   val clipboardManager =
     ExpressionClipboardManager(
       formatterSymbols = formatterSymbols,
-      clipboard = LocalClipboard.current.nativeClipboard,
+      clipboard = LocalClipboard.current,
     )
 
   if (value.hasSlots()) {

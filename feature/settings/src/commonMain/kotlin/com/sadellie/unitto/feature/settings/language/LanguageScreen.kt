@@ -19,7 +19,6 @@
 
 package com.sadellie.unitto.feature.settings.language
 
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.RadioButton
@@ -28,7 +27,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.os.LocaleListCompat
 import com.sadellie.unitto.core.designsystem.ExpressivePreview
 import com.sadellie.unitto.core.designsystem.shapes.Sizes
 import com.sadellie.unitto.core.ui.ListItemExpressive
@@ -46,17 +44,10 @@ internal fun LanguageRoute(navigateUp: () -> Unit) {
 
 @Composable
 private fun LanguageScreen(navigateUp: () -> Unit) {
-  val currentLangKey = remember { AppCompatDelegate.getApplicationLocales().toLanguageTags() }
+  val currentLangKey = remember { AppLanguage.current() }
 
   fun changeLanguage(langKey: String) {
-    val selectedLocale =
-      if (langKey == "") {
-        LocaleListCompat.getEmptyLocaleList()
-      } else {
-        LocaleListCompat.forLanguageTags(langKey)
-      }
-
-    AppCompatDelegate.setApplicationLocales(selectedLocale)
+    AppLanguage.set(langKey)
     navigateUp()
   }
 

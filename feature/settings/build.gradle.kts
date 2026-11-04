@@ -55,6 +55,8 @@ kotlin {
     implementation(libs.io.insert.koin.koin.core.coroutines)
     implementation(libs.androidx.appcompat.appcompat)
   }
+  // The name of the web backup file has the date
+  sourceSets.wasmJsMain.dependencies { implementation(libs.org.jetbrains.kotlinx.kotlinx.datetime) }
   sourceSets.commonTest.dependencies {
     implementation(libs.org.jetbrains.kotlin.kotlin.test)
     implementation(libs.org.jetbrains.kotlinx.kotlinx.coroutines.test)

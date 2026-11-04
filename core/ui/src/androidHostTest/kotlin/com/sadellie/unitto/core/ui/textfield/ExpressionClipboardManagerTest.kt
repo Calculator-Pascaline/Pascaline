@@ -37,7 +37,7 @@ class ExpressionClipboardManagerTest {
   private val systemClipboardManager =
     context.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
   private val clipboardManager =
-    ExpressionClipboardManager(formatterSymbols, systemClipboardManager)
+    ExpressionClipboardManager(systemClipboardManager, formatterSymbols)
 
   @Test
   fun setTextGetText_test() = runBlocking {

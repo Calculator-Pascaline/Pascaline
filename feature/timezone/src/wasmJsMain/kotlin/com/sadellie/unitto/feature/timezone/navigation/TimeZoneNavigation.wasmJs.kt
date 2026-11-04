@@ -19,13 +19,30 @@
 package com.sadellie.unitto.feature.timezone.navigation
 
 import com.sadellie.unitto.core.navigation.LocalNavigator
+import com.sadellie.unitto.core.navigation.Route
 import com.sadellie.unitto.core.navigation.TimeZoneStartRoute
-import com.sadellie.unitto.core.ui.AndroidExclusiveScreenMain
+import com.sadellie.unitto.feature.timezone.WebAddTimeZoneScreen
+import com.sadellie.unitto.feature.timezone.WebTimeZoneScreen
+import kotlinx.serialization.Serializable
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.core.module.Module
 import org.koin.dsl.navigation3.navigation
 
 @OptIn(KoinExperimentalAPI::class)
 internal actual fun Module.timeZoneNavigation() {
-  navigation<TimeZoneStartRoute> { AndroidExclusiveScreenMain(LocalNavigator.current::openDrawer) }
+  navigation<TimeZoneStartRoute> {
+    val navigator = LocalNavigator.current
+    WebTimeZoneScreen(
+      openDrawer = navigator::openDrawer,
+      navigateToAddTimeZone = { userMillis -> navigator.goTo(AddTimeZoneRoute(userMillis)) },
+    )
+  }
+  navigation<AddTimeZoneRoute> { route ->
+    WebAddTimeZoneScreen(navigateUp = LocalNavigator.current::goBack, userMillis = route.userMillis)
+  }
+}
+
+@Serializable
+internal data class AddTimeZoneRoute(val userMillis: Double) : Route {
+  override val routeId = "add_time_zone_route"
 }
