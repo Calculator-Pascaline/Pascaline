@@ -199,19 +199,6 @@ internal class CalculatorViewModel(
     _equalClicked.update { false }
   }
 
-  fun updateRadianMode(newValue: Boolean) =
-    viewModelScope.launch {
-      userPrefsRepository.updateRadianMode(newValue)
-      _equalClicked.update { false }
-      calculateInput()
-    }
-
-  fun updateAdditionalButtons(newValue: Boolean) =
-    viewModelScope.launch { userPrefsRepository.updateAdditionalButtons(newValue) }
-
-  fun updateInverseMode(newValue: Boolean) =
-    viewModelScope.launch { userPrefsRepository.updateInverseMode(newValue) }
-
   fun updateInitialPartialHistoryView(newValue: Boolean) =
     viewModelScope.launch { userPrefsRepository.updateInitialPartialHistoryView(newValue) }
 

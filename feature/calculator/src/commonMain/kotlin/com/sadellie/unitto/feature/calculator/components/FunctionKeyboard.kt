@@ -44,13 +44,18 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -72,8 +77,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -106,6 +111,7 @@ import com.sadellie.unitto.core.common.PhysicalUnits
 import com.sadellie.unitto.core.common.Token
 import com.sadellie.unitto.core.common.UnitMenuItem
 import com.sadellie.unitto.core.common.physicalUnitNames
+import com.sadellie.unitto.core.datastore.UserPreferencesRepository
 import com.sadellie.unitto.core.designsystem.icons.symbols.ActivityZone
 import com.sadellie.unitto.core.designsystem.icons.symbols.ActivityZoneFill
 import com.sadellie.unitto.core.designsystem.icons.symbols.Airwave
@@ -141,6 +147,7 @@ import com.sadellie.unitto.core.ui.trackKeyPress
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import unitto.core.common.generated.resources.Res
 import unitto.core.common.generated.resources.calculator_units_and_constants
 import unitto.core.common.generated.resources.common_close
@@ -389,7 +396,11 @@ private val CALCULUS_PAGE =
 internal fun UnitsSheet(onDismiss: () -> Unit, onUnitClick: (String) -> Unit) {
   val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
   val categories = remember { PhysicalUnits.menu.filterIsInstance<UnitMenuItem.Category>() }
-  var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
+  // Opens on the category it was left on, read before the first frame to not flash another one
+  val userPrefsRepository = koinInject<UserPreferencesRepository>()
+  val savedCategory =
+    remember { userPrefsRepository.appData(UNITS_CATEGORY_KEY) }.collectAsState(null).value ?: return
+  val selectedIndex = (savedCategory.toIntOrNull() ?: 0).coerceIn(categories.indices)
   val selected = categories[selectedIndex]
 
   val scope = rememberCoroutineScope()
@@ -406,7 +417,13 @@ internal fun UnitsSheet(onDismiss: () -> Unit, onUnitClick: (String) -> Unit) {
     // The whole page takes the chosen category's color
     containerColor = animateColorAsState(categoryPageColor(selected.name), label = "Units page").value,
   ) {
-    Column(modifier = Modifier.fillMaxSize().padding(top = 8.dp)) {
+    // In landscape the navigation bar is on a side, and would cover the X
+    Column(
+      modifier =
+        Modifier.fillMaxSize()
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+          .padding(top = 8.dp)
+    ) {
       Row(
         modifier = Modifier.padding(start = 20.dp, end = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -426,7 +443,7 @@ internal fun UnitsSheet(onDismiss: () -> Unit, onUnitClick: (String) -> Unit) {
             category = category,
             selected = index == selectedIndex,
             isHorizontal = isHorizontal,
-            onClick = { selectedIndex = index },
+            onClick = { scope.launch { userPrefsRepository.updateAppData(UNITS_CATEGORY_KEY, index.toString()) } },
           )
         }
       }
@@ -772,6 +789,7 @@ private val CATEGORY_ICONS: Map<String, ImageVector> by lazy {
 }
 
 private const val CATEGORY_ICON_SELECTED_SCALE = 1.15f
+private const val UNITS_CATEGORY_KEY = "UNITS_CATEGORY"
 private const val CATEGORY_GROW_MS = 250L
 private const val CATEGORY_FADE_IN_MS = 220
 private const val CATEGORY_FADE_OUT_MS = 90
