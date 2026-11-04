@@ -61,7 +61,7 @@ materialKolor = "6.0.0"
 composeMultiplatform = "1.12.2"
 # https://github.com/JetBrains/compose-multiplatform/releases
 # https://mvnrepository.com/artifact/org.jetbrains.compose.material3/material3
-composeMultiplatformMaterial3 = "1.12.0-alpha03"
+composeMultiplatformMaterial3 = "1.13.0-beta01"
 # https://github.com/touchlab/Kermit/releases
 kermit = "2.2.0"
 # https://developer.android.com/jetpack/androidx/releases/annotation
