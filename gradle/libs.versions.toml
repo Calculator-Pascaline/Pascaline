@@ -19,7 +19,7 @@ androidxCoreCoreKts = "1.19.1"
 # https://mvnrepository.com/artifact/androidx.glance/glance-appwidget
 androidxGlanceGlance = "1.2.0"
 # https://developer.android.com/jetpack/androidx/releases/datastore
-androidxDatastoreDatastorePreferences = "1.3.0-rc01"
+androidxDatastoreDatastorePreferences = "1.3.0"
 # https://github.com/InsertKoinIO/koin/releases
 koin = "4.2.2"
 # https://mvnrepository.com/artifact/androidx.lifecycle/lifecycle-runtime-compose
