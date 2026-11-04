@@ -76,7 +76,10 @@ actual class KBigDecimal(internal val wrapped: BigDecimal) : Comparable<KBigDeci
   actual fun multiply(multiplier: KBigDecimal): KBigDecimal =
     KBigDecimal(this.wrapped.times(multiplier.wrapped))
 
-  actual fun div(divisor: KBigDecimal): KBigDecimal = KBigDecimal(this.wrapped.div(divisor.wrapped))
+  // Like Kotlin's / on the JVM (Android): rounded to the scale of this number. The library's div is
+  // exact and fails for results like 1/3 that never end
+  actual fun div(divisor: KBigDecimal): KBigDecimal =
+    KBigDecimal(this.wrapped.divide(divisor.wrapped, this.wrapped.scale, RoundingMode.HALF_EVEN))
 
   actual operator fun plus(addend: KBigDecimal): KBigDecimal =
     KBigDecimal(this.wrapped.plus(addend.wrapped))
