@@ -440,8 +440,6 @@
     <string name="sequences_title">数列</string>
     <string name="sequences_to">到 n</string>
     <string name="settings_about">关于</string>
-    <string name="settings_ac_button">AC 键</string>
-    <string name="settings_ac_button_support">显示独立的清除按钮</string>
     <string name="settings_additional">其他</string>
     <string name="settings_amoled_dark">AMOLED 深色</string>
     <string name="settings_amoled_dark_support">在深色主题中使用纯黑背景</string>
@@ -493,8 +491,6 @@
     <string name="settings_menu_show">在菜单中显示</string>
     <string name="settings_menu_shown">显示</string>
     <string name="settings_menu_support">应用的顺序和显示哪些应用</string>
-    <string name="settings_middle_zero">零居中</string>
-    <string name="settings_middle_zero_support">交换零和小数点按钮的位置</string>
     <string name="settings_note">注意</string>
     <string name="settings_partial_history_view">部分历史视图</string>
     <string name="settings_partial_history_view_support">预览历史记录中的最新条目</string>

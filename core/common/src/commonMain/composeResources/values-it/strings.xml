@@ -440,8 +440,6 @@
     <string name="sequences_title">Successioni</string>
     <string name="sequences_to">A n</string>
     <string name="settings_about">Informazioni</string>
-    <string name="settings_ac_button">Pulsante AC</string>
-    <string name="settings_ac_button_support">Mostra un pulsante di cancellazione separato</string>
     <string name="settings_additional">Extra</string>
     <string name="settings_amoled_dark">AMOLED scuro</string>
     <string name="settings_amoled_dark_support">Usa sfondo nero per i temi scuri</string>
@@ -493,8 +491,6 @@
     <string name="settings_menu_show">Mostra nel menu</string>
     <string name="settings_menu_shown">Mostrate</string>
     <string name="settings_menu_support">Ordine delle app e quali sono mostrate</string>
-    <string name="settings_middle_zero">Zero al centro</string>
-    <string name="settings_middle_zero_support">Scambia i pulsanti zero e decimale</string>
     <string name="settings_note">Nota</string>
     <string name="settings_partial_history_view">Vista cronologia parziale</string>
     <string name="settings_partial_history_view_support">Visualizza l'ultima voce nella cronologia</string>

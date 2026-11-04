@@ -440,8 +440,6 @@
     <string name="sequences_title">अनुक्रम</string>
     <string name="sequences_to">n तक</string>
     <string name="settings_about">जानकारी</string>
-    <string name="settings_ac_button">AC बटन</string>
-    <string name="settings_ac_button_support">अलग साफ़ करने वाला बटन दिखाएँ</string>
     <string name="settings_additional">अतिरिक्त</string>
     <string name="settings_amoled_dark">AMOLED डार्क</string>
     <string name="settings_amoled_dark_support">डार्क थीम के लिए काली पृष्ठभूमि का उपयोग करें</string>
@@ -493,8 +491,6 @@
     <string name="settings_menu_show">मेन्यू में दिखाएँ</string>
     <string name="settings_menu_shown">दिखाए गए</string>
     <string name="settings_menu_support">ऐप का क्रम और कौन से दिखाए जाते हैं</string>
-    <string name="settings_middle_zero">शून्य बीच में</string>
-    <string name="settings_middle_zero_support">शून्य और दशमलव बटन अदल-बदलें</string>
     <string name="settings_note">नोट</string>
     <string name="settings_partial_history_view">आंशिक इतिहास दृश्य</string>
     <string name="settings_partial_history_view_support">इतिहास में सबसे हाल की प्रविष्टि की झलक देखें</string>

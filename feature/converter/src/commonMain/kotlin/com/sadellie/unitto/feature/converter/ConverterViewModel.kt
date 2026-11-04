@@ -92,12 +92,10 @@ internal class ConverterViewModel(
             result = outputValue,
             unitFrom = unitFrom,
             unitTo = unitTo,
-            middleZero = prefs.middleZero,
             formatterSymbols = prefs.formatterSymbols,
             scale = prefs.precision,
             outputFormat = OutputFormat.PLAIN,
             formatTime = prefs.formatTime,
-            acButton = prefs.acButton,
           )
         }
 

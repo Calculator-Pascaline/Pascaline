@@ -440,8 +440,6 @@
     <string name="sequences_title">Sucesiones</string>
     <string name="sequences_to">Hasta n</string>
     <string name="settings_about">Acerca de</string>
-    <string name="settings_ac_button">Botón AC</string>
-    <string name="settings_ac_button_support">Mostrar botón de borrado separado</string>
     <string name="settings_additional">Adicional</string>
     <string name="settings_amoled_dark">Oscuro AMOLED</string>
     <string name="settings_amoled_dark_support">Usar fondo negro para temas oscuros</string>
@@ -493,8 +491,6 @@
     <string name="settings_menu_show">Mostrar en el menú</string>
     <string name="settings_menu_shown">Visibles</string>
     <string name="settings_menu_support">Orden de las apps y cuáles se muestran</string>
-    <string name="settings_middle_zero">Cero en el medio</string>
-    <string name="settings_middle_zero_support">Intercambiar botones de cero y decimal</string>
     <string name="settings_note">Nota</string>
     <string name="settings_partial_history_view">Vista parcial del historial</string>
     <string name="settings_partial_history_view_support">Ver el último registro en el historial</string>

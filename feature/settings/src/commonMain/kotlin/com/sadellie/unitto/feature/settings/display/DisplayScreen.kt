@@ -47,19 +47,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sadellie.unitto.core.common.collectAsStateWithLifecycleKMP
-import com.sadellie.unitto.core.datastore.DisplayPreferences
-import com.sadellie.unitto.core.designsystem.icons.iconpack.ClearBold
-import com.sadellie.unitto.core.designsystem.icons.iconpack.IconPack
 import com.sadellie.unitto.core.designsystem.icons.symbols.Colorize
 import com.sadellie.unitto.core.designsystem.icons.symbols.DarkModeFill
-import com.sadellie.unitto.core.designsystem.icons.symbols.ExposureZero
 import com.sadellie.unitto.core.designsystem.icons.symbols.Keyboard
 import com.sadellie.unitto.core.designsystem.icons.symbols.Language
 import com.sadellie.unitto.core.designsystem.icons.symbols.Palette
 import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
 import com.sadellie.unitto.core.designsystem.shapes.Sizes
 import com.sadellie.unitto.core.ui.ColorSelector
-import com.sadellie.unitto.core.ui.EmptyScreen
 import com.sadellie.unitto.core.ui.ListHeader
 import com.sadellie.unitto.core.ui.ListItemExpressive
 import com.sadellie.unitto.core.ui.ListItemExpressiveDefaults
@@ -73,8 +68,6 @@ import io.github.sadellie.themmo.rememberThemmoController
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import unitto.core.common.generated.resources.Res
-import unitto.core.common.generated.resources.settings_ac_button
-import unitto.core.common.generated.resources.settings_ac_button_support
 import unitto.core.common.generated.resources.settings_additional
 import unitto.core.common.generated.resources.settings_amoled_dark
 import unitto.core.common.generated.resources.settings_amoled_dark_support
@@ -88,8 +81,6 @@ import unitto.core.common.generated.resources.settings_dynamic_colors_support
 import unitto.core.common.generated.resources.settings_language
 import unitto.core.common.generated.resources.settings_language_support
 import unitto.core.common.generated.resources.settings_light_mode
-import unitto.core.common.generated.resources.settings_middle_zero
-import unitto.core.common.generated.resources.settings_middle_zero_support
 import unitto.core.common.generated.resources.settings_phone_keypad
 import unitto.core.common.generated.resources.settings_phone_keypad_support
 import unitto.core.common.generated.resources.settings_selected_color
@@ -103,54 +94,44 @@ internal fun DisplayRoute(
 ) {
   val viewModel: DisplayViewModel = koinViewModel()
   val phoneKeypad = viewModel.phoneKeypad.collectAsStateWithLifecycleKMP().value
-  when (val prefs = viewModel.prefs.collectAsStateWithLifecycleKMP().value) {
-    null -> EmptyScreen()
-    else ->
-      DisplayScreen(
-        navigateUp = navigateUp,
-        prefs = prefs,
-        controller = themmoController,
-        onThemeChange = { newValue ->
-          themmoController.setThemingMode(newValue)
-          viewModel.updateThemingMode(newValue)
-        },
-        onDynamicThemeChange = { newValue ->
-          themmoController.enableDynamicTheme(newValue)
-          viewModel.updateDynamicTheme(newValue)
-        },
-        onAmoledThemeChange = { newValue ->
-          themmoController.enableAmoledTheme(newValue)
-          viewModel.updateAmoledTheme(newValue)
-        },
-        onColorChange = { newValue ->
-          themmoController.setCustomColor(newValue)
-          viewModel.updateCustomColor(newValue)
-        },
-        onMonetModeChange = { newValue ->
-          themmoController.setMonetMode(newValue)
-          viewModel.updateMonetMode(newValue)
-        },
-        updateAcButton = viewModel::updateAcButton,
-        updateMiddleZero = viewModel::updateMiddleZero,
-        phoneKeypad = phoneKeypad,
-        updatePhoneKeypad = viewModel::updatePhoneKeypad,
-        navigateToLanguages = navigateToLanguages,
-      )
-  }
+  DisplayScreen(
+    navigateUp = navigateUp,
+    controller = themmoController,
+    onThemeChange = { newValue ->
+      themmoController.setThemingMode(newValue)
+      viewModel.updateThemingMode(newValue)
+    },
+    onDynamicThemeChange = { newValue ->
+      themmoController.enableDynamicTheme(newValue)
+      viewModel.updateDynamicTheme(newValue)
+    },
+    onAmoledThemeChange = { newValue ->
+      themmoController.enableAmoledTheme(newValue)
+      viewModel.updateAmoledTheme(newValue)
+    },
+    onColorChange = { newValue ->
+      themmoController.setCustomColor(newValue)
+      viewModel.updateCustomColor(newValue)
+    },
+    onMonetModeChange = { newValue ->
+      themmoController.setMonetMode(newValue)
+      viewModel.updateMonetMode(newValue)
+    },
+    phoneKeypad = phoneKeypad,
+    updatePhoneKeypad = viewModel::updatePhoneKeypad,
+    navigateToLanguages = navigateToLanguages,
+  )
 }
 
 @Composable
 private fun DisplayScreen(
   navigateUp: () -> Unit,
-  prefs: DisplayPreferences,
   controller: ThemmoController,
   onThemeChange: (ThemingMode) -> Unit,
   onDynamicThemeChange: (Boolean) -> Unit,
   onAmoledThemeChange: (Boolean) -> Unit,
   onColorChange: (Color) -> Unit,
   onMonetModeChange: (MonetMode) -> Unit,
-  updateAcButton: (Boolean) -> Unit,
-  updateMiddleZero: (Boolean) -> Unit,
   phoneKeypad: Boolean,
   updatePhoneKeypad: (Boolean) -> Unit,
   navigateToLanguages: () -> Unit,
@@ -208,30 +189,12 @@ private fun DisplayScreen(
       ListHeader(stringResource(Res.string.settings_additional))
 
       ListItemExpressive(
-        icon = IconPack.ClearBold,
-        headlineText = stringResource(Res.string.settings_ac_button),
-        supportingText = stringResource(Res.string.settings_ac_button_support),
-        switchState = prefs.acButton,
-        onSwitchChange = updateAcButton,
-        shape = ListItemExpressiveDefaults.firstShape,
-      )
-
-      ListItemExpressive(
-        icon = Symbols.ExposureZero,
-        headlineText = stringResource(Res.string.settings_middle_zero),
-        supportingText = stringResource(Res.string.settings_middle_zero_support),
-        switchState = prefs.middleZero,
-        onSwitchChange = updateMiddleZero,
-        shape = ListItemExpressiveDefaults.middleShape,
-      )
-
-      ListItemExpressive(
         icon = Symbols.Keyboard,
         headlineText = stringResource(Res.string.settings_phone_keypad),
         supportingText = stringResource(Res.string.settings_phone_keypad_support),
         switchState = phoneKeypad,
         onSwitchChange = updatePhoneKeypad,
-        shape = ListItemExpressiveDefaults.middleShape,
+        shape = ListItemExpressiveDefaults.firstShape,
       )
 
       ListItemExpressive(
@@ -408,15 +371,12 @@ private fun Preview() {
   ) { themmoController ->
     DisplayScreen(
       navigateUp = {},
-      prefs = DisplayPreferences(middleZero = true, acButton = true),
       controller = themmoController,
       onThemeChange = themmoController::setThemingMode,
       onDynamicThemeChange = themmoController::enableDynamicTheme,
       onAmoledThemeChange = themmoController::enableAmoledTheme,
       onColorChange = themmoController::setCustomColor,
       onMonetModeChange = themmoController::setMonetMode,
-      updateAcButton = {},
-      updateMiddleZero = {},
       phoneKeypad = false,
       updatePhoneKeypad = {},
       navigateToLanguages = {},

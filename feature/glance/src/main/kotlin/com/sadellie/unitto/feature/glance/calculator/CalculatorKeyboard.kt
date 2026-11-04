@@ -44,7 +44,6 @@ internal fun CalculatorKeyboard(
   deleteTokenAction: () -> Action,
   equalAction: () -> Action,
   useDot: Boolean,
-  middleZero: Boolean,
 ) =
   Column(modifier = modifier) {
     val rowModifier = GlanceModifier.fillMaxWidth()
@@ -60,7 +59,6 @@ internal fun CalculatorKeyboard(
     KeyboardRow4(rowModifier = rowModifier, addTokenAction = addTokenAction)
     KeyboardRow5(
       rowModifier = rowModifier,
-      middleZero = middleZero,
       useDot = useDot,
       addTokenAction = addTokenAction,
       deleteTokenAction = deleteTokenAction,
@@ -207,7 +205,6 @@ private fun KeyboardRow4(rowModifier: GlanceModifier, addTokenAction: (String) -
 @Composable
 private fun KeyboardRow5(
   rowModifier: GlanceModifier,
-  middleZero: Boolean,
   useDot: Boolean,
   addTokenAction: (String) -> Action,
   deleteTokenAction: () -> Action,
@@ -216,33 +213,18 @@ private fun KeyboardRow5(
   Row(rowModifier) {
     val buttonModifier = GlanceModifier.defaultWeight()
 
-    if (middleZero) {
-      IconButton(
-        glanceModifier = buttonModifier,
-        containerColor = UnittoGlanceTheme.colors.inverseOnSurface,
-        iconRes = if (useDot) R.drawable.dot else R.drawable.comma,
-        onClick = addTokenAction(Token.Digit.DOT),
-      )
-      IconButton(
-        glanceModifier = buttonModifier,
-        containerColor = UnittoGlanceTheme.colors.inverseOnSurface,
-        iconRes = R.drawable.key0,
-        onClick = addTokenAction(Token.Digit.DIGIT_0),
-      )
-    } else {
-      IconButton(
-        glanceModifier = buttonModifier,
-        containerColor = UnittoGlanceTheme.colors.inverseOnSurface,
-        iconRes = R.drawable.key0,
-        onClick = addTokenAction(Token.Digit.DIGIT_0),
-      )
-      IconButton(
-        glanceModifier = buttonModifier,
-        containerColor = UnittoGlanceTheme.colors.inverseOnSurface,
-        iconRes = if (useDot) R.drawable.dot else R.drawable.comma,
-        onClick = addTokenAction(Token.Digit.DOT),
-      )
-    }
+    IconButton(
+      glanceModifier = buttonModifier,
+      containerColor = UnittoGlanceTheme.colors.inverseOnSurface,
+      iconRes = R.drawable.key0,
+      onClick = addTokenAction(Token.Digit.DIGIT_0),
+    )
+    IconButton(
+      glanceModifier = buttonModifier,
+      containerColor = UnittoGlanceTheme.colors.inverseOnSurface,
+      iconRes = if (useDot) R.drawable.dot else R.drawable.comma,
+      onClick = addTokenAction(Token.Digit.DOT),
+    )
     IconButton(
       glanceModifier = buttonModifier,
       containerColor = UnittoGlanceTheme.colors.inverseOnSurface,
@@ -266,7 +248,6 @@ private fun PreviewCalculatorKeyboard() {
   CalculatorKeyboard(
     modifier = GlanceModifier.fillMaxSize(),
     addTokenAction = { emptyAction },
-    middleZero = true,
     useDot = true,
     addBracketAction = { emptyAction },
     clearInputAction = { emptyAction },

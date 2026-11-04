@@ -127,8 +127,6 @@ internal class CalculatorViewModel(
           outputFormat = prefs.outputFormat,
           formatterSymbols = prefs.formatterSymbols,
           history = history,
-          middleZero = prefs.middleZero,
-          acButton = prefs.acButton,
           additionalButtons = prefs.additionalButtons,
           inverseMode = prefs.inverseMode,
           partialHistoryView = prefs.partialHistoryView,

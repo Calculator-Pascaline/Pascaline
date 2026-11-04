@@ -482,8 +482,6 @@
     <string name="locale_ru" translatable="false">Русский</string>
     <string name="locale_tr" translatable="false">Türkçe</string>
     <string name="locale_zh_rCN" translatable="false">简体中文</string>
-    <string name="settings_ac_button">AC button</string>
-    <string name="settings_ac_button_support">Show separate clear button</string>
     <string name="settings_additional">Additional</string>
     <string name="settings_about">About</string>
     <string name="settings_apps">Apps</string>
@@ -533,8 +531,6 @@
     <string name="settings_language">Language</string>
     <string name="settings_language_support">Change the app language</string>
     <string name="settings_light_mode">Light</string>
-    <string name="settings_middle_zero">Zero in the middle</string>
-    <string name="settings_middle_zero_support">Swap zero and decimal buttons</string>
     <string name="settings_phone_keypad">Phone keypad</string>
     <string name="settings_phone_keypad_support">1 2 3 on the top row, like a phone, instead of 7 8 9</string>
     <string name="settings_note">Note</string>

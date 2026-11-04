@@ -39,12 +39,10 @@ internal sealed class ConverterUIState {
     val result: ConverterResult,
     val unitFrom: BasicUnit.Default,
     val unitTo: BasicUnit.Default,
-    val middleZero: Boolean,
     val formatterSymbols: FormatterSymbols,
     val scale: Int,
     val outputFormat: Int,
     val formatTime: Boolean,
-    val acButton: Boolean,
   ) : ConverterUIState()
 
   data class NumberBase(

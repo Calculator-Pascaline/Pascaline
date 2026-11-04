@@ -440,8 +440,6 @@
     <string name="sequences_title">Rijen</string>
     <string name="sequences_to">Tot n</string>
     <string name="settings_about">Over</string>
-    <string name="settings_ac_button">AC-knop</string>
-    <string name="settings_ac_button_support">Aparte wis-knop weergeven</string>
     <string name="settings_additional">Aanvullend</string>
     <string name="settings_amoled_dark">AMOLED Donker</string>
     <string name="settings_amoled_dark_support">Zwarte achtergrond gebruiken voor donkere thema's</string>
@@ -493,8 +491,6 @@
     <string name="settings_menu_show">Tonen in het menu</string>
     <string name="settings_menu_shown">Getoond</string>
     <string name="settings_menu_support">Volgorde van de apps en welke getoond worden</string>
-    <string name="settings_middle_zero">Nul in het midden</string>
-    <string name="settings_middle_zero_support">Wissel de nul- en decimaalknop om</string>
     <string name="settings_note">Opmerking</string>
     <string name="settings_partial_history_view">Gedeeltelijke geschiedenisweergave</string>
     <string name="settings_partial_history_view_support">Bekijk de laatste invoer in de geschiedenis</string>

@@ -442,8 +442,6 @@ private fun PreviewCalculatorScreen() {
             outputFormat = OutputFormat.PLAIN,
             formatterSymbols = FormatterSymbols(Token.SPACE, Token.PERIOD, false),
             history = calculatorHistoryItems,
-            middleZero = false,
-            acButton = true,
             additionalButtons = false,
             inverseMode = false,
             partialHistoryView = true,

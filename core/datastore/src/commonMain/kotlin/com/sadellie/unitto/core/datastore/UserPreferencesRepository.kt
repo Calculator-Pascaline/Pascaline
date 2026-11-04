@@ -36,7 +36,6 @@ interface UserPreferencesRepository {
   val generalPrefs: Flow<GeneralPreferences>
   val calculatorPrefs: Flow<CalculatorPreferences>
   val converterPrefs: Flow<ConverterPreferences>
-  val displayPrefs: Flow<DisplayPreferences>
   val formattingPrefs: Flow<FormattingPreferences>
   val unitGroupsPrefs: Flow<UnitGroupsPreferences>
   val addSubtractPrefs: Flow<AddSubtractPreferences>
@@ -88,9 +87,6 @@ interface UserPreferencesRepository {
     val formatterSymbols: FormatterSymbols
       get() = FormatterSymbols(Token.SPACE, Token.PERIOD, false)
 
-    val middleZero: Boolean
-      get() = true
-
     val partialHistoryView: Boolean
       get() = true
 
@@ -130,9 +126,6 @@ interface UserPreferencesRepository {
 
     val latestRightSide: String
       get() = UnitID.mile
-
-    val acButton: Boolean
-      get() = true
 
     val additionButtons: Boolean
       get() = false
@@ -177,8 +170,6 @@ interface UserPreferencesRepository {
 
   suspend fun updateEnableKeepScreenOn(enabled: Boolean)
 
-  suspend fun updateMiddleZero(enabled: Boolean)
-
   suspend fun updateToolsExperiment(enabled: Boolean)
 
   suspend fun updateRadianMode(radianMode: Boolean)
@@ -206,8 +197,6 @@ interface UserPreferencesRepository {
   suspend fun updateFractionalOutput(enabled: Boolean)
 
   suspend fun updateConstantCalculation(enabled: Boolean)
-
-  suspend fun updateAcButton(enabled: Boolean)
 
   suspend fun updateAdditionalButtons(enabled: Boolean)
 

@@ -440,8 +440,6 @@
     <string name="sequences_title">Diziler</string>
     <string name="sequences_to">n sonu</string>
     <string name="settings_about">Hakkında</string>
-    <string name="settings_ac_button">AC düğmesi</string>
-    <string name="settings_ac_button_support">Ayrı bir temizle düğmesi göster</string>
     <string name="settings_additional">Ek</string>
     <string name="settings_amoled_dark">AMOLED Koyu</string>
     <string name="settings_amoled_dark_support">Koyu temalar için siyah arka plan kullan</string>
@@ -493,8 +491,6 @@
     <string name="settings_menu_show">Menüde göster</string>
     <string name="settings_menu_shown">Gösterilen</string>
     <string name="settings_menu_support">Uygulamaların sırası ve hangilerinin gösterildiği</string>
-    <string name="settings_middle_zero">Ortada sıfır</string>
-    <string name="settings_middle_zero_support">Sıfır ve ondalık düğmelerinin yerini değiştir</string>
     <string name="settings_note">Not</string>
     <string name="settings_partial_history_view">Kısmi geçmiş görünümü</string>
     <string name="settings_partial_history_view_support">Geçmişteki son girdiye göz at</string>

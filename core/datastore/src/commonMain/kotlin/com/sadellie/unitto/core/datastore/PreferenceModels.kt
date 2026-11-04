@@ -48,8 +48,6 @@ data class GeneralPreferences(
 data class CalculatorPreferences(
   val radianMode: Boolean,
   val formatterSymbols: FormatterSymbols,
-  val middleZero: Boolean,
-  val acButton: Boolean,
   val additionalButtons: Boolean,
   val inverseMode: Boolean,
   val partialHistoryView: Boolean,
@@ -64,8 +62,6 @@ data class CalculatorPreferences(
 
 data class ConverterPreferences(
   val formatterSymbols: FormatterSymbols,
-  val middleZero: Boolean,
-  val acButton: Boolean,
   val precision: Int,
   val outputFormat: Int,
   val formatTime: Boolean,
@@ -77,7 +73,6 @@ data class ConverterPreferences(
   val showIcons: Boolean,
 )
 
-data class DisplayPreferences(val middleZero: Boolean, val acButton: Boolean)
 
 data class FormattingPreferences(
   val digitsPrecision: Int,

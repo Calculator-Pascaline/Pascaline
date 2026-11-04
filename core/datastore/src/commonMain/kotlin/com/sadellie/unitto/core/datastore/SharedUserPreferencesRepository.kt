@@ -104,14 +104,12 @@ abstract class SharedUserPreferencesRepository : UserPreferencesRepository {
         CalculatorPreferences(
           radianMode = preferences.radianMode(),
           formatterSymbols = preferences.formatterSymbols(),
-          middleZero = preferences.middleZero(),
           partialHistoryView = preferences.partialHistoryView(),
           steppedPartialHistoryView = preferences.steppedPartialHistoryView(),
           initialPartialHistoryView = preferences.initialPartialHistoryView(),
           openHistoryViewButton = preferences.openHistoryViewButton(),
           precision = preferences.digitsPrecision(),
           outputFormat = Defaults.outputFormat,
-          acButton = preferences.acButton(),
           additionalButtons = preferences.additionalButtons(),
           inverseMode = preferences.inverseMode(),
           fractionalOutput = preferences.fractionalOutput(),
@@ -124,8 +122,6 @@ abstract class SharedUserPreferencesRepository : UserPreferencesRepository {
       values.map { preferences ->
         ConverterPreferences(
           formatterSymbols = preferences.formatterSymbols(),
-          middleZero = preferences.middleZero(),
-          acButton = preferences.acButton(),
           precision = preferences.digitsPrecision(),
           outputFormat = Defaults.outputFormat,
           formatTime = preferences.unitConverterFormatTime(),
@@ -136,12 +132,6 @@ abstract class SharedUserPreferencesRepository : UserPreferencesRepository {
           latestRightSideUnit = preferences.latestRightSide(),
           showIcons = preferences.unitConverterShowIcons(),
         )
-      }
-
-  override val displayPrefs: Flow<DisplayPreferences>
-    get() =
-      values.map { preferences ->
-        DisplayPreferences(middleZero = preferences.middleZero(), acButton = preferences.acButton())
       }
 
   override val formattingPrefs: Flow<FormattingPreferences>
@@ -230,9 +220,6 @@ abstract class SharedUserPreferencesRepository : UserPreferencesRepository {
   override suspend fun updateEnableKeepScreenOn(enabled: Boolean) =
     edit { set(PrefKeys.ENABLE_KEEP_SCREEN_ON_PREF_KEY, enabled) }
 
-  override suspend fun updateMiddleZero(enabled: Boolean) =
-    edit { set(PrefKeys.MIDDLE_ZERO_PREF_KEY, enabled) }
-
   override suspend fun updateToolsExperiment(enabled: Boolean) =
     edit { set(PrefKeys.ENABLE_TOOLS_EXPERIMENT_PREF_KEY, enabled) }
 
@@ -273,9 +260,6 @@ abstract class SharedUserPreferencesRepository : UserPreferencesRepository {
 
   override suspend fun updateConstantCalculation(enabled: Boolean) =
     edit { set(PrefKeys.CONSTANT_CALCULATION_PREF_KEY, enabled) }
-
-  override suspend fun updateAcButton(enabled: Boolean) =
-    edit { set(PrefKeys.AC_BUTTON_PREF_KEY, enabled) }
 
   override suspend fun updateAdditionalButtons(enabled: Boolean) =
     edit { set(PrefKeys.ADDITIONAL_BUTTONS_PREF_KEY, enabled) }
@@ -320,8 +304,6 @@ abstract class SharedUserPreferencesRepository : UserPreferencesRepository {
     return FormatterSymbols(grouping, fractional, indian)
   }
 
-  private fun PreferenceValues.middleZero() = boolean(PrefKeys.MIDDLE_ZERO_PREF_KEY) ?: Defaults.middleZero
-
   private fun PreferenceValues.partialHistoryView() =
     boolean(PrefKeys.PARTIAL_HISTORY_VIEW_PREF_KEY) ?: Defaults.partialHistoryView
 
@@ -364,8 +346,6 @@ abstract class SharedUserPreferencesRepository : UserPreferencesRepository {
 
   private fun PreferenceValues.latestRightSide() =
     string(PrefKeys.LATEST_RIGHT_SIDE_PREF_KEY) ?: Defaults.latestRightSide
-
-  private fun PreferenceValues.acButton() = boolean(PrefKeys.AC_BUTTON_PREF_KEY) ?: Defaults.acButton
 
   private fun PreferenceValues.additionalButtons() =
     boolean(PrefKeys.ADDITIONAL_BUTTONS_PREF_KEY) ?: Defaults.additionButtons

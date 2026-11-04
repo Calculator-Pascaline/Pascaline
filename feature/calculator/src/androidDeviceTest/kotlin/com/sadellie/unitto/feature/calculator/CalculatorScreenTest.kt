@@ -21,19 +21,20 @@ package com.sadellie.unitto.feature.calculator
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTouchInput
-import androidx.compose.ui.test.swipeDown
 import com.sadellie.unitto.core.common.FormatterSymbols
 import com.sadellie.unitto.core.common.OutputFormat
 import com.sadellie.unitto.core.common.Token
+import com.sadellie.unitto.core.model.calculator.CalculatorHistoryItem
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.getString
 import org.junit.Rule
 import org.junit.Test
 import unitto.core.common.generated.resources.Res
+import unitto.core.common.generated.resources.calculator_clear_history
 import unitto.core.common.generated.resources.calculator_clear_history_support
 
 class CalculatorScreenTest {
@@ -51,10 +52,8 @@ class CalculatorScreenTest {
               radianMode = false,
               precision = 3,
               outputFormat = OutputFormat.PLAIN,
-              formatterSymbols = FormatterSymbols(Token.SPACE, Token.PERIOD),
+              formatterSymbols = FormatterSymbols(Token.SPACE, Token.PERIOD, false),
               history = emptyList(),
-              middleZero = false,
-              acButton = true,
               additionalButtons = false,
               inverseMode = false,
               partialHistoryView = true,
@@ -68,12 +67,9 @@ class CalculatorScreenTest {
           onDeleteClick = {},
           onClearClick = {},
           onEqualClick = {},
-          onRadianModeClick = {},
-          onAdditionalButtonsClick = {},
-          onInverseModeClick = {},
           onClearHistoryClick = {},
           onDeleteHistoryItemClick = {},
-          updateInitialPartialHistoryView = {},
+          onUpdateHistoryLabel = { _, _ -> },
         )
       }
 
@@ -82,8 +78,9 @@ class CalculatorScreenTest {
     }
 
   @Test
-  fun ready_swipeForHistory(): Unit =
+  fun ready_clearHistoryAsksFirst(): Unit =
     with(composeTestRule) {
+      val buttonLabel = runBlocking { getString(Res.string.calculator_clear_history) }
       val expectedLabel = runBlocking { getString(Res.string.calculator_clear_history_support) }
       setContent {
         Ready(
@@ -94,10 +91,8 @@ class CalculatorScreenTest {
               radianMode = false,
               precision = 3,
               outputFormat = OutputFormat.PLAIN,
-              formatterSymbols = FormatterSymbols(Token.SPACE, Token.PERIOD),
-              history = emptyList(),
-              middleZero = false,
-              acButton = true,
+              formatterSymbols = FormatterSymbols(Token.SPACE, Token.PERIOD, false),
+              history = listOf(CalculatorHistoryItem(id = 1, expression = "1+1", result = "2")),
               additionalButtons = false,
               inverseMode = false,
               partialHistoryView = true,
@@ -111,17 +106,13 @@ class CalculatorScreenTest {
           onDeleteClick = {},
           onClearClick = {},
           onEqualClick = {},
-          onRadianModeClick = {},
-          onAdditionalButtonsClick = {},
-          onInverseModeClick = {},
           onClearHistoryClick = {},
           onDeleteHistoryItemClick = {},
-          updateInitialPartialHistoryView = {},
+          onUpdateHistoryLabel = { _, _ -> },
         )
       }
 
-      onNodeWithTag("inputBox").performTouchInput { swipeDown() }
-      onNodeWithTag("historyButton").performClick()
+      onNodeWithContentDescription(buttonLabel).performClick()
       onNodeWithText(expectedLabel).assertExists()
     }
 }

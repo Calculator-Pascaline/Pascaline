@@ -33,8 +33,6 @@ internal sealed class CalculatorUIState {
     val outputFormat: Int,
     val formatterSymbols: FormatterSymbols,
     val history: List<CalculatorHistoryItem>,
-    val middleZero: Boolean,
-    val acButton: Boolean,
     val additionalButtons: Boolean,
     val inverseMode: Boolean,
     val partialHistoryView: Boolean,

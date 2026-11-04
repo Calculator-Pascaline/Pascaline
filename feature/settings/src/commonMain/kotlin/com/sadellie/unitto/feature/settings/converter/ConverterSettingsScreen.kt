@@ -195,8 +195,6 @@ private fun PreviewConverterSettingsScreen() =
       prefs =
         ConverterPreferences(
           formatterSymbols = FormatterSymbols(Token.SPACE, Token.PERIOD, false),
-          middleZero = false,
-          acButton = true,
           precision = 3,
           outputFormat = OutputFormat.PLAIN,
           formatTime = false,

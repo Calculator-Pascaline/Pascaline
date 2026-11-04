@@ -45,6 +45,11 @@ jobs:
         if: github.event_name == 'pull_request'
         run: ./gradlew testAndroidHostTest :kt-math:jvmTest
 
+      # They need a device to run, but compiling them catches code changes that break them
+      - name: Compile tests for devices
+        if: github.event_name == 'pull_request'
+        run: ./gradlew compileAndroidDeviceTest
+
       # Code checks (detekt/config.yml): new findings fail, the known ones are in detekt/baseline.xml
       - name: Check code with Detekt
         if: github.event_name == 'pull_request'

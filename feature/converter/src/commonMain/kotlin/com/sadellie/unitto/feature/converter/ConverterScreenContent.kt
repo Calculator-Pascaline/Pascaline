@@ -213,8 +213,6 @@ internal fun ConverterDefault(
           if (focusedOnInput1) uiState.input1.addBracket() else uiState.input2.addBracket()
         },
         fractional = uiState.formatterSymbols.fractional,
-        middleZero = uiState.middleZero,
-        acButton = uiState.acButton,
       )
     },
   )
@@ -620,7 +618,6 @@ private fun PreviewConverterDefault() {
         input1 = TextFieldState("123"),
         input2 = TextFieldState("456"),
         scale = 3,
-        middleZero = false,
         unitFrom =
           NormalUnit(
             UnitID.meter,
@@ -637,7 +634,6 @@ private fun PreviewConverterDefault() {
             Res.string.unit_meter,
             Res.string.unit_meter_short,
           ),
-        acButton = true,
         formatterSymbols = FormatterSymbols(Token.SPACE, Token.PERIOD, false),
         outputFormat = OutputFormat.PLAIN,
         result = ConverterResult.Default(KBigDecimal.ZERO, KBigDecimal.ZERO),

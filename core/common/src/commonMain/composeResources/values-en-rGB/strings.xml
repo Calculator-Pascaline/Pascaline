@@ -61,8 +61,6 @@
     <string name="date_calculator_subtract">Subtract</string>
     <string name="date_calculator_title">Date calculator</string>
     <string name="date_calculator_years">Years</string>
-    <string name="settings_ac_button">AC button</string>
-    <string name="settings_ac_button_support">Show separate clear button</string>
     <string name="settings_additional">Additional</string>
     <string name="settings_amoled_dark">AMOLED Dark</string>
     <string name="settings_amoled_dark_support">Use black background for dark themes</string>
@@ -88,8 +86,6 @@
     <string name="settings_language">Language</string>
     <string name="settings_language_support">Change the app language</string>
     <string name="settings_light_mode">Light</string>
-    <string name="settings_middle_zero">Zero in the middle</string>
-    <string name="settings_middle_zero_support">Swap zero and decimal buttons</string>
     <string name="settings_note">Note</string>
     <string name="settings_partial_history_view">Partial history view</string>
     <string name="settings_partial_history_view_support">Peek latest entrance in history</string>

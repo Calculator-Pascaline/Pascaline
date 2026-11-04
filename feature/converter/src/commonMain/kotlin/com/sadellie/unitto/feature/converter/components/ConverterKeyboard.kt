@@ -50,12 +50,10 @@ import com.sadellie.unitto.core.ui.KeypadButton.Companion.KeyC
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.KeyD
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.KeyE
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.KeyF
-import com.sadellie.unitto.core.ui.KeypadButton.Companion.LeftBracketKey
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.MinusKey
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.MultiplyKey
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.PlusKey
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.PowerKey
-import com.sadellie.unitto.core.ui.KeypadButton.Companion.RightBracketKey
 import com.sadellie.unitto.core.ui.KeypadButton.Companion.RootKey
 import com.sadellie.unitto.core.ui.KeypadFlow
 import com.sadellie.unitto.core.ui.inKeypadRow
@@ -68,8 +66,6 @@ internal fun DefaultKeyboard(
   onDeleteClick: () -> Unit,
   onBracketsClick: () -> Unit,
   fractional: String,
-  middleZero: Boolean,
-  acButton: Boolean,
 ) {
   val iconHeight: Float =
     if (LocalWindowSize.current.heightSizeClass < WindowHeightSizeClass.Medium)
@@ -79,13 +75,8 @@ internal fun DefaultKeyboard(
   val fractionalKey = remember(fractional) { if (fractional == Token.PERIOD) DotKey else CommaKey }
   KeypadFlow(modifier = modifier, iconHeight = iconHeight) {
     KeypadRow {
-      if (acButton) {
-        ButtonTertiary(ClearKey, onClearClick)
-        ButtonFilled(BracketsKey, onBracketsClick)
-      } else {
-        ButtonFilled(LeftBracketKey, onAddTokenClick)
-        ButtonFilled(RightBracketKey, onAddTokenClick)
-      }
+      ButtonTertiary(ClearKey, onClearClick)
+      ButtonFilled(BracketsKey, onBracketsClick)
       ButtonFilled(PowerKey, onAddTokenClick)
       ButtonFilled(RootKey, onAddTokenClick)
     }
@@ -108,13 +99,8 @@ internal fun DefaultKeyboard(
       ButtonFilled(MinusKey, onAddTokenClick)
     }
     KeypadRow {
-      if (middleZero) {
-        ButtonLight(fractionalKey, onAddTokenClick)
-        ButtonLight(Key0, onAddTokenClick)
-      } else {
-        ButtonLight(Key0, onAddTokenClick)
-        ButtonLight(fractionalKey, onAddTokenClick)
-      }
+      ButtonLight(Key0, onAddTokenClick)
+      ButtonLight(fractionalKey, onAddTokenClick)
       ButtonLight(BackspaceKey, onLongClick = onClearClick, onClick = onDeleteClick)
       ButtonFilled(PlusKey, onAddTokenClick)
     }
@@ -176,8 +162,6 @@ private fun PreviewConverterKeyboard() {
     onDeleteClick = {},
     onBracketsClick = {},
     fractional = Token.PERIOD,
-    middleZero = false,
-    acButton = true,
   )
 }
 

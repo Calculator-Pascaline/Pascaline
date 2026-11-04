@@ -28,7 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.hasText
 import com.sadellie.unitto.core.model.timezone.FavoriteZone
 import org.junit.Rule
 import org.junit.Test
@@ -50,7 +50,7 @@ class FavoriteTimeZonesTest {
           modifier = Modifier.background(MaterialTheme.colorScheme.secondaryContainer),
           item =
             FavoriteZone(
-              timeZone = TimeZone.getTimeZone("Africa/Addis_Ababa"),
+              timeZone = TimeZone.getTimeZone("Asia/Tokyo"),
               position = -1,
               label = "label text",
             ),
@@ -70,6 +70,7 @@ class FavoriteTimeZonesTest {
         )
       }
 
-      onNodeWithText("11:00").assertExists()
+      // 14:00 in Addis Ababa (UTC+3) is 20:00 in Tokyo (UTC+9), the clock may be 12 or 24 hours
+      onNode(hasText("20:00", substring = true) or hasText("8:00", substring = true)).assertExists()
     }
 }

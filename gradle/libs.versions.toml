@@ -28,6 +28,8 @@ androidxLifecycleLifecycleRuntimeCompose = "2.11.0"
 androidxRoom = "2.8.5"
 # https://mvnrepository.com/artifact/androidx.test/core
 androidxTest = "1.7.0"
+# https://mvnrepository.com/artifact/androidx.test.espresso/espresso-core
+androidxTestEspresso = "3.7.0"
 # https://mvnrepository.com/artifact/androidx.test.ext/junit-ktx
 androidxTestExtJunitKtx = "1.3.0"
 # https://mvnrepository.com/artifact/androidx.test/runner
@@ -81,6 +83,7 @@ androidx-activity-activity-compose = { module = "androidx.activity:activity-comp
 androidx-appcompat-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidxAppCompatAppCompat" }
 androidx-browser-browser = { module = "androidx.browser:browser", version.ref = "androidxBrowserBrowser" }
 androidx-compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "androidxCompose" }
+androidx-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "androidxCompose" }
 androidx-core-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidxCoreCoreKts" }
 androidx-glance-glance = { module = "androidx.glance:glance", version.ref = "androidxGlanceGlance" }
 androidx-glance-glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "androidxGlanceGlance" }
@@ -102,6 +105,7 @@ androidx-room-common = { module = "androidx.room:room-common", version.ref = "an
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "androidxRoom" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "androidxRoom" }
 androidx-test-core = { module = "androidx.test:core", version.ref = "androidxTest" }
+androidx-test-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "androidxTestEspresso" }
 androidx-test-ext-junit-ktx = { module = "androidx.test.ext:junit-ktx", version.ref = "androidxTestExtJunitKtx" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidxTestRunner" }
 androidx-work-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "androidxWorkWorkRuntimeKtx" }

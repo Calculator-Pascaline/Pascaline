@@ -440,8 +440,6 @@
     <string name="sequences_title">Sorozatok</string>
     <string name="sequences_to">n-ig</string>
     <string name="settings_about">Névjegy</string>
-    <string name="settings_ac_button">AC gomb</string>
-    <string name="settings_ac_button_support">Külön törlés gomb megjelenítése</string>
     <string name="settings_additional">Továbbiak</string>
     <string name="settings_amoled_dark">AMOLED sötét</string>
     <string name="settings_amoled_dark_support">Fekete háttér használata sötét témákhoz</string>
@@ -493,8 +491,6 @@
     <string name="settings_menu_show">Megjelenítés a menüben</string>
     <string name="settings_menu_shown">Látható</string>
     <string name="settings_menu_support">Az alkalmazások sorrendje és hogy melyik látszik</string>
-    <string name="settings_middle_zero">Nulla középen</string>
-    <string name="settings_middle_zero_support">Nulla és tizedesjel gomb felcserélése</string>
     <string name="settings_note">Megjegyzés</string>
     <string name="settings_partial_history_view">Részleges előzménynézet</string>
     <string name="settings_partial_history_view_support">Legutóbbi bejegyzés megtekintése az előzményekben</string>

@@ -32,8 +32,6 @@ import kotlinx.coroutines.launch
 
 class DisplayViewModel(private val userPrefsRepository: UserPreferencesRepository) : ViewModel() {
 
-  val prefs = userPrefsRepository.displayPrefs.stateIn(viewModelScope, null)
-
   val phoneKeypad =
     userPrefsRepository
       .appData(PrefKeys.PHONE_KEYPAD_PREF_KEY)
@@ -59,13 +57,6 @@ class DisplayViewModel(private val userPrefsRepository: UserPreferencesRepositor
   fun updateMonetMode(monetMode: MonetMode) {
     viewModelScope.launch { userPrefsRepository.updateMonetMode(monetMode) }
   }
-
-  fun updateAcButton(enabled: Boolean) {
-    viewModelScope.launch { userPrefsRepository.updateAcButton(enabled) }
-  }
-
-  fun updateMiddleZero(enabled: Boolean) =
-    viewModelScope.launch { userPrefsRepository.updateMiddleZero(enabled) }
 
   fun updatePhoneKeypad(enabled: Boolean) =
     viewModelScope.launch {

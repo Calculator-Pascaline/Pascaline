@@ -113,8 +113,6 @@ private fun PreviewCalculatorSettingsScreenStandard() {
       CalculatorPreferences(
         radianMode = true,
         formatterSymbols = FormatterSymbols(Token.SPACE, Token.PERIOD, false),
-        middleZero = false,
-        acButton = false,
         additionalButtons = false,
         inverseMode = false,
         partialHistoryView = false,

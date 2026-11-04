@@ -440,8 +440,6 @@
     <string name="sequences_title">Barisan</string>
     <string name="sequences_to">Sampai n</string>
     <string name="settings_about">Tentang</string>
-    <string name="settings_ac_button">Tombol AC</string>
-    <string name="settings_ac_button_support">Tampilkan tombol hapus terpisah</string>
     <string name="settings_additional">Tambahan</string>
     <string name="settings_amoled_dark">Gelap AMOLED</string>
     <string name="settings_amoled_dark_support">Gunakan latar hitam untuk tema gelap</string>
@@ -493,8 +491,6 @@
     <string name="settings_menu_show">Tampilkan di menu</string>
     <string name="settings_menu_shown">Ditampilkan</string>
     <string name="settings_menu_support">Urutan aplikasi dan mana yang ditampilkan</string>
-    <string name="settings_middle_zero">Nol di tengah</string>
-    <string name="settings_middle_zero_support">Tukar tombol desimal dan nol</string>
     <string name="settings_note">Catatan</string>
     <string name="settings_partial_history_view">Tampilan sebagian riwayat</string>
     <string name="settings_partial_history_view_support">Lihat masukan terbaru dalam riwayat</string>

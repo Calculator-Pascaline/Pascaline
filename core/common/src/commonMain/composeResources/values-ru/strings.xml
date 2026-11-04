@@ -440,8 +440,6 @@
     <string name="sequences_title">Последовательности</string>
     <string name="sequences_to">До n</string>
     <string name="settings_about">О приложении</string>
-    <string name="settings_ac_button">Кнопка AC</string>
-    <string name="settings_ac_button_support">Показывать отдельную кнопку очистки</string>
     <string name="settings_additional">Дополнительно</string>
     <string name="settings_amoled_dark">AMOLED темный</string>
     <string name="settings_amoled_dark_support">Использовать черный фон для темных тем</string>
@@ -493,8 +491,6 @@
     <string name="settings_menu_show">Показать в меню</string>
     <string name="settings_menu_shown">Показаны</string>
     <string name="settings_menu_support">Порядок приложений и какие из них показаны</string>
-    <string name="settings_middle_zero">Ноль посередине</string>
-    <string name="settings_middle_zero_support">Поменять местами кнопки нуля и десятичной точки</string>
     <string name="settings_note">Примечание</string>
     <string name="settings_partial_history_view">Частичный просмотр истории</string>
     <string name="settings_partial_history_view_support">Показывать последнюю запись в истории</string>

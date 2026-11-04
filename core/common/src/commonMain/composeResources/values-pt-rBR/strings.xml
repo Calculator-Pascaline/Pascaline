@@ -440,8 +440,6 @@
     <string name="sequences_title">Sequências</string>
     <string name="sequences_to">Até n</string>
     <string name="settings_about">Sobre</string>
-    <string name="settings_ac_button">Botão AC</string>
-    <string name="settings_ac_button_support">Mostrar botão de limpar separado</string>
     <string name="settings_additional">Adicional</string>
     <string name="settings_amoled_dark">AMOLED Escuro</string>
     <string name="settings_amoled_dark_support">Usar fundo preto para temas escuros</string>
@@ -493,8 +491,6 @@
     <string name="settings_menu_show">Mostrar no menu</string>
     <string name="settings_menu_shown">Mostrados</string>
     <string name="settings_menu_support">Ordem dos apps e quais são mostrados</string>
-    <string name="settings_middle_zero">Zero no meio</string>
-    <string name="settings_middle_zero_support">Inverter botões de zero e decimal</string>
     <string name="settings_note">Nota</string>
     <string name="settings_partial_history_view">Visualização parcial do histórico</string>
     <string name="settings_partial_history_view_support">Ver a última entrada no histórico</string>

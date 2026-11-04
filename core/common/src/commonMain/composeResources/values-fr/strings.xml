@@ -440,8 +440,6 @@
     <string name="sequences_title">Suites</string>
     <string name="sequences_to">À n</string>
     <string name="settings_about">À propos</string>
-    <string name="settings_ac_button">Bouton AC</string>
-    <string name="settings_ac_button_support">Afficher un bouton d'effacement séparé</string>
     <string name="settings_additional">Supplémentaire</string>
     <string name="settings_amoled_dark">AMOLED sombre</string>
     <string name="settings_amoled_dark_support">Utiliser un fond noir pour les thèmes sombres</string>
@@ -493,8 +491,6 @@
     <string name="settings_menu_show">Afficher dans le menu</string>
     <string name="settings_menu_shown">Affichées</string>
     <string name="settings_menu_support">Ordre des apps et celles qui sont affichées</string>
-    <string name="settings_middle_zero">Zéro au milieu</string>
-    <string name="settings_middle_zero_support">Inverser les boutons zéro et décimal</string>
     <string name="settings_note">Note</string>
     <string name="settings_partial_history_view">Vue partielle de l'historique</string>
     <string name="settings_partial_history_view_support">Aperçu de la dernière entrée dans l'historique</string>

@@ -177,7 +177,6 @@ private fun ReadyUI(appPrefs: CalculatorPreferences, input: String, output: Stri
       deleteTokenAction = DeleteTokenAction.Companion::create,
       equalAction = EqualAction.Companion::create,
       useDot = formatterSymbols.fractional == Token.Digit.DOT,
-      middleZero = appPrefs.middleZero,
     )
   }
 }
@@ -260,9 +259,7 @@ private fun PreviewWidget() {
         formatterSymbols = FormatterSymbols(Token.SPACE, Token.PERIOD, false),
         fractionalOutput = false,
         constantCalculation = false,
-        middleZero = true,
         inverseMode = false,
-        acButton = true,
         precision = 3,
         outputFormat = OutputFormat.PLAIN,
         additionalButtons = false,

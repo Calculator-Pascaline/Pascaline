@@ -47,5 +47,11 @@ kotlin {
     implementation(libs.org.jetbrains.kotlin.kotlin.test)
     implementation(libs.org.jetbrains.kotlinx.kotlinx.coroutines.test)
   }
-  sourceSets.androidDeviceTest.dependencies { implementation(libs.androidx.compose.ui.test.junit4) }
+  sourceSets.androidDeviceTest.dependencies {
+    implementation(libs.androidx.compose.ui.test.junit4)
+    // The empty activity that the tests run in
+    implementation(libs.androidx.compose.ui.test.manifest)
+    // Compose brings an Espresso too old for recent Android versions
+    implementation(libs.androidx.test.espresso.core)
+  }
 }
