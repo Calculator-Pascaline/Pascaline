@@ -405,7 +405,7 @@ private fun Results(
 
 /** Hexadecimal and binary digits in groups of 4, others of 3. */
 private fun String.groupedFor(base: NumberBase) =
-  grouped(if (base == NumberBase.BIN || base == NumberBase.HEX) 4 else 3)
+  grouped(if (base == NumberBase.BIN || base == NumberBase.HEX) NIBBLE_GROUP else THOUSANDS_GROUP)
 
 /** Digits from the right in groups: 1111 0000, 65 535. */
 private fun String.grouped(size: Int): String {
@@ -492,3 +492,7 @@ private val WIDE_KEYPAD_MAX_WIDTH = 520.dp
 private const val KEYPAD_HEIGHT_FACTOR = 0.5f
 private val INPUT_MIN_HEIGHT = 64.dp
 private val CARD_SHAPE = RoundedCornerShape(20.dp)
+
+/** Binary and hexadecimal digits by 4 (a nibble), the others by 3 */
+private const val NIBBLE_GROUP = 4
+private const val THOUSANDS_GROUP = 3

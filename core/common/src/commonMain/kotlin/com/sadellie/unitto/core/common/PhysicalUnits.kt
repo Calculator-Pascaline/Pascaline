@@ -265,9 +265,13 @@ object PhysicalUnits {
       constant("hplanck", "Planck constant", "6.62607015E-34", Dimension(kg = 1, m = 2, s = -1)),
     )
 
-  private fun leaves(vararg units: PhysicalUnit) = units.map { UnitMenuItem.Leaf(it) }
+  private fun leaves(vararg units: PhysicalUnit): List<UnitMenuItem> = units.map { UnitMenuItem.Leaf(it) }
 
-  private fun category(name: String, vararg children: UnitMenuItem) =
+  /** Units and sub-menus, in their order: leaves(…) + category(…). */
+  private fun category(name: String, children: List<UnitMenuItem>) = UnitMenuItem.Category(name, children)
+
+  /** Only sub-menus. */
+  private fun category(name: String, vararg children: UnitMenuItem.Category) =
     UnitMenuItem.Category(name, children.toList())
 
   /** Same groups and order as Epsilon (metric variant). */
@@ -277,77 +281,60 @@ object PhysicalUnits {
         "Length and angle",
         category(
           "Length",
-          *leaves(picometer, nanometer, micrometer, millimeter, centimeter, meter, kilometer).toTypedArray(),
-          *leaves(astronomicalUnit, lightYear, parsec).toTypedArray(),
-          category("Imperial", *leaves(inch, foot, yard, mile).toTypedArray()),
+          leaves(picometer, nanometer, micrometer, millimeter, centimeter, meter, kilometer) +
+            leaves(astronomicalUnit, lightYear, parsec) +
+            category("Imperial", leaves(inch, foot, yard, mile)),
         ),
-        category("Angle", *leaves(degree, radian, gradian).toTypedArray()),
+        category("Angle", leaves(degree, radian, gradian)),
       ),
       category(
         "Time and frequency",
         category(
           "Time",
-          *leaves(nanosecond, microsecond, millisecond, second, minute, hour, day, week, month, year)
-            .toTypedArray(),
+          leaves(nanosecond, microsecond, millisecond, second, minute, hour, day, week, month, year),
         ),
-        category("Frequency", *leaves(hertz, kilohertz, megahertz, gigahertz).toTypedArray()),
+        category("Frequency", leaves(hertz, kilohertz, megahertz, gigahertz)),
       ),
       category(
         "Area and volume",
-        category("Area", *leaves(hectare).toTypedArray(), category("Imperial", *leaves(acre).toTypedArray())),
+        category("Area", leaves(hectare) + category("Imperial", leaves(acre))),
         category(
           "Volume",
-          *leaves(milliliter, centiliter, deciliter, liter).toTypedArray(),
-          category(
-            "Imperial",
-            *leaves(teaspoon, tablespoon, fluidOunce, cup, pint, quart, gallon).toTypedArray(),
-          ),
+          leaves(milliliter, centiliter, deciliter, liter) +
+            category("Imperial", leaves(teaspoon, tablespoon, fluidOunce, cup, pint, quart, gallon)),
         ),
       ),
       category(
         "Mass",
-        *leaves(microgram, milligram, gram, kilogram, tonne).toTypedArray(),
-        category("Imperial", *leaves(ounce, pound, shortTon, longTon).toTypedArray()),
+        leaves(microgram, milligram, gram, kilogram, tonne) +
+          category("Imperial", leaves(ounce, pound, shortTon, longTon)),
       ),
       category(
         "Electricity",
-        category("Current", *leaves(microampere, milliampere, ampere).toTypedArray()),
-        category("Voltage", *leaves(microvolt, millivolt, volt, kilovolt).toTypedArray()),
-        category("Resistance", *leaves(ohm, kiloohm).toTypedArray()),
-        category("Capacitance", *leaves(microfarad, millifarad, farad).toTypedArray()),
-        category("Other units", *leaves(henry, coulomb, siemens, tesla).toTypedArray()),
+        category("Current", leaves(microampere, milliampere, ampere)),
+        category("Voltage", leaves(microvolt, millivolt, volt, kilovolt)),
+        category("Resistance", leaves(ohm, kiloohm)),
+        category("Capacitance", leaves(microfarad, millifarad, farad)),
+        category("Other units", leaves(henry, coulomb, siemens, tesla)),
       ),
       category(
         "Force and pressure",
-        category("Force", *leaves(millinewton, newton, kilonewton).toTypedArray()),
-        category("Pressure", *leaves(pascal, hectopascal, bar, atmosphere).toTypedArray()),
+        category("Force", leaves(millinewton, newton, kilonewton)),
+        category("Pressure", leaves(pascal, hectopascal, bar, atmosphere)),
       ),
       category(
         "Energy and power",
         category(
           "Energy",
-          category("Joule", *leaves(millijoule, joule, kilojoule).toTypedArray()),
-          category(
-            "Electronvolt",
-            *leaves(millielectronvolt, electronvolt, kiloelectronvolt, megaelectronvolt).toTypedArray(),
-          ),
-          category(
-            "Watt-hour",
-            *leaves(milliwattHour, wattHour, kilowattHour, megawattHour, gigawattHour).toTypedArray(),
-          ),
+          category("Joule", leaves(millijoule, joule, kilojoule)),
+          category("Electronvolt", leaves(millielectronvolt, electronvolt, kiloelectronvolt, megaelectronvolt)),
+          category("Watt-hour", leaves(milliwattHour, wattHour, kilowattHour, megawattHour, gigawattHour)),
         ),
-        category(
-          "Power",
-          *leaves(microwatt, milliwatt, watt, kilowatt, megawatt, gigawatt, horsepower).toTypedArray(),
-        ),
+        category("Power", leaves(microwatt, milliwatt, watt, kilowatt, megawatt, gigawatt, horsepower)),
       ),
-      category("Temperature", *leaves(kelvin, celsius, fahrenheit).toTypedArray()),
-      category(
-        "Other units",
-        *leaves(candela).toTypedArray(),
-        category("Amount of substance", *leaves(micromole, millimole, mole).toTypedArray()),
-      ),
-      category("Constants", *constants.map { UnitMenuItem.Leaf(it) }.toTypedArray()),
+      category("Temperature", leaves(kelvin, celsius, fahrenheit)),
+      category("Other units", leaves(candela) + category("Amount of substance", leaves(micromole, millimole, mole))),
+      category("Constants", constants.map { UnitMenuItem.Leaf(it) }),
     )
 
   /** Every unit and constant, longest symbol first (for matching `_mmol` before `_m`). */

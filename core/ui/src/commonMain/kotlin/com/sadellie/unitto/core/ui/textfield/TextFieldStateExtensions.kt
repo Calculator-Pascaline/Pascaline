@@ -30,33 +30,63 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 
 fun TextFieldState.addTokens(tokens: String) {
-  when (tokens) {
+  if (tokens == Token.Layout.FRACTION) return addFraction()
+  when (actionBefore(tokens)) {
+    TokenAction.REPLACE_AHEAD -> deleteAheadAndAdd(tokens)
+    TokenAction.DELETE -> deleteTokens()
+    TokenAction.INSERT -> insertTokens(tokens)
+  }
+}
+
+/** What typing [tokens] does with what is before the cursor. */
+private enum class TokenAction {
+  /** An operator before is replaced: 2+ then × ==> 2× */
+  REPLACE_AHEAD,
+
+  /** An operator at the start deletes instead */
+  DELETE,
+  INSERT,
+}
+
+private fun TextFieldState.actionBefore(tokens: String): TokenAction {
+  val tokenAhead = text.toString().tokenAhead(selection.min)
+  val replaced =
+    when (tokens) {
+      in BINARY_OPERATORS -> REPLACED_BY_OPERATOR
+      Token.Operator.MINUS -> REPLACED_BY_MINUS
+      Token.Digit.DOT -> setOf(Token.Digit.DOT)
+      else -> emptySet()
+    }
+  return when {
+    tokenAhead in replaced -> TokenAction.REPLACE_AHEAD
+    tokenAhead == "" && tokens in BINARY_OPERATORS -> TokenAction.DELETE
+    else -> TokenAction.INSERT
+  }
+}
+
+/** Operators that need something before them */
+private val BINARY_OPERATORS =
+  setOf(
     Token.Operator.PLUS,
     Token.Operator.MULTIPLY,
     Token.Operator.DIVIDE,
     Token.Operator.POWER,
-    Token.Layout.POWER -> {
-      val tokenAhead = text.toString().tokenAhead(selection.min)
-      if (tokenAhead == Token.Operator.PLUS) return deleteAheadAndAdd(tokens)
-      if (tokenAhead == Token.Operator.MINUS) return deleteAheadAndAdd(tokens)
-      if (tokenAhead == Token.Operator.MULTIPLY) return deleteAheadAndAdd(tokens)
-      if (tokenAhead == Token.Operator.DIVIDE) return deleteAheadAndAdd(tokens)
-      if (tokenAhead == Token.Operator.SQRT) return deleteAheadAndAdd(tokens)
-      if (tokenAhead == Token.Operator.POWER) return deleteAheadAndAdd(tokens)
-      if (tokenAhead == "") return deleteTokens()
-    }
-    Token.Operator.MINUS -> {
-      val tokenAhead = text.toString().tokenAhead(selection.min)
-      if (tokenAhead == Token.Operator.PLUS) return deleteAheadAndAdd(tokens)
-      if (tokenAhead == Token.Operator.MINUS) return deleteAheadAndAdd(tokens)
-    }
-    Token.Digit.DOT -> {
-      val tokenAhead = text.toString().tokenAhead(selection.min)
-      if (tokenAhead == Token.Digit.DOT) return deleteAheadAndAdd(tokens)
-    }
-    Token.Layout.FRACTION -> return addFraction()
-  }
+    Token.Layout.POWER,
+  )
 
+private val REPLACED_BY_OPERATOR =
+  setOf(
+    Token.Operator.PLUS,
+    Token.Operator.MINUS,
+    Token.Operator.MULTIPLY,
+    Token.Operator.DIVIDE,
+    Token.Operator.SQRT,
+    Token.Operator.POWER,
+  )
+
+private val REPLACED_BY_MINUS = setOf(Token.Operator.PLUS, Token.Operator.MINUS)
+
+private fun TextFieldState.insertTokens(tokens: String) {
   this.edit {
     val insertStart = selection.min
     replace(selection.min, selection.max, tokens)
@@ -106,88 +136,65 @@ private fun TextFieldState.addFraction() {
 /** Start of the operand that ends at [pos]: number, constant or a closed bracket. */
 private fun String.operandStart(pos: Int): Int {
   val digits = Token.Digit.allWithDot.map { it.first() }
-  val previous = getOrNull(pos - 1) ?: return pos
+  val previous = getOrNull(pos - 1)
   return when {
+    previous == null -> pos
     previous in digits -> {
       var start = pos
       while (getOrNull(start - 1) in digits) start--
       start
     }
     previous.toString() in Token.Const.all -> pos - 1
-    previous == Token.Operator.RIGHT_BRACKET.first() -> {
-      var balance = 0
-      var start = pos - 1
-      while (start >= 0) {
-        if (this[start] == Token.Operator.RIGHT_BRACKET.first()) balance++
-        if (this[start] == Token.Operator.LEFT_BRACKET.first()) balance--
-        if (balance == 0) break
-        start--
-      }
-      if (start < 0) return pos
-      // include function name: sin(...)
-      Token.Func.all.firstOrNull { startsWith(it, start - it.length) }?.let { start -= it.length }
-      start
-    }
+    previous == Token.Operator.RIGHT_BRACKET.first() -> bracketOperandStart(pos)
     else -> pos
   }
 }
 
+/** Start of the brackets that end at [pos], with the function they belong to: sin(…). */
+private fun String.bracketOperandStart(pos: Int): Int {
+  var balance = 0
+  var start = pos - 1
+  while (start >= 0) {
+    if (this[start] == Token.Operator.RIGHT_BRACKET.first()) balance++
+    if (this[start] == Token.Operator.LEFT_BRACKET.first()) balance--
+    if (balance == 0) break
+    start--
+  }
+  val function = Token.Func.all.firstOrNull { start >= 0 && startsWith(it, start - it.length) }
+  return if (start < 0) pos else start - (function?.length ?: 0)
+}
+
 fun TextFieldState.addBracket() {
   val slotStart = text.enclosingSlotStart(selection.min)
-  if (slotStart != -1) return addBracketInSlot(slotStart)
-
-  val subStringBeforeCursor = text.substring(0..<selection.min)
-
-  // Always open when empty in front
-  if (subStringBeforeCursor.isEmpty()) {
-    addTokens(Token.Operator.LEFT_BRACKET)
-    return
+  val textBeforeCursor = text.substring(0..<selection.min)
+  // Opened when balanced in front, or after an operator or a function
+  val opens =
+    textBeforeCursor.bracketBalance() == 0 || text.toString().tokenAhead(selection.min) in OPEN_AFTER
+  when {
+    slotStart != -1 -> addBracketInSlot(slotStart)
+    // Always open when empty in front
+    textBeforeCursor.isEmpty() -> addTokens(Token.Operator.LEFT_BRACKET)
+    // Always close before operator
+    text.toString().tokenAfter(selection.min) in CLOSE_BEFORE -> addTokens(Token.Operator.RIGHT_BRACKET)
+    opens -> addTokens(Token.Operator.LEFT_BRACKET)
+    else -> closeBracket()
   }
-
-  // Always close before operator
-  val openBeforeOperators =
-    listOf(
-      Token.Operator.MULTIPLY,
-      Token.Operator.DIVIDE,
-      Token.Operator.PLUS,
-      Token.Operator.MINUS,
-      Token.Operator.POWER,
-    )
-  if (text.toString().tokenAfter(selection.min) in openBeforeOperators) {
-    addTokens(Token.Operator.RIGHT_BRACKET)
-    return
-  }
-
-  // Always open when balanced in front
-  val leftBracketChar: Char = Token.Operator.LEFT_BRACKET.first()
-  val rightBracketChar: Char = Token.Operator.RIGHT_BRACKET.first()
-  var balance = 0
-  subStringBeforeCursor.forEach {
-    if (it == leftBracketChar) balance += 1
-    if (it == rightBracketChar) balance -= 1
-  }
-  if (balance == 0) {
-    addTokens(Token.Operator.LEFT_BRACKET)
-    return
-  }
-
-  // Always open after operator
-  val openAfterOperators =
-    listOf(
-      Token.Operator.MULTIPLY,
-      Token.Operator.DIVIDE,
-      Token.Operator.PLUS,
-      Token.Operator.MINUS,
-      Token.Operator.POWER,
-      Token.Operator.LEFT_BRACKET,
-    ) + Token.Func.allWithOpeningBracket
-  if (text.toString().tokenAhead(selection.min) in openAfterOperators) {
-    addTokens(Token.Operator.LEFT_BRACKET)
-    return
-  }
-
-  closeBracket()
 }
+
+/** Opened brackets minus closed ones. */
+private fun CharSequence.bracketBalance(): Int =
+  count { it == Token.Operator.LEFT_BRACKET.first() } - count { it == Token.Operator.RIGHT_BRACKET.first() }
+
+private val CLOSE_BEFORE =
+  listOf(
+    Token.Operator.MULTIPLY,
+    Token.Operator.DIVIDE,
+    Token.Operator.PLUS,
+    Token.Operator.MINUS,
+    Token.Operator.POWER,
+  )
+
+private val OPEN_AFTER by lazy { CLOSE_BEFORE + Token.Operator.LEFT_BRACKET + Token.Func.allWithOpeningBracket }
 
 /**
  * Closing bracket that is already there (from templates like `d/dx()`) is skipped instead of adding
@@ -220,35 +227,17 @@ private fun TextFieldState.closeBracket() {
 private fun TextFieldState.addBracketInSlot(slotStart: Int) {
   val textBeforeCursor = text.substring(slotStart + 1, selection.min)
   val tokenAhead = text.toString().tokenAhead(selection.min)
-  val openAfter =
-    listOf(
-      Token.Operator.MULTIPLY,
-      Token.Operator.DIVIDE,
-      Token.Operator.PLUS,
-      Token.Operator.MINUS,
-      Token.Operator.POWER,
-      Token.Operator.LEFT_BRACKET,
-    ) + Token.Func.allWithOpeningBracket
-
-  if (textBeforeCursor.isEmpty() || tokenAhead in openAfter) {
-    addTokens(Token.Operator.LEFT_BRACKET)
-    return
-  }
-
-  val balance =
-    textBeforeCursor.count { it == Token.Operator.LEFT_BRACKET.first() } -
-      textBeforeCursor.count { it == Token.Operator.RIGHT_BRACKET.first() }
-  if (balance > 0) {
-    closeBracket()
-    return
-  }
-
   val slotEnd = text.slotEnd(slotStart)
-  if (slotEnd == -1) {
-    addTokens(Token.Operator.RIGHT_BRACKET)
-    return
+  when {
+    textBeforeCursor.isEmpty() || tokenAhead in OPEN_AFTER -> addTokens(Token.Operator.LEFT_BRACKET)
+    textBeforeCursor.bracketBalance() > 0 -> closeBracket()
+    slotEnd == -1 -> addTokens(Token.Operator.RIGHT_BRACKET)
+    else -> leaveSlot(slotEnd)
   }
+}
 
+/** Cursor after the slot that ends at [slotEnd], or in the next slot of the same template. */
+private fun TextFieldState.leaveSlot(slotEnd: Int) {
   // Integral: from lower bound go straight into upper bound. Same for fractions
   val nextSlotStart = slotEnd + 1
   var cursor =
@@ -289,34 +278,28 @@ fun TextFieldState.deleteTokens() {
  */
 private fun TextFieldState.deleteInSlot(): Boolean {
   val cursor = selection.min
-  val charBefore = text.getOrNull(cursor - 1) ?: return false
-
-  if (charBefore.isSlotStart()) {
-    deleteAtSlotStart(cursor - 1)
-    return true
+  val charBefore = text.getOrNull(cursor - 1)
+  val slotStart = if (charBefore == SLOT_END) text.slotStart(cursor - 1) else -1
+  val isAtSlotStart = charBefore?.isSlotStart() == true
+  when {
+    isAtSlotStart -> deleteAtSlotStart(cursor - 1)
+    slotStart == -1 -> Unit
+    // empty slot
+    slotStart == cursor - 2 -> deleteAtSlotStart(slotStart)
+    // nested slot is last, step into the outer slot first
+    text[cursor - 2] == SLOT_END -> edit { selection = TextRange(cursor - 1) }
+    else -> deleteLastInSlot(slotEnd = cursor - 1)
   }
+  return isAtSlotStart || slotStart != -1
+}
 
-  if (charBefore == SLOT_END) {
-    val slotStart = text.slotStart(cursor - 1)
-    if (slotStart == -1) return false
-    if (slotStart == cursor - 2) {
-      // empty slot
-      deleteAtSlotStart(slotStart)
-    } else if (text[cursor - 2] == SLOT_END) {
-      // nested slot is last, step into the outer slot first
-      edit { selection = TextRange(cursor - 1) }
-    } else {
-      val slotEnd = cursor - 1
-      val deleteLength = text.toString().tokenLengthAhead(slotEnd)
-      edit {
-        delete(slotEnd - deleteLength, slotEnd)
-        selection = TextRange(slotEnd - deleteLength)
-      }
-    }
-    return true
+/** Last token in the slot that ends at [slotEnd], the cursor stays in the slot. */
+private fun TextFieldState.deleteLastInSlot(slotEnd: Int) {
+  val deleteLength = text.toString().tokenLengthAhead(slotEnd)
+  edit {
+    delete(slotEnd - deleteLength, slotEnd)
+    selection = TextRange(slotEnd - deleteLength)
   }
-
-  return false
 }
 
 private fun TextFieldState.deleteAtSlotStart(slotStart: Int) {
@@ -324,75 +307,61 @@ private fun TextFieldState.deleteAtSlotStart(slotStart: Int) {
   val slotEnd = text.slotEnd(slotStart)
   val isEmpty = slotEnd == slotStart + 1
   val charBefore = text.getOrNull(slotStart - 1)
-
   // Empty denominator: fraction goes away, numerator stays. ⟨5⟩⟨|⟩ ==> 5|
-  if (charBefore == SLOT_END && text[slotStart] == SLOT_DEN && isEmpty) {
-    val numeratorStart = text.slotStart(slotStart - 1)
-    if (numeratorStart != -1) {
+  val numeratorStart =
+    if (charBefore == SLOT_END && text[slotStart] == SLOT_DEN && isEmpty) text.slotStart(slotStart - 1) else -1
+  val ownerStart = slotStart - text.slotOwnerLength(slotStart, charBefore)
+  // Where an empty template ends, null when it can't go (a slot isn't empty)
+  val deleteEnd = if (isEmpty && slotEnd != -1) text.emptyTemplateEnd(slotStart, slotEnd, charBefore) else null
+  when {
+    numeratorStart != -1 ->
       edit {
         delete(slotStart - 1, slotEnd + 1)
         delete(numeratorStart, numeratorStart + 1)
         selection = TextRange(slotStart - 2)
       }
-      return
-    }
-  }
-
-  // Integral upper bound or denominator, go to the end of previous slot
-  if (charBefore == SLOT_END && text[slotStart].isSecondSlot()) {
-    edit { selection = TextRange(slotStart - 1) }
-    return
-  }
-
-  // Owner of this slot, for example "^" for power. Deleted together with an empty slot
-  val ownerLength =
-    when {
-      text[slotStart] == SLOT_SUP && charBefore == Token.Operator.POWER.first() ->
-        Token.Operator.POWER.length
-      text[slotStart] == SLOT_SUB && text.startsWith(Token.Func.LOG, slotStart - Token.Func.LOG.length) ->
-        Token.Func.LOG.length
-      text[slotStart] == SLOT_SUB && charBefore?.isPairOwner() == true -> 1
-      text[slotStart] == SLOT_SUB && charBefore == Token.Calculus.EVALUATED_AT.first() ->
-        Token.Calculus.EVALUATED_AT.length
-      text[slotStart] == SLOT_RAD && charBefore == Token.Operator.SQRT.first() ->
-        Token.Operator.SQRT.length
-      else -> 0
-    }
-  val ownerStart = slotStart - ownerLength
-
-  if (!isEmpty || slotEnd == -1) {
-    edit { selection = TextRange(ownerStart) }
-    return
-  }
-
-  var deleteEnd = slotEnd + 1
-  val isPair = charBefore?.isPairOwner() == true || text[slotStart] == SLOT_NUM
-  if (isPair) {
-    // Integral and fraction are deleted only when both slots are empty
-    val upperStart = slotEnd + 1
-    if (text.getOrNull(upperStart)?.isSlotStart() == true) {
-      if (text.slotEnd(upperStart) != upperStart + 1) {
-        edit { selection = TextRange(ownerStart) }
-        return
+    // Integral upper bound or denominator, go to the end of previous slot
+    charBefore == SLOT_END && text[slotStart].isSecondSlot() -> edit { selection = TextRange(slotStart - 1) }
+    deleteEnd == null -> edit { selection = TextRange(ownerStart) }
+    else ->
+      edit {
+        delete(ownerStart, deleteEnd)
+        selection = TextRange(ownerStart)
       }
-      deleteEnd = upperStart + 2
-    }
-    // Remove "dx" too if there is nothing to integrate
-    val isIntegral = charBefore == Token.Calculus.INTEGRAL.first()
-    if (isIntegral && text.startsWith(Token.Calculus.DX, deleteEnd)) {
-      deleteEnd += Token.Calculus.DX.length
-    }
-    // Empty body of sum or product
-    val isSeries = charBefore?.isPairOwner() == true && !isIntegral
-    if (isSeries && text.startsWith(EMPTY_BRACKETS, deleteEnd)) {
-      deleteEnd += EMPTY_BRACKETS.length
-    }
+  }
+}
+
+/** Owner of the slot at [slotStart], for example "^" for power. Deleted together with an empty slot. */
+private fun String.slotOwnerLength(slotStart: Int, charBefore: Char?): Int =
+  when {
+    this[slotStart] == SLOT_SUP && charBefore == Token.Operator.POWER.first() -> Token.Operator.POWER.length
+    this[slotStart] == SLOT_SUB && startsWith(Token.Func.LOG, slotStart - Token.Func.LOG.length) ->
+      Token.Func.LOG.length
+    this[slotStart] == SLOT_SUB && charBefore?.isPairOwner() == true -> 1
+    this[slotStart] == SLOT_SUB && charBefore == Token.Calculus.EVALUATED_AT.first() ->
+      Token.Calculus.EVALUATED_AT.length
+    this[slotStart] == SLOT_RAD && charBefore == Token.Operator.SQRT.first() -> Token.Operator.SQRT.length
+    else -> 0
   }
 
-  edit {
-    delete(ownerStart, deleteEnd)
-    selection = TextRange(ownerStart)
-  }
+/**
+ * End of the template of the empty slot from [slotStart] to [slotEnd]. Integral, sum, product and
+ * fraction go only when both slots are empty: null when the other one isn't.
+ */
+private fun String.emptyTemplateEnd(slotStart: Int, slotEnd: Int, charBefore: Char?): Int? {
+  var deleteEnd = slotEnd + 1
+  val isPair = charBefore?.isPairOwner() == true || this[slotStart] == SLOT_NUM
+  val upperStart = slotEnd + 1
+  val hasUpper = isPair && getOrNull(upperStart)?.isSlotStart() == true
+  if (hasUpper && slotEnd(upperStart) != upperStart + 1) return null
+  if (hasUpper) deleteEnd = upperStart + 2
+  // Remove "dx" too if there is nothing to integrate
+  val isIntegral = charBefore == Token.Calculus.INTEGRAL.first()
+  if (isPair && isIntegral && startsWith(Token.Calculus.DX, deleteEnd)) deleteEnd += Token.Calculus.DX.length
+  // Empty body of sum or product
+  val isSeries = charBefore?.isPairOwner() == true && !isIntegral
+  if (isPair && isSeries && startsWith(EMPTY_BRACKETS, deleteEnd)) deleteEnd += EMPTY_BRACKETS.length
+  return deleteEnd
 }
 
 /** ∫, Σ and ∏ have two slots (bounds) deleted together. */

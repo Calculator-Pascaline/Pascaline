@@ -262,49 +262,47 @@ actual class KBigInteger internal constructor(internal val wrapped: BigInteger) 
   internal fun bitLength(): Int = this.wrapped.bitLength
 }
 
-actual class KBigDecimalMath {
-  actual companion object {
-    actual fun toRadians(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal =
-      BigDecimalMath.toRadians(bigDecimal, mathContext)
+actual object KBigDecimalMath {
+  actual fun toRadians(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal =
+    BigDecimalMath.toRadians(bigDecimal, mathContext)
 
-    actual fun sin(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal =
-      BigDecimalMath.sin(bigDecimal, mathContext)
+  actual fun sin(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal =
+    BigDecimalMath.sin(bigDecimal, mathContext)
 
-    actual fun asin(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal =
-      BigDecimalMath.asin(bigDecimal, mathContext)
+  actual fun asin(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal =
+    BigDecimalMath.asin(bigDecimal, mathContext)
 
-    actual fun toDegrees(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal =
-      BigDecimalMath.toDegrees(bigDecimal, mathContext)
+  actual fun toDegrees(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal =
+    BigDecimalMath.toDegrees(bigDecimal, mathContext)
 
-    actual fun cos(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal =
-      BigDecimalMath.cos(bigDecimal, mathContext)
+  actual fun cos(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal =
+    BigDecimalMath.cos(bigDecimal, mathContext)
 
-    actual fun acos(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal =
-      BigDecimalMath.acos(bigDecimal, mathContext)
+  actual fun acos(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal =
+    BigDecimalMath.acos(bigDecimal, mathContext)
 
-    actual fun tan(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal =
-      BigDecimalMath.tan(bigDecimal, mathContext)
+  actual fun tan(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal =
+    BigDecimalMath.tan(bigDecimal, mathContext)
 
-    actual fun atan(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal =
-      BigDecimalMath.atan(bigDecimal, mathContext)
+  actual fun atan(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal =
+    BigDecimalMath.atan(bigDecimal, mathContext)
 
-    actual fun log(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal =
-      BigDecimalMath.log(bigDecimal, mathContext)
+  actual fun log(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal =
+    BigDecimalMath.log(bigDecimal, mathContext)
 
-    actual fun log10(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal =
-      BigDecimalMath.log10(bigDecimal, mathContext)
+  actual fun log10(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal =
+    BigDecimalMath.log10(bigDecimal, mathContext)
 
-    actual fun exp(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal =
-      BigDecimalMath.exp(bigDecimal, mathContext)
+  actual fun exp(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal =
+    BigDecimalMath.exp(bigDecimal, mathContext)
 
-    actual fun pi(mathContext: KMathContext): KBigDecimal = BigDecimalMath.pi(mathContext)
+  actual fun pi(mathContext: KMathContext): KBigDecimal = BigDecimalMath.pi(mathContext)
 
-    actual fun e(mathContext: KMathContext): KBigDecimal = BigDecimalMath.e(mathContext)
+  actual fun e(mathContext: KMathContext): KBigDecimal = BigDecimalMath.e(mathContext)
 
-    actual fun sqrt(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal =
-      BigDecimalMath.sqrt(bigDecimal, mathContext)
+  actual fun sqrt(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal =
+    BigDecimalMath.sqrt(bigDecimal, mathContext)
 
-    actual fun pow(expr: KBigDecimal, factor: KBigDecimal, mathContext: KMathContext): KBigDecimal =
-      BigDecimalMath.pow(expr, factor, mathContext)
-  }
+  actual fun pow(expr: KBigDecimal, factor: KBigDecimal, mathContext: KMathContext): KBigDecimal =
+    BigDecimalMath.pow(expr, factor, mathContext)
 }

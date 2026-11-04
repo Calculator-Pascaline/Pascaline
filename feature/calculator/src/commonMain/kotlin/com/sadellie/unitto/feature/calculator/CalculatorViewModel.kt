@@ -36,6 +36,7 @@ import com.sadellie.unitto.core.common.stateIn
 import com.sadellie.unitto.core.common.OutputFormat
 import com.sadellie.unitto.core.common.toFormattedString
 import com.sadellie.unitto.core.data.calculator.CalculatorHistoryRepository
+import com.sadellie.unitto.core.datastore.CalculatorPreferences
 import com.sadellie.unitto.core.datastore.UserPreferencesRepository
 import com.sadellie.unitto.core.model.calculator.CalculatorHistoryItem
 import com.sadellie.unitto.core.ui.textfield.ANGLE_BOX_FUNCTIONS
@@ -241,42 +242,7 @@ internal class CalculatorViewModel(
           null
         }
 
-      val lines = mutableListOf<String>()
-      if (evaluated != null) {
-        // Exact value with square roots first, then approximation: √5i, ≈2.236i
-        val exact =
-          when (evaluated) {
-            is ExpressionResult.Real -> evaluated.exact
-            is ExpressionResult.Complex -> evaluated.exact
-            is ExpressionResult.Symbolic -> null
-          }
-        if (exact != null) lines += exact
-        val approximation =
-          evaluated
-            .format(prefs.precision, prefs.outputFormat)
-            // replace minus symbols since it is not recognized by evaluatto
-            .replace("-", Token.Operator.MINUS)
-        lines += if (exact != null) APPROXIMATELY + approximation.removePrefix(APPROXIMATELY) else approximation
-
-        // Complex numbers and expressions with x can't be fractions
-        if (prefs.fractionalOutput && evaluated is ExpressionResult.Real) {
-          // Exact fraction when the result is rational: 1÷3×3 is 1, not 0.999… as 1⁄1
-          val exactFraction = evaluated.fraction
-          val fractional =
-            if (exactFraction != null) {
-              exactFraction.toFractionalString()
-            } else {
-              try {
-                // Different rounding mode to properly calculate fractional
-                calculate(inputValue, prefs.radianMode, KRoundingMode.DOWN).toFractionalString()
-              } catch (e: Exception) {
-                ""
-              }
-            }
-          if (fractional.isNotEmpty()) lines += fractional.toFractionSlots()
-        }
-
-      }
+      val lines = if (evaluated == null) emptyList() else resultLines(evaluated, inputValue, prefs)
 
       val historyResult = HistoryResult(lines = lines, menu = evaluated?.menuSections() ?: emptyList())
       calculatorHistoryRepository.add(
@@ -288,6 +254,51 @@ internal class CalculatorViewModel(
       _input.clearText()
       _result.update { CalculationResult.Empty }
     }
+
+  /** Lines of a result: exact value with square roots, approximation, then the fraction. */
+  private suspend fun resultLines(
+    evaluated: ExpressionResult,
+    inputValue: String,
+    prefs: CalculatorPreferences,
+  ): List<String> {
+    val lines = mutableListOf<String>()
+    // Exact value with square roots first, then approximation: √5i, ≈2.236i
+    val exact =
+      when (evaluated) {
+        is ExpressionResult.Real -> evaluated.exact
+        is ExpressionResult.Complex -> evaluated.exact
+        is ExpressionResult.Symbolic -> null
+      }
+    if (exact != null) lines += exact
+    val approximation =
+      evaluated
+        .format(prefs.precision, prefs.outputFormat)
+        // replace minus symbols since it is not recognized by evaluatto
+        .replace("-", Token.Operator.MINUS)
+    lines += if (exact != null) APPROXIMATELY + approximation.removePrefix(APPROXIMATELY) else approximation
+    // Complex numbers and expressions with x can't be fractions
+    if (prefs.fractionalOutput && evaluated is ExpressionResult.Real) {
+      val fractional = fraction(evaluated, inputValue, prefs)
+      if (fractional.isNotEmpty()) lines += fractional.toFractionSlots()
+    }
+    return lines
+  }
+
+  /** `1 2⁄3`, empty when the result is not a fraction. */
+  private suspend fun fraction(evaluated: ExpressionResult.Real, inputValue: String, prefs: CalculatorPreferences): String {
+    // Exact fraction when the result is rational: 1÷3×3 is 1, not 0.999… as 1⁄1
+    val exactFraction = evaluated.fraction
+    return if (exactFraction != null) {
+      exactFraction.toFractionalString()
+    } else {
+      try {
+        // Different rounding mode to properly calculate fractional
+        calculate(inputValue, prefs.radianMode, KRoundingMode.DOWN).toFractionalString()
+      } catch (e: Exception) {
+        ""
+      }
+    }
+  }
 
   /** Previous result with the operation of previous expression: 5+3 for 2+3=5. */
   private fun repeatLastOperation(): String? {
@@ -396,9 +407,11 @@ internal class CalculatorViewModel(
     /** Exact value, then ≈ decimal when they are not the same. Only ≈ decimal without exact. */
     fun exactAndApproximate(exact: String?, value: KBigDecimal, unit: String = ""): List<String> {
       val decimal = value.text()
-      if (exact == null) return listOf(APPROXIMATELY + decimal + unit)
-      if (exact == decimal) return listOf(exact + unit)
-      return listOf(exact + unit, APPROXIMATELY + decimal + unit)
+      return when (exact) {
+        null -> listOf(APPROXIMATELY + decimal + unit)
+        decimal -> listOf(exact + unit)
+        else -> listOf(exact + unit, APPROXIMATELY + decimal + unit)
+      }
     }
 
     val mathContext = KMathContext(COMPLEX_INFO_PRECISION, KRoundingMode.HALF_EVEN)
@@ -463,11 +476,13 @@ internal class CalculatorViewModel(
   ): String {
     val realText = real.toScientific(precision, outputFormat)
     val imaginaryText = imaginary.abs().toScientific(precision, outputFormat)
-    if (imaginaryText == "0") return realText
     val imaginaryPart = if (imaginaryText == "1") Token.Const.I else imaginaryText + Token.Const.I
     val isNegative = imaginary < KBigDecimal.ZERO
-    if (realText == "0") return (if (isNegative) "-" else "") + imaginaryPart
-    return realText + (if (isNegative) "-" else Token.Operator.PLUS) + imaginaryPart
+    return when {
+      imaginaryText == "0" -> realText
+      realText == "0" -> (if (isNegative) "-" else "") + imaginaryPart
+      else -> realText + (if (isNegative) "-" else Token.Operator.PLUS) + imaginaryPart
+    }
   }
 
   /** `1 2⁄3` ==> `1⟨2⟩⟨3⟩` to show it with a horizontal bar. */

@@ -147,6 +147,18 @@ class UnitConverterRepositoryImpl(private val unitsRepo: UnitsRepository) :
           value = calculateInput(value1),
         )
 
+      else -> convertWithTwoFields(unitFrom, unitTo, value1, value2)
+    }
+  }
+
+  /** Feet and inches or pounds and ounces have two fields, other units one. */
+  private suspend fun convertWithTwoFields(
+    unitFrom: BasicUnit,
+    unitTo: BasicUnit,
+    value1: String,
+    value2: String,
+  ): ConverterResult =
+    when {
       // foot and inches output and input
       unitTo.id == UnitID.foot && unitFrom.id == UnitID.foot ->
         convertFoot(
@@ -202,7 +214,6 @@ class UnitConverterRepositoryImpl(private val unitsRepo: UnitsRepository) :
           value = calculateInput(value1),
         )
     }
-  }
 
   private suspend fun convertNumberBaseBatch(
     input: String,

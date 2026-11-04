@@ -19,6 +19,9 @@
 
 package com.sadellie.unitto.feature.calculator.components
 
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.core.MutableTransitionState
@@ -513,7 +516,7 @@ private fun MoreMenu(
   Box {
     IconButton(modifier = Modifier.size(MENU_BUTTON_SIZE), onClick = { expanded = true }) {
       Icon(
-        modifier = Modifier.rotate(90f),
+        modifier = Modifier.rotate(degrees = 90f),
         imageVector = Symbols.MoreVert,
         contentDescription = stringResource(Res.string.calculator_more),
       )
@@ -581,23 +584,26 @@ private fun MoreMenu(
   }
 }
 
-private fun MenuSection.title(): StringResource =
-  when (this) {
-    MenuSection.FACTORIZATION -> Res.string.calculator_factorization
-    MenuSection.ROOTS -> Res.string.calculator_roots
-    MenuSection.DISCRIMINANT -> Res.string.calculator_discriminant
-    MenuSection.DECIMAL -> Res.string.calculator_decimal
-    MenuSection.HEXADECIMAL -> Res.string.calculator_hexadecimal
-    MenuSection.BINARY -> Res.string.calculator_binary
-    MenuSection.PRIME_FACTORS -> Res.string.calculator_prime_factors
-    MenuSection.COMPLEX_PLANE -> Res.string.calculator_complex_plane
-    MenuSection.REAL_PART -> Res.string.calculator_real_part
-    MenuSection.IMAGINARY_PART -> Res.string.calculator_imaginary_part
-    MenuSection.MODULUS -> Res.string.calculator_modulus
-    MenuSection.ARGUMENT -> Res.string.calculator_argument
-    MenuSection.SI_UNITS -> Res.string.calculator_si_units
-    MenuSection.OTHER_UNITS -> Res.string.calculator_other_temperatures
-  }
+private fun MenuSection.title(): StringResource = MENU_TITLES.getValue(this)
+
+private val MENU_TITLES: Map<MenuSection, StringResource> by lazy {
+  mapOf(
+    MenuSection.FACTORIZATION to Res.string.calculator_factorization,
+    MenuSection.ROOTS to Res.string.calculator_roots,
+    MenuSection.DISCRIMINANT to Res.string.calculator_discriminant,
+    MenuSection.DECIMAL to Res.string.calculator_decimal,
+    MenuSection.HEXADECIMAL to Res.string.calculator_hexadecimal,
+    MenuSection.BINARY to Res.string.calculator_binary,
+    MenuSection.PRIME_FACTORS to Res.string.calculator_prime_factors,
+    MenuSection.COMPLEX_PLANE to Res.string.calculator_complex_plane,
+    MenuSection.REAL_PART to Res.string.calculator_real_part,
+    MenuSection.IMAGINARY_PART to Res.string.calculator_imaginary_part,
+    MenuSection.MODULUS to Res.string.calculator_modulus,
+    MenuSection.ARGUMENT to Res.string.calculator_argument,
+    MenuSection.SI_UNITS to Res.string.calculator_si_units,
+    MenuSection.OTHER_UNITS to Res.string.calculator_other_temperatures,
+  )
+}
 
 /**
  * Axes, unit circle and a vector from origin to [point] (`real,imaginary`). Real and imaginary
@@ -649,46 +655,7 @@ private fun ComplexPlane(
     content = {
       Canvas(modifier = Modifier.clipToBounds()) {
         val geometry = PlaneGeometry(size.width, size.height, PLANE_MARGIN.toPx(), re, im)
-        val center = geometry.center
-        val labelGap = 2.dp.toPx()
-        // axes
-        drawLine(axisColor, Offset(0f, center.y), Offset(size.width, center.y))
-        drawLine(axisColor, Offset(center.x, 0f), Offset(center.x, size.height))
-        drawText(
-          realAxisLabel,
-          topLeft =
-            Offset(
-              size.width - realAxisLabel.size.width - labelGap,
-              center.y - realAxisLabel.size.height - labelGap,
-            ),
-        )
-        drawText(imaginaryAxisLabel, topLeft = Offset(center.x + labelGap * 2, labelGap))
-        if (length == 0.0) {
-          drawCircle(vectorColor, 4.dp.toPx(), center)
-          return@Canvas
-        }
-        drawCircle(axisColor.copy(alpha = UNIT_CIRCLE_ALPHA), geometry.radius, center, style = Stroke(1.dp.toPx()))
-        val end = geometry.end
-        // projections on axes
-        val dash = PathEffect.dashPathEffect(floatArrayOf(4.dp.toPx(), 4.dp.toPx()))
-        drawLine(axisColor, end, Offset(end.x, center.y), pathEffect = dash)
-        drawLine(axisColor, end, Offset(center.x, end.y), pathEffect = dash)
-        drawCircle(axisColor, 2.5.dp.toPx(), Offset(end.x, center.y))
-        drawCircle(axisColor, 2.5.dp.toPx(), Offset(center.x, end.y))
-        // vector
-        drawLine(vectorColor, center, end, strokeWidth = 2.dp.toPx(), cap = StrokeCap.Round)
-        drawCircle(vectorColor, 4.dp.toPx(), end)
-        // angle
-        val arc = geometry.arcRadius
-        drawArc(
-          color = vectorColor.copy(alpha = ANGLE_ARC_ALPHA),
-          startAngle = 0f,
-          sweepAngle = (-angle * 180 / PI).toFloat(),
-          useCenter = false,
-          topLeft = Offset(center.x - arc, center.y - arc),
-          size = Size(arc * 2, arc * 2),
-          style = Stroke(1.5.dp.toPx()),
-        )
+        drawComplexPlane(geometry, length, angle, axisColor, vectorColor, realAxisLabel, imaginaryAxisLabel)
       }
       Label(realLabel)
       Label(imaginaryLabel)
@@ -701,68 +668,154 @@ private fun ComplexPlane(
     val height = constraints.maxHeight
     val canvas = measurables[0].measure(Constraints.fixed(width, height))
     val loose = Constraints(maxWidth = width, maxHeight = height)
-    val (real, imaginary, angleText, degrees, lengthText) =
-      measurables.drop(1).map { it.measure(loose) }
+    // After the canvas, in this order: real part, imaginary part, angle, its degrees and the length
+    val labels = measurables.drop(1).map { it.measure(loose) }.iterator()
+    val real = labels.next()
+    val imaginary = labels.next()
+    val angleText = labels.next()
+    val degrees = labels.next()
+    val lengthText = labels.next()
     val geometry = PlaneGeometry(width.toFloat(), height.toFloat(), PLANE_MARGIN.toPx(), re, im)
     val gap = LABEL_GAP.roundToPx()
-
-    fun Placeable.clampX(x: Float) = x.roundToInt().coerceIn(0, (width - this.width).coerceAtLeast(0))
-
-    fun Placeable.clampY(y: Float) = y.roundToInt().coerceIn(0, (height - this.height).coerceAtLeast(0))
-
     layout(width, height) {
       canvas.place(0, 0)
-      if (length == 0.0) return@layout
-      val center = geometry.center
-      val end = geometry.end
-      // real part under (or over) its projection on real axis, away from the vector
-      val realY = if (im >= 0) center.y + gap else center.y - gap - real.height
-      real.place(real.clampX(end.x - real.width / 2f), real.clampY(realY))
-      // imaginary part next to its projection on imaginary axis, on the other side of the vector
-      val imaginaryX = if (re >= 0) center.x - gap - imaginary.width else center.x + gap
-      imaginary.place(imaginary.clampX(imaginaryX), imaginary.clampY(end.y - imaginary.height / 2f))
-      // angle next to its arc: inside of the angle, just over (or under) real axis. Small angles
-      // don't have space there, and over the vector is where the length goes: label goes on the
-      // other side of real axis, under (or over) the start of the arc
-      val blockHeight = angleText.height + degrees.height
-      val isNegative = im < 0
-      val isSmall = abs(angle) < SMALL_ANGLE
-      val left: Float
-      val top: Float
-      if (isSmall) {
-        left = center.x + gap * 2
-        top = if (isNegative) center.y - gap - blockHeight else center.y + gap
-      } else {
-        // far enough so that the vector is above the whole label
-        val underVector =
-          if (abs(angle) < PI / 2) (blockHeight + gap * 2) / tan(abs(angle)).toFloat() else 0f
-        var start = center.x + maxOf(geometry.arcRadius + gap, underVector)
-        // don't cross dashed projection of the vector, go to the other side of it
-        val blockWidth = maxOf(angleText.width, degrees.width)
-        if (start < end.x + gap && start + blockWidth > end.x - gap) start = end.x + gap
-        left = start
-        top = if (isNegative) center.y + gap else center.y - gap - blockHeight
+      if (length != 0.0) {
+        PlaneLabels(real, imaginary, angleText, degrees, lengthText)
+          .place(this, geometry, PlanePoint(re, im, angle), gap, IntSize(width, height))
       }
-      angleText.place(angleText.clampX(left), angleText.clampY(top))
-      degrees.place(degrees.clampX(left), degrees.clampY(top + angleText.height))
-      // length next to the middle of the vector, on the side away from the angle
-      val normalX = if (angle >= 0) -sin(angle) else sin(angle)
-      val normalY = if (angle >= 0) -cos(angle) else cos(angle)
-      val offset = gap + maxOf(lengthText.width, lengthText.height) / 2f
-      val lengthCenterX = (center.x + end.x) / 2 + (normalX * offset).toFloat()
-      val lengthCenterY = (center.y + end.y) / 2 + (normalY * offset).toFloat()
-      var lengthLeft = lengthCenterX - lengthText.width / 2f
-      var lengthTop = lengthCenterY - lengthText.height / 2f
-      // Off the dashed projections: almost flat vectors put it on the horizontal one, almost
-      // vertical ones on the vertical one
-      if (lengthTop < end.y && lengthTop + lengthText.height > end.y) {
-        lengthTop = if (im >= 0) end.y - gap - lengthText.height else end.y + gap
-      }
-      if (lengthLeft < end.x && lengthLeft + lengthText.width > end.x) {
-        lengthLeft = if (re >= 0) end.x - gap - lengthText.width else end.x + gap
-      }
-      lengthText.place(lengthText.clampX(lengthLeft), lengthText.clampY(lengthTop))
     }
+  }
+}
+
+/** Real and imaginary part, angle and length of the point on the plane. */
+private class PlanePoint(val re: Double, val im: Double, val angle: Double)
+
+private fun DrawScope.drawComplexPlane(
+  geometry: PlaneGeometry,
+  length: Double,
+  angle: Double,
+  axisColor: Color,
+  vectorColor: Color,
+  realAxisLabel: TextLayoutResult,
+  imaginaryAxisLabel: TextLayoutResult,
+) {
+  val center = geometry.center
+  val labelGap = 2.dp.toPx()
+  // axes
+  drawLine(axisColor, Offset(0f, center.y), Offset(size.width, center.y))
+  drawLine(axisColor, Offset(center.x, 0f), Offset(center.x, size.height))
+  drawText(
+    realAxisLabel,
+    topLeft = Offset(size.width - realAxisLabel.size.width - labelGap, center.y - realAxisLabel.size.height - labelGap),
+  )
+  drawText(imaginaryAxisLabel, topLeft = Offset(center.x + labelGap * 2, labelGap))
+  if (length == 0.0) {
+    drawCircle(vectorColor, 4.dp.toPx(), center)
+  } else {
+    drawVector(geometry, angle, axisColor, vectorColor)
+  }
+}
+
+/** Unit circle, the vector, its projections on the axes and the arc of its angle. */
+private fun DrawScope.drawVector(geometry: PlaneGeometry, angle: Double, axisColor: Color, vectorColor: Color) {
+  val center = geometry.center
+  drawCircle(axisColor.copy(alpha = UNIT_CIRCLE_ALPHA), geometry.radius, center, style = Stroke(1.dp.toPx()))
+  val end = geometry.end
+  // projections on axes
+  val dash = PathEffect.dashPathEffect(floatArrayOf(4.dp.toPx(), 4.dp.toPx()))
+  drawLine(axisColor, end, Offset(end.x, center.y), pathEffect = dash)
+  drawLine(axisColor, end, Offset(center.x, end.y), pathEffect = dash)
+  drawCircle(axisColor, 2.5.dp.toPx(), Offset(end.x, center.y))
+  drawCircle(axisColor, 2.5.dp.toPx(), Offset(center.x, end.y))
+  // vector
+  drawLine(vectorColor, center, end, strokeWidth = 2.dp.toPx(), cap = StrokeCap.Round)
+  drawCircle(vectorColor, 4.dp.toPx(), end)
+  // angle
+  val arc = geometry.arcRadius
+  drawArc(
+    color = vectorColor.copy(alpha = ANGLE_ARC_ALPHA),
+    startAngle = 0f,
+    sweepAngle = (-angle * 180 / PI).toFloat(),
+    useCenter = false,
+    topLeft = Offset(center.x - arc, center.y - arc),
+    size = Size(arc * 2, arc * 2),
+    style = Stroke(1.5.dp.toPx()),
+  )
+}
+
+/** The labels of the plane, measured. */
+private class PlaneLabels(
+  val real: Placeable,
+  val imaginary: Placeable,
+  val angle: Placeable,
+  val degrees: Placeable,
+  val length: Placeable,
+) {
+  /** Labels in [size], each next to what it tells, away from the vector. */
+  fun place(scope: Placeable.PlacementScope, geometry: PlaneGeometry, point: PlanePoint, gap: Int, size: IntSize) {
+    fun Placeable.placeIn(x: Float, y: Float) =
+      with(scope) {
+        place(
+          x.roundToInt().coerceIn(0, (size.width - width).coerceAtLeast(0)),
+          y.roundToInt().coerceIn(0, (size.height - height).coerceAtLeast(0)),
+        )
+      }
+    val center = geometry.center
+    val end = geometry.end
+    // real part under (or over) its projection on real axis, away from the vector
+    val realY = if (point.im >= 0) center.y + gap else center.y - gap - real.height
+    real.placeIn(end.x - real.width / 2f, realY)
+    // imaginary part next to its projection on imaginary axis, on the other side of the vector
+    val imaginaryX = if (point.re >= 0) center.x - gap - imaginary.width else center.x + gap
+    imaginary.placeIn(imaginaryX, end.y - imaginary.height / 2f)
+    val (left, top) = angleLabelPosition(geometry, point.angle, gap)
+    angle.placeIn(left, top)
+    degrees.placeIn(left, top + angle.height)
+    val (lengthLeft, lengthTop) = lengthLabelPosition(geometry, point, gap)
+    length.placeIn(lengthLeft, lengthTop)
+  }
+
+  /**
+   * Angle next to its arc: inside of the angle, just over (or under) real axis. Small angles don't
+   * have space there, and over the vector is where the length goes: label goes on the other side of
+   * real axis, under (or over) the start of the arc.
+   */
+  private fun angleLabelPosition(geometry: PlaneGeometry, angle: Double, gap: Int): Pair<Float, Float> {
+    val center = geometry.center
+    val end = geometry.end
+    val blockHeight = this.angle.height + degrees.height
+    val isNegative = angle < 0
+    if (abs(angle) < SMALL_ANGLE) {
+      return (center.x + gap * 2) to (if (isNegative) center.y - gap - blockHeight else center.y + gap)
+    }
+    // far enough so that the vector is above the whole label
+    val underVector = if (abs(angle) < PI / 2) (blockHeight + gap * 2) / tan(abs(angle)).toFloat() else 0f
+    var start = center.x + maxOf(geometry.arcRadius + gap, underVector)
+    // don't cross dashed projection of the vector, go to the other side of it
+    val blockWidth = maxOf(this.angle.width, degrees.width)
+    if (start < end.x + gap && start + blockWidth > end.x - gap) start = end.x + gap
+    return start to (if (isNegative) center.y + gap else center.y - gap - blockHeight)
+  }
+
+  /** Length next to the middle of the vector, on the side away from the angle. */
+  private fun lengthLabelPosition(geometry: PlaneGeometry, point: PlanePoint, gap: Int): Pair<Float, Float> {
+    val center = geometry.center
+    val end = geometry.end
+    val angle = point.angle
+    val normalX = if (angle >= 0) -sin(angle) else sin(angle)
+    val normalY = if (angle >= 0) -cos(angle) else cos(angle)
+    val offset = gap + maxOf(length.width, length.height) / 2f
+    var left = (center.x + end.x) / 2 + (normalX * offset).toFloat() - length.width / 2f
+    var top = (center.y + end.y) / 2 + (normalY * offset).toFloat() - length.height / 2f
+    // Off the dashed projections: almost flat vectors put it on the horizontal one, almost
+    // vertical ones on the vertical one
+    if (top < end.y && top + length.height > end.y) {
+      top = if (point.im >= 0) end.y - gap - length.height else end.y + gap
+    }
+    if (left < end.x && left + length.width > end.x) {
+      left = if (point.re >= 0) end.x - gap - length.width else end.x + gap
+    }
+    return left to top
   }
 }
 

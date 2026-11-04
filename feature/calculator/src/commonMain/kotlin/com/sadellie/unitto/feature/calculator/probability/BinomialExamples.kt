@@ -302,6 +302,23 @@ private class TreeStyle(
   val treeShare: Float,
 )
 
+/** Branch from [from] to [to] with its [label]: above for a failure, below for a success. */
+private fun DrawScope.drawBranch(
+  measurer: TextMeasurer,
+  from: Offset,
+  to: Offset,
+  label: String,
+  style: TextStyle,
+  lineColor: Color,
+  isSuccess: Boolean,
+) {
+  drawLine(lineColor, from, to, strokeWidth = 2f)
+  val layout = measurer.measure(label, style)
+  val middle = (from + to) / 2f
+  val above = if (!isSuccess) -layout.size.height.toFloat() else 0f
+  drawText(layout, topLeft = Offset(middle.x - layout.size.width / 2, middle.y + above))
+}
+
 /** Probability tree with [labels] on the right and arrows from label k to every leaf with k successes. */
 private fun DrawScope.drawBinomialTree(
   tree: TreeStyle,
@@ -318,7 +335,7 @@ private fun DrawScope.drawBinomialTree(
   val treeWidth = size.width * tree.treeShare
   val levelWidth = treeWidth / flips
   val start = 4.dp.toPx()
-  fun leafY(index: Int) = (index + 0.5f) * leafHeight
+  fun leafY(index: Int) = (index + LEAF_MIDDLE) * leafHeight
   // Node at [level] covering leaves from [first]: centered on them
   fun nodeY(level: Int, first: Int) = (leafY(first) + leafY(first + (1 shl (flips - level)) - 1)) / 2
 
@@ -327,14 +344,10 @@ private fun DrawScope.drawBinomialTree(
     val span = 1 shl (flips - level)
     for (first in 0 until leaves step span) {
       val from = Offset(start + level * levelWidth, nodeY(level, first))
-      listOf(first to false, first + span / 2 to true).forEach { (childFirst, isSuccess) ->
-        val to = Offset(start + (level + 1) * levelWidth, nodeY(level + 1, childFirst))
-        drawLine(lineColor, from, to, strokeWidth = 2f)
-        val label = measurer.measure(if (isSuccess) tree.successBranch else tree.failureBranch, branchStyle)
-        val middle = (from + to) / 2f
-        val above = if (!isSuccess) -label.size.height.toFloat() else 0f
-        drawText(label, topLeft = Offset(middle.x - label.size.width / 2, middle.y + above))
-      }
+      val failure = Offset(start + (level + 1) * levelWidth, nodeY(level + 1, first))
+      val success = Offset(start + (level + 1) * levelWidth, nodeY(level + 1, first + span / 2))
+      drawBranch(measurer, from, failure, tree.failureBranch, branchStyle, lineColor, isSuccess = false)
+      drawBranch(measurer, from, success, tree.successBranch, branchStyle, lineColor, isSuccess = true)
       drawCircle(lineColor, radius = 3.dp.toPx(), center = from)
     }
   }
@@ -461,7 +474,7 @@ private fun PascalTriangle(n: Int, coloredRow: Boolean) {
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-      (0..n).forEach { row ->
+      for (row in 0..n) {
         val isUsed = row == n
         Box(modifier = Modifier.fillMaxWidth()) {
           Row(
@@ -473,7 +486,7 @@ private fun PascalTriangle(n: Int, coloredRow: Boolean) {
                 }
               }
           ) {
-            (0..row).forEach { k ->
+            for (k in 0..row) {
               val color =
                 when {
                   !isUsed -> MaterialTheme.colorScheme.onSurface
@@ -541,3 +554,6 @@ private val PASCAL_CELL = 34.dp
 private val PASCAL_LABEL_WIDTH = 44.dp
 private val CARD_SPACING = 8.dp
 private val EXAMPLE_SHAPE = RoundedCornerShape(20.dp)
+
+/** A leaf's text in the middle of its height */
+private const val LEAF_MIDDLE = 0.5f

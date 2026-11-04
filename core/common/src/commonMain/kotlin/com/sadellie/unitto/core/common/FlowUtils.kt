@@ -43,14 +43,16 @@ fun <T1, T2, T3, T4, T5, T6, T7, R> combineBig(
   transform: suspend (T1, T2, T3, T4, T5, T6, T7) -> R,
 ): Flow<R> =
   combine(flow, flow2, flow3, flow4, flow5, flow6, flow7) { args ->
+    // In the order of the flows
+    val values = args.iterator()
     transform(
-      args[0] as T1,
-      args[1] as T2,
-      args[2] as T3,
-      args[3] as T4,
-      args[4] as T5,
-      args[5] as T6,
-      args[6] as T7,
+      values.next() as T1,
+      values.next() as T2,
+      values.next() as T3,
+      values.next() as T4,
+      values.next() as T5,
+      values.next() as T6,
+      values.next() as T7,
     )
   }
 
@@ -67,15 +69,17 @@ fun <T1, T2, T3, T4, T5, T6, T7, T8, R> combineBig(
   transform: suspend (T1, T2, T3, T4, T5, T6, T7, T8) -> R,
 ): Flow<R> =
   combine(flow, flow2, flow3, flow4, flow5, flow6, flow7, flow8) { args ->
+    // In the order of the flows
+    val values = args.iterator()
     transform(
-      args[0] as T1,
-      args[1] as T2,
-      args[2] as T3,
-      args[3] as T4,
-      args[4] as T5,
-      args[5] as T6,
-      args[6] as T7,
-      args[7] as T8,
+      values.next() as T1,
+      values.next() as T2,
+      values.next() as T3,
+      values.next() as T4,
+      values.next() as T5,
+      values.next() as T6,
+      values.next() as T7,
+      values.next() as T8,
     )
   }
 

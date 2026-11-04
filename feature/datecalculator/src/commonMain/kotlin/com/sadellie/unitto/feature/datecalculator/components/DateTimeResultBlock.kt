@@ -56,123 +56,73 @@ internal fun DateTimeResultBlock(
   formatterSymbols: FormatterSymbols,
 ) {
   val focusManager = LocalFocusManager.current
+  // After the difference in parts, one page per total: in years, months…
+  val totals =
+    listOf(
+      Res.string.date_calculator_years to diff.sumYears,
+      Res.string.date_calculator_months to diff.sumMonths,
+      Res.string.date_calculator_weeks to diff.sumWeeks,
+      Res.string.date_calculator_days to diff.sumDays,
+      Res.string.date_calculator_hours to diff.sumHours,
+      Res.string.date_calculator_minutes to diff.sumMinutes,
+    )
 
   PagedIsland(
     modifier = modifier,
-    pageCount = 6,
+    pageCount = totals.size + 1,
     onClick = { focusManager.clearFocus() },
     backgroundColor = MaterialTheme.colorScheme.tertiaryContainer,
   ) { currentPage ->
-    when (currentPage) {
-      0 ->
-        Column(modifier = Modifier.fillMaxWidth()) {
-          Text(
-            text = stringResource(Res.string.date_calculator_difference),
-            style = MaterialTheme.typography.labelMedium,
-          )
-          SelectionContainer {
-            Column {
-              if (diff.years > 0) {
-                PartialDateText(
-                  text = Res.string.date_calculator_years,
-                  value = diff.years,
-                  precision = precision,
-                  outputFormat = outputFormat,
-                  formatterSymbols = formatterSymbols,
-                )
-              }
+    if (currentPage == 0) {
+      DifferenceParts(diff, precision, outputFormat, formatterSymbols)
+    } else {
+      val (header, total) = totals[currentPage - 1]
+      SingleDateText(
+        headerText = header,
+        value = total,
+        precision = precision,
+        outputFormat = outputFormat,
+        formatterSymbols = formatterSymbols,
+      )
+    }
+  }
+}
 
-              if (diff.months > 0) {
-                PartialDateText(
-                  text = Res.string.date_calculator_months,
-                  value = diff.months,
-                  precision = precision,
-                  outputFormat = outputFormat,
-                  formatterSymbols = formatterSymbols,
-                )
-              }
-
-              if (diff.days > 0) {
-                PartialDateText(
-                  text = Res.string.date_calculator_days,
-                  value = diff.days,
-                  precision = precision,
-                  outputFormat = outputFormat,
-                  formatterSymbols = formatterSymbols,
-                )
-              }
-
-              if (diff.hours > 0) {
-                PartialDateText(
-                  text = Res.string.date_calculator_hours,
-                  value = diff.hours,
-                  precision = precision,
-                  outputFormat = outputFormat,
-                  formatterSymbols = formatterSymbols,
-                )
-              }
-
-              if (diff.minutes > 0) {
-                PartialDateText(
-                  text = Res.string.date_calculator_minutes,
-                  value = diff.minutes,
-                  precision = precision,
-                  outputFormat = outputFormat,
-                  formatterSymbols = formatterSymbols,
-                )
-              }
-            }
+/** The difference as years, months, days, hours and minutes, the ones that aren't 0. */
+@Composable
+private fun DifferenceParts(
+  diff: InstantDifference.Default,
+  precision: Int,
+  outputFormat: Int,
+  formatterSymbols: FormatterSymbols,
+) {
+  val parts =
+    listOf(
+      Res.string.date_calculator_years to diff.years,
+      Res.string.date_calculator_months to diff.months,
+      Res.string.date_calculator_days to diff.days,
+      Res.string.date_calculator_hours to diff.hours,
+      Res.string.date_calculator_minutes to diff.minutes,
+    )
+  Column(modifier = Modifier.fillMaxWidth()) {
+    Text(
+      text = stringResource(Res.string.date_calculator_difference),
+      style = MaterialTheme.typography.labelMedium,
+    )
+    SelectionContainer {
+      Column {
+        parts.forEach { (text, value) ->
+          if (value > 0) {
+            PartialDateText(
+              text = text,
+              value = value,
+              precision = precision,
+              outputFormat = outputFormat,
+              formatterSymbols = formatterSymbols,
+            )
           }
         }
-
-      1 ->
-        SingleDateText(
-          headerText = Res.string.date_calculator_years,
-          value = diff.sumYears,
-          precision = precision,
-          outputFormat = outputFormat,
-          formatterSymbols = formatterSymbols,
-        )
-      2 ->
-        SingleDateText(
-          headerText = Res.string.date_calculator_months,
-          value = diff.sumMonths,
-          precision = precision,
-          outputFormat = outputFormat,
-          formatterSymbols = formatterSymbols,
-        )
-      3 ->
-        SingleDateText(
-          headerText = Res.string.date_calculator_weeks,
-          value = diff.sumWeeks,
-          precision = precision,
-          outputFormat = outputFormat,
-          formatterSymbols = formatterSymbols,
-        )
-      4 ->
-        SingleDateText(
-          headerText = Res.string.date_calculator_days,
-          value = diff.sumDays,
-          precision = precision,
-          outputFormat = outputFormat,
-          formatterSymbols = formatterSymbols,
-        )
-      5 ->
-        SingleDateText(
-          headerText = Res.string.date_calculator_hours,
-          value = diff.sumHours,
-          precision = precision,
-          outputFormat = outputFormat,
-          formatterSymbols = formatterSymbols,
-        )
-      6 ->
-        SingleDateText(
-          headerText = Res.string.date_calculator_minutes,
-          value = diff.sumMinutes,
-          precision = precision,
-          outputFormat = outputFormat,
-          formatterSymbols = formatterSymbols,
-        )
+      }
     }
   }
 }

@@ -56,17 +56,23 @@ internal class SequenceSystem(definitions: List<SequenceDefinition>) {
 
   /** u(n), NaN when it is not defined (before the first rank, wrong formula, too big). */
   fun term(name: String, n: Int): Double {
-    val sequence = byName[name] ?: return Double.NaN
-    val formula = sequence.formula ?: return Double.NaN
-    if (n < sequence.firstRank || n - sequence.firstRank > MAX_RANKS) return Double.NaN
-    val key = name to n
-    terms[key]?.let { return it }
+    val sequence = byName[name]
+    val formula = sequence?.formula
+    return when {
+      sequence == null || formula == null -> Double.NaN
+      n < sequence.firstRank || n - sequence.firstRank > MAX_RANKS -> Double.NaN
+      else -> terms[name to n] ?: calculate(sequence, formula, n)
+    }
+  }
+
+  private fun calculate(sequence: SequenceDefinition, formula: SequenceFunction, n: Int): Double {
+    val key = sequence.name to n
     if (calculating.isEmpty() && sequence.type != SequenceType.EXPLICIT) {
       // Earlier terms one after another: going straight to u(5000) would need 5000 nested calls
-      for (rank in sequence.firstRank until n) if ((name to rank) !in terms) term(name, rank)
+      for (rank in sequence.firstRank until n) if ((sequence.name to rank) !in terms) term(sequence.name, rank)
     }
+    // A term that needs itself
     if (!calculating.add(key)) return Double.NaN
-
     val previous = n - sequence.firstRank
     val value =
       when (sequence.type) {

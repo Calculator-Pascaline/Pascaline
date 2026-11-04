@@ -21,4 +21,5 @@ package com.sadellie.unitto.feature.settings.startingscreen
 import androidx.compose.runtime.Composable
 import com.sadellie.unitto.core.navigation.DrawerItem
 
-@Composable internal actual fun AddShortcutButton(destination: DrawerItem) {}
+// A browser has no home screen shortcuts
+@Composable internal actual fun AddShortcutButton(destination: DrawerItem) = Unit

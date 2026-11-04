@@ -55,12 +55,12 @@ fun TextFieldState.addFunctionWithAngleBox(function: String, radians: Boolean) {
  * @return `false` if there is no angle box at the cursor.
  */
 fun TextFieldState.skipAngleBox(): Boolean {
-  if (!selection.collapsed) return false
   val cursor = selection.min
-  val box = listOf(DEGREE_BOX, RADIAN_BOX).firstOrNull { text.startsWith(it, cursor) } ?: return false
-  if (!text.startsWith(Token.Operator.RIGHT_BRACKET, cursor + box.length)) return false
-  edit { selection = TextRange(cursor + box.length + Token.Operator.RIGHT_BRACKET.length) }
-  return true
+  val box = listOf(DEGREE_BOX, RADIAN_BOX).firstOrNull { text.startsWith(it, cursor) }
+  val skips =
+    selection.collapsed && box != null && text.startsWith(Token.Operator.RIGHT_BRACKET, cursor + box.length)
+  if (skips && box != null) edit { selection = TextRange(cursor + box.length + Token.Operator.RIGHT_BRACKET.length) }
+  return skips
 }
 
 /**
@@ -68,19 +68,17 @@ fun TextFieldState.skipAngleBox(): Boolean {
  * Nested brackets are skipped: `sin(2(1+|3)_°)` finds `_°`.
  */
 fun CharSequence.angleBoxAt(cursor: Int): IntRange? {
-  var position = cursor
-  // Out of brackets one by one until the bracket of a trigonometric function
-  while (true) {
-    val open = openingBracketBefore(position)
-    if (open == -1) return null
-    val close = closingBracketAfter(position)
-    if (ANGLE_BOX_FUNCTIONS.any { startsWith(it, open + 1 - it.length) }) {
-      val box = listOf(DEGREE_BOX, RADIAN_BOX).firstOrNull { endsWithAt(it, close) } ?: return null
-      return close - box.length until close
-    }
-    if (close >= length) return null
-    position = close + 1
-  }
+  // Brackets around the cursor, from the inside out: where they open and close
+  val brackets =
+    generateSequence(cursor) { position -> closingBracketAfter(position).takeIf { it < length }?.plus(1) }
+      .map { position -> openingBracketBefore(position) to closingBracketAfter(position) }
+      .takeWhile { (open, _) -> open != -1 }
+  // The bracket of a trigonometric function
+  val (_, close) =
+    brackets.firstOrNull { (open, _) -> ANGLE_BOX_FUNCTIONS.any { startsWith(it, open + 1 - it.length) } }
+      ?: return null
+  val box = listOf(DEGREE_BOX, RADIAN_BOX).firstOrNull { endsWithAt(it, close) }
+  return box?.let { close - it.length until close }
 }
 
 /** Switches the angle box in [range] between deg and rad. */
@@ -125,8 +123,9 @@ fun TextFieldState.chooseAngleUnit(typed: String) {
  */
 fun TextFieldState.deleteFunctionWithEmptyAngleBox(): Boolean {
   val cursor = selection.min
-  val function = ANGLE_BOX_FUNCTIONS.firstOrNull { text.endsWithAt(it, cursor) } ?: return false
-  val box = listOf(DEGREE_BOX, RADIAN_BOX).firstOrNull { text.startsWith(it, cursor) } ?: return false
+  val function = ANGLE_BOX_FUNCTIONS.firstOrNull { text.endsWithAt(it, cursor) }
+  val box = listOf(DEGREE_BOX, RADIAN_BOX).firstOrNull { text.startsWith(it, cursor) }
+  if (function == null || box == null) return false
   val closing = if (text.startsWith(Token.Operator.RIGHT_BRACKET, cursor + box.length)) 1 else 0
   edit {
     delete(cursor - function.length, cursor + box.length + closing)

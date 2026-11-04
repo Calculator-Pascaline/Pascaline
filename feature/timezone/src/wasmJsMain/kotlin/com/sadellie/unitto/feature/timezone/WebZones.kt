@@ -46,8 +46,9 @@ internal object WebZones {
 
   /** Date and hour at [millis] in [zone]. */
   fun local(millis: Double, zone: String): LocalTime {
-    val parts = browserLocalParts(millis, zone).split(',').map(String::toInt)
-    return LocalTime(parts[0], parts[1], parts[2], parts[3], parts[4])
+    // Year, month, day, hour and minute, in this order
+    val parts = browserLocalParts(millis, zone).split(',').map(String::toInt).iterator()
+    return LocalTime(parts.next(), parts.next(), parts.next(), parts.next(), parts.next())
   }
 
   /** The moment it is [time] in [zone]. Summer time is found again for the new moment. */
@@ -64,7 +65,7 @@ internal object WebZones {
     val time = local(millis, zone)
     val asUtc = utc(time.year, time.month - 1, time.day, time.hour, time.minute)
     // Seconds and milliseconds don't count, only whole minutes
-    return asUtc - (millis - millis.mod(60_000.0))
+    return asUtc - (millis - millis.mod(MILLIS_IN_MINUTE))
   }
 
   /** Like "13:45" or "1:45 PM", as the browser's language writes it. */
@@ -101,7 +102,7 @@ internal data class LocalTime(
   /** Days from [other]: 1 is the day after. */
   fun daysFrom(other: LocalTime): Int =
     ((utc(year, month - 1, day, 0, 0) - utc(other.year, other.month - 1, other.day, 0, 0)) /
-        86_400_000.0)
+        MILLIS_IN_DAY)
       .toInt()
 }
 
@@ -173,3 +174,6 @@ private external fun browserLocalParts(millis: Double, zone: String): String
 }"""
 )
 private external fun browserFormat(millis: Double, zone: String, tag: String, kind: String): String
+
+private const val MILLIS_IN_MINUTE = 60_000.0
+private const val MILLIS_IN_DAY = 86_400_000.0

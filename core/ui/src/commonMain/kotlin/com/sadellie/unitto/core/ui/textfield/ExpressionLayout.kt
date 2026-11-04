@@ -39,7 +39,7 @@ import kotlin.math.max
  *
  * @property carets Every position in raw text where cursor can be placed.
  */
-internal class ExpressionLayout(
+internal data class ExpressionLayout(
   val width: Float,
   val ascent: Float,
   val descent: Float,
@@ -146,74 +146,45 @@ private fun String.parseLayout(from: Int): Pair<List<LayoutNode>, Int> {
   val nodes = mutableListOf<LayoutNode>()
   var index = from
   var textStart = from
-
-  fun flushText() {
-    if (index > textStart) nodes.add(LayoutNode.Text(textStart, substring(textStart, index)))
-  }
-
-  while (index < length) {
-    val char = this[index]
-    if (char == SLOT_END) break
-
-    val kind = char.toSlotKind()
-    if (kind != null) {
-      flushText()
-      val (content, end) = parseLayout(index + 1)
-      nodes.add(LayoutNode.Slot(kind, index, end, content))
-      index = end + 1
-      textStart = index
-      continue
-    }
-
-    if (startsWith(Token.Calculus.DERIVATIVE, index)) {
-      flushText()
-      nodes.add(LayoutNode.Derivative(index))
-      index += Token.Calculus.DERIVATIVE.length
-      textStart = index
-      continue
-    }
-
-    val unit = PhysicalUnits.tokenAt(this, index)
-    if (unit != null) {
-      flushText()
-      nodes.add(LayoutNode.UnitToken(index, unit))
-      index += unit.token.length
-      textStart = index
-      continue
-    }
-
-    if (char == INTEGRAL_CHAR) {
-      flushText()
-      nodes.add(LayoutNode.IntegralSign(index))
+  while (index < length && this[index] != SLOT_END) {
+    val special = specialNodeAt(index)
+    if (special == null) {
       index++
+    } else {
+      // Text before it is a node too
+      if (index > textStart) nodes.add(LayoutNode.Text(textStart, substring(textStart, index)))
+      nodes.add(special.first)
+      index = special.second
       textStart = index
-      continue
     }
-
-    if (char in BIG_OPERATORS && getOrNull(index + 1) == SLOT_SUB) {
-      flushText()
-      nodes.add(LayoutNode.BigOperator(index, char.toString()))
-      index++
-      textStart = index
-      continue
-    }
-
-    val isHidden =
-      (char == POWER_CHAR && getOrNull(index + 1) == SLOT_SUP) ||
-        (char == SQRT_CHAR && getOrNull(index + 1) == SLOT_RAD)
-    if (isHidden) {
-      flushText()
-      nodes.add(LayoutNode.Hidden(index))
-      index++
-      textStart = index
-      continue
-    }
-
-    index++
   }
   index = index.coerceAtMost(length)
-  flushText()
+  if (index > textStart) nodes.add(LayoutNode.Text(textStart, substring(textStart, index)))
   return nodes to index
+}
+
+/** Node that is not plain text at [index], with the index after it. Null for plain text. */
+private fun String.specialNodeAt(index: Int): Pair<LayoutNode, Int>? {
+  val char = this[index]
+  val kind = char.toSlotKind()
+  val unit = PhysicalUnits.tokenAt(this, index)
+  val isHidden =
+    (char == POWER_CHAR && getOrNull(index + 1) == SLOT_SUP) ||
+      (char == SQRT_CHAR && getOrNull(index + 1) == SLOT_RAD)
+  return when {
+    kind != null -> {
+      val (content, end) = parseLayout(index + 1)
+      LayoutNode.Slot(kind, index, end, content) to end + 1
+    }
+    startsWith(Token.Calculus.DERIVATIVE, index) ->
+      LayoutNode.Derivative(index) to index + Token.Calculus.DERIVATIVE.length
+    unit != null -> LayoutNode.UnitToken(index, unit) to index + unit.token.length
+    char == INTEGRAL_CHAR -> LayoutNode.IntegralSign(index) to index + 1
+    char in BIG_OPERATORS && getOrNull(index + 1) == SLOT_SUB ->
+      LayoutNode.BigOperator(index, char.toString()) to index + 1
+    isHidden -> LayoutNode.Hidden(index) to index + 1
+    else -> null
+  }
 }
 
 /** Measured part of the expression. Same coordinates as [ExpressionLayout]. */
@@ -254,44 +225,69 @@ private class LayoutBuilder(
     size: Float,
     isTopLevel: Boolean = false,
   ): Box {
-    val caretTop = -size * CARET_ASCENT
-    val caretBottom = size * CARET_DESCENT
+    if (nodes.isEmpty()) return emptyRow(rowStart, size, isTopLevel)
+    val row = RowBuilder(size, rowStart)
+    var nodeIndex = 0
+    // A node can take the next ones with it: a numerator its denominator
+    while (nodeIndex < nodes.size) nodeIndex += 1 + row.place(nodes, nodeIndex)
+    row.caret(rowEnd)
+    return row.box()
+  }
 
-    if (nodes.isEmpty()) {
-      val caret = Caret(rowStart, 0f, caretTop, caretBottom)
-      if (isTopLevel) return Box(0f, size * TEXT_ASCENT, size * TEXT_DESCENT, carets = listOf(caret))
-
-      // Empty slot
-      val stroke = size * PLACEHOLDER_STROKE
-      val rect =
-        Rect(
-          left = size * PLACEHOLDER_MARGIN,
-          top = -size * PLACEHOLDER_HEIGHT,
-          right = size * (PLACEHOLDER_MARGIN + PLACEHOLDER_WIDTH),
-          bottom = 0f,
-        )
-      return Box(
-        width = size * (PLACEHOLDER_WIDTH + PLACEHOLDER_MARGIN * 2),
-        ascent = size * PLACEHOLDER_HEIGHT + stroke,
-        descent = stroke,
-        placeholders = listOf(PlacedPlaceholder(rect, stroke)),
-        carets = listOf(caret.copy(x = size * PLACEHOLDER_MARGIN)),
+  /** Nothing at the top, an empty slot elsewhere. */
+  private fun emptyRow(rowStart: Int, size: Float, isTopLevel: Boolean): Box {
+    val caret = Caret(rowStart, 0f, -size * CARET_ASCENT, size * CARET_DESCENT)
+    if (isTopLevel) return Box(0f, size * TEXT_ASCENT, size * TEXT_DESCENT, carets = listOf(caret))
+    val stroke = size * PLACEHOLDER_STROKE
+    val rect =
+      Rect(
+        left = size * PLACEHOLDER_MARGIN,
+        top = -size * PLACEHOLDER_HEIGHT,
+        right = size * (PLACEHOLDER_MARGIN + PLACEHOLDER_WIDTH),
+        bottom = 0f,
       )
+    return Box(
+      width = size * (PLACEHOLDER_WIDTH + PLACEHOLDER_MARGIN * 2),
+      ascent = size * PLACEHOLDER_HEIGHT + stroke,
+      descent = stroke,
+      placeholders = listOf(PlacedPlaceholder(rect, stroke)),
+      carets = listOf(caret.copy(x = size * PLACEHOLDER_MARGIN)),
+    )
+  }
+
+  /** A row being placed from left to right. */
+  private inner class RowBuilder(private val size: Float, rowStart: Int) {
+    private val caretTop = -size * CARET_ASCENT
+    private val caretBottom = size * CARET_DESCENT
+    private val texts = mutableListOf<PlacedText>()
+    private val bars = mutableListOf<Rect>()
+    private val placeholders = mutableListOf<PlacedPlaceholder>()
+    private val strokes = mutableListOf<PlacedStroke>()
+    private val carets = mutableListOf(Caret(rowStart, 0f, caretTop, caretBottom))
+    private var x = 0f
+    private var ascent = size * TEXT_ASCENT
+    private var descent = size * TEXT_DESCENT
+    // Metrics of the previous element, superscripts and subscripts are placed relative to it
+    private var previousAscent = size * TEXT_ASCENT
+    private var previousDescent = size * TEXT_DESCENT
+
+    fun caret(index: Int) {
+      carets += Caret(index, x, caretTop, caretBottom)
     }
 
-    val texts = mutableListOf<PlacedText>()
-    val bars = mutableListOf<Rect>()
-    val placeholders = mutableListOf<PlacedPlaceholder>()
-    val strokes = mutableListOf<PlacedStroke>()
-    val carets = mutableListOf(Caret(rowStart, 0f, caretTop, caretBottom))
-    var x = 0f
-    var ascent = size * TEXT_ASCENT
-    var descent = size * TEXT_DESCENT
-    // Metrics of the previous element, superscripts and subscripts are placed relative to it
-    var previousAscent = size * TEXT_ASCENT
-    var previousDescent = size * TEXT_DESCENT
+    fun box() =
+      Box(
+        width = x,
+        ascent = ascent,
+        descent = descent,
+        texts = texts,
+        bars = bars,
+        placeholders = placeholders,
+        strokes = strokes,
+        carets = carets,
+      )
 
-    fun add(box: Box) {
+    private fun add(box: Box) {
       val moved = box.moved(x, 0f)
       texts += moved.texts
       bars += moved.bars
@@ -303,120 +299,111 @@ private class LayoutBuilder(
       x += box.width
     }
 
-    var nodeIndex = 0
-    while (nodeIndex < nodes.size) {
-      when (val node = nodes[nodeIndex]) {
-        is LayoutNode.Text -> {
-          val box = layoutText(node, size, caretTop, caretBottom)
-          add(box)
-          previousAscent = box.ascent
-          previousDescent = box.descent
-        }
-        is LayoutNode.Hidden -> carets += Caret(node.index, x, caretTop, caretBottom)
-        is LayoutNode.IntegralSign -> {
-          val box = layoutIntegralSign(node, size, caretTop, caretBottom)
-          add(box)
-          // bounds go to the top and the bottom of the sign
-          previousAscent = box.ascent
-          previousDescent = box.descent
-        }
-        is LayoutNode.BigOperator -> {
-          carets += Caret(node.index, x, caretTop, caretBottom)
-          val lower = nodes.getOrNull(nodeIndex + 1) as? LayoutNode.Slot
-          val upper = nodes.getOrNull(nodeIndex + 2) as? LayoutNode.Slot
-          val box =
-            if (lower?.kind == SlotKind.SUBSCRIPT && upper?.kind == SlotKind.SUPERSCRIPT) {
-              nodeIndex += 2
-              layoutBigOperator(node.symbol, lower, upper, size)
-            } else {
-              layoutText(LayoutNode.Text(node.index, node.symbol), size, caretTop, caretBottom)
-            }
-          add(box)
-          if (upper != null && box.carets.isNotEmpty()) {
-            carets += Caret(upper.end + 1, x, caretTop, caretBottom)
-          }
-          previousAscent = box.ascent
-          previousDescent = box.descent
-        }
-        is LayoutNode.UnitToken -> {
-          carets += Caret(node.index, x, caretTop, caretBottom)
-          val box = layoutUnit(node.unit, size, node.index)
-          add(box)
-          carets += Caret(node.index + node.unit.token.length, x, caretTop, caretBottom)
-          previousAscent = box.ascent
-          previousDescent = box.descent
-        }
-        is LayoutNode.Derivative -> {
-          carets += Caret(node.start, x, caretTop, caretBottom)
-          val box = layoutDerivative(size)
-          add(box)
-          carets += Caret(node.start + Token.Calculus.DERIVATIVE.length, x, caretTop, caretBottom)
-          previousAscent = box.ascent
-          previousDescent = box.descent
-        }
-        is LayoutNode.Slot -> {
-          carets += Caret(node.start, x, caretTop, caretBottom)
-          val next = nodes.getOrNull(nodeIndex + 1) as? LayoutNode.Slot
-          var last = node
-          val box =
-            when {
-              node.kind == SlotKind.NUMERATOR && next?.kind == SlotKind.DENOMINATOR -> {
-                last = next
-                nodeIndex++
-                layoutFraction(node, next, size)
-              }
-              node.kind == SlotKind.SUBSCRIPT && next?.kind == SlotKind.SUPERSCRIPT -> {
-                // integral bounds, one above the other. Empty ones are bigger, easy to tap
-                last = next
-                nodeIndex++
-                fun boundScale(bound: LayoutNode.Slot) =
-                  if (bound.content.isEmpty()) EMPTY_BOUND_SCALE else SCRIPT_SCALE
-                layoutScripts(
-                  next,
-                  node,
-                  size,
-                  previousAscent,
-                  previousDescent,
-                  superscriptScale = boundScale(next),
-                  subscriptScale = boundScale(node),
-                )
-              }
-              node.kind == SlotKind.SUPERSCRIPT ->
-                layoutScripts(node, null, size, previousAscent, previousDescent)
-              node.kind == SlotKind.SUBSCRIPT ->
-                layoutScripts(null, node, size, previousAscent, previousDescent)
-              // Broken fraction, draw content as is
-              node.kind == SlotKind.RADICAND -> layoutRadical(node, size)
-              else -> layoutRow(node.content, node.start + 1, node.end, size)
-            }
-          add(box)
-          // ∫ with nothing before dx: empty box for the function, with the cursor in it
-          val isEmptyIntegrand =
-            node.kind == SlotKind.SUBSCRIPT &&
-              last.kind == SlotKind.SUPERSCRIPT &&
-              (nodes.getOrNull(nodeIndex + 1) as? LayoutNode.Text)?.text?.startsWith(Token.Calculus.DX) == true
-          if (isEmptyIntegrand) add(layoutRow(emptyList(), last.end + 1, last.end + 1, size))
-          carets += Caret(last.end + 1, x, caretTop, caretBottom)
-          if (node.kind == SlotKind.NUMERATOR || node.kind == SlotKind.RADICAND) {
-            previousAscent = box.ascent
-            previousDescent = box.descent
-          }
+    /** Adds [box], what comes next is placed relative to it. */
+    private fun addAndFollow(box: Box) {
+      add(box)
+      previousAscent = box.ascent
+      previousDescent = box.descent
+    }
+
+    /** Places [nodes] at [index]. @return How many nodes after it were placed with it. */
+    fun place(nodes: List<LayoutNode>, index: Int): Int =
+      when (val node = nodes[index]) {
+        is LayoutNode.BigOperator -> placeBigOperator(node, nodes, index)
+        is LayoutNode.Slot -> placeSlot(node, nodes, index)
+        else -> {
+          placeSimple(node)
+          0
         }
       }
-      nodeIndex++
-    }
-    carets += Caret(rowEnd, x, caretTop, caretBottom)
 
-    return Box(
-      width = x,
-      ascent = ascent,
-      descent = descent,
-      texts = texts,
-      bars = bars,
-      placeholders = placeholders,
-      strokes = strokes,
-      carets = carets,
-    )
+    private fun placeSimple(node: LayoutNode) {
+      when (node) {
+        is LayoutNode.Text -> addAndFollow(layoutText(node, size, caretTop, caretBottom))
+        is LayoutNode.Hidden -> caret(node.index)
+        // bounds go to the top and the bottom of the sign
+        is LayoutNode.IntegralSign -> addAndFollow(layoutIntegralSign(node, size, caretTop, caretBottom))
+        is LayoutNode.UnitToken -> {
+          caret(node.index)
+          addAndFollow(layoutUnit(node.unit, size, node.index))
+          caret(node.index + node.unit.token.length)
+        }
+        is LayoutNode.Derivative -> {
+          caret(node.start)
+          addAndFollow(layoutDerivative(size))
+          caret(node.start + Token.Calculus.DERIVATIVE.length)
+        }
+        is LayoutNode.BigOperator,
+        is LayoutNode.Slot -> Unit
+      }
+    }
+
+    private fun placeBigOperator(node: LayoutNode.BigOperator, nodes: List<LayoutNode>, index: Int): Int {
+      caret(node.index)
+      val lower = nodes.getOrNull(index + 1) as? LayoutNode.Slot
+      val upper = nodes.getOrNull(index + 2) as? LayoutNode.Slot
+      val hasBounds =
+        lower != null && upper != null && lower.kind == SlotKind.SUBSCRIPT && upper.kind == SlotKind.SUPERSCRIPT
+      val box =
+        if (hasBounds && lower != null && upper != null) {
+          layoutBigOperator(node.symbol, lower, upper, size)
+        } else {
+          layoutText(LayoutNode.Text(node.index, node.symbol), size, caretTop, caretBottom)
+        }
+      addAndFollow(box)
+      if (upper != null && box.carets.isNotEmpty()) caret(upper.end + 1)
+      return if (hasBounds) 2 else 0
+    }
+
+    private fun placeSlot(node: LayoutNode.Slot, nodes: List<LayoutNode>, index: Int): Int {
+      caret(node.start)
+      val next = nodes.getOrNull(index + 1) as? LayoutNode.Slot
+      // A fraction, or integral bounds one above the other
+      val pair =
+        next?.takeIf {
+          (node.kind == SlotKind.NUMERATOR && it.kind == SlotKind.DENOMINATOR) ||
+            (node.kind == SlotKind.SUBSCRIPT && it.kind == SlotKind.SUPERSCRIPT)
+        }
+      val last = pair ?: node
+      val box = slotBox(node, pair)
+      add(box)
+      val taken = if (pair != null) 1 else 0
+      // ∫ with nothing before dx: empty box for the function, with the cursor in it
+      val isEmptyIntegrand =
+        node.kind == SlotKind.SUBSCRIPT &&
+          last.kind == SlotKind.SUPERSCRIPT &&
+          (nodes.getOrNull(index + taken + 1) as? LayoutNode.Text)?.text?.startsWith(Token.Calculus.DX) == true
+      if (isEmptyIntegrand) add(layoutRow(emptyList(), last.end + 1, last.end + 1, size))
+      caret(last.end + 1)
+      if (node.kind == SlotKind.NUMERATOR || node.kind == SlotKind.RADICAND) {
+        previousAscent = box.ascent
+        previousDescent = box.descent
+      }
+      return taken
+    }
+
+    private fun slotBox(node: LayoutNode.Slot, pair: LayoutNode.Slot?): Box {
+      // Empty bounds are bigger, easy to tap
+      fun boundScale(bound: LayoutNode.Slot) = if (bound.content.isEmpty()) EMPTY_BOUND_SCALE else SCRIPT_SCALE
+      return when {
+        pair != null && node.kind == SlotKind.NUMERATOR -> layoutFraction(node, pair, size)
+        pair != null ->
+          layoutScripts(
+            pair,
+            node,
+            size,
+            previousAscent,
+            previousDescent,
+            superscriptScale = boundScale(pair),
+            subscriptScale = boundScale(node),
+          )
+        node.kind == SlotKind.SUPERSCRIPT -> layoutScripts(node, null, size, previousAscent, previousDescent)
+        node.kind == SlotKind.SUBSCRIPT -> layoutScripts(null, node, size, previousAscent, previousDescent)
+        node.kind == SlotKind.RADICAND -> layoutRadical(node, size)
+        // Broken fraction, draw content as is
+        else -> layoutRow(node.content, node.start + 1, node.end, size)
+      }
+    }
   }
 
   private fun layoutText(node: LayoutNode.Text, size: Float, caretTop: Float, caretBottom: Float): Box {

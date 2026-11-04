@@ -32,7 +32,7 @@ internal data class WeightedValue(val value: Double, val frequency: Double)
  * @property deviation Population standard deviation σ.
  * @property sampleDeviation Sample standard deviation s, null for a total frequency of 1 or less.
  */
-internal class Statistics(
+internal data class Statistics(
   val totalFrequency: Double,
   val minimum: Double,
   val maximum: Double,
@@ -95,16 +95,15 @@ private fun quantile(sorted: List<WeightedValue>, total: Double, share: Double):
  */
 private fun median(sorted: List<WeightedValue>, total: Double): Double {
   val half = total / 2
-  var cumulated = 0.0
-  for ((index, item) in sorted.withIndex()) {
-    cumulated += item.frequency
-    if (abs(cumulated - half) < SAME_FREQUENCY) {
-      val next = sorted.getOrNull(index + 1) ?: return item.value
-      return (item.value + next.value) / 2
-    }
-    if (cumulated > half) return item.value
+  // Frequency up to each value, included
+  val cumulated = sorted.runningFold(0.0) { sum, item -> sum + item.frequency }.drop(1)
+  val index = cumulated.indexOfFirst { abs(it - half) < SAME_FREQUENCY || it > half }
+  val next = sorted.getOrNull(index + 1)
+  return when {
+    index == -1 -> sorted.last().value
+    abs(cumulated[index] - half) < SAME_FREQUENCY && next != null -> (sorted[index].value + next.value) / 2
+    else -> sorted[index].value
   }
-  return sorted.last().value
 }
 
 /** Bar of a histogram: values from [start] (included) to [end] (excluded). */

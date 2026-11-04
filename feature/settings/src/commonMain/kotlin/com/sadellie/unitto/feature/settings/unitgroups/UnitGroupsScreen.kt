@@ -29,6 +29,7 @@ import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -132,30 +133,7 @@ private fun UnitGroupsScreen(
   ScaffoldWithLargeTopBar(
     title = stringResource(Res.string.settings_unit_groups_title),
     navigationIcon = { NavigateUpButton(navigateUpAction) },
-    actions = {
-      AnimatedVisibility(
-        visible = !uiState.isAutoSortEnabled,
-        label = "Undo button",
-        enter = fadeIn() + expandHorizontally(),
-        exit = fadeOut() + shrinkHorizontally(),
-      ) {
-        IconButton(
-          onClick = undoAutoSortUnitGroups,
-          enabled = !uiState.isAutoSortEnabled,
-          shapes = IconButtonDefaults.shapes(),
-        ) {
-          Icon(Symbols.Undo, stringResource(Res.string.settings_unit_groups_undo))
-        }
-      }
-
-      IconButton(
-        onClick = { updateAutoSortDialogState(AutoSortDialogState.SHOW) },
-        enabled = uiState.isAutoSortEnabled,
-        shapes = IconButtonDefaults.shapes(),
-      ) {
-        Icon(Symbols.SwapVert, stringResource(Res.string.settings_unit_groups_auto_sort))
-      }
-    },
+    actions = { AutoSortActions(uiState.isAutoSortEnabled, undoAutoSortUnitGroups, updateAutoSortDialogState) },
   ) { paddingValues ->
     val copiedShownList = rememberUpdatedState(uiState.shownUnitGroups) as MutableState
     val lazyListState = rememberLazyListState()
@@ -228,32 +206,71 @@ private fun UnitGroupsScreen(
     }
   }
 
-  if (showAutoSortDialog) {
-    AlertDialog(
-      icon = { Icon(Symbols.SwapVert, stringResource(Res.string.settings_unit_groups_auto_sort)) },
-      onDismissRequest = { updateAutoSortDialogState(AutoSortDialogState.NONE) },
-      confirmButton = {
-        TextButton(
-          onClick = autoSortUnitGroups,
-          enabled = !isSorting,
-          shapes = ButtonDefaults.shapes(),
-        ) {
-          Text(stringResource(Res.string.common_confirm))
-        }
-      },
-      dismissButton = {
-        TextButton(
-          onClick = { updateAutoSortDialogState(AutoSortDialogState.NONE) },
-          enabled = !isSorting,
-          shapes = ButtonDefaults.shapes(),
-        ) {
-          Text(stringResource(Res.string.common_cancel))
-        }
-      },
-      title = { Text(stringResource(Res.string.settings_unit_groups_auto_sort)) },
-      text = { Text(stringResource(Res.string.settings_unit_groups_auto_sort_support)) },
-    )
+  if (showAutoSortDialog) AutoSortDialog(isSorting, autoSortUnitGroups, updateAutoSortDialogState)
+}
+
+/** Undo, once the unit groups were sorted, and the button that sorts them. */
+@Composable
+private fun RowScope.AutoSortActions(
+  isAutoSortEnabled: Boolean,
+  undoAutoSortUnitGroups: () -> Unit,
+  updateAutoSortDialogState: (AutoSortDialogState) -> Unit,
+) {
+  AnimatedVisibility(
+    visible = !isAutoSortEnabled,
+    label = "Undo button",
+    enter = fadeIn() + expandHorizontally(),
+    exit = fadeOut() + shrinkHorizontally(),
+  ) {
+    IconButton(
+      onClick = undoAutoSortUnitGroups,
+      enabled = !isAutoSortEnabled,
+      shapes = IconButtonDefaults.shapes(),
+    ) {
+      Icon(Symbols.Undo, stringResource(Res.string.settings_unit_groups_undo))
+    }
   }
+
+  IconButton(
+    onClick = { updateAutoSortDialogState(AutoSortDialogState.SHOW) },
+    enabled = isAutoSortEnabled,
+    shapes = IconButtonDefaults.shapes(),
+  ) {
+    Icon(Symbols.SwapVert, stringResource(Res.string.settings_unit_groups_auto_sort))
+  }
+}
+
+/** Asks before sorting the unit groups by how much they are used. */
+@Composable
+private fun AutoSortDialog(
+  isSorting: Boolean,
+  autoSortUnitGroups: () -> Unit,
+  updateAutoSortDialogState: (AutoSortDialogState) -> Unit,
+) {
+  AlertDialog(
+    icon = { Icon(Symbols.SwapVert, stringResource(Res.string.settings_unit_groups_auto_sort)) },
+    onDismissRequest = { updateAutoSortDialogState(AutoSortDialogState.NONE) },
+    confirmButton = {
+      TextButton(
+        onClick = autoSortUnitGroups,
+        enabled = !isSorting,
+        shapes = ButtonDefaults.shapes(),
+      ) {
+        Text(stringResource(Res.string.common_confirm))
+      }
+    },
+    dismissButton = {
+      TextButton(
+        onClick = { updateAutoSortDialogState(AutoSortDialogState.NONE) },
+        enabled = !isSorting,
+        shapes = ButtonDefaults.shapes(),
+      ) {
+        Text(stringResource(Res.string.common_cancel))
+      }
+    },
+    title = { Text(stringResource(Res.string.settings_unit_groups_auto_sort)) },
+    text = { Text(stringResource(Res.string.settings_unit_groups_auto_sort_support)) },
+  )
 }
 
 @Composable

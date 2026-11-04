@@ -57,13 +57,13 @@ val timeZonesDataModule = lazyModule {
       object : TimeZonesRepository {
         override val favoriteTimeZones = emptyFlow<List<FavoriteZone>>()
 
-        override suspend fun updatePosition(timeZone: FavoriteZone, targetPosition: Int) {}
+        override suspend fun updatePosition(timeZone: FavoriteZone, targetPosition: Int) = Unit
 
-        override suspend fun addToFavorites(timeZone: TimeZone) {}
+        override suspend fun addToFavorites(timeZone: TimeZone) = Unit
 
-        override suspend fun removeFromFavorites(timeZone: FavoriteZone) {}
+        override suspend fun removeFromFavorites(timeZone: FavoriteZone) = Unit
 
-        override suspend fun updateLabel(timeZone: FavoriteZone, label: String) {}
+        override suspend fun updateLabel(timeZone: FavoriteZone, label: String) = Unit
 
         override suspend fun filter(searchQuery: String, locale: ULocale): List<SearchResultZone> =
           emptyList()

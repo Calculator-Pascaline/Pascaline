@@ -147,29 +147,31 @@ internal class InferenceViewModel(userPrefsRepository: UserPreferencesRepository
       if (observed.any { it == null } || expected.any { it == null }) return null
       return goodnessOfFitTest(observed.filterNotNull(), expected.filterNotNull())
     }
-    val v = numbers(kind.testFields) ?: return null
+    // The fields in their order: Kotlin evaluates arguments from left to right
+    val v = numbers(kind.testFields)?.iterator() ?: return null
     return when (kind) {
-      InferenceKind.ONE_PROPORTION -> oneProportionTest(v[0], v[1], v[2], alternative)
-      InferenceKind.TWO_PROPORTIONS -> twoProportionsTest(v[0], v[1], v[2], v[3], alternative)
-      InferenceKind.ONE_MEAN_T -> oneMeanTTest(v[0], v[1], v[2], v[3], alternative)
-      InferenceKind.ONE_MEAN_Z -> oneMeanZTest(v[0], v[1], v[2], v[3], alternative)
-      InferenceKind.TWO_MEANS_T -> twoMeansTTest(v[0], v[1], v[2], v[3], v[4], v[5], alternative)
-      InferenceKind.TWO_MEANS_Z -> twoMeansZTest(v[0], v[1], v[2], v[3], v[4], v[5], alternative)
+      InferenceKind.ONE_PROPORTION -> oneProportionTest(v.next(), v.next(), v.next(), alternative)
+      InferenceKind.TWO_PROPORTIONS -> twoProportionsTest(v.next(), v.next(), v.next(), v.next(), alternative)
+      InferenceKind.ONE_MEAN_T -> oneMeanTTest(v.next(), v.next(), v.next(), v.next(), alternative)
+      InferenceKind.ONE_MEAN_Z -> oneMeanZTest(v.next(), v.next(), v.next(), v.next(), alternative)
+      InferenceKind.TWO_MEANS_T -> twoMeansTTest(v.next(), v.next(), v.next(), v.next(), v.next(), v.next(), alternative)
+      InferenceKind.TWO_MEANS_Z -> twoMeansZTest(v.next(), v.next(), v.next(), v.next(), v.next(), v.next(), alternative)
       InferenceKind.GOODNESS_OF_FIT -> null
     }
   }
 
   fun interval(): IntervalResult? {
     val fields = kind.intervalFields ?: return null
-    val v = numbers(fields) ?: return null
+    // The fields in their order, like in test()
+    val v = numbers(fields)?.iterator() ?: return null
     val level = confidence.toNumberOrNull() ?: return null
     return when (kind) {
-      InferenceKind.ONE_PROPORTION -> oneProportionInterval(v[0], v[1], level)
-      InferenceKind.TWO_PROPORTIONS -> twoProportionsInterval(v[0], v[1], v[2], v[3], level)
-      InferenceKind.ONE_MEAN_T -> oneMeanTInterval(v[0], v[1], v[2], level)
-      InferenceKind.ONE_MEAN_Z -> oneMeanZInterval(v[0], v[1], v[2], level)
-      InferenceKind.TWO_MEANS_T -> twoMeansTInterval(v[0], v[1], v[2], v[3], v[4], v[5], level)
-      InferenceKind.TWO_MEANS_Z -> twoMeansZInterval(v[0], v[1], v[2], v[3], v[4], v[5], level)
+      InferenceKind.ONE_PROPORTION -> oneProportionInterval(v.next(), v.next(), level)
+      InferenceKind.TWO_PROPORTIONS -> twoProportionsInterval(v.next(), v.next(), v.next(), v.next(), level)
+      InferenceKind.ONE_MEAN_T -> oneMeanTInterval(v.next(), v.next(), v.next(), level)
+      InferenceKind.ONE_MEAN_Z -> oneMeanZInterval(v.next(), v.next(), v.next(), level)
+      InferenceKind.TWO_MEANS_T -> twoMeansTInterval(v.next(), v.next(), v.next(), v.next(), v.next(), v.next(), level)
+      InferenceKind.TWO_MEANS_Z -> twoMeansZInterval(v.next(), v.next(), v.next(), v.next(), v.next(), v.next(), level)
       InferenceKind.GOODNESS_OF_FIT -> null
     }
   }

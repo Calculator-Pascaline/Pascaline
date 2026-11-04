@@ -334,13 +334,13 @@ private fun DrawScope.drawGrid(
     val sx = window.toScreenX(x, size.width)
     val isAxis = abs(x) < stepX / 2
     drawLine(if (isAxis) axisColor else gridColor, Offset(sx, 0f), Offset(sx, size.height), if (isAxis) 2f else 1f)
-    if (!isAxis) drawLabel(measurer, formatTick(x, stepX), Offset(sx + 4f, axisY + 2f), labelStyle)
+    if (!isAxis) drawLabel(measurer, formatTick(x, stepX), Offset(sx + TICK_LABEL_SHIFT_X, axisY + TICK_LABEL_SHIFT_Y), labelStyle)
   }
   gridValues(window.yMin, window.yMax, stepY).forEach { y ->
     val sy = window.toScreenY(y, size.height)
     val isAxis = abs(y) < stepY / 2
     drawLine(if (isAxis) axisColor else gridColor, Offset(0f, sy), Offset(size.width, sy), if (isAxis) 2f else 1f)
-    if (!isAxis) drawLabel(measurer, formatTick(y, stepY), Offset(axisX + 4f, sy + 2f), labelStyle)
+    if (!isAxis) drawLabel(measurer, formatTick(y, stepY), Offset(axisX + TICK_LABEL_SHIFT_X, sy + TICK_LABEL_SHIFT_Y), labelStyle)
   }
 }
 
@@ -397,7 +397,7 @@ private fun DrawScope.drawTrace(
     topLeft = Offset(padding, padding),
     size = Size(layout.size.width + padding * 2, layout.size.height + padding),
   )
-  drawText(layout, topLeft = Offset(padding * 2, padding * 1.5f))
+  drawText(layout, topLeft = Offset(padding * TEXT_PADDING_X, padding * TEXT_PADDING_Y))
 }
 
 /** 1, 2 or 5 times a power of ten, close to [rough]. */
@@ -462,3 +462,10 @@ private val POINT_RADIUS = 4.dp
 private const val POINTS_MARGIN = 0.12
 private val LABEL_PADDING = 6.dp
 private val LABEL_HEIGHT = 16.dp
+
+/** Tick labels next to their line */
+private const val TICK_LABEL_SHIFT_X = 4f
+private const val TICK_LABEL_SHIFT_Y = 2f
+/** Text inside its background, in paddings */
+private const val TEXT_PADDING_X = 2f
+private const val TEXT_PADDING_Y = 1.5f

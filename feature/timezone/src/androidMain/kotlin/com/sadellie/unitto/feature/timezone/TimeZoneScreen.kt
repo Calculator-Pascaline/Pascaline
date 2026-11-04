@@ -25,10 +25,6 @@ import android.icu.util.ULocale
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.compose.animation.animateColor
-import androidx.compose.animation.core.animateDp
-import androidx.compose.animation.core.updateTransition
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,7 +33,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
@@ -47,12 +42,11 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFloatingActionButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -62,7 +56,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.TextRange
@@ -208,22 +201,12 @@ private fun TimeZoneScreen(
       ) { index, item ->
         ReorderableItem(reorderableLazyListState, item.timeZone.id) { isDragging ->
           val isSelected = uiState.selectedTimeZone == item
-          val transition = updateTransition(isDragging, label = "draggedTransition")
-          val itemPadding by transition.animateDp(label = "itemPadding") { if (it) 8.dp else 0.dp }
-          val background by
-            transition.animateColor(label = "background") {
-              if (it) MaterialTheme.colorScheme.surfaceContainerHighest
-              else MaterialTheme.colorScheme.surfaceBright
-            }
-          val cornerRadius by
-            transition.animateDp(label = "cornerRadius") { if (it) Sizes.large else 0.dp }
-
           FavoriteTimeZoneItem(
             modifier =
-              Modifier.padding(itemPadding)
-                .clip(RoundedCornerShape(cornerRadius))
-                .clip(ListItemExpressiveDefaults.listedShaped(index, mutableFavorites.size))
-                .background(background)
+              Modifier.draggedZoneItem(
+                  isDragging,
+                  ListItemExpressiveDefaults.listedShaped(index, mutableFavorites.size),
+                )
                 .longPressDraggableHandle(onDragStopped = { onDragEnd(mutableFavorites, item) }),
             item = item,
             fromTime = currentUserTime,

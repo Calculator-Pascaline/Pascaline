@@ -132,14 +132,12 @@ internal fun CharSequence.enclosingSlotStart(pos: Int): Int {
  * Where to put cursor after inserting a template. Index of the first empty place, cursor goes
  * right after it: empty slot start, empty brackets `()` or empty integral `∫dx`. -1 if none.
  */
-internal fun CharSequence.indexOfEmptySlot(): Int {
-  for (index in 0..<lastIndex) {
-    if (this[index].isSlotStart() && this[index + 1] == SLOT_END) return index
-    if (startsWith(EMPTY_BRACKETS, index)) return index
-    if (startsWith(Token.Layout.INDEFINITE_INTEGRAL, index)) return index
-  }
-  return -1
-}
+internal fun CharSequence.indexOfEmptySlot(): Int =
+  (0..<lastIndex).firstOrNull { index ->
+    (this[index].isSlotStart() && this[index + 1] == SLOT_END) ||
+      startsWith(EMPTY_BRACKETS, index) ||
+      startsWith(Token.Layout.INDEFINITE_INTEGRAL, index)
+  } ?: -1
 
 private const val EMPTY_BRACKETS = Token.Operator.LEFT_BRACKET + Token.Operator.RIGHT_BRACKET
 
@@ -174,14 +172,7 @@ internal fun CharSequence.renderSlots(placeholderColor: Color): SlotRendering {
     val kind = char.toSlotKind()
     if (kind != null) {
       slots.add(kind)
-      // Fractions can't be drawn here, they are shown in one line: (1)/2
-      replacements[index] =
-        when (kind) {
-          SlotKind.NUMERATOR,
-          SlotKind.RADICAND -> '('
-          SlotKind.DENOMINATOR -> FRACTION_SLASH
-          else -> INVISIBLE_CHAR
-        }
+      replacements[index] = kind.startReplacement()
       if (char == SLOT_SUP && getOrNull(index - 1) == POWER_CHAR) {
         replacements[index - 1] = INVISIBLE_CHAR
       }
@@ -195,15 +186,10 @@ internal fun CharSequence.renderSlots(placeholderColor: Color): SlotRendering {
     }
 
     if (char == SLOT_END) {
-      if (slots.lastOrNull() == SlotKind.RADICAND) {
-        replacements[index] = ')'
-      } else if (slots.lastOrNull() == SlotKind.NUMERATOR && getOrNull(index - 1) != SLOT_NUM) {
-        replacements[index] = ')'
-      } else if (getOrNull(index - 1)?.isSlotStart() == true) {
-        replacements[index] = PLACEHOLDER_CHAR
+      val replacement = endReplacement(index, slots.lastOrNull())
+      replacements[index] = replacement
+      if (replacement == PLACEHOLDER_CHAR) {
         styles.add(AnnotatedString.Range(SpanStyle(color = placeholderColor), index, index + 1))
-      } else {
-        replacements[index] = INVISIBLE_CHAR
       }
       slots.removeLastOrNull()
     }
@@ -212,6 +198,24 @@ internal fun CharSequence.renderSlots(placeholderColor: Color): SlotRendering {
 
   return SlotRendering(replacements, styles)
 }
+
+/** What a slot start is drawn as. Fractions can't be drawn here, they are shown in one line: (1)/2 */
+private fun SlotKind.startReplacement(): Char =
+  when (this) {
+    SlotKind.NUMERATOR,
+    SlotKind.RADICAND -> '('
+    SlotKind.DENOMINATOR -> FRACTION_SLASH
+    else -> INVISIBLE_CHAR
+  }
+
+/** What the slot end at [index] of a [kind] slot is drawn as: a bracket, the placeholder or nothing. */
+private fun CharSequence.endReplacement(index: Int, kind: SlotKind?): Char =
+  when {
+    kind == SlotKind.RADICAND -> ')'
+    kind == SlotKind.NUMERATOR && getOrNull(index - 1) != SLOT_NUM -> ')'
+    getOrNull(index - 1)?.isSlotStart() == true -> PLACEHOLDER_CHAR
+    else -> INVISIBLE_CHAR
+  }
 
 /** Same as [formatExpression], but with slots rendered. For read only texts. */
 fun String.formatExpressionWithSlots(
@@ -280,13 +284,10 @@ private const val LINE_BASELINE = 0.79f
 /** Cursor at [pos] is in lower or upper bound of ∫, Σ or ∏. */
 fun CharSequence.isInCalculusBound(pos: Int): Boolean {
   val slotStart = enclosingSlotStart(pos)
-  if (slotStart <= 0) return false
-  val before = this[slotStart - 1]
-  if (before in CALCULUS_OWNERS) return true
+  val before = if (slotStart > 0) this[slotStart - 1] else null
   // upper bound: owner⟨lower⟩⟨upper⟩
-  if (before != SLOT_END) return false
-  val lowerStart = slotStart(slotStart - 1)
-  return lowerStart > 0 && this[lowerStart - 1] in CALCULUS_OWNERS
+  val lowerStart = if (before == SLOT_END) slotStart(slotStart - 1) else -1
+  return (before != null && before in CALCULUS_OWNERS) || (lowerStart > 0 && this[lowerStart - 1] in CALCULUS_OWNERS)
 }
 
 /** Cursor at [pos] is after unit conversion arrow: `3_km→|` */
@@ -294,34 +295,38 @@ fun CharSequence.isAfterConversion(pos: Int): Boolean =
   subSequence(0, pos.coerceAtMost(length)).contains(Token.Operator.CONVERT)
 
 /** Cursor at [pos] is in bounds or body of Σ or ∏: `Σ⟨n=1⟩⟨∞⟩(1/n|)` */
-fun CharSequence.isInSeries(pos: Int): Boolean {
-  for (owner in (0..<pos.coerceAtMost(length)).reversed()) {
-    if (this[owner] !in SERIES_OWNERS) continue
-    // lower and upper bounds
-    var index = owner + 1
-    repeat(2) {
-      if (index < length && this[index].isSlotStart()) {
-        val end = slotEnd(index)
-        if (end == -1) return true
-        index = end + 1
-      }
-    }
-    if (pos < index) return true
-    if (index >= length || this[index] != LEFT_BRACKET) continue
-    var depth = 0
-    for (body in index..<length) {
-      when (this[body]) {
-        LEFT_BRACKET -> depth++
-        RIGHT_BRACKET -> depth--
-      }
-      if (depth == 0) {
-        if (pos <= body) return true
-        break
-      }
-    }
-    if (depth != 0) return true
+fun CharSequence.isInSeries(pos: Int): Boolean =
+  (0..<pos.coerceAtMost(length)).reversed().any { owner ->
+    this[owner] in SERIES_OWNERS && seriesContains(owner, pos)
   }
-  return false
+
+/** [pos] is in the bounds or body of the Σ or ∏ at [owner], or they aren't closed yet. */
+private fun CharSequence.seriesContains(owner: Int, pos: Int): Boolean {
+  // lower and upper bounds
+  var index = owner + 1
+  var isOpen = false
+  repeat(2) {
+    if (!isOpen && index < length && this[index].isSlotStart()) {
+      val end = slotEnd(index)
+      if (end == -1) isOpen = true else index = end + 1
+    }
+  }
+  val hasBody = !isOpen && index < length && this[index] == LEFT_BRACKET
+  val bodyEnd = if (hasBody) matchingBracket(index) else -1
+  return isOpen || pos < index || (hasBody && (bodyEnd == -1 || pos <= bodyEnd))
+}
+
+/** Index of the bracket that closes the one at [open], -1 when it is not closed. */
+private fun CharSequence.matchingBracket(open: Int): Int {
+  var depth = 0
+  for (index in open..<length) {
+    when (this[index]) {
+      LEFT_BRACKET -> depth++
+      RIGHT_BRACKET -> depth--
+    }
+    if (depth == 0) return index
+  }
+  return -1
 }
 
 private val SERIES_OWNERS = listOf(Token.Calculus.SUM, Token.Calculus.PRODUCT).map { it.first() }

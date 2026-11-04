@@ -33,11 +33,15 @@ import androidx.compose.ui.graphics.Color
 import io.github.sadellie.themmo.core.MonetMode
 import io.github.sadellie.themmo.core.ThemingMode
 
+/** Default light and dark color schemes of a [ThemmoController]. */
+data class ThemmoColorSchemes(val light: ColorScheme, val dark: ColorScheme)
+
 /**
  * Controller that holds current theming options and provides methods to manipulate them.
  *
  * @param lightColorScheme Scheme as default light color scheme.
  * @param darkColorScheme Scheme as default dark color scheme.
+ * @param colorSchemes The light and the dark scheme together.
  * @param themingMode Current [io.github.sadellie.themmo.core.ThemingMode].
  * @param dynamicThemeEnabled When true will use dynamic theming (Monet).
  * @param amoledThemeEnabled When true will change background color to black. Only for dark theme.
@@ -45,14 +49,16 @@ import io.github.sadellie.themmo.core.ThemingMode
  * @param monetMode Monet mode for custom color scheme generation
  */
 class ThemmoController(
-  val lightColorScheme: ColorScheme,
-  val darkColorScheme: ColorScheme,
+  colorSchemes: ThemmoColorSchemes,
   themingMode: ThemingMode,
   dynamicThemeEnabled: Boolean,
   amoledThemeEnabled: Boolean,
   customColor: Color,
   monetMode: MonetMode,
 ) {
+  val lightColorScheme: ColorScheme = colorSchemes.light
+  val darkColorScheme: ColorScheme = colorSchemes.dark
+
   var currentThemingMode: ThemingMode by mutableStateOf(themingMode)
     private set
 
@@ -132,8 +138,7 @@ fun rememberThemmoController(
 ): ThemmoController {
   return rememberSaveable(saver = themmoControllerSaver(lightColorScheme, darkColorScheme)) {
     ThemmoController(
-      lightColorScheme = lightColorScheme,
-      darkColorScheme = darkColorScheme,
+      colorSchemes = ThemmoColorSchemes(lightColorScheme, darkColorScheme),
       themingMode = themingMode,
       dynamicThemeEnabled = dynamicThemeEnabled,
       amoledThemeEnabled = amoledThemeEnabled,
@@ -174,8 +179,7 @@ private fun restoreThemmoState(
   map: Map<String, Any?>,
 ): ThemmoController {
   return ThemmoController(
-    lightColorScheme,
-    darkColorScheme,
+    ThemmoColorSchemes(lightColorScheme, darkColorScheme),
     themingMode = map[THEMING_MODE] as ThemingMode,
     dynamicThemeEnabled = map[DYNAMIC_ENABLED] as Boolean,
     amoledThemeEnabled = map[AMOLED_ENABLED] as Boolean,

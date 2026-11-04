@@ -30,6 +30,8 @@ import com.sadellie.unitto.core.common.FormatterSymbols
 import com.sadellie.unitto.core.ui.textfield.OutlinedDecimalTextField
 import com.sadellie.unitto.core.ui.textfield.UnexpectedDigitsInputTransformation
 
+// formatterSymbols waits for the output transformation below (TODO)
+@Suppress("UnusedParameter")
 @Composable
 internal fun BodyMassTextField(
   modifier: Modifier,

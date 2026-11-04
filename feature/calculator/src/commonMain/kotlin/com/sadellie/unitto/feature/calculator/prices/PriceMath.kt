@@ -32,19 +32,19 @@ internal enum class QuantityKind(val baseSymbol: String) {
  * @property factor How many base units ([QuantityKind.baseSymbol]) one of this unit is: 1 g = 0.001 kg.
  */
 internal enum class QuantityUnit(val symbol: String, val kind: QuantityKind, val factor: Double) {
-  MILLIGRAM("mg", QuantityKind.MASS, 1e-6),
-  GRAM("g", QuantityKind.MASS, 0.001),
-  KILOGRAM("kg", QuantityKind.MASS, 1.0),
-  OUNCE("oz", QuantityKind.MASS, 0.028349523125),
-  POUND("lb", QuantityKind.MASS, 0.45359237),
-  MILLILITER("mL", QuantityKind.VOLUME, 0.001),
-  CENTILITER("cL", QuantityKind.VOLUME, 0.01),
-  LITER("L", QuantityKind.VOLUME, 1.0),
-  FLUID_OUNCE("fl oz", QuantityKind.VOLUME, 0.0295735295625),
-  GALLON("gal", QuantityKind.VOLUME, 3.785411784),
-  CENTIMETER("cm", QuantityKind.LENGTH, 0.01),
-  METER("m", QuantityKind.LENGTH, 1.0),
-  PIECE("pc", QuantityKind.COUNT, 1.0),
+  MILLIGRAM("mg", QuantityKind.MASS, factor = 1e-6),
+  GRAM("g", QuantityKind.MASS, factor = 0.001),
+  KILOGRAM("kg", QuantityKind.MASS, factor = 1.0),
+  OUNCE("oz", QuantityKind.MASS, factor = 0.028349523125),
+  POUND("lb", QuantityKind.MASS, factor = 0.45359237),
+  MILLILITER("mL", QuantityKind.VOLUME, factor = 0.001),
+  CENTILITER("cL", QuantityKind.VOLUME, factor = 0.01),
+  LITER("L", QuantityKind.VOLUME, factor = 1.0),
+  FLUID_OUNCE("fl oz", QuantityKind.VOLUME, factor = 0.0295735295625),
+  GALLON("gal", QuantityKind.VOLUME, factor = 3.785411784),
+  CENTIMETER("cm", QuantityKind.LENGTH, factor = 0.01),
+  METER("m", QuantityKind.LENGTH, factor = 1.0),
+  PIECE("pc", QuantityKind.COUNT, factor = 1.0),
 }
 
 /** Price for a quantity, like 2.50 for 300 g. */
@@ -87,9 +87,14 @@ internal enum class ComparisonProblem {
  */
 internal fun compare(offers: List<Offer?>): ComparisonResult {
   val complete = offers.withIndex().filter { (_, offer) -> offer != null && offer.price >= 0 && offer.quantity > 0 }
-  if (complete.size < 2) return ComparisonResult.Problem(ComparisonProblem.NOT_ENOUGH_OFFERS)
   val kinds = complete.map { it.value!!.unit.kind }.distinct()
-  if (kinds.size > 1) return ComparisonResult.Problem(ComparisonProblem.DIFFERENT_KINDS)
+  val problem =
+    when {
+      complete.size < 2 -> ComparisonProblem.NOT_ENOUGH_OFFERS
+      kinds.size > 1 -> ComparisonProblem.DIFFERENT_KINDS
+      else -> null
+    }
+  if (problem != null) return ComparisonResult.Problem(problem)
   val unitPrices = offers.map { offer -> offer?.takeIf { it.price >= 0 && it.quantity > 0 }?.unitPrice ?: Double.NaN }
   val cheapest = complete.minBy { it.value!!.unitPrice }.index
   return ComparisonResult.Compared(Comparison(kinds.single(), cheapest, unitPrices))

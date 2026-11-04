@@ -18,6 +18,8 @@
 
 package com.sadellie.unitto.core.common
 
+// Detekt reads the parameters of expect constructors as unused properties
+@Suppress("UnusedPrivateProperty")
 expect class KBigDecimal : Comparable<KBigDecimal> {
 
   constructor(string: String)
@@ -93,6 +95,8 @@ expect class KBigDecimal : Comparable<KBigDecimal> {
   fun scaleByPowerOfTen(n: Int): KBigDecimal
 }
 
+// Detekt reads the parameters of expect constructors as unused properties
+@Suppress("UnusedPrivateProperty")
 expect class KBigInteger : Comparable<KBigInteger> {
   constructor(value: String)
 
@@ -142,6 +146,8 @@ expect class KRoundingMode {
   }
 }
 
+// Detekt reads the parameters of expect constructors as unused properties
+@Suppress("UnusedPrivateProperty")
 expect class KMathContext {
   override fun equals(other: Any?): Boolean
 
@@ -154,36 +160,34 @@ expect class KMathContext {
   override fun hashCode(): Int
 }
 
-expect class KBigDecimalMath {
-  companion object {
-    fun toRadians(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal
+expect object KBigDecimalMath {
+  fun toRadians(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal
 
-    fun sin(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal
+  fun sin(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal
 
-    fun asin(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal
+  fun asin(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal
 
-    fun toDegrees(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal
+  fun toDegrees(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal
 
-    fun cos(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal
+  fun cos(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal
 
-    fun acos(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal
+  fun acos(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal
 
-    fun tan(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal
+  fun tan(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal
 
-    fun atan(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal
+  fun atan(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal
 
-    fun log(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal
+  fun log(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal
 
-    fun log10(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal
+  fun log10(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal
 
-    fun exp(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal
+  fun exp(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal
 
-    fun pi(mathContext: KMathContext): KBigDecimal
+  fun pi(mathContext: KMathContext): KBigDecimal
 
-    fun e(mathContext: KMathContext): KBigDecimal
+  fun e(mathContext: KMathContext): KBigDecimal
 
-    fun sqrt(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal
+  fun sqrt(bigDecimal: KBigDecimal, mathContext: KMathContext): KBigDecimal
 
-    fun pow(expr: KBigDecimal, factor: KBigDecimal, mathContext: KMathContext): KBigDecimal
-  }
+  fun pow(expr: KBigDecimal, factor: KBigDecimal, mathContext: KMathContext): KBigDecimal
 }

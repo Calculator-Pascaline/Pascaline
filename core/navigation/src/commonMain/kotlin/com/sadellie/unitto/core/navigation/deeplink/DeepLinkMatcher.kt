@@ -34,55 +34,53 @@ internal class DeepLinkMatcher<T : NavKey>(
   fun match(): DeepLinkMatchResult<T>? {
     if (request.pathSegments.size != deepLinkPattern.pathSegments.size) return null
     // exact match (url does not contain any arguments)
-    if (request.uri == deepLinkPattern.uriPattern)
-      return DeepLinkMatchResult(deepLinkPattern.serializer, mapOf())
-
+    if (request.uri == deepLinkPattern.uriPattern) return DeepLinkMatchResult(deepLinkPattern.serializer, mapOf())
     val args = mutableMapOf<String, Any>()
-    // match the path
+    // provide the serializer of the matching key and map of arg names to parsed arg values
+    return if (matchPath(args) && matchQueries(args)) DeepLinkMatchResult(deepLinkPattern.serializer, args) else null
+  }
+
+  /** Every path segment matches, the path arguments are put in [args]. */
+  private fun matchPath(args: MutableMap<String, Any>): Boolean =
     request.pathSegments
       .asSequence()
       // zip to compare the two objects side by side, order matters here so we
       // need to make sure the compared segments are at the same position within the url
       .zip(deepLinkPattern.pathSegments.asSequence())
-      .forEach {
-        // retrieve the two path segments to compare
-        val requestedSegment = it.first
-        val candidateSegment = it.second
-        // if the potential match expects a path arg for this segment, try to parse the
-        // requested segment into the expected type
+      .all { (requestedSegment, candidateSegment) ->
         if (candidateSegment.isParamArg) {
+          // if the potential match expects a path arg for this segment, try to parse the
+          // requested segment into the expected type
           val parsedValue =
             try {
               candidateSegment.typeParser.invoke(requestedSegment)
             } catch (e: IllegalArgumentException) {
               Logger.e(TAG_LOG_ERROR, e) { "Failed to parse path value:[$requestedSegment]." }
-              return null
+              null
             }
-          args[candidateSegment.stringValue] = parsedValue
-        } else if (requestedSegment != candidateSegment.stringValue) {
+          if (parsedValue != null) args[candidateSegment.stringValue] = parsedValue
+          parsedValue != null
+        } else {
           // if it's path arg is not the expected type, its not a match
-          return null
+          requestedSegment == candidateSegment.stringValue
         }
       }
-    // match queries (if any)
-    request.queries.forEach { (name, value) ->
+
+  /** Every query (if any) is known and parsed, into [args]. */
+  private fun matchQueries(args: MutableMap<String, Any>): Boolean =
+    request.queries.all { (name, value) ->
       val queryStringParser = deepLinkPattern.queryValueParsers[name]
-      if (queryStringParser == null) {
-        Logger.e(TAG_LOG_ERROR) { "Failed to find parser for name:[$name] value:[$value]." }
-        return null
-      }
+      if (queryStringParser == null) Logger.e(TAG_LOG_ERROR) { "Failed to find parser for name:[$name] value:[$value]." }
       val queryParsedValue =
         try {
-          queryStringParser.invoke(value)
+          queryStringParser?.invoke(value)
         } catch (e: IllegalArgumentException) {
           Logger.e(TAG_LOG_ERROR, e) { "Failed to parse query name:[$name] value:[$value]." }
-          return null
+          null
         }
-      args[name] = queryParsedValue
+      if (queryParsedValue != null) args[name] = queryParsedValue
+      queryParsedValue != null
     }
-    // provide the serializer of the matching key and map of arg names to parsed arg values
-    return DeepLinkMatchResult(deepLinkPattern.serializer, args)
-  }
 }
 
 /**

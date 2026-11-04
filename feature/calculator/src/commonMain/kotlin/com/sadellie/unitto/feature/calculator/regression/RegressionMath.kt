@@ -75,30 +75,7 @@ internal class RegressionResult(
  * the model (logarithmic needs x > 0, exponential y > 0, power both).
  */
 internal fun regression(points: List<DataPoint>, model: RegressionModel): RegressionResult? {
-  val coefficients =
-    when (model) {
-      RegressionModel.LINEAR -> polynomialFit(points, 1)
-      RegressionModel.PROPORTIONAL -> proportionalFit(points)
-      RegressionModel.QUADRATIC -> polynomialFit(points, 2)
-      RegressionModel.CUBIC -> polynomialFit(points, 3)
-      RegressionModel.QUARTIC -> polynomialFit(points, 4)
-      RegressionModel.LOGARITHMIC -> {
-        if (points.any { it.x <= 0 }) return null
-        polynomialFit(points.map { DataPoint(ln(it.x), it.y) }, 1)
-      }
-      RegressionModel.EXPONENTIAL -> {
-        // ln(y) = ln(a) + b·x
-        if (points.any { it.y <= 0 }) return null
-        polynomialFit(points.map { DataPoint(it.x, ln(it.y)) }, 1)?.let { (b, lnA) -> listOf(exp(lnA), b) }
-      }
-      RegressionModel.POWER -> {
-        // ln(y) = ln(a) + b·ln(x)
-        if (points.any { it.x <= 0 || it.y <= 0 }) return null
-        polynomialFit(points.map { DataPoint(ln(it.x), ln(it.y)) }, 1)?.let { (b, lnA) -> listOf(exp(lnA), b) }
-      }
-    } ?: return null
-  if (coefficients.any { !it.isFinite() }) return null
-
+  val coefficients = fit(points, model)?.takeIf { fitted -> fitted.all { it.isFinite() } } ?: return null
   val partial = RegressionResult(model, coefficients, null, null)
   return RegressionResult(
     model = model,
@@ -107,6 +84,39 @@ internal fun regression(points: List<DataPoint>, model: RegressionModel): Regres
     determination = determination(points, partial::valueAt),
   )
 }
+
+/** Coefficients of [model], null when the points don't fit it. */
+private fun fit(points: List<DataPoint>, model: RegressionModel): List<Double>? =
+  when (model) {
+    RegressionModel.LINEAR -> polynomialFit(points, 1)
+    RegressionModel.PROPORTIONAL -> proportionalFit(points)
+    RegressionModel.QUADRATIC -> polynomialFit(points, 2)
+    RegressionModel.CUBIC -> polynomialFit(points, CUBIC_DEGREE)
+    RegressionModel.QUARTIC -> polynomialFit(points, QUARTIC_DEGREE)
+    RegressionModel.LOGARITHMIC -> logarithmicFit(points, logX = true, logY = false)
+    // ln(y) = ln(a) + b·x
+    RegressionModel.EXPONENTIAL -> logarithmicFit(points, logX = false, logY = true)
+    // ln(y) = ln(a) + b·ln(x)
+    RegressionModel.POWER -> logarithmicFit(points, logX = true, logY = true)
+  }
+
+/**
+ * Straight line through the points with ln(x) and/or ln(y), which must be above 0. With ln(y) the
+ * line gives ln(a): a = e^ln(a).
+ */
+private fun logarithmicFit(points: List<DataPoint>, logX: Boolean, logY: Boolean): List<Double>? {
+  val fits = points.all { (!logX || it.x > 0) && (!logY || it.y > 0) }
+  val line =
+    if (fits) {
+      polynomialFit(points.map { DataPoint(if (logX) ln(it.x) else it.x, if (logY) ln(it.y) else it.y) }, 1)
+    } else {
+      null
+    }
+  return if (logY) line?.let { (b, lnA) -> listOf(exp(lnA), b) } else line
+}
+
+private const val CUBIC_DEGREE = 3
+private const val QUARTIC_DEGREE = 4
 
 /** Coefficients from the highest power: `a·x² + b·x + c` ==> a, b, c. */
 private fun polynomialFit(points: List<DataPoint>, degree: Int): List<Double>? {
@@ -130,24 +140,35 @@ private fun solve(matrix: Array<DoubleArray>, vector: DoubleArray): List<Double>
   val size = vector.size
   val a = Array(size) { matrix[it].copyOf() }
   val b = vector.copyOf()
-  val scale = a.maxOf { row -> row.maxOf { abs(it) } }.takeIf { it > 0 } ?: return null
-  for (column in 0 until size) {
+  val scale = a.maxOf { row -> row.maxOf { abs(it) } }
+  var isSingular = scale <= 0
+  var column = 0
+  while (!isSingular && column < size) {
     val pivot = (column until size).maxBy { abs(a[it][column]) }
-    if (abs(a[pivot][column]) < SINGULAR * scale) return null
-    a[column] = a[pivot].also { a[pivot] = a[column] }
-    b[column] = b[pivot].also { b[pivot] = b[column] }
-    for (row in column + 1 until size) {
-      val factor = a[row][column] / a[column][column]
-      for (k in column until size) a[row][k] -= factor * a[column][k]
-      b[row] -= factor * b[column]
+    isSingular = abs(a[pivot][column]) < SINGULAR * scale
+    if (!isSingular) {
+      a[column] = a[pivot].also { a[pivot] = a[column] }
+      b[column] = b[pivot].also { b[pivot] = b[column] }
+      eliminateBelow(a, b, column)
     }
+    column++
   }
+  if (isSingular) return null
   val solution = DoubleArray(size)
   for (row in size - 1 downTo 0) {
     val known = (row + 1 until size).sumOf { a[row][it] * solution[it] }
     solution[row] = (b[row] - known) / a[row][row]
   }
   return solution.toList()
+}
+
+/** Subtracts row [column] from the rows below it, so that they have 0 in [column]. */
+private fun eliminateBelow(a: Array<DoubleArray>, b: DoubleArray, column: Int) {
+  for (row in column + 1 until b.size) {
+    val factor = a[row][column] / a[column][column]
+    for (k in column until b.size) a[row][k] -= factor * a[column][k]
+    b[row] -= factor * b[column]
+  }
 }
 
 /** 1 − (squared distances to the curve) / (squared distances to the mean of y). */

@@ -126,22 +126,25 @@ internal class ProbabilityViewModel(userPrefsRepository: UserPreferencesReposito
    */
   fun setProbability(value: String) {
     typedProbability = value
-    val p = value.toNumberOrNull()?.takeIf { it in 0.0..1.0 } ?: return
-    val distribution = distribution ?: return
-    val bound =
-      when (calculation) {
-        CalculationType.AT_MOST -> if (distribution.isDiscrete) distribution.largestAtMost(p) else distribution.quantile(p)
-        // P(X ≥ a) = 1 − P(X ≤ a − 1) for discrete
-        CalculationType.AT_LEAST ->
-          if (distribution.isDiscrete) {
-            (distribution.quantile(1 - p) + 1).coerceAtMost(distribution.support.endInclusive)
-          } else {
-            distribution.quantile(1 - p)
-          }
-        else -> return
-      }
-    if (bound.isFinite()) a = bound.toInput()
+    val p = value.toNumberOrNull()?.takeIf { it in 0.0..1.0 }
+    val distribution = distribution
+    val bound = if (p != null && distribution != null) boundFor(distribution, p) else null
+    if (bound != null && bound.isFinite()) a = bound.toInput()
   }
+
+  /** Bound a for [p] with the chosen calculation, null when it has no single bound. */
+  private fun boundFor(distribution: Distribution, p: Double): Double? =
+    when (calculation) {
+      CalculationType.AT_MOST -> if (distribution.isDiscrete) distribution.largestAtMost(p) else distribution.quantile(p)
+      // P(X ≥ a) = 1 − P(X ≤ a − 1) for discrete
+      CalculationType.AT_LEAST ->
+        if (distribution.isDiscrete) {
+          (distribution.quantile(1 - p) + 1).coerceAtMost(distribution.support.endInclusive)
+        } else {
+          distribution.quantile(1 - p)
+        }
+      else -> null
+    }
 
   /** Done typing the probability: discrete ones show the probability that a really gives. */
   fun finishProbability() {

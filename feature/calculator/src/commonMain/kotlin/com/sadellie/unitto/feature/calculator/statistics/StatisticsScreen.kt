@@ -236,7 +236,7 @@ private fun HistogramTab(modifier: Modifier, values: List<WeightedValue>, format
       drawLine(axisColor, Offset(plot.left, plot.bottom), Offset(plot.right, plot.bottom), strokeWidth = 2f)
       // Bounds under the bars, fewer when they don't fit
       val every = max(1, (bars.size + 1) / MAX_X_LABELS + 1)
-      (0..bars.size step every).forEach { index ->
+      for (index in 0..bars.size step every) {
         val x = plot.left + index * barWidth
         val text = formatTick(start + index * width, width)
         drawLabelCentered(measurer, text, Offset(x, plot.bottom + LABEL_GAP.toPx()), labelStyle)

@@ -27,10 +27,10 @@ object BrowserLocale {
   fun is24Hour(): Boolean = browserIs24Hour()
 
   /** Short weekday names from Monday, null when the browser doesn't know [languageTag]. */
-  fun weekdays(languageTag: String): List<String>? = names(languageTag, "weekday", 7)
+  fun weekdays(languageTag: String): List<String>? = names(languageTag, "weekday", DAYS_IN_WEEK)
 
   /** Short month names from January. */
-  fun months(languageTag: String): List<String>? = names(languageTag, "month", 12)
+  fun months(languageTag: String): List<String>? = names(languageTag, "month", MONTHS_IN_YEAR)
 
   /** What [languageTag] writes before or after the hour, like AM and PM. */
   fun amPm(languageTag: String): Pair<String, String>? {
@@ -92,3 +92,6 @@ private external fun browserNames(tag: String, kind: String): String?
 }"""
 )
 private external fun browserCurrencySymbol(tag: String, code: String): String?
+
+private const val DAYS_IN_WEEK = 7
+private const val MONTHS_IN_YEAR = 12

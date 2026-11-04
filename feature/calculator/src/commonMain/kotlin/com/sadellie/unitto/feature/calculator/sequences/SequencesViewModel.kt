@@ -154,9 +154,9 @@ internal class SequencesViewModel(private val userPrefsRepository: UserPreferenc
       item.type = SequenceType.entries.firstOrNull { it.name == parts.getOrNull(1) } ?: SequenceType.EXPLICIT
       item.formula.edit { replace(0, length, parts.getOrElse(2) { "" }) }
       item.formula.placeCursorAtTheEnd()
-      item.firstRank = parts.getOrElse(3) { "0" }
-      item.firstTerm = parts.getOrElse(4) { "" }
-      item.secondTerm = parts.getOrElse(5) { "" }
+      item.firstRank = parts.getOrElse(FIRST_RANK_FIELD) { "0" }
+      item.firstTerm = parts.getOrElse(FIRST_TERM_FIELD) { "" }
+      item.secondTerm = parts.getOrElse(SECOND_TERM_FIELD) { "" }
     }
   }
 }
@@ -165,3 +165,8 @@ private const val DATA_KEY = "SEQUENCES_DATA"
 private const val SEPARATOR = "\t"
 private const val LINE_SEPARATOR = "\n"
 private const val SAVE_DELAY_MS = 500L
+
+/** Fields of a saved sequence after its name, type and formula */
+private const val FIRST_RANK_FIELD = 3
+private const val FIRST_TERM_FIELD = 4
+private const val SECOND_TERM_FIELD = 5

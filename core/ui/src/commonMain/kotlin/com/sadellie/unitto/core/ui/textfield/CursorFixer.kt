@@ -50,15 +50,14 @@ fun TextFieldBuffer.fixTextRange(): TextRange {
  * replace!
  */
 fun String.tokenLengthAhead(pos: Int): Int {
-  Token.Func.allWithOpeningBracket.forEach { if (pos.isAfterToken(this, it)) return it.length }
-  unitEndingAt(pos)?.let { return it.token.length }
-  if (pos.isAfterToken(this, Token.Calculus.DERIVATIVE)) return Token.Calculus.DERIVATIVE.length
-  if (pos.isAfterToken(this, Token.Calculus.DX)) return Token.Calculus.DX.length
-  Token.Sequence.all.forEach { if (pos.isAfterToken(this, it)) return it.length }
-
+  val token =
+    Token.Func.allWithOpeningBracket.firstOrNull { pos.isAfterToken(this, it) }
+      ?: unitEndingAt(pos)?.token
+      ?: listOf(Token.Calculus.DERIVATIVE, Token.Calculus.DX).firstOrNull { pos.isAfterToken(this, it) }
+      ?: Token.Sequence.all.firstOrNull { pos.isAfterToken(this, it) }
   // We default to 1 here. It means that cursor is not placed after illegal token. Just a number
   // or a binary operator or something else, can delete by one symbol.
-  return 1
+  return token?.length ?: 1
 }
 
 fun String.tokenAhead(pos: Int): String {
@@ -72,13 +71,10 @@ fun String.tokenAhead(pos: Int): String {
  * - `123,456+|cos(8)` return `false`
  * - `123,|456+cos(8)` return `false` (impossible in UI. See [ExpressionOutputTransformation])
  */
-private fun CharSequence.isPlacedIllegallyAt(pos: Int): Boolean {
-  Token.Func.allWithOpeningBracket.forEach { if (pos.isAtToken(this, it)) return true }
-  Token.Layout.inseparable.forEach { if (pos.isAtToken(this, it)) return true }
-  if (isInsideOfUnit(pos)) return true
-
-  return false
-}
+private fun CharSequence.isPlacedIllegallyAt(pos: Int): Boolean =
+  Token.Func.allWithOpeningBracket.any { pos.isAtToken(this, it) } ||
+    Token.Layout.inseparable.any { pos.isAtToken(this, it) } ||
+    isInsideOfUnit(pos)
 
 private fun Int.isAtToken(str: CharSequence, token: String): Boolean {
   val checkBound = (token.length - 1).coerceAtLeast(1)

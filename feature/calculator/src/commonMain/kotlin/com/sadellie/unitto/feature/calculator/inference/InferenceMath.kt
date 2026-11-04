@@ -86,7 +86,7 @@ private fun tTest(statistic: Double, degreesOfFreedom: Double, alternative: Alte
 
 /** H₀: p = [p0], with [successes] out of [n]. */
 internal fun oneProportionTest(p0: Double, successes: Double, n: Double, alternative: Alternative): TestResult? {
-  if (n <= 0 || successes !in 0.0..n || p0 <= 0 || p0 >= 1) return null
+  if (!isSample(successes, n) || !isProbability(p0)) return null
   return zTest((successes / n - p0) / sqrt(p0 * (1 - p0) / n), alternative)
 }
 
@@ -98,7 +98,7 @@ internal fun twoProportionsTest(
   n2: Double,
   alternative: Alternative,
 ): TestResult? {
-  if (n1 <= 0 || n2 <= 0 || successes1 !in 0.0..n1 || successes2 !in 0.0..n2) return null
+  if (!isSample(successes1, n1) || !isSample(successes2, n2)) return null
   val pooled = (successes1 + successes2) / (n1 + n2)
   val error = sqrt(pooled * (1 - pooled) * (1 / n1 + 1 / n2))
   return zTest((successes1 / n1 - successes2 / n2) / error, alternative)
@@ -140,7 +140,7 @@ internal fun twoMeansZTest(
   n2: Double,
   alternative: Alternative,
 ): TestResult? {
-  if (n1 <= 0 || n2 <= 0 || sigma1 <= 0 || sigma2 <= 0) return null
+  if (!allPositive(n1, n2, sigma1, sigma2)) return null
   return zTest((mean1 - mean2) / sqrt(sigma1 * sigma1 / n1 + sigma2 * sigma2 / n2), alternative)
 }
 
@@ -157,7 +157,7 @@ internal fun goodnessOfFitTest(observed: List<Double>, expected: List<Double>): 
 
 /** Standard error and Welch–Satterthwaite degrees of freedom. */
 private fun welch(deviation1: Double, n1: Double, deviation2: Double, n2: Double): Pair<Double, Double>? {
-  if (n1 < 2 || n2 < 2 || deviation1 <= 0 || deviation2 <= 0) return null
+  if (n1 < 2 || n2 < 2 || !allPositive(deviation1, deviation2)) return null
   val a = deviation1 * deviation1 / n1
   val b = deviation2 * deviation2 / n2
   val degreesOfFreedom = (a + b).pow(2) / (a * a / (n1 - 1) + b * b / (n2 - 1))
@@ -182,7 +182,7 @@ internal fun twoProportionsInterval(
   n2: Double,
   level: Double,
 ): IntervalResult? {
-  if (n1 <= 0 || n2 <= 0 || successes1 !in 0.0..n1 || successes2 !in 0.0..n2 || !validLevel(level)) return null
+  if (!isSample(successes1, n1) || !isSample(successes2, n2) || !validLevel(level)) return null
   val p1 = successes1 / n1
   val p2 = successes2 / n2
   val error = sqrt(p1 * (1 - p1) / n1 + p2 * (1 - p2) / n2)
@@ -222,7 +222,15 @@ internal fun twoMeansZInterval(
   n2: Double,
   level: Double,
 ): IntervalResult? {
-  if (n1 <= 0 || n2 <= 0 || sigma1 <= 0 || sigma2 <= 0 || !validLevel(level)) return null
+  if (!allPositive(n1, n2, sigma1, sigma2) || !validLevel(level)) return null
   val error = sqrt(sigma1 * sigma1 / n1 + sigma2 * sigma2 / n2)
   return IntervalResult(mean1 - mean2, critical(standardNormal, level), error, null)
 }
+
+/** [successes] out of a sample of [n]. */
+private fun isSample(successes: Double, n: Double): Boolean = n > 0 && successes in 0.0..n
+
+/** Strictly between 0 and 1. */
+private fun isProbability(p: Double): Boolean = p > 0 && p < 1
+
+private fun allPositive(vararg values: Double): Boolean = values.all { it > 0 }

@@ -102,46 +102,54 @@ internal fun compoundInterest(known: Map<CompoundValue, Double>, unknown: Compou
       rate(n!!, pv!!, pmt!!, fv!!, settings)
     } else {
       val i = periodRate(known[CompoundValue.RATE]!!, settings)
-      val start = if (settings.paysAtStart) 1.0 else 0.0
-      // Without interest: PV + Pmt × N + FV = 0
-      if (abs(i) < NO_RATE) {
-        when (unknown) {
-          CompoundValue.N -> -(pv!! + fv!!) / pmt!!
-          CompoundValue.PRESENT_VALUE -> -(pmt!! * n!! + fv!!)
-          CompoundValue.PAYMENT -> -(pv!! + fv!!) / n!!
-          CompoundValue.FUTURE_VALUE -> -(pv!! + pmt!! * n!!)
-          CompoundValue.RATE -> error("rate is found above")
-        }
-      } else {
-        // Payments are worth (1 + i × start) more when they are made at the start
-        val adjusted = { payment: Double -> payment * (1 + i * start) / i }
-        when (unknown) {
-          CompoundValue.N -> {
-            val ratio = (adjusted(pmt!!) - fv!!) / (adjusted(pmt) + pv!!)
-            if (ratio <= 0) null else ln(ratio) / ln(1 + i)
-          }
-          CompoundValue.PRESENT_VALUE -> {
-            val growth = (1 + i).pow(n!!)
-            -(fv!! + adjusted(pmt!!) * (growth - 1)) / growth
-          }
-          CompoundValue.PAYMENT -> {
-            val growth = (1 + i).pow(n!!)
-            -(fv!! + pv!! * growth) / ((1 + i * start) * (growth - 1) / i)
-          }
-          CompoundValue.FUTURE_VALUE -> {
-            val growth = (1 + i).pow(n!!)
-            -(pv!! * growth + adjusted(pmt!!) * (growth - 1))
-          }
-          CompoundValue.RATE -> error("rate is found above")
-        }
-      }
+      val values = CashFlows(n, pv, pmt, fv)
+      if (abs(i) < NO_RATE) values.withoutInterest(unknown) else values.withInterest(unknown, i, settings.paysAtStart)
     }
   return result?.takeIf { it.isFinite() }
 }
 
+/** The known values, the unknown one is null. */
+private class CashFlows(val n: Double?, val pv: Double?, val pmt: Double?, val fv: Double?) {
+  /** Without interest: PV + Pmt × N + FV = 0 */
+  fun withoutInterest(unknown: CompoundValue): Double =
+    when (unknown) {
+      CompoundValue.N -> -(pv!! + fv!!) / pmt!!
+      CompoundValue.PRESENT_VALUE -> -(pmt!! * n!! + fv!!)
+      CompoundValue.PAYMENT -> -(pv!! + fv!!) / n!!
+      CompoundValue.FUTURE_VALUE -> -(pv!! + pmt!! * n!!)
+      CompoundValue.RATE -> error("rate is found by rate()")
+    }
+
+  /** With [i] interest a period, payments at the start of periods when [paysAtStart]. */
+  fun withInterest(unknown: CompoundValue, i: Double, paysAtStart: Boolean): Double? {
+    val start = if (paysAtStart) 1.0 else 0.0
+    // Payments are worth (1 + i × start) more when they are made at the start
+    val adjusted = { payment: Double -> payment * (1 + i * start) / i }
+    return when (unknown) {
+      CompoundValue.N -> {
+        val ratio = (adjusted(pmt!!) - fv!!) / (adjusted(pmt) + pv!!)
+        if (ratio <= 0) null else ln(ratio) / ln(1 + i)
+      }
+      CompoundValue.PRESENT_VALUE -> {
+        val growth = (1 + i).pow(n!!)
+        -(fv!! + adjusted(pmt!!) * (growth - 1)) / growth
+      }
+      CompoundValue.PAYMENT -> {
+        val growth = (1 + i).pow(n!!)
+        -(fv!! + pv!! * growth) / ((1 + i * start) * (growth - 1) / i)
+      }
+      CompoundValue.FUTURE_VALUE -> {
+        val growth = (1 + i).pow(n!!)
+        -(pv!! * growth + adjusted(pmt!!) * (growth - 1))
+      }
+      CompoundValue.RATE -> error("rate is found by rate()")
+    }
+  }
+}
+
 /** Rate of one payment period from the annual rate in percent, with C/Y compoundings a year. */
 private fun periodRate(annualPercent: Double, settings: CompoundSettings): Double =
-  (1 + annualPercent / 100 / settings.compoundingsPerYear).pow(settings.compoundingsPerYear / settings.paymentsPerYear) - 1
+  (1 + annualPercent / PERCENT / settings.compoundingsPerYear).pow(settings.compoundingsPerYear / settings.paymentsPerYear) - 1
 
 /** What is left of the cash flows at [annualPercent]: 0 for the right rate. */
 private fun balance(annualPercent: Double, n: Double, pv: Double, pmt: Double, fv: Double, settings: CompoundSettings): Double {
@@ -158,27 +166,30 @@ private fun rate(n: Double, pv: Double, pmt: Double, fv: Double, settings: Compo
   val f = { rate: Double -> balance(rate, n, pv, pmt, fv, settings) }
   // Rates from −99 % to 10 000 %, more steps close to 0 where most rates are
   val candidates = (-RATE_STEPS..RATE_STEPS).map { step -> MAX_RATE * (step.toDouble() / RATE_STEPS).pow(3) }.filter { it > MIN_RATE }
-  for ((low, high) in candidates.zipWithNext()) {
-    val fLow = f(low)
-    val fHigh = f(high)
-    if (!fLow.isFinite() || !fHigh.isFinite()) continue
-    if (fLow == 0.0) return low
-    if (fLow * fHigh < 0) {
-      var a = low
-      var b = high
-      var fa = fLow
-      repeat(BISECTION_STEPS) {
-        val middle = (a + b) / 2
-        val fm = f(middle)
-        if (fa * fm <= 0) b = middle else {
-          a = middle
-          fa = fm
-        }
-      }
-      return (a + b) / 2
+  // The first two rates around a change of sign, or with the right rate first
+  val around =
+    candidates.zipWithNext().firstOrNull { (low, high) ->
+      val fLow = f(low)
+      val fHigh = f(high)
+      fLow.isFinite() && fHigh.isFinite() && (fLow == 0.0 || fLow * fHigh < 0)
+    }
+  return around?.let { (low, high) -> if (f(low) == 0.0) low else bisection(f, low, high) }
+}
+
+/** Where [f] is 0 between [low] and [high], it changes sign there. */
+private fun bisection(f: (Double) -> Double, low: Double, high: Double): Double {
+  var a = low
+  var b = high
+  var fa = f(low)
+  repeat(BISECTION_STEPS) {
+    val middle = (a + b) / 2
+    val fm = f(middle)
+    if (fa * fm <= 0) b = middle else {
+      a = middle
+      fa = fm
     }
   }
-  return null
+  return (a + b) / 2
 }
 
 private const val NO_RATE = 1e-12
@@ -186,3 +197,5 @@ private const val MAX_RATE = 10_000.0
 private const val MIN_RATE = -99.0
 private const val RATE_STEPS = 400
 private const val BISECTION_STEPS = 200
+
+private const val PERCENT = 100

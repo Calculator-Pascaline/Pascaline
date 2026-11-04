@@ -115,31 +115,11 @@ fun ExpressionLayoutTextField(
   val cursor = state.selection.max
   val focusRequester = remember { FocusRequester() }
 
-  val caretAlpha = remember { Animatable(1f) }
-  val caretBlinks = LocalCursorBlinkEnabled.current
-  LaunchedEffect(text, cursor, caretBlinks) {
-    // Restart blinking on every change
-    caretAlpha.snapTo(1f)
-    while (caretBlinks) {
-      delay(CARET_BLINK_MS)
-      caretAlpha.snapTo(0f)
-      delay(CARET_BLINK_MS)
-      caretAlpha.snapTo(1f)
-    }
-  }
+  val caretAlpha = rememberCaretAlpha(text, cursor)
 
   LaunchedEffect(text) { focusRequester.requestFocus() }
 
-  val sizedModifier =
-    if (!wrapHeight) {
-      modifier
-    } else {
-      modifier.layout { measurable, constraints ->
-        val height = ceil(layout.height).toInt().coerceIn(constraints.minHeight, constraints.maxHeight)
-        val placeable = measurable.measure(constraints.copy(minHeight = height, maxHeight = height))
-        layout(placeable.width, height) { placeable.place(0, 0) }
-      }
-    }
+  val sizedModifier = if (wrapHeight) modifier.heightOf(layout) else modifier
   BoxWithConstraints(modifier = sizedModifier.clipToBounds()) {
     val availableWidth = constraints.maxWidth.toFloat()
     val availableHeight = constraints.maxHeight.toFloat()
@@ -174,18 +154,7 @@ fun ExpressionLayoutTextField(
       modifier =
         Modifier.fillMaxSize().pointerInput(layout, scale, offsetX, baseline) {
           detectTapGestures { position ->
-            val x = (position.x - offsetX) / scale
-            val y = (position.y - baseline) / scale
-            // Tap on deg or rad switches it
-            val boxIndex = layout.angleBoxAt(x, y)
-            if (boxIndex != null) {
-              val box = listOf(DEGREE_BOX, RADIAN_BOX).firstOrNull { state.text.startsWith(it, boxIndex) }
-              if (box != null) state.switchAngleBox(boxIndex until boxIndex + box.length)
-              return@detectTapGestures
-            }
-            val index = layout.indexAt(x, y) ?: return@detectTapGestures
-            focusRequester.requestFocus()
-            state.edit { selection = TextRange(index) }
+            state.tap(layout, (position.x - offsetX) / scale, (position.y - baseline) / scale, focusRequester)
           }
         }
     ) {
@@ -203,6 +172,45 @@ fun ExpressionLayoutTextField(
           }
         }
       }
+    }
+  }
+}
+
+/** Alpha of the caret: blinks, and shows again on every change of [text] or [cursor]. */
+@Composable
+private fun rememberCaretAlpha(text: String, cursor: Int): Animatable<Float, *> {
+  val caretAlpha = remember { Animatable(1f) }
+  val caretBlinks = LocalCursorBlinkEnabled.current
+  LaunchedEffect(text, cursor, caretBlinks) {
+    caretAlpha.snapTo(1f)
+    while (caretBlinks) {
+      delay(CARET_BLINK_MS)
+      caretAlpha.snapTo(0f)
+      delay(CARET_BLINK_MS)
+      caretAlpha.snapTo(1f)
+    }
+  }
+  return caretAlpha
+}
+
+/** As tall as [layout] (taller for fractions and integrals), within the allowed height. */
+private fun Modifier.heightOf(layout: ExpressionLayout): Modifier =
+  layout { measurable, constraints ->
+    val height = ceil(layout.height).toInt().coerceIn(constraints.minHeight, constraints.maxHeight)
+    val placeable = measurable.measure(constraints.copy(minHeight = height, maxHeight = height))
+    layout(placeable.width, height) { placeable.place(0, 0) }
+  }
+
+/** Tap at [x], [y] of [layout]: on deg or rad switches it, elsewhere places the cursor. */
+private fun TextFieldState.tap(layout: ExpressionLayout, x: Float, y: Float, focusRequester: FocusRequester) {
+  val boxIndex = layout.angleBoxAt(x, y)
+  val box = boxIndex?.let { index -> listOf(DEGREE_BOX, RADIAN_BOX).firstOrNull { text.startsWith(it, index) } }
+  val index = if (boxIndex == null) layout.indexAt(x, y) else null
+  when {
+    boxIndex != null && box != null -> switchAngleBox(boxIndex until boxIndex + box.length)
+    index != null -> {
+      focusRequester.requestFocus()
+      edit { selection = TextRange(index) }
     }
   }
 }

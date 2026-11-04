@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import com.sadellie.unitto.core.datastore.AppPreferences
 import com.sadellie.unitto.core.designsystem.theme.DarkThemeColors
 import com.sadellie.unitto.core.designsystem.theme.LightThemeColors
+import io.github.sadellie.themmo.ThemmoColorSchemes
 import io.github.sadellie.themmo.ThemmoController
 
 /** Remembers [ThemmoController] using [prefs] as a key. */
@@ -37,8 +38,7 @@ fun rememberUnittoThemmoController(prefs: AppPreferences) =
     prefs.monetMode,
   ) {
     ThemmoController(
-      lightColorScheme = LightThemeColors,
-      darkColorScheme = DarkThemeColors,
+      colorSchemes = ThemmoColorSchemes(LightThemeColors, DarkThemeColors),
       themingMode = prefs.themingMode,
       dynamicThemeEnabled = prefs.enableDynamicTheme,
       amoledThemeEnabled = prefs.enableAmoledTheme,

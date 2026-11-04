@@ -129,45 +129,19 @@ internal fun CalculatorKeyboard(
   firstFunctionKeys: List<Pair<String, String>> = emptyList(),
   showCalculus: Boolean = true,
 ) {
-  // Portrait: few function rows that scroll, digits never change
   if (LocalWindowSize.current.heightSizeClass >= WindowHeightSizeClass.Medium) {
-    var showUnits by remember { mutableStateOf(false) }
-    ColumnWithConstraints(modifier = modifier) { constraints ->
-      // Function rows are lower than digit rows: digits get most of the height
-      val rowHeight =
-        (constraints.maxHeight - DOTS_HEIGHT) / (BOTTOM_ROWS + PAGE_ROWS * FUNCTION_ROW_SCALE)
-      FunctionRows(
-        modifier = Modifier.fillMaxWidth(),
-        rowHeight = rowHeight * FUNCTION_ROW_SCALE,
-        onAddTokenClick = onAddTokenClick,
-        // Same gaps as the keypad under it
-        spacing = constraints.maxWidth * KEYPAD_SPACING_FRACTION,
-        rowGap = rowHeight * BOTTOM_ROWS * KEYPAD_SPACING_FRACTION,
-        firstKeys = firstFunctionKeys,
-        showCalculus = showCalculus,
-      )
-      BottomGrid(
-        modifier = Modifier.fillMaxWidth().weight(1f),
-        onAddTokenClick = onAddTokenClick,
-        onBracketsClick = onBracketsClick,
-        onDeleteClick = onDeleteClick,
-        onClearClick = onClearClick,
-        onEqualClick = onEqualClick,
-        onUnitsClick = { showUnits = true },
-        isInSeries = isInSeries,
-        fractional = fractional,
-      )
-    }
-    if (showUnits) {
-      UnitsSheet(
-        onDismiss = { showUnits = false },
-        onUnitClick = {
-          onAddTokenClick(it)
-          showUnits = false
-        },
-      )
-    }
-    return
+    return PortraitKeyboard(
+      modifier = modifier,
+      onAddTokenClick = onAddTokenClick,
+      onBracketsClick = onBracketsClick,
+      onDeleteClick = onDeleteClick,
+      onClearClick = onClearClick,
+      onEqualClick = onEqualClick,
+      fractional = fractional,
+      isInSeries = isInSeries,
+      firstFunctionKeys = firstFunctionKeys,
+      showCalculus = showCalculus,
+    )
   }
 
   val pagerState = rememberPagerState(pageCount = { KEYBOARD_PAGES })
@@ -234,6 +208,58 @@ internal fun CalculatorKeyboard(
     PageDots(
       modifier = Modifier.fillMaxWidth().height(DOTS_HEIGHT).padding(bottom = 2.dp),
       pagerState = pagerState,
+    )
+  }
+}
+
+/** Portrait: few function rows that scroll, digits never change. */
+@Composable
+private fun PortraitKeyboard(
+  modifier: Modifier,
+  onAddTokenClick: (String) -> Unit,
+  onBracketsClick: () -> Unit,
+  onDeleteClick: () -> Unit,
+  onClearClick: () -> Unit,
+  onEqualClick: () -> Unit,
+  fractional: String,
+  isInSeries: Boolean,
+  firstFunctionKeys: List<Pair<String, String>>,
+  showCalculus: Boolean,
+) {
+  var showUnits by remember { mutableStateOf(false) }
+  ColumnWithConstraints(modifier = modifier) { constraints ->
+    // Function rows are lower than digit rows: digits get most of the height
+    val rowHeight =
+      (constraints.maxHeight - DOTS_HEIGHT) / (BOTTOM_ROWS + PAGE_ROWS * FUNCTION_ROW_SCALE)
+    FunctionRows(
+      modifier = Modifier.fillMaxWidth(),
+      rowHeight = rowHeight * FUNCTION_ROW_SCALE,
+      onAddTokenClick = onAddTokenClick,
+      // Same gaps as the keypad under it
+      spacing = constraints.maxWidth * KEYPAD_SPACING_FRACTION,
+      rowGap = rowHeight * BOTTOM_ROWS * KEYPAD_SPACING_FRACTION,
+      firstKeys = firstFunctionKeys,
+      showCalculus = showCalculus,
+    )
+    BottomGrid(
+      modifier = Modifier.fillMaxWidth().weight(1f),
+      onAddTokenClick = onAddTokenClick,
+      onBracketsClick = onBracketsClick,
+      onDeleteClick = onDeleteClick,
+      onClearClick = onClearClick,
+      onEqualClick = onEqualClick,
+      onUnitsClick = { showUnits = true },
+      isInSeries = isInSeries,
+      fractional = fractional,
+    )
+  }
+  if (showUnits) {
+    UnitsSheet(
+      onDismiss = { showUnits = false },
+      onUnitClick = {
+        onAddTokenClick(it)
+        showUnits = false
+      },
     )
   }
 }

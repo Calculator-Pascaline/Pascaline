@@ -24,6 +24,8 @@ package com.sadellie.unitto.core.data.converter
  *
  * NEVER CHANGE IDS THAT ARE ALREADY HERE, THESE IDS ARE USED IN DATABASE
  */
+// One ID for each unit of the converter, nothing to split
+@Suppress("LargeClass")
 object UnitID {
   // LENGTH
   const val attometer = "attometer"

@@ -162,7 +162,7 @@ private fun InferenceScreen(openDrawer: () -> Unit, viewModel: InferenceViewMode
       } else {
         val fields = (if (viewModel.isTest) kind.testFields else kind.intervalFields).orEmpty()
         // Two samples side by side
-        fields.chunked(if (fields.size == 6) 3 else 2).forEach { row ->
+        fields.chunked(if (fields.size == TWO_SAMPLE_FIELDS) TWO_SAMPLE_ROW else ONE_SAMPLE_ROW).forEach { row ->
           Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             row.forEach { field ->
               NumberField(
@@ -331,3 +331,8 @@ private val InferenceField.description: StringResource
 
 private val CARD_SHAPE = RoundedCornerShape(20.dp)
 private val TABLE_HEIGHT = 360.dp
+
+/** Two samples have 6 fields, 3 a row: one row each */
+private const val TWO_SAMPLE_FIELDS = 6
+private const val TWO_SAMPLE_ROW = 3
+private const val ONE_SAMPLE_ROW = 2

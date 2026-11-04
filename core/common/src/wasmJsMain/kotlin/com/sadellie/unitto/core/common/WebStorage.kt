@@ -34,16 +34,19 @@ object WebStorage {
   fun decode(text: String): List<String> {
     val fields = mutableListOf<String>()
     var index = 0
-    while (index < text.length) {
+    var isBroken = false
+    while (!isBroken && index < text.length) {
       val colon = text.indexOf(':', index)
-      if (colon == -1) return emptyList()
-      val length = text.substring(index, colon).toIntOrNull() ?: return emptyList()
-      val end = colon + 1 + length
-      if (end > text.length) return emptyList()
-      fields += text.substring(colon + 1, end)
-      index = end
+      val length = if (colon == -1) null else text.substring(index, colon).toIntOrNull()
+      val end = if (length == null) -1 else colon + 1 + length
+      if (length == null || end > text.length) {
+        isBroken = true
+      } else {
+        fields += text.substring(colon + 1, end)
+        index = end
+      }
     }
-    return fields
+    return if (isBroken) emptyList() else fields
   }
 
   /** Everything the web app saved, as JSON: the web app's backup file. */

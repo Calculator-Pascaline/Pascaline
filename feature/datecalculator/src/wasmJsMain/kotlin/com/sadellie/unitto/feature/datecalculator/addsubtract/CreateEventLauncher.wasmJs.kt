@@ -57,7 +57,9 @@ actual fun rememberCreateEventLauncher(): CreateEventLauncher = remember {
 private fun Instant.toIcs(): String {
   val time = toLocalDateTime(TimeZone.UTC)
   fun Int.twoDigits() = toString().padStart(2, '0')
-  return "${time.year.toString().padStart(4, '0')}${time.month.ordinal.plus(1).twoDigits()}" +
+  return "${time.year.toString().padStart(YEAR_DIGITS, '0')}${time.month.ordinal.plus(1).twoDigits()}" +
     "${time.day.twoDigits()}T${time.hour.twoDigits()}${time.minute.twoDigits()}" +
     "${time.second.twoDigits()}Z"
 }
+
+private const val YEAR_DIGITS = 4

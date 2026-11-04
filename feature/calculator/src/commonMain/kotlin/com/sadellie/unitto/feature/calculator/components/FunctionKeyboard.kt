@@ -540,17 +540,17 @@ private fun CategoryTile(category: UnitMenuItem.Category, selected: Boolean, onC
 /** Own color of each category, the same in light and dark themes: strong enough on both. */
 private fun categoryColor(name: String): Color =
   when (name) {
-    "Length and angle" -> Color(0xFF5C6BC0)
-    "Time and frequency" -> Color(0xFF00897B)
-    "Area and volume" -> Color(0xFF039BE5)
-    "Mass" -> Color(0xFFEF6C00)
-    "Electricity" -> Color(0xFFF9A825)
-    "Force and pressure" -> Color(0xFFE53935)
-    "Energy and power" -> Color(0xFF43A047)
-    "Temperature" -> Color(0xFFD81B60)
-    "Other units" -> Color(0xFF8E24AA)
-    "Constants" -> Color(0xFF546E7A)
-    else -> Color(0xFF5C6BC0)
+    "Length and angle" -> Color(color = 0xFF5C6BC0)
+    "Time and frequency" -> Color(color = 0xFF00897B)
+    "Area and volume" -> Color(color = 0xFF039BE5)
+    "Mass" -> Color(color = 0xFFEF6C00)
+    "Electricity" -> Color(color = 0xFFF9A825)
+    "Force and pressure" -> Color(color = 0xFFE53935)
+    "Energy and power" -> Color(color = 0xFF43A047)
+    "Temperature" -> Color(color = 0xFFD81B60)
+    "Other units" -> Color(color = 0xFF8E24AA)
+    "Constants" -> Color(color = 0xFF546E7A)
+    else -> Color(color = 0xFF5C6BC0)
   }
 
 /** Background of the menu: the sheet's color with a light wash of the category's, fading over. */
@@ -609,42 +609,44 @@ private fun UnitChip(unit: PhysicalUnit, color: Color, onClick: () -> Unit) {
  * Icon in front of a category of the units menu, like the unit converter's groups. The menu's
  * names are fixed (not translated), null for a name that has none.
  */
-private fun categoryIcon(name: String): ImageVector? =
-  when (name) {
-    "Length and angle",
-    "Length" -> Symbols.Straighten
-    "Angle" -> Symbols.DiagonalLine
+private fun categoryIcon(name: String): ImageVector? = CATEGORY_ICONS[name]
+
+private val CATEGORY_ICONS: Map<String, ImageVector> by lazy {
+  mapOf(
+    "Length and angle" to Symbols.Straighten,
+    "Length" to Symbols.Straighten,
+    "Angle" to Symbols.DiagonalLine,
     // Inches, ounces, gallons: the units of other countries
-    "Imperial" -> Symbols.Language
-    "Time and frequency",
-    "Time" -> Symbols.Schedule
-    "Frequency" -> Symbols.Airwave
-    "Area and volume",
-    "Area" -> Symbols.ActivityZone
-    "Volume" -> Symbols.WaterMedium
-    "Mass" -> Symbols.Weight
-    "Electricity",
-    "Current" -> Symbols.ElectricBolt
-    "Voltage" -> Symbols.ElectricBoltFill
+    "Imperial" to Symbols.Language,
+    "Time and frequency" to Symbols.Schedule,
+    "Time" to Symbols.Schedule,
+    "Frequency" to Symbols.Airwave,
+    "Area and volume" to Symbols.ActivityZone,
+    "Area" to Symbols.ActivityZone,
+    "Volume" to Symbols.WaterMedium,
+    "Mass" to Symbols.Weight,
+    "Electricity" to Symbols.ElectricBolt,
+    "Current" to Symbols.ElectricBolt,
+    "Voltage" to Symbols.ElectricBoltFill,
     // Zigzag, like a resistor
-    "Resistance" -> Symbols.LineAxis
+    "Resistance" to Symbols.LineAxis,
     // Two plates, like a capacitor
-    "Capacitance" -> Symbols.SplitscreenBottom
-    "Other units" -> Symbols.DevicesOther
-    "Force and pressure",
-    "Force" -> Symbols.FitnessCenter
-    "Pressure" -> Symbols.Compress
-    "Energy and power",
-    "Energy",
-    "Joule" -> Symbols.Energy
-    "Electronvolt" -> Symbols.Atom
-    "Watt-hour",
-    "Power" -> Symbols.Power
-    "Temperature" -> Symbols.DeviceThermostat
-    "Amount of substance" -> Symbols.Atom
-    "Constants" -> Symbols._123
-    else -> null
-  }
+    "Capacitance" to Symbols.SplitscreenBottom,
+    "Other units" to Symbols.DevicesOther,
+    "Force and pressure" to Symbols.FitnessCenter,
+    "Force" to Symbols.FitnessCenter,
+    "Pressure" to Symbols.Compress,
+    "Energy and power" to Symbols.Energy,
+    "Energy" to Symbols.Energy,
+    "Joule" to Symbols.Energy,
+    "Electronvolt" to Symbols.Atom,
+    "Watt-hour" to Symbols.Power,
+    "Power" to Symbols.Power,
+    "Temperature" to Symbols.DeviceThermostat,
+    "Amount of substance" to Symbols.Atom,
+    "Constants" to Symbols._123,
+  )
+}
 
 private val CATEGORY_TILE_SIZE = 52.dp
 private val CATEGORY_TILE_CORNER = 18.dp

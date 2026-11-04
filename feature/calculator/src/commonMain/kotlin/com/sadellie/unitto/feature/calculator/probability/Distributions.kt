@@ -71,6 +71,16 @@ internal sealed class Distribution {
     if (p <= 0) return support.start
     if (p >= 1) return support.endInclusive
     // Find bounds (only infinite sides need searching), then bisect
+    var (low, high) = boundsAround(p)
+    repeat(BISECTION_STEPS) {
+      val middle = (low + high) / 2
+      if (cdf(middle) < p) low = middle else high = middle
+    }
+    return if (isDiscrete) smallestWholeReaching(p, floor(high)) else high
+  }
+
+  /** Low and high x with P(X ≤ x) on both sides of [p], searched on infinite sides. */
+  private fun boundsAround(p: Double): Pair<Double, Double> {
     var low = if (support.start.isFinite()) support.start else -1.0
     var high = if (support.endInclusive.isFinite()) support.endInclusive else max(1.0, low + 1)
     if (!support.start.isFinite()) {
@@ -79,13 +89,12 @@ internal sealed class Distribution {
     if (!support.endInclusive.isFinite()) {
       while (cdf(high) < p && high < SEARCH_LIMIT) high = high * 2 + 1
     }
-    repeat(BISECTION_STEPS) {
-      val middle = (low + high) / 2
-      if (cdf(middle) < p) low = middle else high = middle
-    }
-    if (!isDiscrete) return high
-    // Whole value: smallest k with cdf(k) ≥ p
-    var k = floor(high)
+    return low to high
+  }
+
+  /** Smallest whole k with cdf(k) ≥ [p], from [start] close to it. */
+  private fun smallestWholeReaching(p: Double, start: Double): Double {
+    var k = start
     while (k > support.start && cdf(k - 1) >= p) k--
     while (cdf(k) < p) k++
     return k
@@ -125,9 +134,11 @@ internal class Binomial(private val n: Int, private val p: Double) : Distributio
   override fun density(x: Double): Double {
     if (x < 0 || x > n || x != floor(x)) return 0.0
     val k = x.toInt()
-    if (p == 0.0) return if (k == 0) 1.0 else 0.0
-    if (p == 1.0) return if (k == n) 1.0 else 0.0
-    return exp(lnChoose(n, k) + k * ln(p) + (n - k) * ln(1 - p))
+    return when (p) {
+      0.0 -> if (k == 0) 1.0 else 0.0
+      1.0 -> if (k == n) 1.0 else 0.0
+      else -> exp(lnChoose(n, k) + k * ln(p) + (n - k) * ln(1 - p))
+    }
   }
 
   override fun cdf(x: Double): Double = sumDensity(this, floor(min(x, n.toDouble())).toInt())
@@ -169,7 +180,8 @@ internal class ChiSquared(private val k: Double) : Distribution() {
 
   override fun density(x: Double): Double {
     if (x < 0) return 0.0
-    if (x == 0.0) return if (k == 2.0) 0.5 else if (k < 2) Double.POSITIVE_INFINITY else 0.0
+    // At 0: ½ with 2 degrees of freedom, infinite with fewer
+    if (x == 0.0) return if (k == 2.0) HALF else if (k < 2) Double.POSITIVE_INFINITY else 0.0
     return exp((k / 2 - 1) * ln(x) - x / 2 - k / 2 * ln(2.0) - lnGamma(k / 2))
   }
 
@@ -253,12 +265,13 @@ private fun sumDensity(distribution: Distribution, last: Int): Double {
 
 /** ln Γ(x), Lanczos approximation. */
 internal fun lnGamma(x: Double): Double {
-  if (x < 0.5) return ln(PI / abs(sin(PI * x))) - lnGamma(1 - x)
+  // Reflection formula below ½
+  if (x < HALF) return ln(PI / abs(sin(PI * x))) - lnGamma(1 - x)
   val z = x - 1
   var sum = LANCZOS[0]
   for (i in 1 until LANCZOS.size) sum += LANCZOS[i] / (z + i)
-  val t = z + LANCZOS_G + 0.5
-  return 0.5 * ln(2 * PI) + (z + 0.5) * ln(t) - t + ln(sum)
+  val t = z + LANCZOS_G + HALF
+  return HALF * ln(2 * PI) + (z + HALF) * ln(t) - t + ln(sum)
 }
 
 private fun lnBeta(a: Double, b: Double) = lnGamma(a) + lnGamma(b) - lnGamma(a + b)
@@ -276,20 +289,26 @@ internal fun erf(x: Double): Double {
 internal fun lowerGammaRegularized(a: Double, x: Double): Double {
   if (x <= 0) return 0.0
   val logPrefix = a * ln(x) - x - lnGamma(a)
-  if (x < a + 1) {
-    // Series
-    var term = 1 / a
-    var sum = term
-    var n = a
-    repeat(MAX_ITERATIONS) {
-      n += 1
-      term *= x / n
-      sum += term
-      if (abs(term) < abs(sum) * EPSILON) return (sum * exp(logPrefix)).coerceIn(0.0, 1.0)
-    }
-    return (sum * exp(logPrefix)).coerceIn(0.0, 1.0)
-  }
-  // Continued fraction for Q(a, x)
+  return if (x < a + 1) lowerGammaSeries(a, x, logPrefix) else lowerGammaFraction(a, x, logPrefix)
+}
+
+/** Series of P(a, x), fast for x < a + 1. */
+private fun lowerGammaSeries(a: Double, x: Double, logPrefix: Double): Double {
+  var term = 1 / a
+  var sum = term
+  var n = a
+  var iterations = 0
+  do {
+    n += 1
+    term *= x / n
+    sum += term
+    iterations++
+  } while (iterations < MAX_ITERATIONS && abs(term) >= abs(sum) * EPSILON)
+  return (sum * exp(logPrefix)).coerceIn(0.0, 1.0)
+}
+
+/** 1 − Q(a, x) with the continued fraction of Q, for x ≥ a + 1. */
+private fun lowerGammaFraction(a: Double, x: Double, logPrefix: Double): Double {
   var b = x + 1 - a
   var c = 1 / TINY
   var d = 1 / b
@@ -368,3 +387,5 @@ private const val BISECTION_STEPS = 200
 private const val VISIBLE_TAIL = 0.001
 private const val MIN_RANGE = 1e-9
 private const val SAME_PROBABILITY = 1e-9
+
+private const val HALF = 0.5

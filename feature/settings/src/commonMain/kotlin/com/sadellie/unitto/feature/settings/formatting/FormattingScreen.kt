@@ -143,32 +143,12 @@ fun FormattingScreen(
 
       val supportingItemModifier = Modifier.fillMaxWidth()
 
-      // Precision
-      ListItemExpressive(
-        shape = ListItemExpressiveDefaults.firstShape,
-        leadingContent = {
-          Icon(Symbols.Architecture, stringResource(Res.string.settings_precision))
-        },
-        headlineContent = {
-          Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth(),
-          ) {
-            Text(stringResource(Res.string.settings_precision))
-            Text(precisionText)
-          }
-        },
-        supportingContent = { Text(stringResource(Res.string.settings_precision_support)) },
-        secondaryContent = {
-          Slider(
-            modifier = supportingItemModifier,
-            value = scale.toFloat(),
-            valueRange = precisions,
-            onValueChange = { scale = it.roundToInt() },
-            onValueChangeFinished = { onPrecisionChange(scale) },
-            steps = SCALE_STEPS,
-          )
-        },
+      PrecisionItem(
+        scale = scale,
+        precisionText = precisionText,
+        precisions = precisions,
+        onScaleChange = { scale = it },
+        onPrecisionChange = { onPrecisionChange(scale) },
       )
 
       // Thousands separator
@@ -223,6 +203,43 @@ fun FormattingScreen(
 
     }
   }
+}
+
+/** Digits after the decimal point, with a slider. */
+@Composable
+private fun PrecisionItem(
+  scale: Int,
+  precisionText: String,
+  precisions: ClosedFloatingPointRange<Float>,
+  onScaleChange: (Int) -> Unit,
+  onPrecisionChange: () -> Unit,
+) {
+  ListItemExpressive(
+    shape = ListItemExpressiveDefaults.firstShape,
+    leadingContent = {
+      Icon(Symbols.Architecture, stringResource(Res.string.settings_precision))
+    },
+    headlineContent = {
+      Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxWidth(),
+      ) {
+        Text(stringResource(Res.string.settings_precision))
+        Text(precisionText)
+      }
+    },
+    supportingContent = { Text(stringResource(Res.string.settings_precision_support)) },
+    secondaryContent = {
+      Slider(
+        modifier = Modifier.fillMaxWidth(),
+        value = scale.toFloat(),
+        valueRange = precisions,
+        onValueChange = { onScaleChange(it.roundToInt()) },
+        onValueChangeFinished = onPrecisionChange,
+        steps = SCALE_STEPS,
+      )
+    },
+  )
 }
 
 @Composable

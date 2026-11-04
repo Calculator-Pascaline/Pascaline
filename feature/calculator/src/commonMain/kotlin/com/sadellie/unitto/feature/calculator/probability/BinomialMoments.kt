@@ -233,18 +233,7 @@ private fun WaterExample(fractional: String) {
     style = MaterialTheme.typography.bodyMedium,
   )
 
-  // − 50 people +
-  Row(verticalAlignment = Alignment.CenterVertically) {
-    IconButton(onClick = { countIndex-- }, enabled = countIndex > 0) { Text("−", style = MaterialTheme.typography.titleLarge) }
-    Text(
-      stringResource(Res.string.probability_people, countText),
-      style = MaterialTheme.typography.titleMedium,
-      fontWeight = FontWeight.Bold,
-    )
-    IconButton(onClick = { countIndex++ }, enabled = countIndex < SUM_COUNTS.lastIndex) {
-      Text("+", style = MaterialTheme.typography.titleLarge)
-    }
-  }
+  PeopleStepper(countText, countIndex) { countIndex = it }
 
   ColoredTable(
     header =
@@ -313,6 +302,24 @@ private fun WaterExample(fractional: String) {
         )
       },
   )
+}
+
+/** `− 50 people +`, moving through [SUM_COUNTS]. */
+@Composable
+private fun PeopleStepper(count: String, countIndex: Int, onCountIndexChange: (Int) -> Unit) {
+  Row(verticalAlignment = Alignment.CenterVertically) {
+    IconButton(onClick = { onCountIndexChange(countIndex - 1) }, enabled = countIndex > 0) {
+      Text("−", style = MaterialTheme.typography.titleLarge)
+    }
+    Text(
+      stringResource(Res.string.probability_people, count),
+      style = MaterialTheme.typography.titleMedium,
+      fontWeight = FontWeight.Bold,
+    )
+    IconButton(onClick = { onCountIndexChange(countIndex + 1) }, enabled = countIndex < SUM_COUNTS.lastIndex) {
+      Text("+", style = MaterialTheme.typography.titleLarge)
+    }
+  }
 }
 
 @Composable
@@ -424,7 +431,7 @@ private fun MomentsTable(values: List<Double>, probabilities: List<Double>, frac
             Cell(variance.shown(fractional), VARIANCE_COLOR, bold = true),
           )
         ),
-    weights = listOf(0.8f, 1f, 1f, 1.5f),
+    weights = WATER_TABLE_WEIGHTS,
   )
 }
 
@@ -533,7 +540,7 @@ internal fun NormalRule(mean: Double, sigma: Double, fractional: String) {
             Cell(share(k).percent(), MEAN_COLOR, bold = true),
           )
         },
-      weights = listOf(1f, 1.6f, 1f),
+      weights = SAMPLE_TABLE_WEIGHTS,
     )
     Caption(stringResource(Res.string.probability_rule_outside))
   }
@@ -608,3 +615,6 @@ private val SUM_GRAPH_HEIGHT = 140.dp
 // μ ± σ, μ ± 2σ and μ ± 3σ
 private val RULE_DEVIATIONS = listOf(1, 2, 3)
 
+/** Widths of the table columns, compared to each other */
+private val WATER_TABLE_WEIGHTS = listOf(0.8f, 1f, 1f, 1.5f)
+private val SAMPLE_TABLE_WEIGHTS = listOf(1f, 1.6f, 1f)

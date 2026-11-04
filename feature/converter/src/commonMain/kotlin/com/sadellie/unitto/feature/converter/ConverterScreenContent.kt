@@ -91,7 +91,6 @@ import com.sadellie.unitto.feature.converter.components.UnitSelectionButton
 import org.jetbrains.compose.resources.stringResource
 import unitto.core.common.generated.resources.Res
 import unitto.core.common.generated.resources.calculator_divide_by_zero_error
-import unitto.core.common.generated.resources.common_error
 import unitto.core.common.generated.resources.common_loading
 import unitto.core.common.generated.resources.converter_swap_units_description
 import unitto.core.common.generated.resources.unit_attosecond_short
@@ -434,6 +433,20 @@ private fun ConverterResultTextField(
         readOnly = true,
       )
     }
+    else -> ConverterTextResult(modifier, result, scale, outputFormat, formatterSymbols)
+  }
+}
+
+/** Results shown as text: time, feet and inches, pounds and ounces, loading and errors. */
+@Composable
+private fun ConverterTextResult(
+  modifier: Modifier,
+  result: ConverterResult,
+  scale: Int,
+  outputFormat: Int,
+  formatterSymbols: FormatterSymbols,
+) {
+  when (result) {
     is ConverterResult.Time -> {
       val dayLabel = stringResource(Res.string.unit_day_short)
       val hourLabel = stringResource(Res.string.unit_hour_short)
@@ -459,14 +472,7 @@ private fun ConverterResultTextField(
             )
           )
         }
-      SimpleTextField(
-        modifier = modifier,
-        textColor = converterTextFieldColor,
-        state = state,
-        minRatio = 0.5f,
-        wrap = true,
-        readOnly = true,
-      )
+      TextResultField(modifier, state)
     }
     is ConverterResult.FootInch -> {
       val footLabel = stringResource(Res.string.unit_foot_short)
@@ -483,14 +489,7 @@ private fun ConverterResultTextField(
             )
           )
         }
-      SimpleTextField(
-        modifier = modifier,
-        textColor = converterTextFieldColor,
-        state = state,
-        minRatio = 0.5f,
-        wrap = true,
-        readOnly = true,
-      )
+      TextResultField(modifier, state)
     }
     is ConverterResult.PoundOunce -> {
       val poundLabel = stringResource(Res.string.unit_pound_short)
@@ -507,34 +506,35 @@ private fun ConverterResultTextField(
             )
           )
         }
-      SimpleTextField(
-        modifier = modifier,
-        textColor = converterTextFieldColor,
-        state = state,
-        minRatio = 0.5f,
-        wrap = true,
-        readOnly = true,
-      )
+      TextResultField(modifier, state)
     }
     is ConverterResult.Loading ->
-      SimpleTextField(
-        modifier = modifier,
-        state = TextFieldState(stringResource(Res.string.common_loading)),
-        textColor = converterTextFieldColor,
-        minRatio = 0.5f,
-        wrap = true,
-        readOnly = true,
-      )
+      TextResultField(modifier, TextFieldState(stringResource(Res.string.common_loading)))
     is ConverterResult.Error.DivideByZeroError ->
-      SimpleTextField(
-        modifier = modifier,
-        state = TextFieldState(stringResource(Res.string.calculator_divide_by_zero_error)),
-        minRatio = 0.5f,
-        wrap = true,
-        readOnly = true,
-        textColor = MaterialTheme.colorScheme.error,
+      TextResultField(
+        modifier,
+        TextFieldState(stringResource(Res.string.calculator_divide_by_zero_error)),
+        MaterialTheme.colorScheme.error,
       )
+    is ConverterResult.Default,
+    is ConverterResult.NumberBase -> Unit
   }
+}
+
+@Composable
+private fun TextResultField(
+  modifier: Modifier,
+  state: TextFieldState,
+  textColor: Color = converterTextFieldColor,
+) {
+  SimpleTextField(
+    modifier = modifier,
+    state = state,
+    textColor = textColor,
+    minRatio = 0.5f,
+    wrap = true,
+    readOnly = true,
+  )
 }
 
 @Composable

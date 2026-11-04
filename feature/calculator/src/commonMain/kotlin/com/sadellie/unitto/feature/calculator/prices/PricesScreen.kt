@@ -346,7 +346,7 @@ private fun money(value: Double, currency: String, formatterSymbols: FormatterSy
 }
 
 private fun percent(share: Double, formatterSymbols: FormatterSymbols): String =
-  KBigDecimal.valueOf(share * 100).setScale(1, KRoundingMode.HALF_EVEN).toPlainString().formatExpression(formatterSymbols) +
+  KBigDecimal.valueOf(share * PERCENT).setScale(1, KRoundingMode.HALF_EVEN).toPlainString().formatExpression(formatterSymbols) +
     " %"
 
 private val CURRENCIES_FIRST =
@@ -384,3 +384,5 @@ private const val MAX_CURRENCY_LENGTH = 5
 private val CURRENCY_WIDTH = 160.dp
 private val CURRENCY_SYMBOL_WIDTH = 56.dp
 private val CARD_SHAPE = RoundedCornerShape(20.dp)
+
+private const val PERCENT = 100

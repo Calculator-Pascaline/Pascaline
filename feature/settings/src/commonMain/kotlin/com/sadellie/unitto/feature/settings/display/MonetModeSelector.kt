@@ -92,9 +92,9 @@ internal fun MonetModeSelector(
 @Composable
 private fun MonetModeCheckbox(selected: Boolean, onClick: () -> Unit, colorScheme: ColorScheme) {
   BasicColoredCheckbox(selected = selected, onClick = onClick, color = colorScheme.secondary) {
-    Box(Modifier.fillMaxSize(0.5f).background(colorScheme.primary).align(Alignment.BottomStart))
+    Box(Modifier.fillMaxSize(fraction = 0.5f).background(colorScheme.primary).align(Alignment.BottomStart))
     Box(
-      Modifier.fillMaxSize(0.5f)
+      Modifier.fillMaxSize(fraction = 0.5f)
         .background(colorScheme.secondaryContainer)
         .align(Alignment.BottomEnd)
     )

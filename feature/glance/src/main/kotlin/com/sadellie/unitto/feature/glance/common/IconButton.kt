@@ -133,7 +133,11 @@ internal fun GlanceModifier.cornerRadiusWithBackground(
 @Stable
 private fun roundedCornerShape(dpSize: Float) =
   when (dpSize) {
-    8f -> R.drawable.rounded_corners_rectangle_shape_8dp
-    12f -> R.drawable.rounded_corners_rectangle_shape_12dp
+    SMALL_CORNER -> R.drawable.rounded_corners_rectangle_shape_8dp
+    MEDIUM_CORNER -> R.drawable.rounded_corners_rectangle_shape_12dp
     else -> R.drawable.rounded_corners_rectangle_shape_24dp
   }
+
+/** Corners there is a drawable for, in dp (24 for the others) */
+private const val SMALL_CORNER = 8f
+private const val MEDIUM_CORNER = 12f

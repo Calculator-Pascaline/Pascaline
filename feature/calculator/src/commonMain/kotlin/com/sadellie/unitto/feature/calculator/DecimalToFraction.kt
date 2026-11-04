@@ -84,15 +84,17 @@ private fun KBigDecimal.simplestFraction(): Pair<KBigInteger, KBigInteger>? {
   var denominator = KBigDecimal.ZERO
   var dividend = digitsValue
   var divisor = power
-  while (divisor > KBigDecimal.ZERO) {
+  var found: Pair<KBigInteger, KBigInteger>? = null
+  var isTooBig = false
+  while (found == null && !isTooBig && divisor > KBigDecimal.ZERO) {
     val (term, remainder) = dividend.divideAndRemainder(divisor)
     val nextNumerator = term * numerator + numeratorBefore
     val nextDenominator = term * denominator + denominatorBefore
-    if (nextDenominator > maxDenominator.toKBigDecimal()) return null
+    isTooBig = nextDenominator > maxDenominator.toKBigDecimal()
     // Same digits: digitsValue / power ≤ fraction < nextDigitsValue / power
     val scaled = nextNumerator * power
-    if (digitsValue * nextDenominator <= scaled && scaled < nextDigitsValue * nextDenominator) {
-      return nextNumerator.toBigInteger() to nextDenominator.toBigInteger()
+    if (!isTooBig && digitsValue * nextDenominator <= scaled && scaled < nextDigitsValue * nextDenominator) {
+      found = nextNumerator.toBigInteger() to nextDenominator.toBigInteger()
     }
     numeratorBefore = numerator
     numerator = nextNumerator
@@ -101,7 +103,7 @@ private fun KBigDecimal.simplestFraction(): Pair<KBigInteger, KBigInteger>? {
     dividend = divisor
     divisor = remainder
   }
-  return null
+  return found
 }
 
 private val maxDenominator by lazy { KBigInteger("1000000000") }

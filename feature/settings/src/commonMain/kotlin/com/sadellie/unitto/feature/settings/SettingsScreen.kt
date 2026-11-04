@@ -66,6 +66,7 @@ import com.sadellie.unitto.core.ui.EmptyScreen
 import com.sadellie.unitto.core.ui.ListHeader
 import com.sadellie.unitto.core.ui.ListItemExpressive
 import com.sadellie.unitto.core.ui.ListItemExpressiveDefaults
+import com.sadellie.unitto.core.ui.LinkOpener
 import com.sadellie.unitto.core.ui.LocalPlatform
 import com.sadellie.unitto.core.ui.Platform
 import com.sadellie.unitto.core.ui.ScaffoldWithLargeTopBar
@@ -182,127 +183,154 @@ private fun SettingsScreen(
           support = stringResource(Res.string.settings_updated_support, Config.VERSION_NAME),
         )
       }
-      ListHeader(stringResource(Res.string.settings_general))
-      ListItemExpressive(
-        icon = Symbols.Palette,
-        headlineText = stringResource(Res.string.settings_display),
-        supportingText = stringResource(Res.string.settings_display_support),
-        onClick = { navControllerAction(DisplayRoute) },
-        shape = ListItemExpressiveDefaults.firstShape,
-      )
-      ListItemExpressive(
-        icon = Symbols._123,
-        headlineText = stringResource(Res.string.settings_formatting),
-        supportingText = stringResource(Res.string.settings_formatting_support),
-        onClick = { navControllerAction(FormattingRoute) },
-        shape = ListItemExpressiveDefaults.middleShape,
-      )
-      ListItemExpressive(
-        icon = Symbols.Menu,
-        headlineText = stringResource(Res.string.settings_menu),
-        supportingText = stringResource(Res.string.settings_menu_support),
-        onClick = { navControllerAction(MenuRoute) },
-        shape = ListItemExpressiveDefaults.middleShape,
-      )
-      ListItemExpressive(
-        icon = Symbols.Home,
-        headlineText = stringResource(Res.string.settings_starting_screen),
-        supportingText = stringResource(Res.string.settings_starting_screen_support),
-        onClick = { navControllerAction(StartingScreenRoute) },
-        shape = ListItemExpressiveDefaults.lastShape,
-      )
-
-      ListHeader(stringResource(Res.string.settings_apps))
-      ListItemExpressive(
-        icon = Symbols.Calculate,
-        headlineText = stringResource(Res.string.calculator_title),
-        supportingText = stringResource(Res.string.settings_calculator_support),
-        onClick = { navControllerAction(CalculatorSettingsRoute) },
-        shape = ListItemExpressiveDefaults.firstShape,
-      )
-      ListItemExpressive(
-        icon = Symbols.SwapHoriz,
-        headlineText = stringResource(Res.string.converter_title),
-        supportingText = stringResource(Res.string.settings_converter_support),
-        onClick = { navControllerAction(ConverterSettingsRoute) },
-        shape = ListItemExpressiveDefaults.lastShape,
-      )
-
-      // Vibrations and the screen only exist in the Android app
-      if (LocalPlatform.current == Platform.Android) {
-        ListHeader(stringResource(Res.string.settings_phone))
-        ListItemExpressive(
-          icon = Symbols.Vibration,
-          headlineText = stringResource(Res.string.settings_vibrations),
-          supportingText = stringResource(Res.string.settings_vibrations_support),
-          switchState = uiState.enableVibrations,
-          onSwitchChange = updateVibrations,
-          shape = ListItemExpressiveDefaults.firstShape,
-        )
-        ListItemExpressive(
-          icon = Symbols.BacklightHigh,
-          headlineText = stringResource(Res.string.settings_keep_screen_on),
-          supportingText = stringResource(Res.string.settings_keep_screen_on_support),
-          switchState = uiState.enableKeepScreenOn,
-          onSwitchChange = updateKeepScreenOn,
-          shape = ListItemExpressiveDefaults.middleShape,
-        )
-        ListItemExpressive(
-          icon = Symbols.LockScreen,
-          headlineText = stringResource(Res.string.settings_show_on_lock_screen),
-          supportingText = stringResource(Res.string.settings_show_on_lock_screen_support),
-          switchState = uiState.showOnLockScreen,
-          onSwitchChange = updateShowOnLockScreen,
-          shape = ListItemExpressiveDefaults.middleShape,
-        )
-      }
-      // The web app has its own backup file, on its own after the apps
-      ListItemExpressive(
-        icon = Symbols.RestorePage,
-        headlineText = stringResource(Res.string.settings_backup),
-        supportingText = stringResource(Res.string.settings_backup_support),
-        onClick = { navControllerAction(BackupRoute) },
-        shape =
-          if (LocalPlatform.current == Platform.Android) ListItemExpressiveDefaults.lastShape
-          else ListItemExpressiveDefaults.singleShape,
-      )
-
-      // Feedback, source code for the GPL, credits and licenses of the libraries
-      ListHeader(stringResource(Res.string.settings_about))
-      ListItemExpressive(
-        icon = Symbols.RateReview,
-        headlineText = stringResource(Res.string.settings_report_issue),
-        supportingText = stringResource(Res.string.settings_report_issue_support),
-        onClick = { linkOpener.launch(REPORT_ISSUE_LINK) },
-        shape = ListItemExpressiveDefaults.firstShape,
-      )
-      ListItemExpressive(
-        icon = Symbols.Code,
-        headlineText = stringResource(Res.string.settings_view_source_code),
-        onClick = { linkOpener.launch(Config.SOURCE_CODE_LINK) },
-        shape = ListItemExpressiveDefaults.middleShape,
-      )
-      ListItemExpressive(
-        icon = Symbols.Favorite,
-        headlineText = stringResource(Res.string.settings_based_on_unitto),
-        onClick = { linkOpener.launch(Config.UNITTO_LINK) },
-        shape = ListItemExpressiveDefaults.middleShape,
-      )
-      ListItemExpressive(
-        icon = Symbols.Copyright,
-        headlineText = stringResource(Res.string.settings_third_party_licenses),
-        onClick = { navControllerAction(ThirdPartyRoute) },
-        shape = ListItemExpressiveDefaults.middleShape,
-      )
-      ListItemExpressive(
-        icon = Symbols.Info,
-        headlineText = stringResource(Res.string.settings_version_name),
-        supportingText = Config.VERSION_NAME,
-        onClick = null,
-        shape = ListItemExpressiveDefaults.lastShape,
-      )
+      GeneralSettings(navControllerAction)
+      AppSettings(navControllerAction)
+      DeviceSettings(uiState, navControllerAction, updateVibrations, updateKeepScreenOn, updateShowOnLockScreen)
+      AboutSettings(linkOpener, navControllerAction)
     }
   }
+}
+
+/** Display, formatting, menu and starting screen. */
+@Composable
+private fun GeneralSettings(navControllerAction: (Route) -> Unit) {
+  ListHeader(stringResource(Res.string.settings_general))
+  ListItemExpressive(
+    icon = Symbols.Palette,
+    headlineText = stringResource(Res.string.settings_display),
+    supportingText = stringResource(Res.string.settings_display_support),
+    onClick = { navControllerAction(DisplayRoute) },
+    shape = ListItemExpressiveDefaults.firstShape,
+  )
+  ListItemExpressive(
+    icon = Symbols._123,
+    headlineText = stringResource(Res.string.settings_formatting),
+    supportingText = stringResource(Res.string.settings_formatting_support),
+    onClick = { navControllerAction(FormattingRoute) },
+    shape = ListItemExpressiveDefaults.middleShape,
+  )
+  ListItemExpressive(
+    icon = Symbols.Menu,
+    headlineText = stringResource(Res.string.settings_menu),
+    supportingText = stringResource(Res.string.settings_menu_support),
+    onClick = { navControllerAction(MenuRoute) },
+    shape = ListItemExpressiveDefaults.middleShape,
+  )
+  ListItemExpressive(
+    icon = Symbols.Home,
+    headlineText = stringResource(Res.string.settings_starting_screen),
+    supportingText = stringResource(Res.string.settings_starting_screen_support),
+    onClick = { navControllerAction(StartingScreenRoute) },
+    shape = ListItemExpressiveDefaults.lastShape,
+  )
+}
+
+/** Settings of the calculator and the converter. */
+@Composable
+private fun AppSettings(navControllerAction: (Route) -> Unit) {
+  ListHeader(stringResource(Res.string.settings_apps))
+  ListItemExpressive(
+    icon = Symbols.Calculate,
+    headlineText = stringResource(Res.string.calculator_title),
+    supportingText = stringResource(Res.string.settings_calculator_support),
+    onClick = { navControllerAction(CalculatorSettingsRoute) },
+    shape = ListItemExpressiveDefaults.firstShape,
+  )
+  ListItemExpressive(
+    icon = Symbols.SwapHoriz,
+    headlineText = stringResource(Res.string.converter_title),
+    supportingText = stringResource(Res.string.settings_converter_support),
+    onClick = { navControllerAction(ConverterSettingsRoute) },
+    shape = ListItemExpressiveDefaults.lastShape,
+  )
+}
+
+/** Vibrations, the screen and the lock screen on Android, backup everywhere. */
+@Composable
+private fun DeviceSettings(
+  uiState: SettingsUIState.Ready,
+  navControllerAction: (Route) -> Unit,
+  updateVibrations: (Boolean) -> Unit,
+  updateKeepScreenOn: (Boolean) -> Unit,
+  updateShowOnLockScreen: (Boolean) -> Unit,
+) {
+  // Vibrations and the screen only exist in the Android app
+  if (LocalPlatform.current == Platform.Android) {
+    ListHeader(stringResource(Res.string.settings_phone))
+    ListItemExpressive(
+      icon = Symbols.Vibration,
+      headlineText = stringResource(Res.string.settings_vibrations),
+      supportingText = stringResource(Res.string.settings_vibrations_support),
+      switchState = uiState.enableVibrations,
+      onSwitchChange = updateVibrations,
+      shape = ListItemExpressiveDefaults.firstShape,
+    )
+    ListItemExpressive(
+      icon = Symbols.BacklightHigh,
+      headlineText = stringResource(Res.string.settings_keep_screen_on),
+      supportingText = stringResource(Res.string.settings_keep_screen_on_support),
+      switchState = uiState.enableKeepScreenOn,
+      onSwitchChange = updateKeepScreenOn,
+      shape = ListItemExpressiveDefaults.middleShape,
+    )
+    ListItemExpressive(
+      icon = Symbols.LockScreen,
+      headlineText = stringResource(Res.string.settings_show_on_lock_screen),
+      supportingText = stringResource(Res.string.settings_show_on_lock_screen_support),
+      switchState = uiState.showOnLockScreen,
+      onSwitchChange = updateShowOnLockScreen,
+      shape = ListItemExpressiveDefaults.middleShape,
+    )
+  }
+  // The web app has its own backup file, on its own after the apps
+  ListItemExpressive(
+    icon = Symbols.RestorePage,
+    headlineText = stringResource(Res.string.settings_backup),
+    supportingText = stringResource(Res.string.settings_backup_support),
+    onClick = { navControllerAction(BackupRoute) },
+    shape =
+      if (LocalPlatform.current == Platform.Android) ListItemExpressiveDefaults.lastShape
+      else ListItemExpressiveDefaults.singleShape,
+  )
+}
+
+/** Feedback, source code, credits, licenses and the version. */
+@Composable
+private fun AboutSettings(linkOpener: LinkOpener, navControllerAction: (Route) -> Unit) {
+  // Feedback, source code for the GPL, credits and licenses of the libraries
+  ListHeader(stringResource(Res.string.settings_about))
+  ListItemExpressive(
+    icon = Symbols.RateReview,
+    headlineText = stringResource(Res.string.settings_report_issue),
+    supportingText = stringResource(Res.string.settings_report_issue_support),
+    onClick = { linkOpener.launch(REPORT_ISSUE_LINK) },
+    shape = ListItemExpressiveDefaults.firstShape,
+  )
+  ListItemExpressive(
+    icon = Symbols.Code,
+    headlineText = stringResource(Res.string.settings_view_source_code),
+    onClick = { linkOpener.launch(Config.SOURCE_CODE_LINK) },
+    shape = ListItemExpressiveDefaults.middleShape,
+  )
+  ListItemExpressive(
+    icon = Symbols.Favorite,
+    headlineText = stringResource(Res.string.settings_based_on_unitto),
+    onClick = { linkOpener.launch(Config.UNITTO_LINK) },
+    shape = ListItemExpressiveDefaults.middleShape,
+  )
+  ListItemExpressive(
+    icon = Symbols.Copyright,
+    headlineText = stringResource(Res.string.settings_third_party_licenses),
+    onClick = { navControllerAction(ThirdPartyRoute) },
+    shape = ListItemExpressiveDefaults.middleShape,
+  )
+  ListItemExpressive(
+    icon = Symbols.Info,
+    headlineText = stringResource(Res.string.settings_version_name),
+    supportingText = Config.VERSION_NAME,
+    onClick = null,
+    shape = ListItemExpressiveDefaults.lastShape,
+  )
 }
 
 @Preview

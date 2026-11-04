@@ -21,10 +21,7 @@ package com.sadellie.unitto.feature.timezone
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.SizeTransform
-import androidx.compose.animation.animateColor
-import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -46,10 +43,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
@@ -210,22 +206,12 @@ internal fun WebTimeZoneScreen(openDrawer: () -> Unit, navigateToAddTimeZone: (D
       itemsIndexed(items = orderedFavorites, key = { _, item -> item.zone }) { index, item ->
         ReorderableItem(reorderableLazyListState, item.zone) { isDragging ->
           val isSelected = selected == item.zone
-          val transition = updateTransition(isDragging, label = "draggedTransition")
-          val itemPadding by transition.animateDp(label = "itemPadding") { if (it) 8.dp else 0.dp }
-          val background by
-            transition.animateColor(label = "background") {
-              if (it) MaterialTheme.colorScheme.surfaceContainerHighest
-              else MaterialTheme.colorScheme.surfaceBright
-            }
-          val cornerRadius by
-            transition.animateDp(label = "cornerRadius") { if (it) Sizes.large else 0.dp }
-
           WebFavoriteTimeZoneItem(
             modifier =
-              Modifier.padding(itemPadding)
-                .clip(RoundedCornerShape(cornerRadius))
-                .clip(ListItemExpressiveDefaults.listedShaped(index, orderedFavorites.size))
-                .background(background)
+              Modifier.draggedZoneItem(
+                  isDragging,
+                  ListItemExpressiveDefaults.listedShaped(index, orderedFavorites.size),
+                )
                 .longPressDraggableHandle(
                   onDragStopped = { WebFavoriteZones.reorder(orderedFavorites) }
                 ),

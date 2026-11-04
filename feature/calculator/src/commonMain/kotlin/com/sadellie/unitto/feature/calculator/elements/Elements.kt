@@ -82,14 +82,18 @@ internal class Element(
 /** Every element by atomic number, from hydrogen to oganesson. */
 internal val ELEMENTS: List<Element> by lazy {
   ELEMENT_DATA.trimIndent().lines().mapIndexed { index, line ->
-    val (symbol, name, mass, electronegativity) = line.split(' ')
+    // Symbol, name, mass and electronegativity, in this order
+    val fields = line.split(' ').iterator()
+    val symbol = fields.next()
+    val name = fields.next()
+    val mass = fields.next()
     Element(
       number = index + 1,
       symbol = symbol,
       name = name,
       mass = mass.trim('[', ']').toDouble(),
       isMassNumber = mass.startsWith('['),
-      electronegativity = electronegativity.toDoubleOrNull(),
+      electronegativity = fields.next().toDoubleOrNull(),
     )
   }
 }
@@ -98,6 +102,8 @@ internal val ELEMENTS: List<Element> by lazy {
  * Row and column in the drawn table, both from 0. Lanthanides and actinides go in two extra rows
  * under the table (rows 8 and 9, after an empty row), like in most periodic tables.
  */
+// The numbers are the periodic table: atomic numbers, periods and groups
+@Suppress("MagicNumber")
 internal fun Element.tablePosition(): Pair<Int, Int> {
   val group = group
   if (group != null) return (period - 1) to (group - 1)
@@ -106,6 +112,8 @@ internal fun Element.tablePosition(): Pair<Int, Int> {
   return (period + 2) to (number - first + 3)
 }
 
+// The numbers are the periodic table: atomic numbers, periods and groups
+@Suppress("MagicNumber")
 private fun familyOf(number: Int): ElementFamily =
   when (number) {
     3, 11, 19, 37, 55, 87 -> ElementFamily.ALKALI_METAL

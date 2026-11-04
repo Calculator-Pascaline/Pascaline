@@ -247,15 +247,7 @@ private fun CalculationStep(
   val a = viewModel.a.toNumberOrNull()
   val b = viewModel.b.toNumberOrNull()
   val probability = viewModel.probability(distribution)
-  val shaded =
-    when {
-      a == null -> null
-      calculation == CalculationType.AT_MOST -> Double.NEGATIVE_INFINITY..a
-      calculation == CalculationType.AT_LEAST -> a..Double.POSITIVE_INFINITY
-      calculation == CalculationType.EXACTLY -> a..a
-      b == null -> null
-      else -> a..b
-    }
+  val shaded = shadedRange(calculation, a, b)
 
   Column(
     modifier = modifier.verticalScroll(rememberScrollState()).padding(CARD_SPACING * 2),
@@ -292,26 +284,41 @@ private fun CalculationStep(
       canEditProbability = canFindBound,
     )
 
-    if (viewModel.type == DistributionType.BINOMIAL) {
-      val n = viewModel.parameters.getOrNull(0)?.toNumberOrNull()?.toInt()
-      val p = viewModel.parameters.getOrNull(1)?.toNumberOrNull()
-      if (n != null && p != null) {
-        BinomialMoments(n, p, format.formatterSymbols.fractional)
-        BinomialExplanation(n, p, format.formatterSymbols.fractional)
-      }
-    } else {
-      viewModel.type?.let { type ->
-        val values = viewModel.parameters.mapNotNull { it.toNumberOrNull() }
-        if (values.size == type.parameters.size) {
-          if (type == DistributionType.NORMAL) {
-            NormalMoments(values[0], values[1], format.formatterSymbols.fractional)
-            NormalRule(values[0], values[1], format.formatterSymbols.fractional)
-          } else {
-            DistributionMoments(type, values, format.formatterSymbols.fractional)
-          }
-        }
-      }
+    MomentCards(viewModel, format.formatterSymbols.fractional)
+  }
+}
+
+/** Part of the graph to shade for the calculation, null until its bounds are typed. */
+private fun shadedRange(calculation: CalculationType, a: Double?, b: Double?): ClosedFloatingPointRange<Double>? =
+  when {
+    a == null -> null
+    calculation == CalculationType.AT_MOST -> Double.NEGATIVE_INFINITY..a
+    calculation == CalculationType.AT_LEAST -> a..Double.POSITIVE_INFINITY
+    calculation == CalculationType.EXACTLY -> a..a
+    b == null -> null
+    else -> a..b
+  }
+
+/** Expected value, variance and explanations of the distribution, once its parameters are typed. */
+@Composable
+private fun MomentCards(viewModel: ProbabilityViewModel, fractional: String) {
+  val type = viewModel.type ?: return
+  if (type == DistributionType.BINOMIAL) {
+    val n = viewModel.parameters.getOrNull(0)?.toNumberOrNull()?.toInt()
+    val p = viewModel.parameters.getOrNull(1)?.toNumberOrNull()
+    if (n != null && p != null) {
+      BinomialMoments(n, p, fractional)
+      BinomialExplanation(n, p, fractional)
     }
+    return
+  }
+  val values = viewModel.parameters.mapNotNull { it.toNumberOrNull() }
+  if (values.size != type.parameters.size) return
+  if (type == DistributionType.NORMAL) {
+    NormalMoments(values[0], values[1], fractional)
+    NormalRule(values[0], values[1], fractional)
+  } else {
+    DistributionMoments(type, values, fractional)
   }
 }
 

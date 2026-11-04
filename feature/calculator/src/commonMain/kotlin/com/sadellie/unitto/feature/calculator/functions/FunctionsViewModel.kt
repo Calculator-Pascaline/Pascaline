@@ -160,8 +160,8 @@ internal class FunctionsViewModel(private val userPrefsRepository: UserPreferenc
     value
       .split(LINE_SEPARATOR)
       .mapNotNull { line ->
-        val parts = line.split(SEPARATOR, limit = 3)
-        if (parts.size < 3 || parts[0] !in FUNCTION_NAMES) return@mapNotNull null
+        val parts = line.split(SEPARATOR, limit = SAVED_FIELDS)
+        if (parts.size < SAVED_FIELDS || parts[0] !in FUNCTION_NAMES) return@mapNotNull null
         val input = TextFieldState(parts[2]).apply { placeCursorAtTheEnd() }
         val color = FUNCTION_NAMES.indexOf(parts[0]) % FUNCTION_COLORS.size
         GraphFunctionItem(parts[0], color, visible = parts[1] == "1", input)
@@ -174,3 +174,6 @@ internal val FUNCTION_NAMES = listOf("f", "g", "h", "p", "q", "r", "s", "t")
 private const val SEPARATOR = "\t"
 private const val LINE_SEPARATOR = "\n"
 private const val SAVE_DELAY_MS = 500L
+
+/** Name, visibility and formula of a saved function */
+private const val SAVED_FIELDS = 3

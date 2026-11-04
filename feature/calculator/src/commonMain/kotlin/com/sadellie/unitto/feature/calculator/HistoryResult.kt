@@ -86,13 +86,17 @@ internal data class HistoryResult(
     fun decode(result: String): HistoryResult {
       val all = result.lines().filter { it.isNotEmpty() }
       val separator = all.indexOf(SECTION_SEPARATOR)
-      if (separator == -1) return HistoryResult(all)
       val menuLines = all.drop(separator + 1)
-      val visible = all.take(separator)
-      if (menuLines.firstOrNull()?.startsWith(SECTION_HEADER) != true) {
-        return HistoryResult(visible, decodeOldMenu(menuLines))
+      val visible = all.take(separator.coerceAtLeast(0))
+      return when {
+        separator == -1 -> HistoryResult(all)
+        menuLines.firstOrNull()?.startsWith(SECTION_HEADER) != true -> HistoryResult(visible, decodeOldMenu(menuLines))
+        else -> HistoryResult(visible, decodeMenu(menuLines))
       }
+    }
 
+    /** Sections with their header lines, the lines of each one after it. */
+    private fun decodeMenu(menuLines: List<String>): List<Pair<MenuSection, List<String>>> {
       val menu = mutableListOf<Pair<MenuSection, MutableList<String>>>()
       menuLines.forEach { line ->
         if (line.startsWith(SECTION_HEADER)) {
@@ -102,7 +106,7 @@ internal data class HistoryResult(
           menu.lastOrNull()?.second?.add(line)
         }
       }
-      return HistoryResult(visible, menu)
+      return menu
     }
 
     /** First version: factorization with "=" prefix, then roots. */
