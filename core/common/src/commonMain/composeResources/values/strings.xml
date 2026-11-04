@@ -460,8 +460,6 @@
     <string name="settings_dynamic_colors">Dynamic colors</string>
     <string name="settings_dynamic_colors_support">Use colors from your wallpaper</string>
     <string name="settings_enable_unit_group_description">Enable unit group</string>
-    <string name="settings_exponential_notation">Exponential notation</string>
-    <string name="settings_exponential_notation_support">Replace part of the number with E</string>
     <string name="settings_favorite_time_zones">Favorite time zones</string>
     <string name="settings_favorite_units">Favorite units</string>
     <string name="settings_format_time">Format time</string>

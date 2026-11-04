@@ -413,8 +413,6 @@
     <string name="settings_dynamic_colors">Dinamik renkler</string>
     <string name="settings_dynamic_colors_support">Duvar kağıdınızdaki renkleri kullanın</string>
     <string name="settings_enable_unit_group_description">Birim grubunu etkinleştir</string>
-    <string name="settings_exponential_notation">Üstel gösterim</string>
-    <string name="settings_exponential_notation_support">Sayının bir kısmını E ile değiştir</string>
     <string name="settings_favorite_time_zones">Favori saat dilimleri</string>
     <string name="settings_favorite_units">Favori birimler</string>
     <string name="settings_format_time">Zamanı biçimlendir</string>

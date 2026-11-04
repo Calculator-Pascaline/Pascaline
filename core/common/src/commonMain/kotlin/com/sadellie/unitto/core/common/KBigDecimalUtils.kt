@@ -18,13 +18,42 @@
 
 package com.sadellie.unitto.core.common
 
+import kotlin.math.abs
 import kotlin.math.max
 
 /** Current maximum scale that will be used in app. Used in various places in code. */
 const val MAX_SCALE: Int = 1_000
 
-fun KBigDecimal.toFormattedString(scale: Int, outputFormat: Int): String =
-  this.setMinimumRequiredScale(scale).trimZeros().toStringWith(outputFormat)
+fun KBigDecimal.toFormattedString(scale: Int, outputFormat: Int): String {
+  if (outputFormat == OutputFormat.ALLOW_ENGINEERING && isScientific()) {
+    val (mantissa, exponent) = scientificMantissa()
+    val sign = if (exponent < 0) "-" else "+"
+    return mantissa.setMinimumRequiredScale(scale).trimZeros().toPlainString() + "E" + sign + abs(exponent)
+  }
+  return this.setMinimumRequiredScale(scale).trimZeros().toStringWith(outputFormat)
+}
+
+private val SCIENTIFIC_MAX = KBigDecimal("1E9")
+private val SCIENTIFIC_MIN = KBigDecimal("1E-6")
+
+/** True when this value is too big or too small to read written out: 5.5×10¹⁶, 3×10⁻⁸. */
+fun KBigDecimal.isScientific(): Boolean {
+  val magnitude = abs()
+  return magnitude.compareTo(KBigDecimal.ZERO) != 0 && (magnitude < SCIENTIFIC_MIN || magnitude >= SCIENTIFIC_MAX)
+}
+
+/** 5.5 and 16 for 5.5×10¹⁶: the digits of this value with one before the point, and the power. */
+fun KBigDecimal.scientificMantissa(): Pair<KBigDecimal, Int> {
+  val magnitude = abs()
+  val digits = magnitude.stripTrailingZeros().toPlainString()
+  val exponent =
+    if (magnitude >= KBigDecimal.ONE) {
+      digits.substringBefore(".").length - 1
+    } else {
+      -(digits.substringAfter(".").indexOfFirst { it != '0' } + 1)
+    }
+  return multiply(KBigDecimal("1E${-exponent}")) to exponent
+}
 
 /** Removes all trailing zeroes. */
 fun KBigDecimal.trimZeros(): KBigDecimal =
@@ -83,7 +112,8 @@ internal fun KBigDecimal.setMinimumRequiredScale(prefScale: Int): KBigDecimal {
 private fun KBigDecimal.toStringWith(outputFormat: Int): String =
   // Setting result value using a specified OutputFormat
   when (outputFormat) {
-    OutputFormat.ALLOW_ENGINEERING -> this.toString()
+    // Values that need a power of ten are written by toFormattedString
+    OutputFormat.ALLOW_ENGINEERING -> this.toPlainString()
     OutputFormat.FORCE_ENGINEERING -> this.toEngineeringString()
     else -> this.toPlainString()
   }

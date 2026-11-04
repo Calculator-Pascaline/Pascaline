@@ -70,7 +70,7 @@ class UserPreferencesRepositoryImpl : UserPreferencesRepository {
         initialPartialHistoryView = preferences.getInitialPartialHistoryView(),
         openHistoryViewButton = preferences.getOpenHistoryViewButton(),
         precision = preferences.getDigitsPrecision(),
-        outputFormat = preferences.getOutputFormat(),
+        outputFormat = Defaults.outputFormat,
         acButton = preferences.getAcButton(),
         additionalButtons = preferences.getAdditionalButtons(),
         inverseMode = preferences.getInverseMode(),
@@ -86,7 +86,7 @@ class UserPreferencesRepositoryImpl : UserPreferencesRepository {
         middleZero = preferences.getMiddleZero(),
         acButton = preferences.getAcButton(),
         precision = preferences.getDigitsPrecision(),
-        outputFormat = preferences.getOutputFormat(),
+        outputFormat = Defaults.outputFormat,
         formatTime = preferences.getUnitConverterFormatTime(),
         sorting = preferences.getUnitConverterSorting(),
         shownUnitGroups = preferences.getShownUnitGroups(),
@@ -110,7 +110,7 @@ class UserPreferencesRepositoryImpl : UserPreferencesRepository {
       FormattingPreferences(
         digitsPrecision = preferences.getDigitsPrecision(),
         formatterSymbols = preferences.getFormatterSymbols(),
-        outputFormat = preferences.getOutputFormat(),
+        outputFormat = Defaults.outputFormat,
       )
     }
 
@@ -158,9 +158,6 @@ class UserPreferencesRepositoryImpl : UserPreferencesRepository {
     updateData(PrefKeys.FORMATTER_FRACTIONAL_PREF_KEY, fractional)
     updateData(PrefKeys.FORMATTER_INDIAN_PREF_KEY, indian)
   }
-
-  override suspend fun updateOutputFormat(outputFormat: Int) =
-    updateData(PrefKeys.OUTPUT_FORMAT_PREF_KEY, outputFormat)
 
   override suspend fun updateLatestPairOfUnits(unitFrom: String, unitTo: String) {
     updateData(PrefKeys.LATEST_LEFT_SIDE_PREF_KEY, unitFrom)
@@ -336,9 +333,6 @@ class UserPreferencesRepositoryImpl : UserPreferencesRepository {
 
   private fun Preferences.getDigitsPrecision() =
     this.getTyped<Int>(PrefKeys.DIGITS_PRECISION_PREF_KEY) ?: Defaults.digitsPrecision
-
-  private fun Preferences.getOutputFormat() =
-    this.getTyped<Int>(PrefKeys.OUTPUT_FORMAT_PREF_KEY) ?: Defaults.outputFormat
 
   private fun Preferences.getUnitConverterFormatTime() =
     this.getTyped<Boolean>(PrefKeys.UNIT_CONVERTER_FORMAT_TIME_PREF_KEY)

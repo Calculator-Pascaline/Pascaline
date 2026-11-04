@@ -81,8 +81,6 @@
     <string name="settings_dynamic_colors">Dynamic colours</string>
     <string name="settings_dynamic_colors_support">Use colours from your wallpaper</string>
     <string name="settings_enable_unit_group_description">Enable unit group</string>
-    <string name="settings_exponential_notation">Exponential notation</string>
-    <string name="settings_exponential_notation_support">Replace part of the number with E</string>
     <string name="settings_format_time">Format time</string>
     <string name="settings_format_time_support">Example: Show 130 minutes as 2h 10m</string>
     <string name="settings_formatting">Formatting</string>

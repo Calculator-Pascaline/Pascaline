@@ -413,8 +413,6 @@
     <string name="settings_dynamic_colors">Colori dinamici</string>
     <string name="settings_dynamic_colors_support">Usa colori dallo sfondo del dispositivo</string>
     <string name="settings_enable_unit_group_description">Abilita gruppo di unità</string>
-    <string name="settings_exponential_notation">Notazione esponenziale</string>
-    <string name="settings_exponential_notation_support">Sostituisci parte del numero con E</string>
     <string name="settings_favorite_time_zones">Fusi orari preferiti</string>
     <string name="settings_favorite_units">Unità preferite</string>
     <string name="settings_format_time">Formatta tempo</string>

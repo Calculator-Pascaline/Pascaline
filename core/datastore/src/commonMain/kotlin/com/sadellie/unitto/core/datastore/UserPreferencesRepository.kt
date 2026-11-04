@@ -107,8 +107,9 @@ interface UserPreferencesRepository {
     val digitsPrecision: Int
       get() = 3
 
+    // Not a setting anymore, numbers switch to E notation only when they're too long to read
     val outputFormat: Int
-      get() = OutputFormat.PLAIN
+      get() = OutputFormat.ALLOW_ENGINEERING
 
     val unitConverterFormatTime: Boolean
       get() = false
@@ -150,8 +151,6 @@ interface UserPreferencesRepository {
   suspend fun updateDigitsPrecision(precision: Int)
 
   suspend fun updateFormatterSymbols(grouping: String, fractional: String, indian: Boolean)
-
-  suspend fun updateOutputFormat(outputFormat: Int)
 
   suspend fun updateLatestPairOfUnits(unitFrom: String, unitTo: String)
 

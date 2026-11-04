@@ -30,6 +30,8 @@ import com.sadellie.unitto.core.common.KRoundingMode
 import com.sadellie.unitto.core.common.Token
 import com.sadellie.unitto.core.common.isExpression
 import com.sadellie.unitto.core.common.isGreaterThan
+import com.sadellie.unitto.core.common.isScientific
+import com.sadellie.unitto.core.common.scientificMantissa
 import com.sadellie.unitto.core.common.stateIn
 import com.sadellie.unitto.core.common.OutputFormat
 import com.sadellie.unitto.core.common.toFormattedString
@@ -74,28 +76,6 @@ private const val EMPTY_INTEGRAL_BOUNDS =
     Token.Layout.END +
     Token.Layout.SUPERSCRIPT_START +
     Token.Layout.END
-private val SCIENTIFIC_MAX = KBigDecimal("1E9")
-private val SCIENTIFIC_MIN = KBigDecimal("1E-6")
-
-/** True when [toScientific] would show this value as a power of ten. */
-private fun KBigDecimal.isScientific(): Boolean {
-  val magnitude = abs()
-  return magnitude.compareTo(KBigDecimal.ZERO) != 0 && (magnitude < SCIENTIFIC_MIN || magnitude >= SCIENTIFIC_MAX)
-}
-
-/** 5.5 for 5.5×10¹⁶: the digits of this value with one before the point. */
-private fun KBigDecimal.scientificMantissa(): Pair<KBigDecimal, Int> {
-  val magnitude = abs()
-  val digits = magnitude.stripTrailingZeros().toPlainString()
-  val exponent =
-    if (magnitude >= KBigDecimal.ONE) {
-      digits.substringBefore(".").length - 1
-    } else {
-      -(digits.substringAfter(".").indexOfFirst { it != '0' } + 1)
-    }
-  return multiply(KBigDecimal("1E${-exponent}")) to exponent
-}
-
 /** Value as [toScientific] shows it: rounded to [precision] digits, of the mantissa for powers of ten. */
 private fun KBigDecimal.shownValue(precision: Int): KBigDecimal {
   if (!isScientific()) return KBigDecimal(toFormattedString(precision, OutputFormat.PLAIN))

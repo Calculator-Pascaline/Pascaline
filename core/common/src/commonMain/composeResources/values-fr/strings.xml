@@ -413,8 +413,6 @@
     <string name="settings_dynamic_colors">Couleurs dynamiques</string>
     <string name="settings_dynamic_colors_support">Utiliser les couleurs de votre fond d'écran</string>
     <string name="settings_enable_unit_group_description">Activer le groupe d'unités</string>
-    <string name="settings_exponential_notation">Notation scientifique</string>
-    <string name="settings_exponential_notation_support">Remplacer une partie du nombre par E</string>
     <string name="settings_favorite_time_zones">Fuseaux horaires favoris</string>
     <string name="settings_favorite_units">Unités favorites</string>
     <string name="settings_format_time">Formater le temps</string>

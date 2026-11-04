@@ -413,8 +413,6 @@
     <string name="settings_dynamic_colors">Cores dinâmicas</string>
     <string name="settings_dynamic_colors_support">Usar cores do seu papel de parede</string>
     <string name="settings_enable_unit_group_description">Ativar grupo de unidades</string>
-    <string name="settings_exponential_notation">Notação exponencial</string>
-    <string name="settings_exponential_notation_support">Substituir parte do número por E</string>
     <string name="settings_favorite_time_zones">Fusos horários favoritos</string>
     <string name="settings_favorite_units">Unidades favoritas</string>
     <string name="settings_format_time">Formatar tempo</string>

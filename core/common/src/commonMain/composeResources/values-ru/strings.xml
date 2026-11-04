@@ -413,8 +413,6 @@
     <string name="settings_dynamic_colors">Динамические цвета</string>
     <string name="settings_dynamic_colors_support">Использовать цвета обоев устройства</string>
     <string name="settings_enable_unit_group_description">Включить группу единиц</string>
-    <string name="settings_exponential_notation">Экспоненциальная запись</string>
-    <string name="settings_exponential_notation_support">Заменить часть числа на E</string>
     <string name="settings_favorite_time_zones">Избранные часовые пояса</string>
     <string name="settings_favorite_units">Избранные единицы</string>
     <string name="settings_format_time">Форматировать время</string>

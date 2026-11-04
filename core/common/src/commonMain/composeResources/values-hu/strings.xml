@@ -413,8 +413,6 @@
     <string name="settings_dynamic_colors">Dinamikus színek</string>
     <string name="settings_dynamic_colors_support">Színek használata a háttérképből</string>
     <string name="settings_enable_unit_group_description">Mértékegység-csoport engedélyezése</string>
-    <string name="settings_exponential_notation">Exponenciális jelölés</string>
-    <string name="settings_exponential_notation_support">A szám egy részének cseréje E-re</string>
     <string name="settings_favorite_time_zones">Kedvenc időzónák</string>
     <string name="settings_favorite_units">Kedvenc mértékegységek</string>
     <string name="settings_format_time">Idő formázása</string>

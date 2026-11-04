@@ -413,8 +413,6 @@
     <string name="settings_dynamic_colors">Dynamische Farben</string>
     <string name="settings_dynamic_colors_support">Farben aus Ihrem Hintergrundbild verwenden</string>
     <string name="settings_enable_unit_group_description">Einheitengruppe aktivieren</string>
-    <string name="settings_exponential_notation">Exponentialschreibweise</string>
-    <string name="settings_exponential_notation_support">Teil der Zahl durch E ersetzen</string>
     <string name="settings_favorite_time_zones">Bevorzugte Zeitzonen</string>
     <string name="settings_favorite_units">Bevorzugte Einheiten</string>
     <string name="settings_format_time">Zeit formatieren</string>

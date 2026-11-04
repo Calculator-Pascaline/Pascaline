@@ -413,8 +413,6 @@
     <string name="settings_dynamic_colors">Dynamische kleuren</string>
     <string name="settings_dynamic_colors_support">Kleuren van uw achtergrond gebruiken</string>
     <string name="settings_enable_unit_group_description">Eenheidsgroep inschakelen</string>
-    <string name="settings_exponential_notation">Wetenschappelijke notatie</string>
-    <string name="settings_exponential_notation_support">Vervang een deel van het getal door E</string>
     <string name="settings_favorite_time_zones">Favoriete tijdzones</string>
     <string name="settings_favorite_units">Favoriete eenheden</string>
     <string name="settings_format_time">Tijd opmaken</string>

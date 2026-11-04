@@ -47,7 +47,6 @@ object DatastorePrefKeys {
   val FORMATTER_GROUPING = stringPreferencesKey(PrefKeys.FORMATTER_GROUPING_PREF_KEY)
   val FORMATTER_FRACTIONAL = stringPreferencesKey(PrefKeys.FORMATTER_FRACTIONAL_PREF_KEY)
   val FORMATTER_INDIAN = booleanPreferencesKey(PrefKeys.FORMATTER_INDIAN_PREF_KEY)
-  val OUTPUT_FORMAT = intPreferencesKey(PrefKeys.OUTPUT_FORMAT_PREF_KEY)
 
   // CALCULATOR
   val RADIAN_MODE = booleanPreferencesKey(PrefKeys.RADIAN_MODE_PREF_KEY)

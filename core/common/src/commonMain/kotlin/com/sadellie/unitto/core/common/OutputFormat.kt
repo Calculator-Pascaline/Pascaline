@@ -23,7 +23,8 @@ object OutputFormat {
   // Never use engineering notation
   const val PLAIN = 0
 
-  // Use toFormattedString that a lower API returns
+  // Plain numbers, E notation when the number is too big or too small to read: 1.2E+12, 5E-9.
+  // The app always uses this one
   const val ALLOW_ENGINEERING = 1
 
   // App will try it's best to use engineering notation

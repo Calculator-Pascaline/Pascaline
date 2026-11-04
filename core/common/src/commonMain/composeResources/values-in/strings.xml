@@ -413,8 +413,6 @@
     <string name="settings_dynamic_colors">Warna dinamis</string>
     <string name="settings_dynamic_colors_support">Gunakan warna dari wallpaper Anda</string>
     <string name="settings_enable_unit_group_description">Aktifkan grup unit</string>
-    <string name="settings_exponential_notation">Notasi eksponensial</string>
-    <string name="settings_exponential_notation_support">Ganti sebagian angka dengan E</string>
     <string name="settings_favorite_time_zones">Zona waktu favorit</string>
     <string name="settings_favorite_units">Satuan favorit</string>
     <string name="settings_format_time">Format waktu</string>

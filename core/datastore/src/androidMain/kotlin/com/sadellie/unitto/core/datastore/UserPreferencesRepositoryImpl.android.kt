@@ -76,7 +76,7 @@ class UserPreferencesRepositoryImpl(private val dataStore: DataStore<Preferences
         initialPartialHistoryView = preferences.getInitialPartialHistoryView(),
         openHistoryViewButton = preferences.getOpenHistoryViewButton(),
         precision = preferences.getDigitsPrecision(),
-        outputFormat = preferences.getOutputFormat(),
+        outputFormat = Defaults.outputFormat,
         acButton = preferences.getAcButton(),
         additionalButtons = preferences.getAdditionalButtons(),
         inverseMode = preferences.getInverseMode(),
@@ -92,7 +92,7 @@ class UserPreferencesRepositoryImpl(private val dataStore: DataStore<Preferences
         middleZero = preferences.getMiddleZero(),
         acButton = preferences.getAcButton(),
         precision = preferences.getDigitsPrecision(),
-        outputFormat = preferences.getOutputFormat(),
+        outputFormat = Defaults.outputFormat,
         formatTime = preferences.getUnitConverterFormatTime(),
         sorting = preferences.getUnitConverterSorting(),
         shownUnitGroups = preferences.getShownUnitGroups(),
@@ -116,7 +116,7 @@ class UserPreferencesRepositoryImpl(private val dataStore: DataStore<Preferences
       FormattingPreferences(
         digitsPrecision = preferences.getDigitsPrecision(),
         formatterSymbols = preferences.getFormatterSymbols(),
-        outputFormat = preferences.getOutputFormat(),
+        outputFormat = Defaults.outputFormat,
       )
     }
 
@@ -168,10 +168,6 @@ class UserPreferencesRepositoryImpl(private val dataStore: DataStore<Preferences
       preferences[DatastorePrefKeys.FORMATTER_FRACTIONAL] = fractional
       preferences[DatastorePrefKeys.FORMATTER_INDIAN] = indian
     }
-  }
-
-  override suspend fun updateOutputFormat(outputFormat: Int) {
-    dataStore.edit { preferences -> preferences[DatastorePrefKeys.OUTPUT_FORMAT] = outputFormat }
   }
 
   override suspend fun updateLatestPairOfUnits(unitFrom: String, unitTo: String) {
@@ -391,9 +387,6 @@ class UserPreferencesRepositoryImpl(private val dataStore: DataStore<Preferences
 
   private fun Preferences.getDigitsPrecision() =
     this[DatastorePrefKeys.DIGITS_PRECISION] ?: Defaults.digitsPrecision
-
-  private fun Preferences.getOutputFormat() =
-    this[DatastorePrefKeys.OUTPUT_FORMAT] ?: Defaults.outputFormat
 
   private fun Preferences.getUnitConverterFormatTime() =
     this[DatastorePrefKeys.UNIT_CONVERTER_FORMAT_TIME] ?: Defaults.unitConverterFormatTime

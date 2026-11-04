@@ -59,7 +59,6 @@ import com.sadellie.unitto.core.common.Token
 import com.sadellie.unitto.core.common.collectAsStateWithLifecycleKMP
 import com.sadellie.unitto.core.common.toFormattedString
 import com.sadellie.unitto.core.designsystem.icons.symbols.Architecture
-import com.sadellie.unitto.core.designsystem.icons.symbols.EMobileData
 import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
 import com.sadellie.unitto.core.designsystem.icons.symbols._123
 import com.sadellie.unitto.core.designsystem.shapes.Sizes
@@ -78,12 +77,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import unitto.core.common.generated.resources.Res
 import unitto.core.common.generated.resources.common_comma
-import unitto.core.common.generated.resources.common_disabled
-import unitto.core.common.generated.resources.common_enabled
-import unitto.core.common.generated.resources.settings_auto
 import unitto.core.common.generated.resources.settings_decimal_separator
-import unitto.core.common.generated.resources.settings_exponential_notation
-import unitto.core.common.generated.resources.settings_exponential_notation_support
 import unitto.core.common.generated.resources.settings_formatting
 import unitto.core.common.generated.resources.settings_indian_numbering_system
 import unitto.core.common.generated.resources.settings_period
@@ -104,7 +98,6 @@ fun FormattingRoute(navigateUpAction: () -> Unit) {
         uiState = uiState,
         onPrecisionChange = viewModel::updatePrecision,
         updateFormatterSymbols = viewModel::updateFormatterSymbols,
-        onOutputFormatChange = viewModel::updateOutputFormat,
       )
     }
   }
@@ -116,7 +109,6 @@ fun FormattingScreen(
   uiState: FormattingUIState,
   onPrecisionChange: (Int) -> Unit,
   updateFormatterSymbols: (grouping: String, fractional: String, indian: Boolean) -> Unit,
-  onOutputFormatChange: (Int) -> Unit,
 ) {
   ScaffoldWithLargeTopBar(
     title = stringResource(Res.string.settings_formatting),
@@ -146,7 +138,6 @@ fun FormattingScreen(
       PreviewBox(
         modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
         scale = scale,
-        outputFormat = uiState.outputFormat,
         formatterSymbols = uiState.formatterSymbols,
       )
 
@@ -217,7 +208,7 @@ fun FormattingScreen(
       }
 
       ListItemExpressive(
-        shape = ListItemExpressiveDefaults.middleShape,
+        shape = ListItemExpressiveDefaults.lastShape,
         headlineText = stringResource(Res.string.settings_indian_numbering_system),
         icon = rememberEmptyImageVector(), // empty vector for correct padding
         onSwitchChange = { indian ->
@@ -230,24 +221,6 @@ fun FormattingScreen(
         switchState = uiState.formatterSymbols.indian,
       )
 
-      // Output format
-      ListItemExpressive(
-        shape = ListItemExpressiveDefaults.lastShape,
-        leadingContent = {
-          Icon(Symbols.EMobileData, stringResource(Res.string.settings_exponential_notation))
-        },
-        headlineContent = { Text(stringResource(Res.string.settings_exponential_notation)) },
-        supportingContent = {
-          Text(stringResource(Res.string.settings_exponential_notation_support))
-        },
-        secondaryContent = {
-          OutputFormatSelector(
-            modifier = supportingItemModifier,
-            onOutputFormatChange = onOutputFormatChange,
-            outputFormat = uiState.outputFormat,
-          )
-        },
-      )
     }
   }
 }
@@ -256,19 +229,18 @@ fun FormattingScreen(
 private fun PreviewBox(
   modifier: Modifier,
   scale: Int,
-  outputFormat: Int,
   formatterSymbols: FormatterSymbols,
 ) {
   PagedIsland(modifier = modifier, pageCount = 2) { currentPage ->
     val preview =
-      remember(currentPage, scale, outputFormat, formatterSymbols) {
+      remember(currentPage, scale, formatterSymbols) {
         val decimalString =
           if (currentPage == 0) "123456.${"789123456".repeat(ceil(scale.toDouble() / 9.0).toInt())}"
           else "0.${"1".padStart(scale, '0')}"
 
         try {
           KBigDecimal(decimalString)
-            .toFormattedString(scale, outputFormat)
+            .toFormattedString(scale, OutputFormat.ALLOW_ENGINEERING)
             .formatExpression(formatterSymbols)
         } catch (_: Exception) {
           ""
@@ -353,38 +325,6 @@ private fun GroupingSymbolSelector(
   }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-private fun OutputFormatSelector(
-  modifier: Modifier,
-  onOutputFormatChange: (Int) -> Unit,
-  outputFormat: Int,
-) {
-  Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(Sizes.small)) {
-    ToggleButton(
-      onCheckedChange = { onOutputFormatChange(OutputFormat.ALLOW_ENGINEERING) },
-      checked = OutputFormat.ALLOW_ENGINEERING == outputFormat,
-      modifier = Modifier.weight(1f),
-    ) {
-      Text(stringResource(Res.string.settings_auto))
-    }
-    ToggleButton(
-      onCheckedChange = { onOutputFormatChange(OutputFormat.FORCE_ENGINEERING) },
-      checked = OutputFormat.FORCE_ENGINEERING == outputFormat,
-      modifier = Modifier.weight(1f),
-    ) {
-      Text(stringResource(Res.string.common_enabled))
-    }
-    ToggleButton(
-      onCheckedChange = { onOutputFormatChange(OutputFormat.PLAIN) },
-      checked = OutputFormat.PLAIN == outputFormat,
-      modifier = Modifier.weight(1f),
-    ) {
-      Text(stringResource(Res.string.common_disabled))
-    }
-  }
-}
-
 // When setting scale to this number it will be treated as MAX_SCALE
 internal const val MAX_SCALE_ALIAS = 16f
 private const val SCALE_STEPS = MAX_SCALE_ALIAS.toInt() - 1
@@ -407,20 +347,17 @@ private fun PreviewFormattingScreen() {
   var currentFormatterSymbols by remember {
     mutableStateOf(FormatterSymbols(Token.SPACE, Token.PERIOD, false))
   }
-  var currentOutputFormat by remember { mutableIntStateOf(OutputFormat.PLAIN) }
 
   FormattingScreen(
     uiState =
       FormattingUIState(
         precision = currentPrecision,
-        outputFormat = currentOutputFormat,
         formatterSymbols = currentFormatterSymbols,
       ),
     onPrecisionChange = { currentPrecision = it },
     updateFormatterSymbols = { grouping, fractional, indian ->
       currentFormatterSymbols = FormatterSymbols(grouping, fractional, indian)
     },
-    onOutputFormatChange = { currentOutputFormat = it },
     navigateUpAction = {},
   )
 }

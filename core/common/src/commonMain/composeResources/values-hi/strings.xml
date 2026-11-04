@@ -413,8 +413,6 @@
     <string name="settings_dynamic_colors">गतिशील रंग</string>
     <string name="settings_dynamic_colors_support">अपने वॉलपेपर के रंगों का उपयोग करें</string>
     <string name="settings_enable_unit_group_description">इकाई समूह सक्षम करें</string>
-    <string name="settings_exponential_notation">घातांकीय संकेतन</string>
-    <string name="settings_exponential_notation_support">संख्या के एक हिस्से को E से बदलें</string>
     <string name="settings_favorite_time_zones">पसंदीदा समय क्षेत्र</string>
     <string name="settings_favorite_units">पसंदीदा इकाइयाँ</string>
     <string name="settings_format_time">समय फ़ॉर्मैट</string>

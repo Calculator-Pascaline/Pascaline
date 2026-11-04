@@ -88,6 +88,23 @@ class KBigDecimalUtilsTest {
   }
 
   @Test
+  fun toFormattedString_autoNotation() {
+    val auto = OutputFormat.ALLOW_ENGINEERING
+    // Readable numbers stay plain, round ones too
+    assertEquals("1200", KBigDecimal("1200").toFormattedString(3, auto))
+    assertEquals("0.001", KBigDecimal("0.001").toFormattedString(3, auto))
+    assertEquals("999999999", KBigDecimal("999999999").toFormattedString(3, auto))
+    assertEquals("0.000001", KBigDecimal("0.000001").toFormattedString(6, auto))
+    // Too long to read: E notation with the precision applied to the digits before it
+    assertEquals("1E+9", KBigDecimal("1000000000").toFormattedString(3, auto))
+    assertEquals("1.235E+11", KBigDecimal("123456789012").toFormattedString(3, auto))
+    assertEquals("9.4607304725808E+24", KBigDecimal("9460730472580800000000000").toFormattedString(15, auto))
+    assertEquals("1.235E-7", KBigDecimal("0.000000123456").toFormattedString(3, auto))
+    assertEquals("-5E-9", KBigDecimal("-0.000000005").toFormattedString(3, auto))
+    assertEquals("1.057E-25", KBigDecimal("1.0570008340246E-25").toFormattedString(3, auto))
+  }
+
+  @Test
   fun trimZeros_test() {
     // zero
     var input = KBigDecimal("0")

@@ -35,7 +35,6 @@ class FormattingViewModel(private val userPreferencesRepository: UserPreferences
       .map { mainPrefs ->
         FormattingUIState(
           precision = mainPrefs.digitsPrecision,
-          outputFormat = mainPrefs.outputFormat,
           formatterSymbols = mainPrefs.formatterSymbols,
         )
       }
@@ -54,8 +53,4 @@ class FormattingViewModel(private val userPreferencesRepository: UserPreferences
     viewModelScope.launch {
       userPreferencesRepository.updateFormatterSymbols(grouping, fractional, indian)
     }
-
-  /** @see UserPreferencesRepository.updateOutputFormat */
-  fun updateOutputFormat(outputFormat: Int) =
-    viewModelScope.launch { userPreferencesRepository.updateOutputFormat(outputFormat) }
 }

@@ -22,6 +22,5 @@ import com.sadellie.unitto.core.common.FormatterSymbols
 
 data class FormattingUIState(
   val precision: Int,
-  val outputFormat: Int,
   val formatterSymbols: FormatterSymbols,
 )

@@ -209,7 +209,7 @@ internal fun launchAction(mContext: Context): Action =
   actionStartActivity(ComponentName(mContext, "com.sadellie.unitto.MainActivity"))
 
 internal const val DEFAULT_PRECISION = 3
-internal const val DEFAULT_OUTPUT_FORMAT = OutputFormat.PLAIN
+internal const val DEFAULT_OUTPUT_FORMAT = OutputFormat.ALLOW_ENGINEERING
 
 private suspend fun calculate(input: String, precision: Int, outputFormat: Int): String =
   withContext(Dispatchers.Default) {

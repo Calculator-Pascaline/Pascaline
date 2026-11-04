@@ -413,8 +413,6 @@
     <string name="settings_dynamic_colors">动态颜色</string>
     <string name="settings_dynamic_colors_support">使用壁纸提取的颜色</string>
     <string name="settings_enable_unit_group_description">启用单位组</string>
-    <string name="settings_exponential_notation">科学计数法</string>
-    <string name="settings_exponential_notation_support">用 E 代替数字的一部分</string>
     <string name="settings_favorite_time_zones">常用时区</string>
     <string name="settings_favorite_units">常用单位</string>
     <string name="settings_format_time">格式化时间</string>
