@@ -5,7 +5,7 @@ versionName = "1.4.0"
 # https://mvnrepository.com/artifact/androidx.browser/browser
 androidxBrowserBrowser = "1.10.0"
 # https://developer.android.com/reference/tools/gradle-api
-androidGradlePlugin = "9.4.1"
+androidGradlePlugin = "9.5.0"
 # https://mvnrepository.com/artifact/androidx.activity/activity-compose
 androidxActivityActivityCompose = "1.13.0"
 # https://mvnrepository.com/artifact/androidx.appcompat/appcompat
@@ -40,7 +40,7 @@ junitJunit = "4.13.2"
 # https://kotlinlang.org/docs/releases.html#release-details
 kotlin = "2.4.21"
 # https://github.com/google/ksp/releases
-ksp = "2.3.7"
+ksp = "2.3.13"
 # https://github.com/Calvin-LL/Reorderable/releases
 reorderable = "3.1.0"
 # https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-test
@@ -48,11 +48,11 @@ kotlinxCoroutines = "1.11.0"
 # https://github.com/robolectric/robolectric/releases
 orgRobolectricRobolectric = "4.17"
 # https://github.com/Kotlin/kotlinx.serialization/releases
-kotlinx-serialization = "1.11.0"
+kotlinx-serialization = "1.12.0"
 # https://github.com/eobermuhlner/big-math/releases
 bigMath = "2.3.2"
 # https://github.com/iurysza/module-graph/releases
-devIurysouzaModulegraph = "0.13.0"
+devIurysouzaModulegraph = "0.15.0"
 # https://github.com/detekt/detekt/releases
 detekt = "1.23.8"
 # https://github.com/jordond/MaterialKolor/releases
@@ -61,7 +61,7 @@ materialKolor = "6.0.0"
 composeMultiplatform = "1.12.2"
 # https://github.com/JetBrains/compose-multiplatform/releases
 # https://mvnrepository.com/artifact/org.jetbrains.compose.material3/material3
-composeMultiplatformMaterial3 = "1.12.0-alpha03"
+composeMultiplatformMaterial3 = "1.13.0-beta01"
 # https://github.com/touchlab/Kermit/releases
 kermit = "2.2.0"
 # https://developer.android.com/jetpack/androidx/releases/annotation
@@ -71,7 +71,7 @@ lifecyclyViewModel = "2.11.0"
 # https://github.com/Kotlin/kotlinx-datetime/releases/latest
 kotlinxDatetime = "0.8.0"
 navigation3Runtime = "1.2.0"
-navigation3UI = "1.1.2"
+navigation3UI = "1.2.0"
 # https://github.com/eygraber/uri-kmp/releases
 uriKmp = "0.0.21"
 buildKonfig = "0.23.0"
