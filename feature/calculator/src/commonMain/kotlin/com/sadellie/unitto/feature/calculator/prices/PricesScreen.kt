@@ -117,13 +117,7 @@ private fun PricesScreen(openDrawer: () -> Unit, viewModel: PricesViewModel, for
       verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
       item {
-        OutlinedTextField(
-          modifier = Modifier.width(CURRENCY_WIDTH),
-          value = viewModel.currency,
-          onValueChange = { viewModel.currency = it.take(MAX_CURRENCY_LENGTH) },
-          label = { Text(stringResource(Res.string.prices_currency)) },
-          singleLine = true,
-        )
+        CurrencyField(currency = viewModel.currency, onCurrencyChange = { viewModel.currency = it })
       }
       itemsIndexed(offers) { index, offer ->
         OfferCard(
@@ -214,6 +208,50 @@ private fun OfferCard(
             )
           }
         }
+      }
+    }
+  }
+}
+
+/**
+ * Currency of the prices: one of [COMMON_CURRENCIES] from the list, or any other symbol typed in.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CurrencyField(currency: String, onCurrencyChange: (String) -> Unit) {
+  var expanded by remember { mutableStateOf(false) }
+  ExposedDropdownMenuBox(
+    modifier = Modifier.width(CURRENCY_WIDTH),
+    expanded = expanded,
+    onExpandedChange = { expanded = it },
+  ) {
+    OutlinedTextField(
+      modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable),
+      value = currency,
+      onValueChange = { onCurrencyChange(it.take(MAX_CURRENCY_LENGTH)) },
+      label = { Text(stringResource(Res.string.prices_currency)) },
+      singleLine = true,
+      trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+    )
+    ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+      COMMON_CURRENCIES.forEach { (symbol, code) ->
+        DropdownMenuItem(
+          text = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+              Text(
+                text = symbol,
+                modifier = Modifier.width(CURRENCY_SYMBOL_WIDTH),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = if (symbol == currency) FontWeight.Bold else FontWeight.Normal,
+              )
+              Text(text = code, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+          },
+          onClick = {
+            onCurrencyChange(symbol)
+            expanded = false
+          },
+        )
       }
     }
   }
@@ -311,10 +349,38 @@ private fun percent(share: Double, formatterSymbols: FormatterSymbols): String =
   KBigDecimal.valueOf(share * 100).setScale(1, KRoundingMode.HALF_EVEN).toPlainString().formatExpression(formatterSymbols) +
     " %"
 
-private val CURRENCIES_FIRST = setOf("$", "US$", "£", "¥", "₹", "₩", "₦", "₱", "R$", "A$", "C$")
+private val CURRENCIES_FIRST =
+  setOf("$", "US$", "£", "¥", "CN¥", "₹", "₩", "₦", "₱", "R$", "A$", "C$", "MX$", "₺", "Rp", "R")
+
+/** Symbol and ISO code of the currencies in the list, the most used ones first. */
+private val COMMON_CURRENCIES =
+  listOf(
+    "$" to "USD",
+    "€" to "EUR",
+    "£" to "GBP",
+    "¥" to "JPY",
+    "CN¥" to "CNY",
+    "CHF" to "CHF",
+    "C$" to "CAD",
+    "A$" to "AUD",
+    "₹" to "INR",
+    "R$" to "BRL",
+    "MX$" to "MXN",
+    "₽" to "RUB",
+    "₺" to "TRY",
+    "Rp" to "IDR",
+    "Ft" to "HUF",
+    "₩" to "KRW",
+    "zł" to "PLN",
+    "kr" to "SEK",
+    "R" to "ZAR",
+    "₦" to "NGN",
+    "₱" to "PHP",
+  )
 private const val SMALL_PRICE = 0.1
 private const val PRICE_DECIMALS = 2
 private const val SMALL_PRICE_DECIMALS = 4
 private const val MAX_CURRENCY_LENGTH = 5
-private val CURRENCY_WIDTH = 140.dp
+private val CURRENCY_WIDTH = 160.dp
+private val CURRENCY_SYMBOL_WIDTH = 56.dp
 private val CARD_SHAPE = RoundedCornerShape(20.dp)
