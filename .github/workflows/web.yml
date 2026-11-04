@@ -1,7 +1,8 @@
 # Builds the web app and publishes it on GitHub Pages:
 # https://calculator-pascaline.github.io/Pascaline/
 # Pull requests (like Dependabot updates) are built for Android and the web and tested, but not
-# published. A Dependabot pull request that passes is merged, then the web app is published.
+# published. Every build starts the web app in a browser to check that it works. A Dependabot pull
+# request that passes is merged, then the web app is published.
 name: Web app
 
 on:
@@ -46,6 +47,14 @@ jobs:
 
       - name: Build web app
         run: ./gradlew :sharedApp:wasmJsBrowserDistribution
+
+      # Android checks can't see errors that only happen in the browser. Starting the app in
+      # Chromium stops a broken update before it's merged or published
+      - name: Start web app in a browser
+        run: |
+          pip install playwright
+          python -m playwright install --with-deps chromium
+          python .github/scripts/smoke_test.py sharedApp/build/dist/wasmJs/productionExecutable
 
       - uses: actions/upload-pages-artifact@v5
         if: github.event_name != 'pull_request'
