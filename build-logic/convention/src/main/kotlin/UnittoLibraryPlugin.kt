@@ -24,6 +24,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
+import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.configure
@@ -55,7 +56,8 @@ class UnittoMultiplatformLibraryPlugin : Plugin<Project> {
           }
           androidResources { enable = true }
           withDeviceTest { this.instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner" }
-          withHostTest {}
+          // Robolectric tests read the Compose string resources, which live in the Android assets
+          withHostTest { isIncludeAndroidResources = true }
         }
         @OptIn(ExperimentalWasmDsl::class)
         wasmJs {
@@ -81,6 +83,13 @@ class UnittoMultiplatformLibraryPlugin : Plugin<Project> {
             }
           }
         }
+      }
+      // Robolectric reaches into FileDescriptor when it sets up the application
+      tasks.withType(Test::class.java).configureEach {
+        jvmArgs(
+          "--add-opens=java.base/java.io=ALL-UNNAMED",
+          "--add-exports=java.base/jdk.internal.access=ALL-UNNAMED",
+        )
       }
       dependencies {
         "coreLibraryDesugaring"(libs.findLibrary("com.android.tools.desugar.jdk.libs").get())

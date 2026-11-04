@@ -1,6 +1,6 @@
 # Opens pull requests when Gradle, the libraries in gradle/libs.versions.toml or the GitHub
-# Actions have new versions. The web workflow builds each one for Android and the web, so a
-# broken update shows up there before it is merged.
+# Actions have new versions. The web workflow builds and tests each one, merges it when everything
+# passes and leaves a broken update open.
 version: 2
 updates:
   - package-ecosystem: gradle

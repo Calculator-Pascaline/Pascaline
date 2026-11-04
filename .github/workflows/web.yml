@@ -1,6 +1,7 @@
 # Builds the web app and publishes it on GitHub Pages:
 # https://calculator-pascaline.github.io/Pascaline/
-# Pull requests (like Dependabot updates) are built for Android and the web but not published.
+# Pull requests (like Dependabot updates) are built for Android and the web and tested, but not
+# published. A Dependabot pull request that passes is merged, then the web app is published.
 name: Web app
 
 on:
@@ -39,6 +40,10 @@ jobs:
         if: github.event_name == 'pull_request'
         run: ./gradlew :androidApp:assembleDebug
 
+      - name: Run tests
+        if: github.event_name == 'pull_request'
+        run: ./gradlew testAndroidHostTest :kt-math:jvmTest
+
       - name: Build web app
         run: ./gradlew :sharedApp:wasmJsBrowserDistribution
 
@@ -57,3 +62,23 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v5
+
+  # Dependabot updates that build and pass every test are merged without waiting for a review.
+  # A merge made by a workflow doesn't start the push build, so this one asks for it
+  merge-dependabot:
+    needs: build
+    if: github.event_name == 'pull_request' && github.event.pull_request.user.login == 'dependabot[bot]'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Merge pull request
+        run: gh pr merge --squash --delete-branch "${{ github.event.pull_request.number }}"
+
+      - name: Publish web app
+        run: gh workflow run web.yml --ref main

@@ -127,7 +127,6 @@ class UnitRepositoryFilterUnitsTest {
     assertEquals(expected, actual)
   }
 
-  // FIXME not provided to resource loader
   @Test
   fun filterUnits_verySpecific() = runTest {
     // fill database with some garbage
