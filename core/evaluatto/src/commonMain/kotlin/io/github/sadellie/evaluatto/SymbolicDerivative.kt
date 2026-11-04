@@ -164,7 +164,7 @@ private fun simplifyBinary(operator: BinaryOperator, left: Node, right: Node): N
         l != null && r != null && !r.isZero() && l.remainder(r).isZero() ->
           Node.Number(l.divide(r, 0, KRoundingMode.HALF_EVEN))
         left is Node.Negate -> Node.Negate(simplifyBinary(operator, left.node, right))
-        else -> Node.Binary(operator, left, right)
+        else -> cancelCommonFactors(left, right) ?: Node.Binary(operator, left, right)
       }
     BinaryOperator.POWER ->
       when {
@@ -174,6 +174,98 @@ private fun simplifyBinary(operator: BinaryOperator, left: Node, right: Node): N
       }
     BinaryOperator.MODULO -> Node.Binary(operator, left, right)
   }
+}
+
+/**
+ * Factors found above and below the bar go away: `52x/x` ==> `52`, `x³·sin(x)/x` ==> `x²·sin(x)`.
+ * Null when there is none.
+ */
+private fun cancelCommonFactors(numerator: Node, denominator: Node): Node? {
+  val above = mutableListOf<Node>()
+  val below = mutableListOf<Node>()
+  collectInto(numerator) { above += it }
+  collectInto(denominator) { below += it }
+  var cancelled = false
+  for (factor in below.toList()) {
+    val base = factor.powerBase()
+    val index = above.indexOfFirst { it.powerBase().key() == base.key() }
+    if (index == -1) continue
+    val exponent = above[index].numberExponent() ?: continue
+    val removed = factor.numberExponent() ?: continue
+    val left = exponent - removed
+    // Only whole factors above go, x/x³ stays a fraction
+    if (left < KBigDecimal.ZERO) continue
+    above.removeAt(index)
+    below.remove(factor)
+    if (!left.isZero()) above.add(index, base.pow(Node.Number(left)).simplify())
+    cancelled = true
+  }
+  if (!cancelled) return null
+  val top = above.reduceOrNull { acc, node -> simplifyProduct(acc, node) } ?: number(1)
+  val bottom = below.reduceOrNull { acc, node -> simplifyProduct(acc, node) } ?: return top
+  return simplifyBinary(BinaryOperator.DIVIDE, top, bottom)
+}
+
+/** `x³` ==> `x`, anything else is its own base. */
+private fun Node.powerBase(): Node =
+  if (this is Node.Binary && operator == BinaryOperator.POWER && right is Node.Number) left else this
+
+/** `x³` ==> 3, `x` ==> 1, `x^n` ==> null. */
+private fun Node.numberExponent(): KBigDecimal? =
+  when {
+    this is Node.Binary && operator == BinaryOperator.POWER -> (right as? Node.Number)?.value
+    else -> KBigDecimal.ONE
+  }
+
+/**
+ * A whole number shared by every term of a sum: `52ln(x)+52` ==> 52 and `ln(x)+1`. Null when the
+ * terms share none.
+ */
+private fun Node.commonNumberOfSum(): Pair<KBigDecimal, Node>? {
+  if (this !is Node.Binary || (operator != BinaryOperator.PLUS && operator != BinaryOperator.MINUS)) {
+    return null
+  }
+  val terms = mutableListOf<Pair<KBigDecimal, Node?>>()
+  fun collect(node: Node, negative: Boolean) {
+    when {
+      node is Node.Binary && node.operator == BinaryOperator.PLUS -> {
+        collect(node.left, negative)
+        collect(node.right, negative)
+      }
+      node is Node.Binary && node.operator == BinaryOperator.MINUS -> {
+        collect(node.left, negative)
+        collect(node.right, !negative)
+      }
+      else -> {
+        val (coefficient, rest) = node.splitCoefficient()
+        terms += (if (negative) -coefficient else coefficient) to rest
+      }
+    }
+  }
+  collect(this, false)
+  val wholes =
+    terms.map { (coefficient, _) ->
+      val whole = coefficient.setScale(0, KRoundingMode.HALF_EVEN)
+      if (!coefficient.isEqualTo(whole) || whole.isZero()) return null
+      whole.abs()
+    }
+  val divisor = wholes.reduce { acc, value -> gcd(acc, value) }
+  if (divisor <= KBigDecimal.ONE) return null
+  val divided =
+    terms.map { (coefficient, rest) ->
+      val value = coefficient.divide(divisor, 0, KRoundingMode.HALF_EVEN)
+      if (rest == null) Node.Number(value) else simplifyProduct(Node.Number(value), rest)
+    }
+  val sum =
+    divided.drop(1).fold(divided.first()) { acc, term ->
+      when {
+        term is Node.Negate -> Node.Binary(BinaryOperator.MINUS, acc, term.node)
+        term is Node.Number && term.value < KBigDecimal.ZERO ->
+          Node.Binary(BinaryOperator.MINUS, acc, Node.Number(-term.value))
+        else -> Node.Binary(BinaryOperator.PLUS, acc, term)
+      }
+    }
+  return divisor to sum
 }
 
 /**
@@ -420,7 +512,16 @@ private fun simplifyProduct(left: Node, right: Node): Node {
           absorb(factor.node)
         }
       }
-      else -> rest += factor
+      else -> {
+        // x·(52ln(x)+52) ==> 52x·(ln(x)+1)
+        val common = factor.commonNumberOfSum()
+        if (common == null) {
+          rest += factor
+        } else {
+          coefficient = coefficient.multiply(common.first)
+          rest += common.second
+        }
+      }
     }
   }
   factors.forEach(::absorb)

@@ -165,6 +165,16 @@ class ExpressionCalculusTest {
   @Test
   fun derivativeProduct() = assertSymbolic("sin(x)+x×cos(x)", "d/dx(xsin(x))")
 
+  // x/x goes away
+  @Test
+  fun derivativeXPowerX() =
+    assertSymbolic("x${pow("x")}×(ln(x)+1)", "d/dx(x${pow("x")})")
+
+  // 52x/x is 52, then 52 comes out of the brackets
+  @Test
+  fun derivativeXPowerNumberTimesX() =
+    assertSymbolic("52x${pow("52x")}×(ln(x)+1)", "d/dx(x${pow("52x")})")
+
   // Roots
   @Test
   fun rootsQuintic() =
