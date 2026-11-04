@@ -12,6 +12,11 @@ updates:
       # Small updates together in one pull request, big ones on their own
       libraries:
         update-types: [minor, patch]
+    ignore:
+      # Material 3 1.13 needs Compose Multiplatform 1.13: with 1.12 the web app fails to start
+      # (skiko.mjs misses functions). Update both together by hand
+      - dependency-name: "org.jetbrains.compose.material3:*"
+        versions: ["[1.13.0-alpha,)"]
 
   - package-ecosystem: github-actions
     directory: /

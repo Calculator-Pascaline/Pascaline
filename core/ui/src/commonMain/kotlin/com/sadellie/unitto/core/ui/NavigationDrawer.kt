@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -76,7 +77,8 @@ fun NavigationDrawer(
       modifier = modifier,
       drawerContent = {
         PermanentDrawerSheet(
-          modifier = Modifier.fillMaxHeight().verticalScroll(rememberScrollState()),
+          modifier =
+            Modifier.width(PermanentDrawerWidth).fillMaxHeight().verticalScroll(rememberScrollState()),
           drawerContainerColor = MaterialTheme.colorScheme.surfaceContainer,
           drawerContentColor = MaterialTheme.colorScheme.onSurface,
         ) {
@@ -139,6 +141,9 @@ private fun Modifier.drawerEdgeGesture(enabled: Boolean, state: DrawerState) = c
 }
 
 private val UnittoModalDrawerDragHandleWidth = 60.dp
+
+// Material's 360 dp takes too much of a wide window next to the calculator, the longest label still fits
+private val PermanentDrawerWidth = 256.dp
 private val UnittoModalDrawerDragHandleThreshold = 20.dp
 
 @Preview(backgroundColor = 0xFFC8F7D4, showBackground = true, widthDp = 840, heightDp = 500)
