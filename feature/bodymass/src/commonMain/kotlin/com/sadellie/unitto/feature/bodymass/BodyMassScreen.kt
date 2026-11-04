@@ -39,7 +39,6 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButton
-import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -220,7 +219,6 @@ private fun BodyMassInputModeSelector(
       onCheckedChange = { updateIsMetric(true) },
       checked = isMetric,
       modifier = Modifier.weight(1f),
-      shapes = ToggleButtonDefaults.shapes(),
     ) {
       Text(stringResource(Res.string.body_mass_metric))
     }
@@ -228,7 +226,6 @@ private fun BodyMassInputModeSelector(
       onCheckedChange = { updateIsMetric(false) },
       checked = !isMetric,
       modifier = Modifier.weight(1f),
-      shapes = ToggleButtonDefaults.shapes(),
     ) {
       Text(stringResource(Res.string.body_mass_imperial))
     }

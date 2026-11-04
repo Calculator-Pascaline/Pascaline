@@ -47,7 +47,7 @@ class UnittoMultiplatformLibraryPlugin : Plugin<Project> {
       apply(plugin = libs.getPlugin("android.multiplatform.library"))
       extensions.configure<KotlinMultiplatformExtension> {
         configure<KotlinMultiplatformAndroidLibraryTarget> {
-          compileSdk = 37
+          compileSdk { version = release(37) { minorApiLevel = 1 } }
           minSdk = 24
           @OptIn(ExperimentalKotlinGradlePluginApi::class)
           compilerOptions {
@@ -105,7 +105,7 @@ class UnittoLibraryPlugin : Plugin<Project> {
       apply(plugin = libs.getPlugin("android.library"))
 
       extensions.configure<LibraryExtension> {
-        compileSdk = 37
+        compileSdk { version = release(37) { minorApiLevel = 1 } }
         defaultConfig.minSdk = 24
 
         buildFeatures {

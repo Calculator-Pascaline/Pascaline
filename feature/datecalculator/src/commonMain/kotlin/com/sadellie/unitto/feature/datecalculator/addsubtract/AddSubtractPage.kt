@@ -41,7 +41,6 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButton
-import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -189,7 +188,6 @@ private fun OperationSelector(
     ToggleButton(
       checked = addition,
       onCheckedChange = { updateAddition(true) },
-      shapes = ToggleButtonDefaults.shapes(),
       modifier = Modifier.weight(1f),
     ) {
       Icon(Symbols.Add, stringResource(Res.string.date_calculator_add))
@@ -197,7 +195,6 @@ private fun OperationSelector(
     ToggleButton(
       checked = !addition,
       onCheckedChange = { updateAddition(false) },
-      shapes = ToggleButtonDefaults.shapes(),
       modifier = Modifier.weight(1f),
     ) {
       Icon(Symbols.Remove, stringResource(Res.string.date_calculator_subtract))

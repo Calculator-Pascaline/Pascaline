@@ -39,7 +39,6 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButton
-import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
@@ -265,21 +264,18 @@ private fun ThemingModeSelector(
         ToggleButton(
           onCheckedChange = { onThemeChange(ThemingMode.AUTO) },
           checked = ThemingMode.AUTO == currentThemingMode,
-          shapes = ToggleButtonDefaults.shapes(),
         ) {
           Text(stringResource(Res.string.settings_auto), maxLines = 1)
         }
         ToggleButton(
           onCheckedChange = { onThemeChange(ThemingMode.FORCE_LIGHT) },
           checked = ThemingMode.FORCE_LIGHT == currentThemingMode,
-          shapes = ToggleButtonDefaults.shapes(),
         ) {
           Text(stringResource(Res.string.settings_light_mode), maxLines = 1)
         }
         ToggleButton(
           onCheckedChange = { onThemeChange(ThemingMode.FORCE_DARK) },
           checked = ThemingMode.FORCE_DARK == currentThemingMode,
-          shapes = ToggleButtonDefaults.shapes(),
         ) {
           Text(stringResource(Res.string.settings_dark_mode), maxLines = 1)
         }

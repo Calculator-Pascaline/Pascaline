@@ -29,7 +29,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButton
-import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -177,7 +176,6 @@ private fun UnitListSortingSetting(
       ToggleButton(
         checked = currentSorting == sorting,
         onCheckedChange = { onUpdate(sorting) },
-        shapes = ToggleButtonDefaults.shapes(),
       ) {
         Text(stringResource(sorting.res))
       }
