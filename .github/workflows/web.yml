@@ -1,8 +1,9 @@
 # Builds the web app and publishes it on GitHub Pages:
 # https://calculator-pascaline.github.io/Pascaline/
-# Pull requests (like Dependabot updates) are built for Android and the web and tested, but not
-# published. Every build starts the web app in a browser to check that it works. A Dependabot pull
-# request that passes is merged, then the web app is published.
+# Pushes and pull requests (like Dependabot updates) are built for Android and the web and tested,
+# only pushes are published, and only when everything passes. Every build starts the web app in a
+# browser to check that it works. A Dependabot pull request that passes is merged, then the web app
+# is published.
 name: Web app
 
 on:
@@ -38,27 +39,22 @@ jobs:
       - uses: gradle/actions/setup-gradle@v6
 
       - name: Build Android app
-        if: github.event_name == 'pull_request'
         run: ./gradlew :androidApp:assembleDebug
 
       - name: Run tests
-        if: github.event_name == 'pull_request'
         run: ./gradlew testAndroidHostTest :kt-math:jvmTest
 
       # They need a device to run, but compiling them catches code changes that break them
       - name: Compile tests for devices
-        if: github.event_name == 'pull_request'
         run: ./gradlew compileAndroidDeviceTest
 
       # Code checks (detekt/config.yml): new findings fail, the known ones are in detekt/baseline.xml
       - name: Check code with Detekt
-        if: github.event_name == 'pull_request'
         run: ./gradlew detektProjectReport
 
       # The shared tests again on the web's code, in Firefox (installed on the runner): the web app
       # computes with its own number library, which can differ from Android's
       - name: Run tests in a browser
-        if: github.event_name == 'pull_request'
         run: ./gradlew wasmJsBrowserTest --continue
 
       - name: Build web app
