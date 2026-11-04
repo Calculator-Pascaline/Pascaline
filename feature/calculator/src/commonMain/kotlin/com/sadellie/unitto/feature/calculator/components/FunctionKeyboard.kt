@@ -18,12 +18,27 @@
 
 package com.sadellie.unitto.feature.calculator.components
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -39,6 +54,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -54,8 +71,8 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -67,6 +84,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -76,8 +94,11 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import com.sadellie.unitto.core.common.PhysicalUnit
@@ -117,6 +138,7 @@ import com.sadellie.unitto.core.ui.animatePressedWeight
 import com.sadellie.unitto.core.ui.keyHaptics
 import com.sadellie.unitto.core.ui.rememberKeyPress
 import com.sadellie.unitto.core.ui.trackKeyPress
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import unitto.core.common.generated.resources.Res
@@ -358,8 +380,9 @@ private val CALCULUS_PAGE =
   )
 
 /**
- * Units and constants, same menus as on NumWorks: every category is a chip on top, the units of
- * the chosen one are shown below it, grouped under the names of its sub-menus.
+ * Units and constants, same menus as on NumWorks: every category is a tile, across the top of a
+ * screen wider than tall and down the side otherwise, and the units of the chosen one are shown
+ * next to the tiles, grouped under the names of its sub-menus.
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -381,7 +404,7 @@ internal fun UnitsSheet(onDismiss: () -> Unit, onUnitClick: (String) -> Unit) {
     sheetGesturesEnabled = false,
     dragHandle = null,
     // The whole page takes the chosen category's color
-    containerColor = categoryPageColor(selected.name),
+    containerColor = animateColorAsState(categoryPageColor(selected.name), label = "Units page").value,
   ) {
     Column(modifier = Modifier.fillMaxSize().padding(top = 8.dp)) {
       Row(
@@ -397,51 +420,107 @@ internal fun UnitsSheet(onDismiss: () -> Unit, onUnitClick: (String) -> Unit) {
           Icon(Symbols.Close, contentDescription = stringResource(Res.string.common_close))
         }
       }
-      // Categories down the left edge, the chosen one's units on the right: both scroll on their own
-      Row(modifier = Modifier.fillMaxSize().padding(top = 8.dp)) {
-        Column(
-          modifier =
-            Modifier.fillMaxHeight()
-              .verticalScroll(rememberScrollState())
-              .padding(start = 16.dp, end = 12.dp, bottom = 24.dp),
-          verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-          categories.forEachIndexed { index, category ->
-            CategoryTile(
-              category = category,
-              selected = index == selectedIndex,
-              onClick = { selectedIndex = index },
-            )
-          }
+      val tiles: @Composable (Boolean) -> Unit = { isHorizontal ->
+        categories.forEachIndexed { index, category ->
+          CategoryTile(
+            category = category,
+            selected = index == selectedIndex,
+            isHorizontal = isHorizontal,
+            onClick = { selectedIndex = index },
+          )
         }
-        // Back to the top for another category
-        key(selectedIndex) {
-          Column(
-            modifier =
-              Modifier.weight(1f)
-                .fillMaxHeight()
-                .verticalScroll(rememberScrollState())
-                .padding(end = 16.dp, bottom = 24.dp)
-          ) {
-            // The tiles have no text: the chosen one is named here
-            Text(
-              text = menuName(selected.name),
-              style = MaterialTheme.typography.titleMedium,
-              color = categoryColor(selected.name),
-              textAlign = TextAlign.Center,
-              modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
-            )
-            unitSections(selected).forEach { (title, units) ->
-              UnitSection(
-                title = title,
-                units = units,
-                color = categoryColor(selected.name),
-                chipColor = categoryChipColor(selected.name),
-                onUnitClick = onUnitClick,
-              )
+      }
+      // By the shape of the screen: categories across the top when it is wider than tall (a
+      // laptop), down the left edge otherwise (a phone). They scroll apart from the units
+      BoxWithConstraints(modifier = Modifier.fillMaxSize().padding(top = 8.dp)) {
+        if (maxWidth > maxHeight) {
+          Column(modifier = Modifier.fillMaxSize()) {
+            Row(
+              modifier =
+                Modifier.fillMaxWidth()
+                  .horizontalScroll(rememberScrollState())
+                  .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
+              horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+              tiles(true)
+            }
+            CategoryUnits(selected, Modifier.padding(start = 16.dp), onUnitClick)
+          }
+        } else {
+          Row(modifier = Modifier.fillMaxSize()) {
+            Column(
+              modifier =
+                Modifier.fillMaxHeight()
+                  .verticalScroll(rememberScrollState())
+                  .padding(start = 16.dp, end = 12.dp, bottom = 24.dp),
+              verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+              tiles(false)
+            }
+            Column(modifier = Modifier.weight(1f)) {
+              CategoryName(categories, selectedIndex)
+              CategoryUnits(selected, Modifier, onUnitClick)
             }
           }
         }
+      }
+    }
+  }
+}
+
+/** Name of the chosen category above its units, sliding the way the selection moved. */
+@Composable
+private fun CategoryName(categories: List<UnitMenuItem.Category>, selectedIndex: Int) {
+  AnimatedContent(
+    targetState = selectedIndex,
+    modifier = Modifier.fillMaxWidth().padding(end = 16.dp),
+    transitionSpec = {
+      val direction = if (targetState > initialState) 1 else -1
+      val slide = spring<IntOffset>(Spring.DampingRatioNoBouncy, Spring.StiffnessMediumLow)
+      (slideInVertically(slide) { direction * it / 2 } + fadeIn(tween(CATEGORY_FADE_IN_MS))) togetherWith
+        (slideOutVertically(slide) { -direction * it / 2 } + fadeOut(tween(CATEGORY_FADE_OUT_MS)))
+    },
+    contentAlignment = Alignment.CenterStart,
+    label = "Category name",
+  ) { index ->
+    val category = categories[index]
+    Text(
+      text = menuName(category.name),
+      style = MaterialTheme.typography.titleLarge,
+      color = categoryColor(category.name),
+      maxLines = 1,
+      overflow = TextOverflow.Ellipsis,
+    )
+  }
+}
+
+/** Units of the chosen category, scrolling on their own and fading from one category to another. */
+@Composable
+private fun CategoryUnits(
+  selected: UnitMenuItem.Category,
+  modifier: Modifier,
+  onUnitClick: (String) -> Unit,
+) {
+  AnimatedContent(
+    targetState = selected,
+    modifier = modifier.fillMaxHeight(),
+    transitionSpec = {
+      fadeIn(tween(CATEGORY_FADE_IN_MS)) togetherWith fadeOut(tween(CATEGORY_FADE_OUT_MS))
+    },
+    label = "Category units",
+  ) { category ->
+    Column(
+      modifier =
+        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(end = 16.dp, bottom = 24.dp)
+    ) {
+      unitSections(category).forEach { (title, units) ->
+        UnitSection(
+          title = title,
+          units = units,
+          color = categoryColor(category.name),
+          chipColor = categoryChipColor(category.name),
+          onUnitClick = onUnitClick,
+        )
       }
     }
   }
@@ -513,29 +592,73 @@ private fun UnitSection(
 
 /**
  * Category of the units menu as a colored tile, like an app icon: soft tint with the icon in the
- * category's color, filled with it and a white icon when chosen. Named for screen readers.
+ * category's color. Chosen, it fills with that color. When the tiles are [isHorizontal] it also
+ * grows to show its name; otherwise [CategoryName] shows it and the tiles stay where they are.
  */
 @Composable
-private fun CategoryTile(category: UnitMenuItem.Category, selected: Boolean, onClick: () -> Unit) {
+private fun CategoryTile(
+  category: UnitMenuItem.Category,
+  selected: Boolean,
+  isHorizontal: Boolean,
+  onClick: () -> Unit,
+) {
   val color = categoryColor(category.name)
   val name = menuName(category.name)
   val background by
     animateColorAsState(if (selected) color else color.copy(alpha = CATEGORY_TINT_ALPHA), label = "Tile")
   val content by animateColorAsState(if (selected) Color.White else color, label = "Tile icon")
+  val iconScale by
+    animateFloatAsState(
+      if (selected) CATEGORY_ICON_SELECTED_SCALE else 1f,
+      spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow),
+      label = "Tile icon scale",
+    )
+  // The tile that just grew may stick out of the list
+  val bringIntoView = remember { BringIntoViewRequester() }
+  LaunchedEffect(selected) {
+    if (selected) {
+      delay(CATEGORY_GROW_MS)
+      bringIntoView.bringIntoView()
+    }
+  }
+  val icon: @Composable () -> Unit = {
+    Box(modifier = Modifier.size(CATEGORY_TILE_SIZE), contentAlignment = Alignment.Center) {
+      categoryTileIcon(category.name)?.let {
+        Icon(
+          it,
+          contentDescription = null,
+          modifier = Modifier.size(CATEGORY_TILE_ICON_SIZE).graphicsLayer { scaleX = iconScale; scaleY = iconScale },
+        )
+      }
+    }
+  }
   Surface(
     onClick = onClick,
-    modifier = Modifier.size(CATEGORY_TILE_SIZE).semantics { contentDescription = name },
+    modifier = Modifier.bringIntoViewRequester(bringIntoView).semantics { contentDescription = name },
     shape = RoundedCornerShape(CATEGORY_TILE_CORNER),
     color = background,
     contentColor = content,
   ) {
-    Box(contentAlignment = Alignment.Center) {
-      categoryTileIcon(category.name)?.let { icon ->
-        Icon(icon, contentDescription = null, modifier = Modifier.size(CATEGORY_TILE_ICON_SIZE))
+    Row(verticalAlignment = Alignment.CenterVertically) {
+      icon()
+      AnimatedVisibility(
+        visible = selected && isHorizontal,
+        enter = expandHorizontally(tileSpring()) + fadeIn(),
+        exit = shrinkHorizontally(tileSpring()) + fadeOut(),
+      ) {
+        Text(
+          text = name,
+          modifier = Modifier.padding(end = 18.dp),
+          style = MaterialTheme.typography.titleSmall,
+          maxLines = 1,
+          softWrap = false,
+        )
       }
     }
   }
 }
+
+private fun tileSpring() = spring<IntSize>(Spring.DampingRatioLowBouncy, Spring.StiffnessMediumLow)
 
 /** Own color of each category, the same in light and dark themes: strong enough on both. */
 private fun categoryColor(name: String): Color =
@@ -648,6 +771,10 @@ private val CATEGORY_ICONS: Map<String, ImageVector> by lazy {
   )
 }
 
+private const val CATEGORY_ICON_SELECTED_SCALE = 1.15f
+private const val CATEGORY_GROW_MS = 250L
+private const val CATEGORY_FADE_IN_MS = 220
+private const val CATEGORY_FADE_OUT_MS = 90
 private val CATEGORY_TILE_SIZE = 52.dp
 private val CATEGORY_TILE_CORNER = 18.dp
 private val CATEGORY_TILE_ICON_SIZE = 28.dp
