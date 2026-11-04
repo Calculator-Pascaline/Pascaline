@@ -23,6 +23,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -116,6 +120,8 @@ internal fun SheetContent(
       colors = navigationDrawerItemColors,
     )
   }
+  // The last item can scroll above the navigation bar
+  Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
 }
 
 @Composable

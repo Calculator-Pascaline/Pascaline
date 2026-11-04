@@ -100,7 +100,7 @@ internal fun FavoriteTimeZoneItem(
   localeDisplayNames: LocaleDisplayNames,
 ) {
   val context = LocalContext.current
-  val locale = LocalLocale.current
+  val locale = LocalLocale.current.platformLocale
   val is24Hour = DateFormat.is24HourFormat(context)
   var deleteAnimationRunning by remember { mutableStateOf(false) }
   val animatedAlpha by

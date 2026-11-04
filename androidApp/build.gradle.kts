@@ -68,11 +68,11 @@ android {
       }
     }
   }
-  compileSdk = 36
+  compileSdk = 37
 
   defaultConfig {
     applicationId = "io.github.calculatorpascaline"
-    minSdk = 23
+    minSdk = 24
     targetSdk = 36
     versionCode = libs.versions.versionCode.get().toInt()
     versionName = libs.versions.versionName.get()

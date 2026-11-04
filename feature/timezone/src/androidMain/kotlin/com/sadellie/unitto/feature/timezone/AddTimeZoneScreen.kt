@@ -120,7 +120,7 @@ fun AddTimeZoneScreen(
           buttonLabel = stringResource(Res.string.common_read_article),
         )
       } else {
-        val locale = LocalLocale.current
+        val locale = LocalLocale.current.platformLocale
         val is24Hour = is24HourFormat(mContext)
 
         LazyColumn(

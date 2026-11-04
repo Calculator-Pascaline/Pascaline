@@ -71,7 +71,7 @@ internal fun UserTimeZone(
   onResetClick: () -> Unit,
   showReset: Boolean,
 ) {
-  val locale = LocalLocale.current
+  val locale = LocalLocale.current.platformLocale
   val is24Hour = DateFormat.is24HourFormat(LocalContext.current)
 
   Row(
