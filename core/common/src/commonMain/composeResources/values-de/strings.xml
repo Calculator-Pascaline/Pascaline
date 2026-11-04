@@ -60,6 +60,7 @@
     <string name="calculator_title">Rechner</string>
     <string name="calculator_units_and_constants">Einheiten und Konstanten</string>
     <string name="common_add">Hinzufügen</string>
+    <string name="common_close">Schließen</string>
     <string name="common_cancel">Abbrechen</string>
     <string name="common_clear">Löschen</string>
     <string name="common_clear_input_description">Eingabe löschen</string>

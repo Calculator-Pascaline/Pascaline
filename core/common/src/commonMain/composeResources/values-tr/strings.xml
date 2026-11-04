@@ -60,6 +60,7 @@
     <string name="calculator_title">Hesap makinesi</string>
     <string name="calculator_units_and_constants">Birimler ve sabitler</string>
     <string name="common_add">Ekle</string>
+    <string name="common_close">Kapat</string>
     <string name="common_cancel">İptal</string>
     <string name="common_clear">Temizle</string>
     <string name="common_clear_input_description">Girişi temizle</string>

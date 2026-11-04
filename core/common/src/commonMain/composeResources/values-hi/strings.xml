@@ -60,6 +60,7 @@
     <string name="calculator_title">कैलकुलेटर</string>
     <string name="calculator_units_and_constants">इकाइयाँ और स्थिरांक</string>
     <string name="common_add">जोड़ें</string>
+    <string name="common_close">बंद करें</string>
     <string name="common_cancel">रद्द करें</string>
     <string name="common_clear">साफ़ करें</string>
     <string name="common_clear_input_description">इनपुट साफ़ करें</string>

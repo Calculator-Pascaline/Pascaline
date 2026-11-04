@@ -60,6 +60,7 @@
     <string name="calculator_title">Kalkulator</string>
     <string name="calculator_units_and_constants">Satuan dan konstanta</string>
     <string name="common_add">Tambah</string>
+    <string name="common_close">Tutup</string>
     <string name="common_cancel">Batal</string>
     <string name="common_clear">Hapus</string>
     <string name="common_clear_input_description">Hapus masukan</string>

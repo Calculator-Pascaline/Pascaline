@@ -60,6 +60,7 @@
     <string name="calculator_title">计算器</string>
     <string name="calculator_units_and_constants">单位和常数</string>
     <string name="common_add">添加</string>
+    <string name="common_close">关闭</string>
     <string name="common_cancel">取消</string>
     <string name="common_clear">清除</string>
     <string name="common_clear_input_description">清除输入</string>

@@ -60,6 +60,7 @@
     <string name="calculator_title">Számológép</string>
     <string name="calculator_units_and_constants">Mértékegységek és állandók</string>
     <string name="common_add">Hozzáadás</string>
+    <string name="common_close">Bezárás</string>
     <string name="common_cancel">Mégse</string>
     <string name="common_clear">Törlés</string>
     <string name="common_clear_input_description">Bevitel törlése</string>

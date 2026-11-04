@@ -327,6 +327,7 @@
     <string name="probability_sample_of">sample</string>
     <string name="calculator_title">Calculator</string>
     <string name="common_add">Add</string>
+    <string name="common_close">Close</string>
     <string name="common_cancel">Cancel</string>
     <string name="common_clear">Clear</string>
     <string name="common_clear_input_description">Clear input</string>

@@ -18,11 +18,15 @@
 
 package com.sadellie.unitto.feature.calculator.components
 
-import androidx.compose.foundation.clickable
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -32,15 +36,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -50,10 +54,9 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.animation.core.animateIntAsState
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -62,30 +65,62 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.BaselineShift
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
+import com.sadellie.unitto.core.common.PhysicalUnit
 import com.sadellie.unitto.core.common.PhysicalUnits
 import com.sadellie.unitto.core.common.Token
 import com.sadellie.unitto.core.common.UnitMenuItem
-import com.sadellie.unitto.core.designsystem.icons.symbols.ArrowBack
-import com.sadellie.unitto.core.designsystem.icons.symbols.ChevronRight
+import com.sadellie.unitto.core.designsystem.icons.symbols.ActivityZone
+import com.sadellie.unitto.core.designsystem.icons.symbols.ActivityZoneFill
+import com.sadellie.unitto.core.designsystem.icons.symbols.Airwave
+import com.sadellie.unitto.core.designsystem.icons.symbols.Atom
+import com.sadellie.unitto.core.designsystem.icons.symbols.Close
+import com.sadellie.unitto.core.designsystem.icons.symbols.Compress
+import com.sadellie.unitto.core.designsystem.icons.symbols.DeviceThermostat
+import com.sadellie.unitto.core.designsystem.icons.symbols.DevicesOther
+import com.sadellie.unitto.core.designsystem.icons.symbols.DiagonalLine
+import com.sadellie.unitto.core.designsystem.icons.symbols.ElectricBolt
+import com.sadellie.unitto.core.designsystem.icons.symbols.ElectricBoltFill
+import com.sadellie.unitto.core.designsystem.icons.symbols.Energy
+import com.sadellie.unitto.core.designsystem.icons.symbols.FitnessCenter
+import com.sadellie.unitto.core.designsystem.icons.symbols.Language
+import com.sadellie.unitto.core.designsystem.icons.symbols.LineAxis
+import com.sadellie.unitto.core.designsystem.icons.symbols.Power
+import com.sadellie.unitto.core.designsystem.icons.symbols.PowerFill
+import com.sadellie.unitto.core.designsystem.icons.symbols.Schedule
+import com.sadellie.unitto.core.designsystem.icons.symbols.ScheduleFill
+import com.sadellie.unitto.core.designsystem.icons.symbols.SplitscreenBottom
+import com.sadellie.unitto.core.designsystem.icons.symbols.Straighten
+import com.sadellie.unitto.core.designsystem.icons.symbols.StraightenFill
 import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
-import org.jetbrains.compose.resources.stringResource
-import unitto.core.common.generated.resources.Res
-import unitto.core.common.generated.resources.calculator_units_and_constants
+import com.sadellie.unitto.core.designsystem.icons.symbols.WaterMedium
+import com.sadellie.unitto.core.designsystem.icons.symbols.Weight
+import com.sadellie.unitto.core.designsystem.icons.symbols.WeightFill
+import com.sadellie.unitto.core.designsystem.icons.symbols._123
 import com.sadellie.unitto.core.ui.KeyPress
+import com.sadellie.unitto.core.ui.animatePressedWeight
 import com.sadellie.unitto.core.ui.keyHaptics
 import com.sadellie.unitto.core.ui.rememberKeyPress
 import com.sadellie.unitto.core.ui.trackKeyPress
-import com.sadellie.unitto.core.ui.animatePressedWeight
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
+import unitto.core.common.generated.resources.Res
+import unitto.core.common.generated.resources.calculator_units_and_constants
+import unitto.core.common.generated.resources.common_close
 
 /**
  * Function key: [label] is shown, [token] is inserted. [inverse] is used instead when inverse switch
@@ -321,83 +356,290 @@ private val CALCULUS_PAGE =
     ),
   )
 
-/** Units and constants, same menus as on NumWorks. */
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Units and constants, same menus as on NumWorks: every category is a chip on top, the units of
+ * the chosen one are shown below it, grouped under the names of its sub-menus.
+ */
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 internal fun UnitsSheet(onDismiss: () -> Unit, onUnitClick: (String) -> Unit) {
   val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-  val path = remember { mutableStateListOf<UnitMenuItem.Category>() }
-  val items = path.lastOrNull()?.children ?: PhysicalUnits.menu
+  val categories = remember { PhysicalUnits.menu.filterIsInstance<UnitMenuItem.Category>() }
+  var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
+  val selected = categories[selectedIndex]
 
-  ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState) {
-    Row(
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
-      if (path.isNotEmpty()) {
-        IconButton(onClick = { path.removeAt(path.lastIndex) }) {
-          Icon(Symbols.ArrowBack, contentDescription = null)
+  val scope = rememberCoroutineScope()
+  // Hides with the sheet's animation, then closes
+  val close: () -> Unit = { scope.launch { sheetState.hide() }.invokeOnCompletion { onDismiss() } }
+  // Always the whole screen, also wider than a sheet usually is: room for every unit. Closed with
+  // its X (or back), not by sliding it down
+  ModalBottomSheet(
+    onDismissRequest = onDismiss,
+    sheetState = sheetState,
+    sheetMaxWidth = Dp.Unspecified,
+    sheetGesturesEnabled = false,
+    dragHandle = null,
+    // The whole page takes the chosen category's color
+    containerColor = categoryPageColor(selected.name),
+  ) {
+    Column(modifier = Modifier.fillMaxSize().padding(top = 8.dp)) {
+      Row(
+        modifier = Modifier.padding(start = 20.dp, end = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        Text(
+          text = stringResource(Res.string.calculator_units_and_constants),
+          style = MaterialTheme.typography.titleLarge,
+          modifier = Modifier.weight(1f),
+        )
+        IconButton(onClick = close) {
+          Icon(Symbols.Close, contentDescription = stringResource(Res.string.common_close))
         }
-      } else {
-        Spacer(Modifier.width(16.dp))
       }
-      Text(
-        text = path.lastOrNull()?.name ?: stringResource(Res.string.calculator_units_and_constants),
-        style = MaterialTheme.typography.titleLarge,
-      )
-    }
-    LazyColumn(modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp)) {
-      items(items) { item ->
-        when (item) {
-          is UnitMenuItem.Category ->
-            MenuRow(
-              title = item.name,
-              onClick = { path.add(item) },
-              trailing = {
-                Icon(Symbols.ChevronRight, contentDescription = null, modifier = Modifier.size(20.dp))
-              },
+      // Categories down the left edge, the chosen one's units on the right: both scroll on their own
+      Row(modifier = Modifier.fillMaxSize().padding(top = 8.dp)) {
+        Column(
+          modifier =
+            Modifier.fillMaxHeight()
+              .verticalScroll(rememberScrollState())
+              .padding(start = 16.dp, end = 12.dp, bottom = 24.dp),
+          verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+          categories.forEachIndexed { index, category ->
+            CategoryTile(
+              category = category,
+              selected = index == selectedIndex,
+              onClick = { selectedIndex = index },
             )
-          is UnitMenuItem.Leaf ->
-            MenuRow(
-              title = item.unit.symbol,
-              subtitle = item.unit.name,
-              onClick = { onUnitClick(item.unit.token) },
-            )
+          }
         }
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = DIVIDER_ALPHA))
+        // Back to the top for another category
+        key(selectedIndex) {
+          Column(
+            modifier =
+              Modifier.weight(1f)
+                .fillMaxHeight()
+                .verticalScroll(rememberScrollState())
+                .padding(end = 16.dp, bottom = 24.dp)
+          ) {
+            // The tiles have no text: the chosen one is named here
+            Text(
+              text = selected.name,
+              style = MaterialTheme.typography.titleMedium,
+              color = categoryColor(selected.name),
+              textAlign = TextAlign.Center,
+              modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+            )
+            unitSections(selected).forEach { (title, units) ->
+              UnitSection(
+                title = title,
+                units = units,
+                color = categoryColor(selected.name),
+                chipColor = categoryChipColor(selected.name),
+                onUnitClick = onUnitClick,
+              )
+            }
+          }
+        }
       }
     }
   }
 }
 
+/**
+ * Units of [category] in the menu's order: its own units, then each sub-menu's under its name.
+ * Deeper sub-menus are named after both: "Energy · Joule".
+ */
+private fun unitSections(category: UnitMenuItem.Category): List<Pair<String, List<PhysicalUnit>>> {
+  val sections = mutableListOf<Pair<String, List<PhysicalUnit>>>()
+  fun walk(menu: UnitMenuItem.Category, title: String) {
+    val units = menu.children.filterIsInstance<UnitMenuItem.Leaf>().map { it.unit }
+    if (units.isNotEmpty()) sections += title to units
+    menu.children.filterIsInstance<UnitMenuItem.Category>().forEach { child ->
+      // A first level of sub-menus is named alone, Length rather than Length and angle · Length
+      walk(child, if (menu === category) child.name else "$title · ${child.name}")
+    }
+  }
+  walk(category, category.name)
+  return sections
+}
+
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun MenuRow(
+private fun UnitSection(
   title: String,
-  onClick: () -> Unit,
-  subtitle: String? = null,
-  trailing: @Composable () -> Unit = {},
+  units: List<PhysicalUnit>,
+  color: Color,
+  chipColor: Color,
+  onUnitClick: (String) -> Unit,
 ) {
   Row(
-    modifier = Modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 24.dp, vertical = 14.dp),
+    modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    Text(
-      modifier = Modifier.weight(1f),
-      text = title,
-      style = MaterialTheme.typography.titleMedium,
-      fontWeight = if (subtitle != null) FontWeight.Bold else FontWeight.Normal,
-    )
-    if (subtitle != null) {
-      Text(
-        text = subtitle,
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    categoryIcon(title.substringAfterLast(" · "))?.let { icon ->
+      Icon(
+        icon,
+        contentDescription = null,
+        tint = color,
+        modifier = Modifier.size(18.dp),
       )
+      Spacer(Modifier.width(8.dp))
     }
-    trailing()
+    Text(
+      text = title,
+      style = MaterialTheme.typography.labelLarge,
+      color = color,
+    )
+  }
+  FlowRow(
+    horizontalArrangement = Arrangement.spacedBy(8.dp),
+    verticalArrangement = Arrangement.spacedBy(8.dp),
+  ) {
+    units.forEach { unit -> UnitChip(unit = unit, color = chipColor, onClick = { onUnitClick(unit.token) }) }
   }
 }
 
+/**
+ * Category of the units menu as a colored tile, like an app icon: soft tint with the icon in the
+ * category's color, filled with it and a white icon when chosen. Named for screen readers.
+ */
+@Composable
+private fun CategoryTile(category: UnitMenuItem.Category, selected: Boolean, onClick: () -> Unit) {
+  val color = categoryColor(category.name)
+  val background by
+    animateColorAsState(if (selected) color else color.copy(alpha = CATEGORY_TINT_ALPHA), label = "Tile")
+  val content by animateColorAsState(if (selected) Color.White else color, label = "Tile icon")
+  Surface(
+    onClick = onClick,
+    modifier = Modifier.size(CATEGORY_TILE_SIZE).semantics { contentDescription = category.name },
+    shape = RoundedCornerShape(CATEGORY_TILE_CORNER),
+    color = background,
+    contentColor = content,
+  ) {
+    Box(contentAlignment = Alignment.Center) {
+      categoryTileIcon(category.name)?.let { icon ->
+        Icon(icon, contentDescription = null, modifier = Modifier.size(CATEGORY_TILE_ICON_SIZE))
+      }
+    }
+  }
+}
+
+/** Own color of each category, the same in light and dark themes: strong enough on both. */
+private fun categoryColor(name: String): Color =
+  when (name) {
+    "Length and angle" -> Color(0xFF5C6BC0)
+    "Time and frequency" -> Color(0xFF00897B)
+    "Area and volume" -> Color(0xFF039BE5)
+    "Mass" -> Color(0xFFEF6C00)
+    "Electricity" -> Color(0xFFF9A825)
+    "Force and pressure" -> Color(0xFFE53935)
+    "Energy and power" -> Color(0xFF43A047)
+    "Temperature" -> Color(0xFFD81B60)
+    "Other units" -> Color(0xFF8E24AA)
+    "Constants" -> Color(0xFF546E7A)
+    else -> Color(0xFF5C6BC0)
+  }
+
+/** Background of the menu: the sheet's color with a light wash of the category's, fading over. */
+@Composable
+private fun categoryPageColor(name: String): Color {
+  val target =
+    categoryColor(name).copy(alpha = CATEGORY_PAGE_ALPHA).compositeOver(MaterialTheme.colorScheme.surfaceContainerLow)
+  return animateColorAsState(target, label = "Units page").value
+}
+
+/** Units on that page: a stronger wash, so they stand out from it. */
+@Composable
+private fun categoryChipColor(name: String): Color {
+  val target =
+    categoryColor(name).copy(alpha = CATEGORY_CHIP_ALPHA).compositeOver(MaterialTheme.colorScheme.surfaceContainerHigh)
+  return animateColorAsState(target, label = "Unit chips").value
+}
+
+/** Filled icons on the tiles, they read better at this size than the outlined ones. */
+private fun categoryTileIcon(name: String): ImageVector? =
+  when (name) {
+    "Length and angle" -> Symbols.StraightenFill
+    "Time and frequency" -> Symbols.ScheduleFill
+    "Area and volume" -> Symbols.ActivityZoneFill
+    "Mass" -> Symbols.WeightFill
+    "Electricity" -> Symbols.ElectricBoltFill
+    "Energy and power" -> Symbols.PowerFill
+    else -> categoryIcon(name)
+  }
+
+/** Symbol to insert, with its name below: hplanck alone doesn't say it's Planck's constant. */
+@Composable
+private fun UnitChip(unit: PhysicalUnit, color: Color, onClick: () -> Unit) {
+  Surface(
+    onClick = onClick,
+    shape = RoundedCornerShape(12.dp),
+    color = color,
+    contentColor = MaterialTheme.colorScheme.onSurface,
+  ) {
+    Column(
+      modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+      horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+      Text(text = unit.symbol, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Medium)
+      Text(
+        text = unit.name,
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        maxLines = 1,
+      )
+    }
+  }
+}
+
+/**
+ * Icon in front of a category of the units menu, like the unit converter's groups. The menu's
+ * names are fixed (not translated), null for a name that has none.
+ */
+private fun categoryIcon(name: String): ImageVector? =
+  when (name) {
+    "Length and angle",
+    "Length" -> Symbols.Straighten
+    "Angle" -> Symbols.DiagonalLine
+    // Inches, ounces, gallons: the units of other countries
+    "Imperial" -> Symbols.Language
+    "Time and frequency",
+    "Time" -> Symbols.Schedule
+    "Frequency" -> Symbols.Airwave
+    "Area and volume",
+    "Area" -> Symbols.ActivityZone
+    "Volume" -> Symbols.WaterMedium
+    "Mass" -> Symbols.Weight
+    "Electricity",
+    "Current" -> Symbols.ElectricBolt
+    "Voltage" -> Symbols.ElectricBoltFill
+    // Zigzag, like a resistor
+    "Resistance" -> Symbols.LineAxis
+    // Two plates, like a capacitor
+    "Capacitance" -> Symbols.SplitscreenBottom
+    "Other units" -> Symbols.DevicesOther
+    "Force and pressure",
+    "Force" -> Symbols.FitnessCenter
+    "Pressure" -> Symbols.Compress
+    "Energy and power",
+    "Energy",
+    "Joule" -> Symbols.Energy
+    "Electronvolt" -> Symbols.Atom
+    "Watt-hour",
+    "Power" -> Symbols.Power
+    "Temperature" -> Symbols.DeviceThermostat
+    "Amount of substance" -> Symbols.Atom
+    "Constants" -> Symbols._123
+    else -> null
+  }
+
+private val CATEGORY_TILE_SIZE = 52.dp
+private val CATEGORY_TILE_CORNER = 18.dp
+private val CATEGORY_TILE_ICON_SIZE = 28.dp
+private const val CATEGORY_TINT_ALPHA = 0.16f
+private const val CATEGORY_PAGE_ALPHA = 0.08f
+private const val CATEGORY_CHIP_ALPHA = 0.16f
 private val KEY_SPACING = 6.dp
 internal const val PAGE_ROWS = 4
 private const val KEYS_PER_ROW = 4
@@ -407,7 +649,6 @@ private val DOT_SIZE = 6.dp
 /** Width that can be clicked around a dot */
 private val DOT_TARGET_WIDTH = 16.dp
 internal val DOTS_HEIGHT = 14.dp
-private const val DIVIDER_ALPHA = 0.5f
 
 /** Same corners as the other keys. */
 /** Corners of keys like on the keypad: a bit less round while pressed. */

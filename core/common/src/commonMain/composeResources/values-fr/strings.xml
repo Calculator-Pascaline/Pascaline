@@ -60,6 +60,7 @@
     <string name="calculator_title">Calculatrice</string>
     <string name="calculator_units_and_constants">Unités et constantes</string>
     <string name="common_add">Ajouter</string>
+    <string name="common_close">Fermer</string>
     <string name="common_cancel">Annuler</string>
     <string name="common_clear">Effacer</string>
     <string name="common_clear_input_description">Effacer la saisie</string>
