@@ -31,6 +31,38 @@ class AngleUnitsTest {
     assertExpr(expr, result, radianMode = false)
   }
 
+  // Exactly, assertExpr would round a tiny number to 0
+  private fun assertExactlyZero(expr: String) {
+    assertEquals(0, Expression(expr, radianMode = true).calculate().compareTo(KBigDecimal.ZERO))
+    assertEquals(0, Expression(expr, radianMode = false).calculate().compareTo(KBigDecimal.ZERO))
+  }
+
+  private fun assertNoTangent(expr: String, radianMode: Boolean) =
+    assertExprFail(ExpressionException.DivideByZero(), expr, radianMode)
+
+  @Test fun tangentOfRightAngle() {
+    assertNoTangent("tan(90_°)", radianMode = true)
+    assertNoTangent("tan(90_°)", radianMode = false)
+  }
+
+  @Test fun tangentOfThreeRightAngles() = assertNoTangent("tan(270_°)", radianMode = true)
+
+  @Test fun tangentOfRightAngleInRadians() = assertNoTangent("tan(π÷2_rad)", radianMode = false)
+
+  @Test fun tangentOfRightAngleInDegreeMode() = assertNoTangent("tan(90)", radianMode = false)
+
+  @Test fun tangentOfRightAngleInRadianMode() = assertNoTangent("tan(π÷2)", radianMode = true)
+
+  @Test fun cosineOfRightAngleIsZero() = assertExactlyZero("cos(90_°)")
+
+  @Test fun cosineOfThreeRightAnglesIsZero() = assertExactlyZero("cos(270_°)")
+
+  @Test fun sineOfHalfTurnIsZero() = assertExactlyZero("sin(180_°)")
+
+  @Test fun sineOfFullTurnIsZero() = assertExactlyZero("sin(360_°)")
+
+  @Test fun tangentOfHalfTurnIsZero() = assertExactlyZero("tan(180_°)")
+
   @Test fun cosineOfDegrees() = assertBothModes("cos(45_°)", "0.7071067812")
 
   @Test fun sineOfDegrees() = assertBothModes("sin(30_°)", "0.5")

@@ -24,6 +24,7 @@ import com.sadellie.unitto.core.common.KBigDecimalMath
 import com.sadellie.unitto.core.common.KMathContext
 import com.sadellie.unitto.core.common.KRoundingMode
 import com.sadellie.unitto.core.common.MAX_SCALE
+import com.sadellie.unitto.core.common.PhysicalUnits
 import com.sadellie.unitto.core.common.isEqualTo
 
 /** Expression has a variable or a symbolic operation, can't be calculated as a number. */
@@ -118,11 +119,12 @@ internal class Evaluator(
       // Angle box makes radians of the argument: sin(45°) is the same in both angle modes
       is Node.Function -> {
         val angle = node.angle
-        if (angle == null) {
-          evaluateFunction(node.function, evaluate(node.argument, x))
-        } else {
-          val radians = evaluate(node.argument, x) * Complex(KBigDecimal(angle.factor))
-          evaluateFunction(node.function, radians, inRadians = true)
+        val argument = evaluate(node.argument, x)
+        when (angle) {
+          null -> evaluateFunction(node.function, argument)
+          // Not the unit's factor: its digits of π are too few for cos(90°) to be 0
+          PhysicalUnits.degree -> evaluateFunction(node.function, argument, inRadians = false)
+          else -> evaluateFunction(node.function, argument * Complex(KBigDecimal(angle.factor)), inRadians = true)
         }
       }
       is Node.Log -> evaluateLog(evaluate(node.base, x).real(), evaluate(node.argument, x).real())
@@ -199,7 +201,13 @@ internal class Evaluator(
         FunctionType.ABS -> error("handled above")
         FunctionType.SIN -> value.sin(inRadians, mathContext).rescaleTrig()
         FunctionType.COS -> value.cos(inRadians, mathContext).rescaleTrig()
-        FunctionType.TAN -> value.tan(inRadians, mathContext).rescaleTrig()
+        FunctionType.TAN -> {
+          // tan(90°) does not exist, rounded π would make it a huge number
+          if (value.cos(inRadians, mathContext).rescaleTrig().isEqualTo(KBigDecimal.ZERO)) {
+            throw ExpressionException.DivideByZero()
+          }
+          value.tan(inRadians, mathContext).rescaleTrig()
+        }
         FunctionType.ARSIN -> value.arsin(radianMode, mathContext).rescaleTrig()
         FunctionType.ARCOS -> value.arcos(radianMode, mathContext).rescaleTrig()
         FunctionType.ARTAN -> value.artan(radianMode, mathContext).rescaleTrig()
