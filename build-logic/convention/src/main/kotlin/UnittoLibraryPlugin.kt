@@ -62,7 +62,15 @@ class UnittoMultiplatformLibraryPlugin : Plugin<Project> {
         @OptIn(ExperimentalWasmDsl::class)
         wasmJs {
           // Shared tests in Firefox (wasmJsBrowserTest), CI runs them
-          browser { testTask { useKarma().useFirefoxHeadless() } }
+          browser {
+            testTask {
+              useKarma {
+                useFirefoxHeadless()
+                // Timeouts for slow calculations, shared by every module
+                useConfigDirectory(rootProject.file("karma.config.d"))
+              }
+            }
+          }
           binaries.executable()
         }
         compilerOptions {

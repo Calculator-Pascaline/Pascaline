@@ -24,7 +24,14 @@ kotlin {
   jvm()
   @OptIn(ExperimentalWasmDsl::class)
   wasmJs {
-    browser { testTask { useKarma { useFirefoxHeadless() } } }
+    browser {
+      testTask {
+        useKarma {
+          useFirefoxHeadless()
+          useConfigDirectory(rootProject.file("karma.config.d"))
+        }
+      }
+    }
     binaries.executable()
   }
 
