@@ -1,5 +1,5 @@
 /*
- * Unitto is a calculator for Android
+ * Pascaline is a calculator for Android
  * Copyright (c) 2026 Calculator-Pascaline
  *
  * This program is free software: you can redistribute it and/or modify
@@ -43,11 +43,8 @@ import com.sadellie.unitto.core.ui.ListItemExpressiveDefaults
 import com.sadellie.unitto.core.ui.SearchBar
 import com.sadellie.unitto.core.ui.SearchPlaceholder
 import com.sadellie.unitto.core.ui.datetime.LocalPlatformDateFormatSettings
-import com.sadellie.unitto.core.ui.rememberLinkOpener
 import org.jetbrains.compose.resources.stringResource
 import unitto.core.common.generated.resources.Res
-import unitto.core.common.generated.resources.common_read_article
-import unitto.core.common.generated.resources.time_zone_no_results_support
 
 /** A zone found by the search, with its names worked out once. */
 private data class WebSearchResult(val zone: String, val name: String, val region: String)
@@ -80,15 +77,7 @@ internal fun WebAddTimeZoneScreen(navigateUp: () -> Unit, userMillis: Double) {
       label = "Placeholder",
     ) { empty ->
       if (empty) {
-        val linkOpener = rememberLinkOpener()
-        SearchPlaceholder(
-          modifier = Modifier.padding(paddingValues),
-          onButtonClick = {
-            linkOpener.launch("https://sadellie.github.io/unitto/help#add-time-zones")
-          },
-          supportText = stringResource(Res.string.time_zone_no_results_support),
-          buttonLabel = stringResource(Res.string.common_read_article),
-        )
+        SearchPlaceholder(modifier = Modifier.padding(paddingValues))
       } else {
         LazyColumn(
           modifier = Modifier.fillMaxSize(),

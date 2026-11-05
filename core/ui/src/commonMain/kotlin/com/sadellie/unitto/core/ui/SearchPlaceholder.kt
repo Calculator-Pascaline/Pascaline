@@ -44,9 +44,9 @@ import unitto.core.common.generated.resources.common_no_results_description
 @Composable
 fun SearchPlaceholder(
   modifier: Modifier = Modifier,
-  onButtonClick: () -> Unit,
-  supportText: String,
-  buttonLabel: String,
+  onButtonClick: (() -> Unit)? = null,
+  supportText: String? = null,
+  buttonLabel: String? = null,
 ) {
   Column(
     modifier = modifier.fillMaxWidth().padding(16.dp),
@@ -63,18 +63,22 @@ fun SearchPlaceholder(
       textAlign = TextAlign.Center,
       style = MaterialTheme.typography.bodyLarge,
     )
-    Text(
-      text = supportText,
-      textAlign = TextAlign.Center,
-      style = MaterialTheme.typography.bodySmall,
-    )
-    OutlinedButton(
-      onClick = onButtonClick,
-      shapes = ButtonDefaults.shapes(),
-      contentPadding = ButtonDefaults.SmallContentPadding,
-      modifier = Modifier.height(ButtonDefaults.MinHeight),
-    ) {
-      Text(text = buttonLabel, style = ButtonDefaults.textStyleFor(ButtonDefaults.MinHeight))
+    if (supportText != null) {
+      Text(
+        text = supportText,
+        textAlign = TextAlign.Center,
+        style = MaterialTheme.typography.bodySmall,
+      )
+    }
+    if (onButtonClick != null && buttonLabel != null) {
+      OutlinedButton(
+        onClick = onButtonClick,
+        shapes = ButtonDefaults.shapes(),
+        contentPadding = ButtonDefaults.SmallContentPadding,
+        modifier = Modifier.height(ButtonDefaults.MinHeight),
+      ) {
+        Text(text = buttonLabel, style = ButtonDefaults.textStyleFor(ButtonDefaults.MinHeight))
+      }
     }
   }
 }

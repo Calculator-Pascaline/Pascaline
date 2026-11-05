@@ -96,7 +96,6 @@
     <string name="common_no_results_description">Üres keresési eredmény</string>
     <string name="common_open_menu_description">Menü megnyitása</string>
     <string name="common_open_settings">Beállítások megnyitása</string>
-    <string name="common_read_article">Cikk elolvasása</string>
     <string name="common_search_button_description">Keresés gomb</string>
     <string name="common_search_text_field_placeholder">Keresés…</string>
     <string name="common_select_time">Idő kiválasztása</string>
@@ -581,7 +580,6 @@
     <string name="statistics_values">Értékek</string>
     <string name="statistics_variance">Variancia</string>
     <string name="time_zone_add_title">Időzóna hozzáadása</string>
-    <string name="time_zone_no_results_support">Több időzónára van szüksége?</string>
     <string name="time_zone_reset">Visszaállítás</string>
     <string name="time_zone_title">Időzónák</string>
     <string name="unit_acre">Acre</string>

@@ -96,7 +96,6 @@
     <string name="common_no_results_description">खोज का नतीजा खाली है</string>
     <string name="common_open_menu_description">मेन्यू खोलें</string>
     <string name="common_open_settings">सेटिंग खोलें</string>
-    <string name="common_read_article">लेख पढ़ें</string>
     <string name="common_search_button_description">खोज बटन</string>
     <string name="common_search_text_field_placeholder">खोजें…</string>
     <string name="common_select_time">समय चुनें</string>
@@ -581,7 +580,6 @@
     <string name="statistics_values">मान</string>
     <string name="statistics_variance">प्रसरण</string>
     <string name="time_zone_add_title">समय क्षेत्र जोड़ें</string>
-    <string name="time_zone_no_results_support">और समय क्षेत्र चाहिए?</string>
     <string name="time_zone_reset">रीसेट करें</string>
     <string name="time_zone_title">समय क्षेत्र</string>
     <string name="unit_acre">एकड़</string>

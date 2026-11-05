@@ -57,13 +57,10 @@ import com.sadellie.unitto.core.ui.ListItemExpressiveDefaults
 import com.sadellie.unitto.core.ui.SearchBar
 import com.sadellie.unitto.core.ui.SearchPlaceholder
 import com.sadellie.unitto.core.ui.datetime.formatTime
-import com.sadellie.unitto.core.ui.rememberLinkOpener
 import java.time.ZonedDateTime
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import unitto.core.common.generated.resources.Res
-import unitto.core.common.generated.resources.common_read_article
-import unitto.core.common.generated.resources.time_zone_no_results_support
 
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
@@ -110,15 +107,7 @@ fun AddTimeZoneScreen(
       label = "Placeholder",
     ) { empty ->
       if (empty) {
-        val linkOpener = rememberLinkOpener()
-        SearchPlaceholder(
-          modifier = Modifier.padding(paddingValues),
-          onButtonClick = {
-            linkOpener.launch("https://sadellie.github.io/unitto/help#add-time-zones")
-          },
-          supportText = stringResource(Res.string.time_zone_no_results_support),
-          buttonLabel = stringResource(Res.string.common_read_article),
-        )
+        SearchPlaceholder(modifier = Modifier.padding(paddingValues))
       } else {
         val locale = LocalLocale.current.platformLocale
         val is24Hour = is24HourFormat(mContext)

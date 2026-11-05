@@ -96,7 +96,6 @@
     <string name="common_no_results_description">Hapus hasil pencarian</string>
     <string name="common_open_menu_description">Buka menu</string>
     <string name="common_open_settings">Buka pengaturan</string>
-    <string name="common_read_article">Baca artikel</string>
     <string name="common_search_button_description">Tombol cari</string>
     <string name="common_search_text_field_placeholder">Cari…</string>
     <string name="common_select_time">Pilih waktu</string>
@@ -581,7 +580,6 @@
     <string name="statistics_values">Nilai</string>
     <string name="statistics_variance">Varians</string>
     <string name="time_zone_add_title">Tambah zona waktu</string>
-    <string name="time_zone_no_results_support">Butuh lebih banyak zona waktu?</string>
     <string name="time_zone_reset">Atur ulang</string>
     <string name="time_zone_title">Zona waktu</string>
     <string name="unit_acre">Are</string>

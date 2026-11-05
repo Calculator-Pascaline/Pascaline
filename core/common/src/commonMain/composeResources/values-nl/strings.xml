@@ -96,7 +96,6 @@
     <string name="common_no_results_description">Leeg zoekresultaat</string>
     <string name="common_open_menu_description">Menu openen</string>
     <string name="common_open_settings">Instellingen openen</string>
-    <string name="common_read_article">Artikel lezen</string>
     <string name="common_search_button_description">Zoekknop</string>
     <string name="common_search_text_field_placeholder">Zoeken…</string>
     <string name="common_select_time">Tijd selecteren</string>
@@ -581,7 +580,6 @@
     <string name="statistics_values">Waarden</string>
     <string name="statistics_variance">Variantie</string>
     <string name="time_zone_add_title">Tijdzone toevoegen</string>
-    <string name="time_zone_no_results_support">Meer tijdzones nodig?</string>
     <string name="time_zone_reset">Resetten</string>
     <string name="time_zone_title">Tijdzones</string>
     <string name="unit_acre">Acre</string>

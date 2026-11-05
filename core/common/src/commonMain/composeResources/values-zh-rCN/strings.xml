@@ -96,7 +96,6 @@
     <string name="common_no_results_description">搜索结果为空</string>
     <string name="common_open_menu_description">打开菜单</string>
     <string name="common_open_settings">打开设置</string>
-    <string name="common_read_article">阅读文章</string>
     <string name="common_search_button_description">搜索按钮</string>
     <string name="common_search_text_field_placeholder">搜索…</string>
     <string name="common_select_time">选择时间</string>
@@ -581,7 +580,6 @@
     <string name="statistics_values">数值</string>
     <string name="statistics_variance">方差</string>
     <string name="time_zone_add_title">添加时区</string>
-    <string name="time_zone_no_results_support">需要更多时区？</string>
     <string name="time_zone_reset">重置</string>
     <string name="time_zone_title">时区</string>
     <string name="unit_acre">英亩</string>

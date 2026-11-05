@@ -1,5 +1,5 @@
 /*
- * Unitto is a calculator for Android
+ * Pascaline is a calculator for Android
  * Copyright (c) 2026 Calculator-Pascaline
  *
  * This program is free software: you can redistribute it and/or modify

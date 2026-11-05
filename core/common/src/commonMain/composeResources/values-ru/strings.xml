@@ -96,7 +96,6 @@
     <string name="common_no_results_description">Пустой результат поиска</string>
     <string name="common_open_menu_description">Открыть меню</string>
     <string name="common_open_settings">Открыть настройки</string>
-    <string name="common_read_article">Читать статью</string>
     <string name="common_search_button_description">Кнопка поиска</string>
     <string name="common_search_text_field_placeholder">Поиск…</string>
     <string name="common_select_time">Выбрать время</string>
@@ -581,7 +580,6 @@
     <string name="statistics_values">Значения</string>
     <string name="statistics_variance">Дисперсия</string>
     <string name="time_zone_add_title">Добавить часовой пояс</string>
-    <string name="time_zone_no_results_support">Нужны дополнительные часовые пояса?</string>
     <string name="time_zone_reset">Сбросить</string>
     <string name="time_zone_title">Часовые пояса</string>
     <string name="unit_acre">Акр</string>

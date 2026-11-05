@@ -96,7 +96,6 @@
     <string name="common_no_results_description">Résultat de recherche vide</string>
     <string name="common_open_menu_description">Ouvrir le menu</string>
     <string name="common_open_settings">Ouvrir les paramètres</string>
-    <string name="common_read_article">Lire l'article</string>
     <string name="common_search_button_description">Bouton de recherche</string>
     <string name="common_search_text_field_placeholder">Rechercher…</string>
     <string name="common_select_time">Sélectionner l'heure</string>
@@ -581,7 +580,6 @@
     <string name="statistics_values">Valeurs</string>
     <string name="statistics_variance">Variance</string>
     <string name="time_zone_add_title">Ajouter un fuseau horaire</string>
-    <string name="time_zone_no_results_support">Besoin de plus de fuseaux horaires ?</string>
     <string name="time_zone_reset">Réinitialiser</string>
     <string name="time_zone_title">Fuseaux horaires</string>
     <string name="unit_acre">Acre</string>

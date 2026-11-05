@@ -96,7 +96,6 @@
     <string name="common_no_results_description">Leeres Suchergebnis</string>
     <string name="common_open_menu_description">Menü öffnen</string>
     <string name="common_open_settings">Einstellungen öffnen</string>
-    <string name="common_read_article">Artikel lesen</string>
     <string name="common_search_button_description">Schaltfläche „Suchen“</string>
     <string name="common_search_text_field_placeholder">Suchen…</string>
     <string name="common_select_time">Zeit auswählen</string>
@@ -581,7 +580,6 @@
     <string name="statistics_values">Werte</string>
     <string name="statistics_variance">Varianz</string>
     <string name="time_zone_add_title">Zeitzone hinzufügen</string>
-    <string name="time_zone_no_results_support">Benötigen Sie mehr Zeitzonen?</string>
     <string name="time_zone_reset">Zurücksetzen</string>
     <string name="time_zone_title">Zeitzonen</string>
     <string name="unit_acre">Acre</string>

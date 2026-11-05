@@ -40,7 +40,6 @@
     <string name="common_no_results_description">Empty search result</string>
     <string name="common_open_menu_description">Open menu</string>
     <string name="common_open_settings">Open settings</string>
-    <string name="common_read_article">Read the article</string>
     <string name="common_search_button_description">Search button</string>
     <string name="common_search_text_field_placeholder">Search…</string>
     <string name="common_select_time">Select time</string>
@@ -114,7 +113,6 @@
     <string name="settings_vibrations_support">Haptic feedback when clicking keyboard buttons</string>
     <string name="settings_view_source_code">View source code</string>
     <string name="time_zone_add_title">Add time zone</string>
-    <string name="time_zone_no_results_support">Need more time zones?</string>
     <string name="time_zone_title">Time zones</string>
     <string name="unit_acre">Acre</string>
     <string name="unit_acre_short">ac</string>

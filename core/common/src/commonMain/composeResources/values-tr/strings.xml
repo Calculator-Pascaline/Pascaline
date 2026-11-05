@@ -96,7 +96,6 @@
     <string name="common_no_results_description">Boş arama sonucu</string>
     <string name="common_open_menu_description">Menüyü aç</string>
     <string name="common_open_settings">Ayarları aç</string>
-    <string name="common_read_article">Makaleyi oku</string>
     <string name="common_search_button_description">Arama düğmesi</string>
     <string name="common_search_text_field_placeholder">Ara…</string>
     <string name="common_select_time">Zaman seç</string>
@@ -581,7 +580,6 @@
     <string name="statistics_values">Değerler</string>
     <string name="statistics_variance">Varyans</string>
     <string name="time_zone_add_title">Saat dilimi ekle</string>
-    <string name="time_zone_no_results_support">Daha fazla saat dilimine mi ihtiyacınız var?</string>
     <string name="time_zone_reset">Sıfırla</string>
     <string name="time_zone_title">Saat dilimleri</string>
     <string name="unit_acre">Acre</string>
