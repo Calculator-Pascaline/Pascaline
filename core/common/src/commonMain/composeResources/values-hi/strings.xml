@@ -1596,8 +1596,21 @@
     <string name="place_coordinates">निर्देशांक</string>
     <string name="place_latitude">अक्षांश</string>
     <string name="place_longitude">देशांतर</string>
-    <string name="place_time_zone">समय क्षेत्र</string>
-    <string name="place_map_hint">स्थान चुनने के लिए नक्शे पर टैप करें, ज़ूम के लिए पिंच करें या बटन दबाएँ।</string>
+    <string name="place_panels_year">सौर पैनल, पूरे साल</string>
+    <string name="place_panels_day">सौर पैनल, इस दिन</string>
+    <string name="place_real_sun">वास्तव में: सूर्योदय और सूर्यास्त में 1 से 2 मिनट का अंतर हो सकता है, क्षितिज पर पहाड़ या इमारतें हों तो अधिक।</string>
+    <string name="place_real_moon">वास्तव में: चंद्रोदय और चंद्रास्त में कुछ मिनट का अंतर हो सकता है, क्षितिज पर पहाड़ या इमारतें हों तो अधिक।</string>
+    <string name="place_real_sky">वास्तव में: समय कुछ मिनट तक सही हैं। क्या दिखेगा यह बादलों और शहर की रोशनी पर निर्भर है।</string>
+    <string name="place_real_tides">वास्तव में: समय में एक घंटे तक और ऊँचाई में 30% या अधिक का अंतर हो सकता है, क्योंकि मॉडल वैश्विक है और हवा व दबाव भी समुद्र को हिलाते हैं।</string>
+    <string name="place_real_temperature">वास्तव में: ये 1991–2020 के औसत हैं। कोई एक दिन अक्सर कई डिग्री गर्म या ठंडा होता है।</string>
+    <string name="place_real_rain">वास्तव में: ये कई वर्षों के औसत हैं। किसी एक महीने में आधी या दोगुनी वर्षा हो सकती है।</string>
+    <string name="place_real_elevation">वास्तव में: यह क्षेत्र का औसत है, समतल भूमि पर दसियों मीटर और पहाड़ों में सैकड़ों मीटर का अंतर संभव है।</string>
+    <string name="place_real_solar">वास्तव में: यह साफ़ आसमान और बिना छाया मानता है। बादल अक्सर 20 से 50% घटा देते हैं, और पैनल इस ऊर्जा का लगभग 20% बिजली में बदलते हैं।</string>
+    <string name="place_south">दक्षिण</string>
+    <string name="place_north">उत्तर</string>
+    <string name="place_continue">जारी रखें</string>
+    <string name="place_search_city">शहर खोजें</string>
+    <string name="place_no_city">कोई शहर नहीं मिला</string>
     <string name="place_loading_error">डेटा पढ़ा नहीं जा सका: %1$s</string>
     <string name="place_sunrise">सूर्योदय</string>
     <string name="place_sunset">सूर्यास्त</string>
@@ -1695,5 +1708,5 @@
     <string name="place_ground_height">ज़मीन की ऊँचाई</string>
     <string name="place_at_sea">समुद्र में</string>
     <string name="place_elevation_note">कुछ किलोमीटर पर औसत किए गए वैश्विक मॉडल से, चोटियाँ और घाटियाँ काफ़ी अलग हो सकती हैं।</string>
-    <string name="place_credits">डेटा: Trail Sense (MIT, Kyle Corry), NASA MERRA-2, ERA5, EOT20, ETOPO 2022 और IANA समय क्षेत्र।</string>
+    <string name="place_credits">डेटा: Trail Sense (MIT, Kyle Corry), NASA MERRA-2, ERA5, EOT20, ETOPO 2022, Natural Earth और IANA समय क्षेत्र।</string>
 </resources>

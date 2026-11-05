@@ -35,6 +35,9 @@ internal expect fun formatTime(millis: Long, zone: String): String
 /** Like "Sun, 21 Jun 2026" in the person's language. */
 internal expect fun formatDate(millis: Long, zone: String): String
 
+/** Short weekday and day, like Fri 6. */
+internal expect fun formatShortDay(millis: Long, zone: String): String
+
 /** Full name of [month] (1 is January) in the person's language. */
 internal expect fun monthName(month: Int): String
 

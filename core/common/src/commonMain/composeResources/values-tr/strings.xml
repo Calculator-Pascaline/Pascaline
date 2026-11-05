@@ -1596,8 +1596,21 @@
     <string name="place_coordinates">Koordinatlar</string>
     <string name="place_latitude">Enlem</string>
     <string name="place_longitude">Boylam</string>
-    <string name="place_time_zone">Saat dilimi</string>
-    <string name="place_map_hint">Bir yer seçmek için haritaya dokunun, yakınlaştırmak için iki parmak ya da düğmeleri kullanın.</string>
+    <string name="place_panels_year">Güneş panelleri, tüm yıl</string>
+    <string name="place_panels_day">Güneş panelleri, bu gün</string>
+    <string name="place_real_sun">Gerçekte: gün doğumu ve batımı 1-2 dakika farklı olabilir, ufukta dağ veya bina varsa daha fazla.</string>
+    <string name="place_real_moon">Gerçekte: ay doğumu ve batımı birkaç dakika farklı olabilir, ufukta dağ veya bina varsa daha fazla.</string>
+    <string name="place_real_sky">Gerçekte: saatler birkaç dakikaya kadar doğrudur. Ne görüleceği bulutlara ve şehir ışıklarına bağlıdır.</string>
+    <string name="place_real_tides">Gerçekte: saatler bir saate kadar, yükseklikler %30 veya daha fazla farklı olabilir, çünkü model küreseldir ve rüzgâr ile basınç da denizi hareket ettirir.</string>
+    <string name="place_real_temperature">Gerçekte: bunlar 1991–2020 ortalamalarıdır. Belirli bir gün çoğu zaman birkaç derece daha sıcak veya soğuktur.</string>
+    <string name="place_real_rain">Gerçekte: bunlar uzun yılların ortalamalarıdır. Belirli bir ay yarısı kadar veya iki katı getirebilir.</string>
+    <string name="place_real_elevation">Gerçekte: bu bölgenin ortalamasıdır, düzlükte onlarca metre, dağlarda yüzlerce metre sapabilir.</string>
+    <string name="place_real_solar">Gerçekte: bu açık gökyüzü ve gölgesizlik varsayar. Bulutlar çoğu zaman %20 ila %50 azaltır, paneller de bu enerjinin yaklaşık %20’sini elektriğe çevirir.</string>
+    <string name="place_south">Güney</string>
+    <string name="place_north">Kuzey</string>
+    <string name="place_continue">Devam et</string>
+    <string name="place_search_city">Şehir ara</string>
+    <string name="place_no_city">Şehir bulunamadı</string>
     <string name="place_loading_error">Veriler okunamadı: %1$s</string>
     <string name="place_sunrise">Gün doğumu</string>
     <string name="place_sunset">Gün batımı</string>
@@ -1695,5 +1708,5 @@
     <string name="place_ground_height">Arazi yüksekliği</string>
     <string name="place_at_sea">Denizde</string>
     <string name="place_elevation_note">Birkaç kilometrede ortalanan küresel bir modelden, zirveler ve vadiler çok farklı olabilir.</string>
-    <string name="place_credits">Veriler: Trail Sense (MIT, Kyle Corry), NASA MERRA-2, ERA5, EOT20, ETOPO 2022 ve IANA saat dilimleri.</string>
+    <string name="place_credits">Veriler: Trail Sense (MIT, Kyle Corry), NASA MERRA-2, ERA5, EOT20, ETOPO 2022, Natural Earth ve IANA saat dilimleri.</string>
 </resources>

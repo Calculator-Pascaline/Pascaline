@@ -130,7 +130,7 @@ data class ThirdParty(
           website = "https://github.com/kylecorry31/Trail-Sense",
           license = "MIT",
           description =
-            "The Place app reads the climate, tide, elevation and land data that Trail Sense bundles. Copyright (c) 2020 Kyle Corry. Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files, to deal in the Software without restriction, subject to including this notice. The software is provided \"as is\", without warranty of any kind.",
+            "The Place app reads the climate, tide, elevation and land data that Trail Sense bundles, and aims solar panels with its radiation model. Copyright (c) 2020 Kyle Corry. Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files, to deal in the Software without restriction, subject to including this notice. The software is provided \"as is\", without warranty of any kind.",
         ),
         ThirdParty(
           name = "MERRA-2 and ERA5",
@@ -153,6 +153,13 @@ data class ThirdParty(
           website = "https://www.ncei.noaa.gov/products/etopo-global-relief-model",
           license = "Public domain",
           description = "Global relief model, the ground height of the Place app as prepared by Trail Sense.",
+        ),
+        ThirdParty(
+          name = "Natural Earth",
+          dev = "Natural Earth",
+          website = "https://www.naturalearthdata.com",
+          license = "Public domain",
+          description = "Populated places: the cities of the Place map, their names and time zones.",
         ),
         ThirdParty(
           name = "tz database",

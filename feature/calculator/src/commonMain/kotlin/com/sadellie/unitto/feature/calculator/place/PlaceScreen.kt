@@ -18,70 +18,95 @@
 
 package com.sadellie.unitto.feature.calculator.place
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.sadellie.unitto.core.common.FormatterSymbols
 import com.sadellie.unitto.core.common.collectAsStateWithLifecycleKMP
+import com.sadellie.unitto.core.designsystem.LocalLocale
+import com.sadellie.unitto.core.designsystem.icons.symbols.ArrowBack
+import com.sadellie.unitto.core.designsystem.icons.symbols.Close
+import com.sadellie.unitto.core.designsystem.icons.symbols.Search
+import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
+import com.sadellie.unitto.core.ui.BackHandler
 import com.sadellie.unitto.core.ui.DrawerButton
 import com.sadellie.unitto.core.ui.EmptyScreen
 import com.sadellie.unitto.core.ui.ScaffoldWithTopBar
 import com.sadellie.unitto.feature.calculator.probability.toNumberOrNull
 import kotlin.math.abs
+import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Instant
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import unitto.core.common.generated.resources.Res
 import unitto.core.common.generated.resources.common_cancel
+import unitto.core.common.generated.resources.common_clear
 import unitto.core.common.generated.resources.common_ok
-import unitto.core.common.generated.resources.common_search_text_field_placeholder
 import unitto.core.common.generated.resources.place_coordinates
 import unitto.core.common.generated.resources.place_credits
 import unitto.core.common.generated.resources.place_latitude
 import unitto.core.common.generated.resources.place_loading_error
 import unitto.core.common.generated.resources.place_longitude
-import unitto.core.common.generated.resources.place_map_hint
+import unitto.core.common.generated.resources.place_no_city
+import unitto.core.common.generated.resources.place_real_elevation
+import unitto.core.common.generated.resources.place_real_moon
+import unitto.core.common.generated.resources.place_real_rain
+import unitto.core.common.generated.resources.place_real_sky
+import unitto.core.common.generated.resources.place_real_sun
+import unitto.core.common.generated.resources.place_real_temperature
+import unitto.core.common.generated.resources.place_real_tides
+import unitto.core.common.generated.resources.place_search_city
 import unitto.core.common.generated.resources.place_tab_elevation
 import unitto.core.common.generated.resources.place_tab_moon
 import unitto.core.common.generated.resources.place_tab_rain
@@ -89,8 +114,8 @@ import unitto.core.common.generated.resources.place_tab_sky
 import unitto.core.common.generated.resources.place_tab_sun
 import unitto.core.common.generated.resources.place_tab_temperature
 import unitto.core.common.generated.resources.place_tab_tides
-import unitto.core.common.generated.resources.place_time_zone
 import unitto.core.common.generated.resources.place_title
+import unitto.core.common.generated.resources.probability_back
 
 @Composable
 internal fun PlaceRoute(openDrawer: () -> Unit) {
@@ -104,95 +129,94 @@ internal fun PlaceRoute(openDrawer: () -> Unit) {
 }
 
 /**
- * Choose a point on the map, a date and a time zone, then read one chip at a time: a big answer,
- * a graph to drag along and the details. Everything is worked out on the device.
+ * First the city and the date, on [PlaceChooser], then one chip at a time: a big answer, a graph to
+ * drag along and the details. Everything is worked out on the device.
  */
 @Composable
 private fun PlaceScreen(openDrawer: () -> Unit, viewModel: PlaceViewModel, symbols: FormatterSymbols) {
   var dialog by remember { mutableStateOf<PlaceDialog?>(null) }
+  var isChoosing by rememberSaveable { mutableStateOf(true) }
+  val language = LocalLocale.current.language
   val units = rememberPlaceUnits(viewModel.isMetric, symbols)
+  LaunchedEffect(viewModel.cities, language) { viewModel.startAt(language) }
+  BackHandler(enabled = !isChoosing) { isChoosing = true }
   ScaffoldWithTopBar(
-    title = { Text(stringResource(Res.string.place_title)) },
-    navigationIcon = { DrawerButton(onClick = openDrawer) },
+    title = {
+      val city = viewModel.nearCity?.name(language)
+      Text(if (isChoosing || city == null) stringResource(Res.string.place_title) else city)
+    },
+    navigationIcon = {
+      if (isChoosing) {
+        DrawerButton(onClick = openDrawer)
+      } else {
+        IconButton(onClick = { isChoosing = true }) {
+          Icon(Symbols.ArrowBack, stringResource(Res.string.probability_back))
+        }
+      }
+    },
+    keepNavigationIconOnWideScreens = !isChoosing,
     actions = {
-      TextButton(onClick = { viewModel.isMetric = !viewModel.isMetric }) { Text(units.temperatureUnit) }
+      if (!isChoosing) {
+        TextButton(onClick = { viewModel.isMetric = !viewModel.isMetric }) { Text(units.temperatureUnit) }
+      }
     },
     colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
   ) { paddingValues ->
-    BoxWithConstraints(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
-      val isWide = maxWidth >= WIDE_LAYOUT_WIDTH
-      val chooser: @Composable (Modifier) -> Unit = { modifier ->
-        Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-          WorldMap(
-            land = viewModel.land,
-            point = viewModel.point,
-            onChoose = viewModel::choosePoint,
-            modifier = Modifier.fillMaxWidth().height(if (isWide) WIDE_MAP_HEIGHT else MAP_HEIGHT),
-          )
-          Text(
-            stringResource(Res.string.place_map_hint),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-          )
-          PlaceChips(viewModel) { dialog = it }
-        }
-      }
-      val results: @Composable (Modifier) -> Unit = { modifier ->
-        Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(12.dp)) {
-          TabChips(viewModel.tab) { viewModel.tab = it }
-          viewModel.error?.let {
-            Text(
-              stringResource(Res.string.place_loading_error, it),
-              color = MaterialTheme.colorScheme.error,
-              style = MaterialTheme.typography.bodyMedium,
-            )
-          }
-          val report = viewModel.report
-          if (report != null) PlaceTabContent(viewModel.tab, report, viewModel, units)
-          Text(
-            stringResource(Res.string.place_credits),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-          )
-        }
-      }
-      val scrolling = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)
-      if (isWide) {
-        Row(modifier = scrolling, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-          chooser(Modifier.weight(1f))
-          results(Modifier.weight(1f))
-        }
+    AnimatedContent(
+      targetState = isChoosing,
+      modifier = Modifier.padding(paddingValues).fillMaxSize(),
+      transitionSpec = {
+        val direction = if (targetState) -1 else 1
+        (slideInHorizontally { it * direction } + fadeIn()) togetherWith
+          (slideOutHorizontally { -it * direction } + fadeOut())
+      },
+    ) { choosing ->
+      if (choosing) {
+        PlaceChooser(viewModel, language, { dialog = it }) { isChoosing = false }
       } else {
-        Column(modifier = scrolling, verticalArrangement = Arrangement.spacedBy(12.dp)) {
-          chooser(Modifier.fillMaxWidth())
-          results(Modifier.fillMaxWidth())
-        }
+        PlaceMenu(viewModel, units)
       }
     }
   }
   PlaceDialogs(dialog, viewModel) { dialog = null }
 }
 
-private enum class PlaceDialog {
-  COORDINATES,
-  DATE,
-  ZONE,
+/** What the place is like on the chosen date, one chip at a time. */
+@Composable
+private fun PlaceMenu(viewModel: PlaceViewModel, units: PlaceUnits) {
+  Box(
+    modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
+    contentAlignment = Alignment.TopCenter,
+  ) {
+    Column(
+      modifier = Modifier.widthIn(max = MENU_WIDTH).fillMaxWidth(),
+      verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+      TabChips(viewModel.tab) { viewModel.tab = it }
+      viewModel.error?.let {
+        Text(
+          stringResource(Res.string.place_loading_error, it),
+          color = MaterialTheme.colorScheme.error,
+          style = MaterialTheme.typography.bodyMedium,
+        )
+      }
+      val report = viewModel.report
+      if (report != null) {
+        PlaceTabContent(viewModel.tab, report, viewModel, units)
+        RealLifeNote(viewModel.tab.realLife)
+      }
+      Text(
+        stringResource(Res.string.place_credits),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+      )
+    }
+  }
 }
 
-/** The point, the date and the zone, each opens its dialog. */
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-private fun PlaceChips(viewModel: PlaceViewModel, open: (PlaceDialog) -> Unit) {
-  val point = viewModel.point
-  val date = viewModel.date
-  FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-    AssistChip(onClick = { open(PlaceDialog.COORDINATES) }, label = { Text(formatPoint(point)) })
-    AssistChip(
-      onClick = { open(PlaceDialog.DATE) },
-      label = { Text(formatDate(dayStart(date, viewModel.zone) + NOON, viewModel.zone)) },
-    )
-    AssistChip(onClick = { open(PlaceDialog.ZONE) }, label = { Text(viewModel.zone.replace('_', ' ')) })
-  }
+internal enum class PlaceDialog {
+  COORDINATES,
+  DATE,
 }
 
 /** 48.86° N, 2.35° E */
@@ -203,6 +227,63 @@ internal fun formatPoint(point: GeoPoint): String {
     return "$text° ${if (value >= 0) positive else negative}"
   }
   return "${part(point.latitude, 'N', 'S')}, ${part(point.longitude, 'E', 'W')}"
+}
+
+/** A search box, the cities found under it, a tap chooses one and flies the map there. */
+@Composable
+internal fun CitySearch(cities: List<City>, language: String, onChoose: (City) -> Unit, modifier: Modifier = Modifier) {
+  var query by remember { mutableStateOf("") }
+  val focusManager = LocalFocusManager.current
+  val results = remember(query, cities, language) { searchCities(cities, query, language, SEARCH_RESULTS) }
+  Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    OutlinedTextField(
+      value = query,
+      onValueChange = { query = it },
+      modifier = Modifier.fillMaxWidth(),
+      placeholder = { Text(stringResource(Res.string.place_search_city)) },
+      leadingIcon = { Icon(Symbols.Search, null) },
+      trailingIcon = {
+        if (query.isNotEmpty()) {
+          IconButton(onClick = { query = "" }) { Icon(Symbols.Close, stringResource(Res.string.common_clear)) }
+        }
+      },
+      singleLine = true,
+      shape = MaterialTheme.shapes.extraLarge,
+      // Over the map
+      colors =
+        OutlinedTextFieldDefaults.colors(
+          focusedContainerColor = MaterialTheme.colorScheme.surface,
+          unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+        ),
+    )
+    if (query.isNotBlank()) {
+      Column(
+        modifier = Modifier.fillMaxWidth().clip(MaterialTheme.shapes.large).background(MaterialTheme.colorScheme.surfaceContainer)
+      ) {
+        if (results.isEmpty()) {
+          Text(
+            stringResource(Res.string.place_no_city),
+            modifier = Modifier.padding(16.dp),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+          )
+        }
+        results.forEach { city ->
+          ListItem(
+            headlineContent = { Text(city.name(language)) },
+            supportingContent = { Text(city.zone.replace('_', ' ')) },
+            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+            modifier =
+              Modifier.fillMaxWidth().clickable {
+                onChoose(city)
+                query = ""
+                focusManager.clearFocus()
+              },
+          )
+        }
+      }
+    }
+  }
 }
 
 @Composable
@@ -216,6 +297,18 @@ private fun TabChips(selected: PlaceTab, onSelect: (PlaceTab) -> Unit) {
     }
   }
 }
+
+private val PlaceTab.realLife: StringResource
+  get() =
+    when (this) {
+      PlaceTab.SUN -> Res.string.place_real_sun
+      PlaceTab.MOON -> Res.string.place_real_moon
+      PlaceTab.SKY -> Res.string.place_real_sky
+      PlaceTab.TIDES -> Res.string.place_real_tides
+      PlaceTab.TEMPERATURE -> Res.string.place_real_temperature
+      PlaceTab.RAIN -> Res.string.place_real_rain
+      PlaceTab.ELEVATION -> Res.string.place_real_elevation
+    }
 
 private val PlaceTab.title: StringResource
   get() =
@@ -234,7 +327,6 @@ private fun PlaceDialogs(dialog: PlaceDialog?, viewModel: PlaceViewModel, close:
   when (dialog) {
     PlaceDialog.COORDINATES -> CoordinatesDialog(viewModel.point, { viewModel.choosePoint(it) }, close)
     PlaceDialog.DATE -> DateDialog(viewModel.date, viewModel::chooseDate, close)
-    PlaceDialog.ZONE -> ZoneDialog(viewModel::chooseZone, close)
     null -> Unit
   }
 }
@@ -306,45 +398,7 @@ private fun DateDialog(date: LocalDate, onConfirm: (LocalDate) -> Unit, close: (
   }
 }
 
-@Composable
-private fun ZoneDialog(onChoose: (String) -> Unit, close: () -> Unit) {
-  val zones = remember { knownZones() }
-  var search by remember { mutableStateOf("") }
-  val shown = remember(search) { zones.filter { it.replace('_', ' ').contains(search.trim(), ignoreCase = true) } }
-  AlertDialog(
-    onDismissRequest = close,
-    title = { Text(stringResource(Res.string.place_time_zone)) },
-    text = {
-      Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        OutlinedTextField(
-          value = search,
-          onValueChange = { search = it },
-          placeholder = { Text(stringResource(Res.string.common_search_text_field_placeholder)) },
-          singleLine = true,
-          modifier = Modifier.fillMaxWidth(),
-        )
-        LazyColumn(modifier = Modifier.heightIn(max = ZONE_LIST_HEIGHT)) {
-          items(shown) { zone ->
-            ListItem(
-              headlineContent = { Text(zone.replace('_', ' ')) },
-              modifier =
-                Modifier.fillMaxWidth().clickable {
-                  onChoose(zone)
-                  close()
-                },
-            )
-          }
-        }
-      }
-    },
-    confirmButton = {},
-    dismissButton = { TextButton(onClick = close) { Text(stringResource(Res.string.common_cancel)) } },
-  )
-}
-
-private val WIDE_LAYOUT_WIDTH = 720.dp
-private val MAP_HEIGHT = 220.dp
-private val WIDE_MAP_HEIGHT = 320.dp
-private val ZONE_LIST_HEIGHT = 360.dp
-private const val NOON = 43_200_000L
+private val MENU_WIDTH = 720.dp
+internal const val NOON = 43_200_000L
 private const val COORDINATE_LENGTH = 9
+private const val SEARCH_RESULTS = 6

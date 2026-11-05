@@ -1596,8 +1596,21 @@
     <string name="place_coordinates">Koordinat</string>
     <string name="place_latitude">Lintang</string>
     <string name="place_longitude">Bujur</string>
-    <string name="place_time_zone">Zona waktu</string>
-    <string name="place_map_hint">Ketuk peta untuk memilih tempat, cubit atau gunakan tombol untuk memperbesar.</string>
+    <string name="place_panels_year">Panel surya, sepanjang tahun</string>
+    <string name="place_panels_day">Panel surya, pada hari ini</string>
+    <string name="place_real_sun">Kenyataannya: matahari terbit dan terbenam dapat berbeda 1 sampai 2 menit, lebih jika ada gunung atau gedung di cakrawala.</string>
+    <string name="place_real_moon">Kenyataannya: bulan terbit dan terbenam dapat berbeda beberapa menit, lebih jika ada gunung atau gedung di cakrawala.</string>
+    <string name="place_real_sky">Kenyataannya: waktu akurat hingga beberapa menit. Yang terlihat bergantung pada awan dan lampu kota.</string>
+    <string name="place_real_tides">Kenyataannya: waktu dapat berbeda hingga satu jam dan ketinggian 30% atau lebih, karena modelnya global dan angin serta tekanan udara juga menggerakkan laut.</string>
+    <string name="place_real_temperature">Kenyataannya: ini rata-rata 1991–2020. Satu hari tertentu sering beberapa derajat lebih hangat atau lebih dingin.</string>
+    <string name="place_real_rain">Kenyataannya: ini rata-rata banyak tahun. Satu bulan tertentu dapat membawa setengah atau dua kali lipat.</string>
+    <string name="place_real_elevation">Kenyataannya: ini rata-rata wilayah, meleset puluhan meter di dataran dan ratusan meter di pegunungan.</string>
+    <string name="place_real_solar">Kenyataannya: ini mengasumsikan langit cerah tanpa bayangan. Awan sering mengurangi 20 sampai 50%, dan panel mengubah sekitar 20% energi ini menjadi listrik.</string>
+    <string name="place_south">Selatan</string>
+    <string name="place_north">Utara</string>
+    <string name="place_continue">Lanjutkan</string>
+    <string name="place_search_city">Cari kota</string>
+    <string name="place_no_city">Kota tidak ditemukan</string>
     <string name="place_loading_error">Data tidak dapat dibaca: %1$s</string>
     <string name="place_sunrise">Matahari terbit</string>
     <string name="place_sunset">Matahari terbenam</string>
@@ -1695,5 +1708,5 @@
     <string name="place_ground_height">Ketinggian tanah</string>
     <string name="place_at_sea">Di laut</string>
     <string name="place_elevation_note">Dari model global yang dirata-rata beberapa kilometer, puncak dan lembah bisa jauh berbeda.</string>
-    <string name="place_credits">Data: Trail Sense (MIT, Kyle Corry), NASA MERRA-2, ERA5, EOT20, ETOPO 2022 dan zona waktu IANA.</string>
+    <string name="place_credits">Data: Trail Sense (MIT, Kyle Corry), NASA MERRA-2, ERA5, EOT20, ETOPO 2022, Natural Earth dan zona waktu IANA.</string>
 </resources>
