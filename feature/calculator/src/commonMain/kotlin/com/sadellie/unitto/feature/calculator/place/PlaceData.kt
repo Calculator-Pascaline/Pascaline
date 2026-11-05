@@ -184,8 +184,8 @@ internal fun parseElevationIndex(json: String): List<ElevationTile> =
 
 private const val ROOT = "files/place"
 private const val LAND_COLORS = "land_fill.webp"
-private const val SIMPLE_COAST = "coast_low.bin"
-private const val DETAILED_COAST = "coast_high.bin"
+private const val SIMPLE_COAST = "coast_low.dat"
+private const val DETAILED_COAST = "coast_high.dat"
 private const val TIDE_INDEX = "tides/tide-indices-1-2.webp"
 private const val PER_FILE = 3
 private const val MONTHS = 12

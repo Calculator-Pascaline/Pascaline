@@ -1,7 +1,7 @@
 """Builds the coastlines of the Place map from Natural Earth (public domain).
 
 Downloads the GeoJSON files, cuts land minus lakes into 10° tiles and writes them to
-composeResources/files/place as coast_low.bin and coast_high.bin, read by CoastTiles in
+composeResources/files/place as coast_low.dat and coast_high.dat, read by CoastTiles in
 PlaceCoast.kt. land_fill.webp is land.webp (Trail Sense's land map, kept next to this script) with its colors
 spread over the sea, so that coasts sharper than its pixels never show an empty edge.
 
@@ -123,8 +123,8 @@ def fill_colors():
 
 def main(folder):
     os.makedirs(folder, exist_ok=True)
-    build(load(folder, 'ne_50m_land'), load(folder, 'ne_50m_lakes'), 0.02, 'coast_low.bin')
-    build(load(folder, 'ne_10m_land') + load(folder, 'ne_10m_minor_islands'), load(folder, 'ne_10m_lakes'), 0.002, 'coast_high.bin')
+    build(load(folder, 'ne_50m_land'), load(folder, 'ne_50m_lakes'), 0.02, 'coast_low.dat')
+    build(load(folder, 'ne_10m_land') + load(folder, 'ne_10m_minor_islands'), load(folder, 'ne_10m_lakes'), 0.002, 'coast_high.dat')
     fill_colors()
 
 
