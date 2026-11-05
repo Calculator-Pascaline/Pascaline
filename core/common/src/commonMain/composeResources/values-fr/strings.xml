@@ -551,6 +551,8 @@
     <string name="settings_version_name">Nom de la version</string>
     <string name="settings_vibrations">Vibrations</string>
     <string name="settings_vibrations_support">Retour haptique lors de l'appui sur les touches du clavier</string>
+    <string name="settings_key_animation">Animation des touches</string>
+    <string name="settings_key_animation_support">Les touches grandissent quand on appuie dessus</string>
     <string name="settings_view_source_code">Voir le code source</string>
     <string name="statistics_automatic">Automatique : %1$s</string>
     <string name="statistics_bar">[%1$s ; %2$s[ : effectif %3$s</string>

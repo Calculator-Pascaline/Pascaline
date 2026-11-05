@@ -551,6 +551,8 @@
     <string name="settings_version_name">Versienaam</string>
     <string name="settings_vibrations">Trillingen</string>
     <string name="settings_vibrations_support">Haptische feedback bij het indrukken van toetsenbordknoppen</string>
+    <string name="settings_key_animation">Toetsanimatie</string>
+    <string name="settings_key_animation_support">Toetsen worden groter als je ze indrukt</string>
     <string name="settings_view_source_code">Broncode bekijken</string>
     <string name="statistics_automatic">Automatisch: %1$s</string>
     <string name="statistics_bar">[%1$s; %2$s[ : frequentie %3$s</string>

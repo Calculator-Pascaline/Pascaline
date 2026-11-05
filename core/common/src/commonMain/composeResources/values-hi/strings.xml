@@ -551,6 +551,8 @@
     <string name="settings_version_name">संस्करण का नाम</string>
     <string name="settings_vibrations">कंपन</string>
     <string name="settings_vibrations_support">कीबोर्ड बटन क्लिक करने पर हैप्टिक फ़ीडबैक</string>
+    <string name="settings_key_animation">कुंजी एनिमेशन</string>
+    <string name="settings_key_animation_support">दबाने पर कुंजियाँ बड़ी होती हैं</string>
     <string name="settings_view_source_code">सोर्स कोड देखें</string>
     <string name="statistics_automatic">स्वचालित: %1$s</string>
     <string name="statistics_bar">[%1$s; %2$s[ : बारंबारता %3$s</string>

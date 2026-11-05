@@ -551,6 +551,8 @@
     <string name="settings_version_name">Номер версии</string>
     <string name="settings_vibrations">Вибрация</string>
     <string name="settings_vibrations_support">Тактильная отдача при нажатии кнопок клавиатуры</string>
+    <string name="settings_key_animation">Анимация клавиш</string>
+    <string name="settings_key_animation_support">Клавиши увеличиваются при нажатии</string>
     <string name="settings_view_source_code">Посмотреть исходный код</string>
     <string name="statistics_automatic">Автоматически: %1$s</string>
     <string name="statistics_bar">[%1$s; %2$s[ : частота %3$s</string>

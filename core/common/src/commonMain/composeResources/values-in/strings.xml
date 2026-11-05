@@ -551,6 +551,8 @@
     <string name="settings_version_name">Nama versi</string>
     <string name="settings_vibrations">Getaran</string>
     <string name="settings_vibrations_support">Umpanbalik haptik saat menekan tombol papan ketik</string>
+    <string name="settings_key_animation">Animasi tombol</string>
+    <string name="settings_key_animation_support">Tombol membesar saat ditekan</string>
     <string name="settings_view_source_code">Lihat kode sumber</string>
     <string name="statistics_automatic">Otomatis: %1$s</string>
     <string name="statistics_bar">[%1$s; %2$s[ : frekuensi %3$s</string>
