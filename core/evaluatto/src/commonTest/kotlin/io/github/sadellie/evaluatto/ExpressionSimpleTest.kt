@@ -73,6 +73,13 @@ class ExpressionSimpleTest {
 
   @Test fun expression23() = assertExpr("atan(.69)", "34.6056755516", radianMode = false)
 
+  // Logarithm of 3 is cached on the web, it used to replace the one of 2
+  @Test
+  fun logarithmOfThreeKeepsLogarithmOfTwo() {
+    assertExpr("ln(3)", "1.0986122887")
+    assertExpr("ln(4)", "1.3862943611")
+  }
+
   @Test fun expression24() = assertExpr("ln(.69)", "-0.3710636814")
 
   @Test fun expression25() = assertExpr("log(.69)", "-0.1611509093")

@@ -50,4 +50,6 @@ kotlin {
   sourceSets.androidMain.dependencies { implementation(libs.io.insert.koin.koin.core.coroutines) }
 
   sourceSets.commonTest.dependencies { implementation(libs.org.jetbrains.kotlin.kotlin.test) }
+  // The tests use Europe/Paris for summer time, browsers give kotlinx-datetime no named time zones
+  sourceSets.wasmJsTest.dependencies { implementation(npm("@js-joda/timezone", "2.22.0")) }
 }

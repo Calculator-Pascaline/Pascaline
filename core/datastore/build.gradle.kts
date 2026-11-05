@@ -16,12 +16,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-plugins { id("unitto.multiplatform.library") }
+plugins {
+  id("unitto.multiplatform.library")
+  alias(libs.plugins.compose)
+  alias(libs.plugins.compose.compiler)
+}
 
 kotlin {
   android { namespace = "com.sadellie.unitto.core.datastore" }
   sourceSets.commonMain.dependencies {
     implementation(project(":core:common"))
+    implementation(libs.org.jetbrains.compose.runtime.runtime) // need skiko
     implementation(project(":core:model"))
     implementation(project(":core:themmo"))
     implementation(project(":core:data"))

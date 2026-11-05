@@ -772,7 +772,7 @@ internal object BigDecimalMath {
       return round(currentCache, mathContext)
     } else {
       val result = logUsingNewton(THREE, mathContext)
-      log2Cache = result
+      log3Cache = result
       return result
     }
   }

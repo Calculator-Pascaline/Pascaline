@@ -18,6 +18,8 @@
 
 plugins {
   id("unitto.multiplatform.library")
+  alias(libs.plugins.compose)
+  alias(libs.plugins.compose.compiler)
   alias(libs.plugins.ksp)
   alias(libs.plugins.room)
 }
@@ -26,6 +28,7 @@ kotlin {
   android { namespace = "com.sadellie.unitto.core.database" }
   sourceSets.commonMain.dependencies {
     implementation(project(":core:common"))
+    implementation(libs.org.jetbrains.compose.runtime.runtime) // need skiko
     implementation(project.dependencies.platform(libs.io.insert.koin.koin.bom))
     implementation(libs.io.insert.koin.koin.core)
     implementation(libs.androidx.room.common)
