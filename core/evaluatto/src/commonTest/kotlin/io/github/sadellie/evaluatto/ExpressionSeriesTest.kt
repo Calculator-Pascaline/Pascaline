@@ -18,10 +18,13 @@
 
 package io.github.sadellie.evaluatto
 
+import com.sadellie.unitto.core.common.KBigDecimal
 import com.sadellie.unitto.core.common.OutputFormat
 import com.sadellie.unitto.core.common.Token
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertTrue
 
 private val SUP = Token.Layout.SUPERSCRIPT_START
 private val SUB = Token.Layout.SUBSCRIPT_START
@@ -104,6 +107,20 @@ class ExpressionSeriesTest {
 
   // Integrals with infinite bounds
   @Test fun integralExpDecay() = assertExpr(integral("0", "∞", "e${pow("${MINUS}x")}"), "1")
+
+  @Test
+  fun integralKeepsWhatDividesByTinyExponential() =
+    assertExpr(integral("0", "1", fraction("e${pow("${MINUS}300")}", "e${pow("${MINUS}300")}")), "1")
+
+  @Test
+  fun tinyExponentialIsNotZeroOutsideOfIntegrals() =
+    assertTrue(Expression("e${pow("${MINUS}1000")}").calculate() > KBigDecimal.ZERO)
+
+  @Test
+  fun longCalculationCanBeStopped() {
+    val expression = integral("${MINUS}∞", "∞", "e${pow("${MINUS}x${pow(2)}")}")
+    assertFailsWith<IllegalStateException> { Expression(expression, onProgress = { error("stopped") }).calculate() }
+  }
 
   @Test fun integralInverseSquare() = assertExpr(integral("1", "∞", fraction("1", "x${pow(2)}")), "1")
 

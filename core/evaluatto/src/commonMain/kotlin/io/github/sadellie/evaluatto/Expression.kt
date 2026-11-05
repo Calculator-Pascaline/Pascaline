@@ -107,13 +107,15 @@ sealed interface ExpressionResult {
   ) : ExpressionResult
 }
 
+/** @param onProgress Called often during long calculations, throw from it to stop them. */
 class Expression(
   input: String,
   radianMode: Boolean = true,
   roundingMode: KRoundingMode = KRoundingMode.HALF_EVEN,
+  onProgress: () -> Unit = {},
 ) {
   private val tree = Parser(input.tokenize(), roundingMode).parse()
-  private val evaluator = Evaluator(radianMode, roundingMode)
+  private val evaluator = Evaluator(radianMode, roundingMode, onProgress)
   private val radianMode = radianMode
 
   /**

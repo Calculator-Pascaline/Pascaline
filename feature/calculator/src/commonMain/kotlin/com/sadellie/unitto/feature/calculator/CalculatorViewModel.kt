@@ -58,9 +58,12 @@ import io.github.sadellie.evaluatto.integerInfo
 import io.github.sadellie.evaluatto.isShownExactly
 import kotlin.math.PI
 import kotlin.math.atan2
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -105,12 +108,27 @@ private fun KBigDecimal.toScientific(precision: Int, outputFormat: Int): String 
 }
 private const val DEGREES_IN_HALF_TURN = 180.0
 
+/** Tokens of what calculates many points. */
+private val CALCULUS_TOKENS = listOf(Token.Calculus.INTEGRAL, Token.Calculus.SUM, Token.Calculus.PRODUCT)
+
+/** What a calculated result depends on. */
+private data class EvaluationKey(
+  val input: String,
+  val radianMode: Boolean,
+  val precision: Int,
+  val outputFormat: Int,
+)
+
 internal class CalculatorViewModel(
   private val userPrefsRepository: UserPreferencesRepository,
   private val calculatorHistoryRepository: CalculatorHistoryRepository,
   private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
   private var _calculationJob: Job? = null
+  private var _equalJob: Job? = null
+  /** Result of the preview, equal doesn't calculate it again. */
+  private var _lastEvaluated: Pair<EvaluationKey, ExpressionResult>? = null
+  private val _isCalculating = MutableStateFlow(false)
   private val _inputKey = "CALCULATOR_INPUT"
   private val _input = savedStateHandle.getTextFieldState(_inputKey)
   private val _result = MutableStateFlow<CalculationResult>(CalculationResult.Empty)
@@ -122,7 +140,13 @@ internal class CalculatorViewModel(
   private val _pendingReuses = mutableListOf<PendingReuse>()
 
   val uiState: StateFlow<CalculatorUIState> =
-    combine(_result, _prefs, calculatorHistoryRepository.historyFlow, _editing) { result, prefs, history, editing ->
+    combine(
+        _result,
+        _prefs,
+        calculatorHistoryRepository.historyFlow,
+        _editing,
+        _isCalculating,
+      ) { result, prefs, history, editing, isCalculating ->
         prefs ?: return@combine CalculatorUIState.Loading
 
         return@combine CalculatorUIState.Ready(
@@ -140,6 +164,7 @@ internal class CalculatorViewModel(
           initialPartialHistoryView = prefs.initialPartialHistoryView,
           openHistoryViewButton = prefs.openHistoryViewButton,
           isEditing = editing != null,
+          isCalculating = isCalculating,
         )
       }
       .stateIn(viewModelScope, CalculatorUIState.Loading)
@@ -157,6 +182,7 @@ internal class CalculatorViewModel(
   }
 
   fun addTokens(tokens: String) {
+    if (_isCalculating.value) return
     when {
       // Equal was clicked and user tries to type a digit or dot
       _equalClicked.value && tokens in Token.Digit.allWithDot -> _input.clearText()
@@ -184,6 +210,7 @@ internal class CalculatorViewModel(
 
   /** Result tapped in history: changes when its calculation is edited. */
   fun addHistoryResult(item: CalculatorHistoryItem, result: String) {
+    if (_isCalculating.value) return
     addTokens(result)
     rememberReuse(item, result, position = _input.selection.max - result.length)
   }
@@ -197,6 +224,7 @@ internal class CalculatorViewModel(
   }
 
   fun addBracket() {
+    if (_isCalculating.value) return
     if (_equalClicked.value) {
       // Cursor is set to 0 when equal is clicked
       _input.placeCursorAtTheEnd()
@@ -206,6 +234,7 @@ internal class CalculatorViewModel(
   }
 
   fun deleteTokens() {
+    if (_isCalculating.value) return
     if (_equalClicked.value) {
       _input.clearText()
     } else {
@@ -214,7 +243,9 @@ internal class CalculatorViewModel(
     _equalClicked.update { false }
   }
 
+  /** Also stops a calculation that takes too long. */
   fun clearInput() {
+    _equalJob?.cancel()
     _input.clearText()
     _pendingReuses.clear()
     _equalClicked.update { false }
@@ -222,6 +253,7 @@ internal class CalculatorViewModel(
 
   /** Puts [item] in the input, equal then changes it instead of adding a new calculation. */
   fun editHistoryItem(item: CalculatorHistoryItem) {
+    if (_isCalculating.value) return
     _pendingReuses.clear()
     item.reused
       .filter { it.end <= item.expression.length }
@@ -249,20 +281,36 @@ internal class CalculatorViewModel(
    * Result is saved as lines: result, then fraction and roots if there are any. A calculation that
    * is being edited changes in place, with everything that reused its result.
    */
-  fun onEqualClick() =
-    viewModelScope.launch {
-      val prefs = _prefs.value ?: return@launch
-      var inputValue = _input.text.toString()
-      // Equal again repeats last operation on the result: 2+3=5, = ==> 5+3=8
-      val editing = _editing.value
-      if (inputValue.isBlank() && prefs.constantCalculation && editing == null) {
-        inputValue = repeatLastOperation().orEmpty()
+  fun onEqualClick() {
+    if (_isCalculating.value) return
+    _equalJob =
+      viewModelScope.launch {
+        _isCalculating.update { true }
+        try {
+          saveInput()
+        } finally {
+          _isCalculating.update { false }
+        }
       }
-      if (inputValue.isBlank()) return@launch
+  }
 
-      val expression = inputValue.replace(EMPTY_INTEGRAL_BOUNDS, Token.Calculus.INTEGRAL)
-      val reused = locateReused(expression, _pendingReuses)
-      val result = historyResult(inputValue, prefs)
+  private suspend fun saveInput() {
+    val prefs = _prefs.value ?: return
+    var inputValue = _input.text.toString()
+    // Equal again repeats last operation on the result: 2+3=5, = ==> 5+3=8
+    val editing = _editing.value
+    if (inputValue.isBlank() && prefs.constantCalculation && editing == null) {
+      inputValue = repeatLastOperation().orEmpty()
+    }
+    if (inputValue.isBlank()) return
+
+    // The preview of this input may be calculating it right now
+    _calculationJob?.join()
+    val expression = inputValue.replace(EMPTY_INTEGRAL_BOUNDS, Token.Calculus.INTEGRAL)
+    val reused = locateReused(expression, _pendingReuses)
+    val result = historyResult(inputValue, prefs)
+    // An edit is finished even if AC is pressed, or only some calculations would follow it
+    withContext(NonCancellable) {
       // It can be deleted while it is edited
       val isInHistory = calculatorHistoryRepository.historyFlow.first().any { it.id == editing?.id }
       if (editing != null && isInHistory) {
@@ -271,19 +319,24 @@ internal class CalculatorViewModel(
       } else {
         calculatorHistoryRepository.add(expression, result, reused)
       }
-
-      _editing.update { null }
-      _pendingReuses.clear()
-      _equalClicked.update { false }
-      _input.clearText()
-      _result.update { CalculationResult.Empty }
     }
+
+    _editing.update { null }
+    _pendingReuses.clear()
+    _equalClicked.update { false }
+    _input.clearText()
+    _result.update { CalculationResult.Empty }
+  }
 
   /** [HistoryResult] of [input] ready to be saved, one without lines for an error. */
   private suspend fun historyResult(input: String, prefs: CalculatorPreferences): String {
+    val key = EvaluationKey(input, prefs.radianMode, prefs.precision, prefs.outputFormat)
     val evaluated =
       try {
-        evaluate(input, prefs.radianMode, prefs.precision, prefs.outputFormat)
+        _lastEvaluated?.takeIf { it.first == key }?.second
+          ?: evaluate(input, prefs.radianMode, prefs.precision, prefs.outputFormat)
+      } catch (e: CancellationException) {
+        throw e
       } catch (e: Exception) {
         null
       }
@@ -342,15 +395,19 @@ internal class CalculatorViewModel(
   private suspend fun fraction(evaluated: ExpressionResult.Real, inputValue: String, prefs: CalculatorPreferences): String {
     // Exact fraction when the result is rational: 1÷3×3 is 1, not 0.999… as 1⁄1
     val exactFraction = evaluated.fraction
-    return if (exactFraction != null) {
-      exactFraction.toFractionalString()
-    } else {
-      try {
-        // Different rounding mode to properly calculate fractional
-        calculate(inputValue, prefs.radianMode, KRoundingMode.DOWN).toFractionalString()
-      } catch (e: Exception) {
-        ""
-      }
+    return when {
+      exactFraction != null -> exactFraction.toFractionalString()
+      // Integrals and series take too long to be calculated twice
+      CALCULUS_TOKENS.any { it in inputValue } -> evaluated.value.toFractionalString()
+      else ->
+        try {
+          // Different rounding mode to properly calculate fractional
+          calculate(inputValue, prefs.radianMode, KRoundingMode.DOWN).toFractionalString()
+        } catch (e: CancellationException) {
+          throw e
+        } catch (e: Exception) {
+          ""
+        }
     }
   }
 
@@ -373,16 +430,21 @@ internal class CalculatorViewModel(
         }
 
         val prefs = _prefs.value ?: return@launch
+        val input = _input.text.toString()
         val newResult =
           try {
             val evaluated =
               evaluate(
-                input = _input.text.toString(),
+                input = input,
                 radianMode = prefs.radianMode,
                 precision = prefs.precision,
                 outputFormat = prefs.outputFormat,
               )
+            _lastEvaluated =
+              EvaluationKey(input, prefs.radianMode, prefs.precision, prefs.outputFormat) to evaluated
             CalculationResult.Success(evaluated.format(prefs.precision, prefs.outputFormat))
+          } catch (e: CancellationException) {
+            throw e
           } catch (e: Exception) {
             CalculationResult.Empty
           }
@@ -396,7 +458,7 @@ internal class CalculatorViewModel(
     roundingMode: KRoundingMode = KRoundingMode.HALF_EVEN,
   ): KBigDecimal =
     withContext(Dispatchers.Default) {
-      Expression(input, radianMode, roundingMode).calculate().also {
+      Expression(input, radianMode, roundingMode, onProgress = { ensureActive() }).calculate().also {
         if (it.isGreaterThan(maxCalculationResult)) throw ExpressionException.TooBig()
       }
     }
@@ -495,7 +557,9 @@ internal class CalculatorViewModel(
     outputFormat: Int,
   ): ExpressionResult =
     withContext(Dispatchers.Default) {
-      Expression(input, radianMode, KRoundingMode.HALF_EVEN).evaluate(precision, outputFormat).also {
+      Expression(input, radianMode, KRoundingMode.HALF_EVEN, onProgress = { ensureActive() })
+        .evaluate(precision, outputFormat)
+        .also {
         val isTooBig =
           when (it) {
             is ExpressionResult.Real -> it.value.abs().isGreaterThan(maxCalculationResult)

@@ -28,6 +28,7 @@ import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -46,6 +47,7 @@ import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -63,6 +65,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -93,6 +96,7 @@ import com.sadellie.unitto.feature.calculator.components.CalculationList
 import com.sadellie.unitto.feature.calculator.components.CalculatorKeyboard
 import com.sadellie.unitto.feature.calculator.components.historyTextCenterShiftFraction
 import com.sadellie.unitto.feature.calculator.components.historyTextStyle
+import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import unitto.core.common.generated.resources.Res
@@ -325,35 +329,49 @@ private fun ReadyExpanded(
 @Composable
 private fun CalculatorInput(uiState: CalculatorUIState.Ready, onEqualClick: () -> Unit, onCancelEdit: () -> Unit) {
   AnimatedVisibility(visible = uiState.isEditing) { EditingBar(onCancel = onCancelEdit) }
-  ExpressionLayoutTextField(
-    modifier =
-      Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-        .fillMaxWidth()
-        // Grows upward: the keyboard stays where it is
-        .animateContentSize(alignment = Alignment.BottomCenter)
-        .heightIn(min = INPUT_MIN_HEIGHT, max = INPUT_MAX_HEIGHT)
-        .clip(INPUT_SHAPE)
-        .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-        .border(INPUT_BORDER, MaterialTheme.colorScheme.primary.copy(alpha = INPUT_BORDER_ALPHA), INPUT_SHAPE)
-        .padding(horizontal = 12.dp, vertical = 6.dp),
-    // Centered like the text of history cards
-    centerShift = historyTextCenterShiftFraction(),
-    state = uiState.input,
-    formatterSymbols = uiState.formatterSymbols,
-    textColor = MaterialTheme.colorScheme.onSurface,
-    // Same size as the history
-    textStyle = historyTextStyle(),
-    wrapHeight = true,
-    minRatio = INPUT_MIN_RATIO,
-    alignStart = true,
-    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-    onKeyboardAction =
-      KeyboardActionHandler {
-        onEqualClick()
-        it()
-      },
-  )
-}
+  // Only for what takes long, quick results would make it flash
+  val showProgress by
+    produceState(false, uiState.isCalculating) {
+      if (uiState.isCalculating) delay(PROGRESS_DELAY_MS)
+      value = uiState.isCalculating
+    }
+  Box(contentAlignment = Alignment.CenterEnd) {
+    ExpressionLayoutTextField(
+      modifier =
+        Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+          .fillMaxWidth()
+          // Grows upward: the keyboard stays where it is
+          .animateContentSize(alignment = Alignment.BottomCenter)
+          .heightIn(min = INPUT_MIN_HEIGHT, max = INPUT_MAX_HEIGHT)
+          .clip(INPUT_SHAPE)
+          .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+          .border(INPUT_BORDER, MaterialTheme.colorScheme.primary.copy(alpha = INPUT_BORDER_ALPHA), INPUT_SHAPE)
+          .padding(horizontal = 12.dp, vertical = 6.dp),
+      // Centered like the text of history cards
+      centerShift = historyTextCenterShiftFraction(),
+      state = uiState.input,
+      formatterSymbols = uiState.formatterSymbols,
+      textColor = MaterialTheme.colorScheme.onSurface,
+      // Same size as the history
+      textStyle = historyTextStyle(),
+      wrapHeight = true,
+      minRatio = INPUT_MIN_RATIO,
+      alignStart = true,
+      keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+      onKeyboardAction =
+        KeyboardActionHandler {
+          onEqualClick()
+          it()
+        },
+    )
+
+    if (showProgress) {
+      CircularProgressIndicator(
+        modifier = Modifier.padding(end = 24.dp).size(PROGRESS_SIZE),
+        strokeWidth = PROGRESS_STROKE,
+      )
+    }
+  }}
 
 /** Shown above the input while a calculation of history is changed. */
 @Composable
@@ -438,6 +456,9 @@ private val INPUT_MIN_HEIGHT = 56.dp
 private val INPUT_MAX_HEIGHT = 160.dp
 private val INPUT_SHAPE = RoundedCornerShape(20.dp)
 private val EDITING_CLOSE_SIZE = 32.dp
+private const val PROGRESS_DELAY_MS = 300L
+private val PROGRESS_SIZE = 24.dp
+private val PROGRESS_STROKE = 2.5.dp
 private val INPUT_BORDER = 1.5.dp
 private const val INPUT_BORDER_ALPHA = 0.5f
 

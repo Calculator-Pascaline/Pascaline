@@ -40,6 +40,7 @@ internal sealed class CalculatorUIState {
     val initialPartialHistoryView: Boolean,
     val openHistoryViewButton: Boolean,
     val isEditing: Boolean = false,
+    val isCalculating: Boolean = false,
   ) : CalculatorUIState()
 }
 

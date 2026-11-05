@@ -71,9 +71,11 @@ internal class Complex(val re: KBigDecimal, val im: KBigDecimal = KBigDecimal.ZE
     Complex(re.setScale(scale, KRoundingMode.HALF_EVEN), im.setScale(scale, KRoundingMode.HALF_EVEN))
 }
 
+/** @param onProgress Called for every point of integrals and series, can throw to stop them. */
 internal class Evaluator(
   private val radianMode: Boolean,
   private val roundingMode: KRoundingMode,
+  private val onProgress: () -> Unit = {},
 ) {
   private val scale = MAX_SCALE
   private val mathContext = KMathContext(TRIG_SCALE, roundingMode)
@@ -88,6 +90,7 @@ internal class Evaluator(
   private var evaluationsLeft = MAX_EVALUATIONS
 
   private fun spendEvaluation() {
+    onProgress()
     evaluationsLeft--
     if (evaluationsLeft < 0) throw ExpressionException.TooBig()
   }
@@ -152,10 +155,23 @@ internal class Evaluator(
       BinaryOperator.MINUS -> left - right
       BinaryOperator.MULTIPLY -> left * right
       BinaryOperator.DIVIDE -> left.divide(right, workingScale, roundingMode)
-      BinaryOperator.POWER -> power(left, right)
+      BinaryOperator.POWER ->
+        if (node.left == Node.Euler && right.isReal) exponential(right.re) else power(left, right)
       BinaryOperator.MODULO -> Complex(left.real().remainder(right.real()))
     }
   }
+
+  /**
+   * e^[exponent] without the logarithm of e that [power] would calculate. Integrals and series only
+   * keep [POINT_SCALE] digits, so a value far below that is not calculated: e^(−x²) in the tail of an
+   * integral took seconds. It stays above 0 for what divides by it.
+   */
+  private fun exponential(exponent: KBigDecimal): Complex {
+    if (workingScale < scale && exponent < NEGLIGIBLE_EXPONENT) return Complex(negligibleExponential)
+    return Complex(exponent.exp(mathContext))
+  }
+
+  private val negligibleExponential by lazy { NEGLIGIBLE_EXPONENT.exp(mathContext) }
 
   private fun power(base: Complex, exponent: Complex): Complex {
     if (base.isReal && exponent.isReal) {
@@ -482,6 +498,8 @@ private val gaussLegendreNodes =
     .map { (node, weight) -> KBigDecimal(node) to KBigDecimal(weight) }
 
 private val INTEGRAL_TOLERANCE = KBigDecimal("1E-25")
+/** e^−200 is about 10⁻⁸⁷, far below [POINT_SCALE]. */
+private val NEGLIGIBLE_EXPONENT = KBigDecimal("-200")
 private val DERIVATIVE_STEP = KBigDecimal("1E-20")
 private const val INITIAL_INTERVALS = 2
 private const val MAX_INTERVALS = 64
