@@ -551,6 +551,8 @@
     <string name="settings_version_name">版本号</string>
     <string name="settings_vibrations">振动</string>
     <string name="settings_vibrations_support">点击键盘按钮时的触觉反馈</string>
+    <string name="settings_key_animation">按键动画</string>
+    <string name="settings_key_animation_support">按下时按键会变大</string>
     <string name="settings_view_source_code">查看源代码</string>
     <string name="statistics_automatic">自动：%1$s</string>
     <string name="statistics_bar">[%1$s; %2$s[ ：频数 %3$s</string>

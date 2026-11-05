@@ -594,6 +594,8 @@
     <string name="settings_version_name">Version</string>
     <string name="settings_vibrations">Vibrations</string>
     <string name="settings_vibrations_support">Haptic feedback when clicking keyboard buttons</string>
+    <string name="settings_key_animation">Key animation</string>
+    <string name="settings_key_animation_support">Keys grow when you press them</string>
     <string name="settings_view_source_code">View source code</string>
     <string name="time_zone_add_title">Add time zone</string>
     <string name="time_zone_reset">Reset</string>

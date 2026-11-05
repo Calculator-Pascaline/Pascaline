@@ -26,6 +26,7 @@ internal sealed class SettingsUIState {
     val enableVibrations: Boolean,
     val enableKeepScreenOn: Boolean,
     val showOnLockScreen: Boolean,
+    val enableKeyAnimation: Boolean,
     val showUpdateChangelog: Boolean,
   ) : SettingsUIState()
 }

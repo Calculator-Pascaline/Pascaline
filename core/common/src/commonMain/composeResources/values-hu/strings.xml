@@ -551,6 +551,8 @@
     <string name="settings_version_name">Verzió neve</string>
     <string name="settings_vibrations">Rezgések</string>
     <string name="settings_vibrations_support">Haptikus visszajelzés a billentyűzet gombjainak megnyomásakor</string>
+    <string name="settings_key_animation">Billentyűanimáció</string>
+    <string name="settings_key_animation_support">A billentyűk megnőnek lenyomáskor</string>
     <string name="settings_view_source_code">Forráskód megtekintése</string>
     <string name="statistics_automatic">Automatikus: %1$s</string>
     <string name="statistics_bar">[%1$s; %2$s[ : gyakoriság %3$s</string>

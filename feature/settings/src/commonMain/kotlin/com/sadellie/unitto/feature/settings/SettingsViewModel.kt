@@ -34,11 +34,13 @@ internal class SettingsViewModel(private val userPrefsRepository: UserPreference
     combine(
         userPrefsRepository.generalPrefs,
         userPrefsRepository.appData(PrefKeys.SHOW_ON_LOCK_SCREEN_PREF_KEY),
-      ) { prefs, showOnLockScreen ->
+        userPrefsRepository.appData(PrefKeys.KEY_ANIMATION_PREF_KEY),
+      ) { prefs, showOnLockScreen, keyAnimation ->
         SettingsUIState.Ready(
           enableVibrations = prefs.enableVibrations,
           enableKeepScreenOn = prefs.enableKeepScreenOn,
           showOnLockScreen = showOnLockScreen != "false",
+          enableKeyAnimation = keyAnimation != "false",
           showUpdateChangelog = prefs.lastReadChangelog != Config.VERSION_CODE,
         )
       }
@@ -55,6 +57,11 @@ internal class SettingsViewModel(private val userPrefsRepository: UserPreference
   /** @see UserPreferencesRepository.updateEnableKeepScreenOn */
   fun updateEnableKeepScreenOn(enabled: Boolean) =
     viewModelScope.launch { userPrefsRepository.updateEnableKeepScreenOn(enabled) }
+
+  fun updateKeyAnimation(enabled: Boolean) =
+    viewModelScope.launch {
+      userPrefsRepository.updateAppData(PrefKeys.KEY_ANIMATION_PREF_KEY, enabled.toString())
+    }
 
   fun updateShowOnLockScreen(enabled: Boolean) =
     viewModelScope.launch {

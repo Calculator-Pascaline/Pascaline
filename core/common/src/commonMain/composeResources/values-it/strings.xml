@@ -551,6 +551,8 @@
     <string name="settings_version_name">Nome versione</string>
     <string name="settings_vibrations">Vibrazioni</string>
     <string name="settings_vibrations_support">Feedback aptico quando si premono i tasti della tastiera</string>
+    <string name="settings_key_animation">Animazione dei tasti</string>
+    <string name="settings_key_animation_support">I tasti si ingrandiscono quando li premi</string>
     <string name="settings_view_source_code">Visualizza codice sorgente</string>
     <string name="statistics_automatic">Automatico: %1$s</string>
     <string name="statistics_bar">[%1$s; %2$s[ : frequenza %3$s</string>

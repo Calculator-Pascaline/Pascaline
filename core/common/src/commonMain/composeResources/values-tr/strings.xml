@@ -551,6 +551,8 @@
     <string name="settings_version_name">Sürüm adı</string>
     <string name="settings_vibrations">Titreşimler</string>
     <string name="settings_vibrations_support">Klavye düğmelerine tıklarken dokunsal geri bildirim</string>
+    <string name="settings_key_animation">Tuş animasyonu</string>
+    <string name="settings_key_animation_support">Tuşlar basıldığında büyür</string>
     <string name="settings_view_source_code">Kaynak kodunu görüntüle</string>
     <string name="statistics_automatic">Otomatik: %1$s</string>
     <string name="statistics_bar">[%1$s; %2$s[ : frekans %3$s</string>

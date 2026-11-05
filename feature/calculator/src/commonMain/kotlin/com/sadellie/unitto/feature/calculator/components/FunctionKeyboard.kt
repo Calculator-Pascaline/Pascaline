@@ -141,6 +141,7 @@ import com.sadellie.unitto.core.designsystem.icons.symbols.WeightFill
 import com.sadellie.unitto.core.designsystem.icons.symbols._123
 import com.sadellie.unitto.core.ui.KeyPress
 import com.sadellie.unitto.core.ui.animatePressedWeight
+import com.sadellie.unitto.core.ui.LocalKeyAnimation
 import com.sadellie.unitto.core.ui.keyHaptics
 import com.sadellie.unitto.core.ui.rememberKeyPress
 import com.sadellie.unitto.core.ui.trackKeyPress
@@ -823,7 +824,7 @@ internal val DOTS_HEIGHT = 14.dp
 private fun squashedKeyShape(isPressed: Boolean): RoundedCornerShape {
   val corner by
     animateIntAsState(
-      targetValue = if (isPressed) KEY_PRESSED_CORNER else KEY_CORNER,
+      targetValue = if (isPressed && LocalKeyAnimation.current) KEY_PRESSED_CORNER else KEY_CORNER,
       animationSpec = MaterialTheme.motionScheme.fastSpatialSpec(),
       label = "Squashed key",
     )

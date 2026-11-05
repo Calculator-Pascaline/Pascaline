@@ -551,6 +551,8 @@
     <string name="settings_version_name">Nombre de la versión</string>
     <string name="settings_vibrations">Vibraciones</string>
     <string name="settings_vibrations_support">Retroalimentación háptica al presionar teclas del teclado</string>
+    <string name="settings_key_animation">Animación de teclas</string>
+    <string name="settings_key_animation_support">Las teclas crecen al pulsarlas</string>
     <string name="settings_view_source_code">Ver código fuente</string>
     <string name="statistics_automatic">Automático: %1$s</string>
     <string name="statistics_bar">[%1$s; %2$s[ : frecuencia %3$s</string>
