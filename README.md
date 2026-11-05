@@ -43,6 +43,102 @@
 
 <p align="center"><sub>Added to the home screen, the web app opens in its own window and works without internet.</sub></p>
 
+## ✨ Features
+
+### 🧮 Advanced math
+
+<table>
+  <tr>
+    <td align="center" valign="top" width="33%">
+      <b>Complex numbers</b><br />
+      <img src="docs/screenshots/complex-numbers.png" width="240" alt="(1+2i)² is −3+4i, √−5 is √5 i, and 1+i on the complex plane with length √2 and angle π/4" /><br />
+      <sub>Exact results and the complex plane</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <b>Calculus</b><br />
+      <img src="docs/screenshots/calculus.png" width="240" alt="The integral of x² is x³/3 + C, a derivative, and the integral of 1/(1+x²) from −∞ to ∞ is π" /><br />
+      <sub>Integrals, even to infinity, and derivatives</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <b>Series</b><br />
+      <img src="docs/screenshots/series.png" width="240" alt="The sum of 1/n² from n=1 to ∞ is π²/6, about 1.645" /><br />
+      <sub>Sums and products, with exact values</sub>
+    </td>
+  </tr>
+</table>
+
+### 📐 Algebra and functions
+
+<table>
+  <tr>
+    <td align="center" valign="top" width="33%">
+      <b>Equations</b><br />
+      <img src="docs/screenshots/equations.png" width="240" alt="x⁵+6x factorized, with the roots x≈0, x≈−1.107±1.107i and x≈1.107±1.107i" /><br />
+      <sub>Factorization and all the roots</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <b>Functions</b><br />
+      <img src="docs/screenshots/functions.png" width="240" alt="The graph of sin(x)" /><br />
+      <sub>Graphs and tables of values</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <b>Programmer</b><br />
+      <img src="docs/screenshots/programmer.png" width="240" alt="FF AND 0F is F, shown in hexadecimal, decimal, octal and binary" /><br />
+      <sub>HEX, DEC, OCT and BIN with bitwise operators</sub>
+    </td>
+  </tr>
+</table>
+
+### 📊 Data
+
+<table>
+  <tr>
+    <td align="center" valign="top" width="33%">
+      <b>Statistics</b><br />
+      <img src="docs/screenshots/statistics.png" width="240" alt="A histogram of values with their frequencies" /><br />
+      <sub>Histograms, box plots and every statistic</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <b>Regression</b><br />
+      <img src="docs/screenshots/regression.png" width="240" alt="Points with the line y = 2.02x − 0.02 through them" /><br />
+      <sub>Find the curve through your points</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <b>Probability</b><br />
+      <img src="docs/screenshots/probability.png" width="240" alt="The bell curve of the normal distribution with its mean and standard deviation" /><br />
+      <sub>Common distributions, with examples</sub>
+    </td>
+  </tr>
+</table>
+
+### 🧰 Everyday tools
+
+<table>
+  <tr>
+    <td align="center" valign="top" width="33%">
+      <b>Unit converter</b><br />
+      <img src="docs/screenshots/units.png" width="240" alt="100 kilometers is 62.137 miles" /><br />
+      <sub>Convert between all sorts of units</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <b>Finance</b><br />
+      <img src="docs/screenshots/finance.png" width="240" alt="Simple interest of 5% on 1000 for 365 days is 50" /><br />
+      <sub>Simple and compound interest</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <b>Elements</b><br />
+      <img src="docs/screenshots/elements.png" width="240" alt="The periodic table with the details of carbon" /><br />
+      <sub>The periodic table, element by element</sub>
+    </td>
+  </tr>
+</table>
+
+## 🔒 Privacy
+
+The Android app doesn't ask for the internet permission, so it can't connect to the internet: your calculations stay on your device. Links like **Report an issue** open in your browser.
+
+The web app is downloaded from GitHub Pages, then everything you do in it stays in your browser.
+
 ## 💬 Feedback
 
 Ideas, bugs or anything that could make Pascaline better are welcome.
