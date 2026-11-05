@@ -118,6 +118,46 @@ internal fun calculateNormalWeightImperial(
   return lowest to highest
 }
 
+/** How much health risk a waist-to-height ratio shows, see [waistToHeightBand]. */
+internal enum class WaistToHeightBand {
+  HEALTHY,
+  INCREASED,
+  HIGH,
+}
+
+/**
+ * Waist divided by height.
+ *
+ * @param waist Waist in the unit of [height].
+ * @return Ratio, [KBigDecimal.ZERO] if input is negative or zero.
+ */
+internal fun calculateWaistToHeight(waist: KBigDecimal, height: KBigDecimal): KBigDecimal {
+  if (waist <= KBigDecimal.ZERO || height <= KBigDecimal.ZERO) return KBigDecimal.ZERO
+  return waist.divide(height, WAIST_TO_HEIGHT_SCALE, KRoundingMode.HALF_EVEN)
+}
+
+/** Height in inches for [calculateWaistToHeight]. */
+internal fun heightInInches(heightFt: KBigDecimal, heightIn: KBigDecimal): KBigDecimal =
+  heightFt.multiply(footToInchFactor).plus(heightIn)
+
+/** The ratio is not meant for a BMI of 35 or more (NICE NG246, NHS). */
+internal fun isWaistToHeightUsable(bodyMassIndex: KBigDecimal): Boolean =
+  bodyMassIndex < waistToHeightBodyMassLimit
+
+/** Bands of NICE NG246. There is none under 0.4, it is not said to be healthy. */
+internal fun waistToHeightBand(ratio: KBigDecimal): WaistToHeightBand? =
+  when {
+    ratio < waistToHeightHealthy -> null
+    ratio < waistToHeightIncreased -> WaistToHeightBand.HEALTHY
+    ratio < waistToHeightHigh -> WaistToHeightBand.INCREASED
+    else -> WaistToHeightBand.HIGH
+  }
+
+private const val WAIST_TO_HEIGHT_SCALE = 4
+private val waistToHeightHealthy = KBigDecimal("0.4")
+private val waistToHeightIncreased = KBigDecimal("0.5")
+private val waistToHeightHigh = KBigDecimal("0.6")
+private val waistToHeightBodyMassLimit = KBigDecimal("35")
 private val cmToMFactor = KBigDecimal("100")
 private val footToInchFactor = KBigDecimal("12")
 private val metricToImperialFactor = KBigDecimal("703")

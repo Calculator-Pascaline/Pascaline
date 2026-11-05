@@ -40,21 +40,27 @@ internal class BodyMassViewModel(userPreferencesRepository: UserPreferencesRepos
   private val _height1 = TextFieldState()
   private val _height2 = TextFieldState()
   private val _weight = TextFieldState()
+  private val _waist = TextFieldState()
   private val _result = MutableStateFlow(KBigDecimal.ZERO)
   private val _normalWeightRange = MutableStateFlow(KBigDecimal.ZERO to KBigDecimal.ZERO)
+  private val _waistToHeight = MutableStateFlow(KBigDecimal.ZERO)
 
   val uiState =
-    combine(userPreferencesRepository.bodyMassPrefs, _isMetric, _result, _normalWeightRange) {
-        userPrefs,
-        isMetric,
-        result,
-        normalWeightRange ->
+    combine(
+        userPreferencesRepository.bodyMassPrefs,
+        _isMetric,
+        _result,
+        _normalWeightRange,
+        _waistToHeight,
+      ) { userPrefs, isMetric, result, normalWeightRange, waistToHeight ->
         UIState.Ready(
           isMetric = isMetric,
           height1 = _height1,
           height2 = _height2,
           weight = _weight,
+          waist = _waist,
           result = result,
+          waistToHeight = waistToHeight,
           normalWeightRange = normalWeightRange,
           formatterSymbols = userPrefs.formatterSymbols,
         )
@@ -65,16 +71,19 @@ internal class BodyMassViewModel(userPreferencesRepository: UserPreferencesRepos
     val height1Flow = _height1.observe()
     val height2Flow = _height2.observe()
     val weightFlow = _weight.observe()
+    val waistFlow = _waist.observe()
 
-    combine(height1Flow, height2Flow, weightFlow, _isMetric) {
+    combine(height1Flow, height2Flow, weightFlow, waistFlow, _isMetric) {
         height1FlowValue,
         height2FlowValue,
         weightFlowValue,
+        waistFlowValue,
         isMetricValue ->
         calculate(
           height1FlowValue.toString(),
           height2FlowValue.toString(),
           weightFlowValue.toString(),
+          waistFlowValue.toString(),
           isMetricValue,
         )
       }
@@ -87,6 +96,7 @@ internal class BodyMassViewModel(userPreferencesRepository: UserPreferencesRepos
     height1Input: String,
     height2Input: String,
     weightInput: String,
+    waistInput: String,
     isMetric: Boolean,
   ) {
     _calculateJob?.cancel()
@@ -95,22 +105,31 @@ internal class BodyMassViewModel(userPreferencesRepository: UserPreferencesRepos
         try {
           val height1 = KBigDecimal(height1Input.ifEmpty { "0" })
           val weight = KBigDecimal(weightInput.ifEmpty { "0" })
+          val waist = KBigDecimal(waistInput.ifEmpty { "0" })
 
           if (isMetric) {
-            _result.update { calculateMetric(height1, weight) }
+            val bodyMassIndex = calculateMetric(height1, weight)
+            _result.update { bodyMassIndex }
+            _waistToHeight.update { waistToHeight(waist, height1, bodyMassIndex) }
             _normalWeightRange.update { calculateNormalWeightMetric(height1) }
           } else {
             val height2 = KBigDecimal(height2Input.ifEmpty { "0" })
 
-            _result.update { calculateImperial(height1, height2, weight) }
+            val bodyMassIndex = calculateImperial(height1, height2, weight)
+            _result.update { bodyMassIndex }
+            _waistToHeight.update { waistToHeight(waist, heightInInches(height1, height2), bodyMassIndex) }
             _normalWeightRange.update { calculateNormalWeightImperial(height1, height2) }
           }
         } catch (e: Exception) {
           _result.update { KBigDecimal.ZERO }
           _normalWeightRange.update { KBigDecimal.ZERO to KBigDecimal.ZERO }
+          _waistToHeight.update { KBigDecimal.ZERO }
         }
       }
   }
+
+  private fun waistToHeight(waist: KBigDecimal, height: KBigDecimal, bodyMassIndex: KBigDecimal) =
+    if (isWaistToHeightUsable(bodyMassIndex)) calculateWaistToHeight(waist, height) else KBigDecimal.ZERO
 }
 
 internal expect fun getInitialIsMetric(): Boolean

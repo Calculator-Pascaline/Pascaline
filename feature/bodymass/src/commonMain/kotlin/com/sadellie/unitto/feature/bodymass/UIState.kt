@@ -30,8 +30,11 @@ internal sealed class UIState {
     val height1: TextFieldState,
     val height2: TextFieldState,
     val weight: TextFieldState,
+    val waist: TextFieldState,
     val normalWeightRange: Pair<KBigDecimal, KBigDecimal>,
     val result: KBigDecimal,
+    /** Zero when there is nothing to show, see [isWaistToHeightUsable]. */
+    val waistToHeight: KBigDecimal,
     val formatterSymbols: FormatterSymbols,
   ) : UIState()
 }

@@ -25,6 +25,37 @@ import kotlin.test.assertEquals
 
 class BodyMassUtilsTest {
   @Test
+  fun waistToHeight_isTheSameInEveryUnit() {
+    val metric = calculateWaistToHeight(KBigDecimal("90"), KBigDecimal("180"))
+    val imperial = calculateWaistToHeight(KBigDecimal("36"), heightInInches(KBigDecimal("6"), KBigDecimal("0")))
+    assertEquals(0, metric.compareTo(KBigDecimal("0.5")))
+    assertEquals(0, imperial.compareTo(KBigDecimal("0.5")))
+  }
+
+  @Test
+  fun waistToHeight_nothingToCalculate() {
+    assertEquals(0, calculateWaistToHeight(KBigDecimal.ZERO, KBigDecimal("180")).compareTo(KBigDecimal.ZERO))
+    assertEquals(0, calculateWaistToHeight(KBigDecimal("90"), KBigDecimal.ZERO).compareTo(KBigDecimal.ZERO))
+    assertEquals(0, calculateWaistToHeight(KBigDecimal("-1"), KBigDecimal("180")).compareTo(KBigDecimal.ZERO))
+  }
+
+  @Test
+  fun waistToHeight_bands() {
+    assertEquals(null, waistToHeightBand(KBigDecimal("0.39")))
+    assertEquals(WaistToHeightBand.HEALTHY, waistToHeightBand(KBigDecimal("0.4")))
+    assertEquals(WaistToHeightBand.HEALTHY, waistToHeightBand(KBigDecimal("0.49")))
+    assertEquals(WaistToHeightBand.INCREASED, waistToHeightBand(KBigDecimal("0.5")))
+    assertEquals(WaistToHeightBand.INCREASED, waistToHeightBand(KBigDecimal("0.59")))
+    assertEquals(WaistToHeightBand.HIGH, waistToHeightBand(KBigDecimal("0.6")))
+  }
+
+  @Test
+  fun waistToHeight_isNotForBodyMassOf35OrMore() {
+    assertEquals(true, isWaistToHeightUsable(KBigDecimal("34.9")))
+    assertEquals(false, isWaistToHeightUsable(KBigDecimal("35")))
+  }
+
+  @Test
   fun calculateMetric_positiveNumbers() {
     val heightCm = KBigDecimal("190")
     val weightKg = KBigDecimal("80")
