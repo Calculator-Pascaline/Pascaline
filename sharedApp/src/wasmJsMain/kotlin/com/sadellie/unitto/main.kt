@@ -124,7 +124,7 @@ fun main() {
  * cut down to what the app shows, WebFontsTest says when a translation needs them cut again:
  * ```
  * pyftsubset NotoSansMath-Regular.ttf --layout-features='*' --output-file=noto_sans_math.ttf  *   --unicodes=2190-23FF,25A0-25FF,27C0-27FF,2980-2BFF
- * pyftsubset NotoSansSC-Regular.otf --layout-features='*' --output-file=noto_sans_sc.otf  *   --text-file=<characters of values-zh-rCN/strings.xml> --unicodes=3000-303F,FF00-FF65
+ * pyftsubset NotoSansSC-Regular.otf --layout-features='*' --output-file=noto_sans_sc.otf  *   --text-file=<characters of values-zh-rCN/strings.xml and of files/place/cities.tsv> --unicodes=3000-303F,FF00-FF65
  * ```
  */
 @OptIn(ExperimentalResourceApi::class)

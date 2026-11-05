@@ -21,7 +21,6 @@ package com.sadellie.unitto.feature.calculator.place
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sadellie.unitto.core.common.stateIn
@@ -85,6 +84,10 @@ internal data class PlaceReport(
   /** Millimeters of each month, January first. */
   val precipitation: DoubleArray,
   val climate: Climate,
+  /** Best aim of a solar panel on this date, null when the Sun stays down. */
+  val dayPanel: PanelAim?,
+  /** Best aim of a solar panel that stays in place all year. */
+  val yearPanel: PanelAim?,
 ) {
   /** Average low and high on [date], at the point's elevation. */
   fun dayTemperature(date: LocalDate): Pair<Double, Double> {
@@ -106,8 +109,8 @@ internal data class PlaceReport(
 internal data class EclipseReport(val lunar: Eclipse?, val solar: Eclipse?)
 
 /**
- * A point of the map, a date and a time zone. Whenever one changes, the report is worked out again
- * from the bundled data and the astronomy, off the main thread.
+ * A point of the map and a date, the time zone comes with the point. Whenever one changes, the
+ * report is worked out again from the bundled data and the astronomy, off the main thread.
  */
 internal class PlaceViewModel(userPrefsRepository: UserPreferencesRepository) : ViewModel() {
   val formatterSymbols =
@@ -116,6 +119,19 @@ internal class PlaceViewModel(userPrefsRepository: UserPreferencesRepository) : 
   private val data = PlaceData()
   private var reportJob: Job? = null
   private var zones: List<ZoneCity> = emptyList()
+  private var started = false
+
+  /** Cities of the map, the biggest first, empty until they are read. */
+  var cities by mutableStateOf<List<City>>(emptyList())
+    private set
+
+  /** Where the map should fly to, with a number that changes each time. */
+  var focus by mutableStateOf<Pair<GeoPoint, Int>?>(null)
+    private set
+
+  /** The city closest to the point when it is near, null otherwise. */
+  var nearCity by mutableStateOf<City?>(null)
+    private set
 
   var tab by mutableStateOf(PlaceTab.SUN)
   var isMetric by mutableStateOf(placeUsesMetric())
@@ -134,7 +150,7 @@ internal class PlaceViewModel(userPrefsRepository: UserPreferencesRepository) : 
   var eclipses by mutableStateOf<EclipseReport?>(null)
     private set
 
-  var land by mutableStateOf<ImageBitmap?>(null)
+  var land by mutableStateOf<LandMap?>(null)
     private set
 
   /** Why the last report couldn't be made, null when it was. */
@@ -147,23 +163,43 @@ internal class PlaceViewModel(userPrefsRepository: UserPreferencesRepository) : 
     }
     viewModelScope.launch {
       zones = runCatching { data.zones() }.getOrDefault(emptyList())
-      // Start where the device's clock is set, the city of its zone
-      zones.firstOrNull { it.zone == zone }?.let { point = it.point }
+      cities = runCatching { data.cities() }.getOrDefault(emptyList())
+      nearCity = nearCity(point)
       recompute()
     }
   }
 
-  /** A new point brings the zone of its closest city, the date stays. */
+  /**
+   * A new point brings the zone of its closest city, from the cities of the map, then from the zone
+   * cities. The date stays.
+   */
   fun choosePoint(newPoint: GeoPoint) {
     point = GeoPoint(newPoint.latitude.coerceIn(-MAX_LATITUDE, MAX_LATITUDE), wrapLongitude(newPoint.longitude))
-    nearestZone(zones, point)?.let { zone = it }
+    nearCity = nearCity(point)
+    val cityZone = nearestCity(cities, point)?.first?.zone?.takeIf { it in knownZoneSet }
+    (cityZone ?: nearestZone(zones, point))?.let { zone = it }
     recompute()
   }
 
-  fun chooseZone(newZone: String) {
-    zone = newZone
-    recompute()
+  /** Chooses [city] and flies the map to it. */
+  fun chooseCity(city: City) {
+    choosePoint(city.point)
+    focus = city.point to ((focus?.second ?: 0) + 1)
   }
+
+  /** The first time the cities are there, flies to the city of [language] on its today. */
+  fun startAt(language: String) {
+    if (started) return
+    val city = defaultCity(cities, language) ?: return
+    started = true
+    chooseCity(city)
+    chooseDate(today())
+  }
+
+  private val knownZoneSet by lazy { knownZones().toSet() }
+
+  private fun nearCity(point: GeoPoint): City? =
+    nearestCity(cities, point)?.takeIf { it.second <= NEAR_CITY_KM }?.first
 
   fun chooseDate(newDate: LocalDate) {
     date = newDate
@@ -234,6 +270,8 @@ internal class PlaceViewModel(userPrefsRepository: UserPreferencesRepository) : 
         temperatures = temperatures,
         precipitation = precipitation,
         climate = Climate.OCEANIC,
+        dayPanel = dayPanelAim(point, dayStart, date.dayOfYear),
+        yearPanel = yearPanelAim(point, dayStart(LocalDate(date.year, 1, 1), zone)),
       )
     val means = DoubleArray(MONTHS) { partial.monthMean(it) }
     return partial.copy(climate = koppen(means, precipitation, point.latitude))
@@ -271,4 +309,5 @@ private const val FULL = 180.0
 private const val SHOWERS = 3
 private const val MONTHS = 12
 private const val MAX_LATITUDE = 89.9
+private const val NEAR_CITY_KM = 25.0
 private val DEFAULT_POINT = GeoPoint(48.8566, 2.3522)

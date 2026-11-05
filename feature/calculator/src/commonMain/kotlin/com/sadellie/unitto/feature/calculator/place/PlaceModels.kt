@@ -449,3 +449,99 @@ internal fun daysInMonths(year: Int): IntArray {
 
 /** Wraps a longitude to −180..180. */
 internal fun wrapLongitude(longitude: Double): Double = longitude - 360 * floor((longitude + 180) / 360)
+
+// Cities
+
+/** A city of Natural Earth: where, from which web map zoom it is labeled, how big, its zone and names. */
+internal data class City(
+  val point: GeoPoint,
+  val minZoom: Float,
+  val population: Long,
+  val zone: String,
+  /** Names in [CITY_LANGUAGES], empty when the same as English. */
+  val names: List<String>,
+) {
+  /** Name in [language] (like "fr"), English when there is none. */
+  fun name(language: String): String {
+    val index = CITY_LANGUAGES.indexOf(cityLanguage(language))
+    return names.getOrNull(index)?.takeIf { it.isNotEmpty() } ?: names[0]
+  }
+}
+
+/** Languages of the names in the city file, English first. */
+internal val CITY_LANGUAGES = listOf("en", "de", "es", "fr", "hi", "hu", "id", "it", "nl", "pt", "ru", "tr", "zh")
+
+/** Android may still call Indonesian "in". */
+private fun cityLanguage(language: String) = if (language == "in") "id" else language
+
+/** Rows of cities.tsv: latitude, longitude, min zoom, population, zone, then the names. */
+internal fun parseCities(text: String): List<City> =
+  text.lineSequence()
+    .filter { it.isNotBlank() && !it.startsWith("#") }
+    .mapNotNull { line ->
+      val columns = line.split('\t')
+      val latitude = columns.getOrNull(0)?.toDoubleOrNull()
+      val longitude = columns.getOrNull(1)?.toDoubleOrNull()
+      if (latitude == null || longitude == null || columns.size < CITY_NAME_COLUMN + 1) {
+        null
+      } else {
+        City(
+          point = GeoPoint(latitude, longitude),
+          minZoom = columns[2].toFloatOrNull() ?: DEFAULT_MIN_ZOOM,
+          population = columns[3].toLongOrNull() ?: 0,
+          zone = columns[4],
+          names = List(CITY_LANGUAGES.size) { columns.getOrNull(CITY_NAME_COLUMN + it).orEmpty() },
+        )
+      }
+    }
+    .toList()
+
+/** The closest city to [point], and how far it is in km. */
+internal fun nearestCity(cities: List<City>, point: GeoPoint): Pair<City, Double>? =
+  cities.minByOrNull { greatCircle(it.point, point) }?.let { it to greatCircle(it.point, point) * KM_PER_DEGREE }
+
+/**
+ * Cities whose name in [language] or in English starts with [query], then the ones that contain it,
+ * the biggest first (the file is sorted by population).
+ */
+internal fun searchCities(cities: List<City>, query: String, language: String, limit: Int): List<City> {
+  val text = query.trim()
+  if (text.isEmpty()) return emptyList()
+  fun names(city: City) = listOf(city.name(language), city.names[0])
+  val starting = cities.filter { city -> names(city).any { it.startsWith(text, ignoreCase = true) } }
+  val containing = cities.filter { city -> names(city).any { it.contains(text, ignoreCase = true) } }
+  return (starting + containing).distinct().take(limit)
+}
+
+/** The usual city for a language, the capital of its biggest speaking country in Europe or Asia. */
+internal fun defaultCity(cities: List<City>, language: String): City? {
+  val name = LANGUAGE_CITIES[language] ?: LANGUAGE_CITIES.getValue(ENGLISH)
+  return cities.firstOrNull { it.names[0] == name }
+}
+
+private const val ENGLISH = "en"
+private val LANGUAGE_CITIES =
+  mapOf(
+    ENGLISH to "London",
+    "de" to "Berlin",
+    "es" to "Madrid",
+    "fr" to "Paris",
+    "hi" to "New Delhi",
+    "hu" to "Budapest",
+    "id" to "Jakarta",
+    "in" to "Jakarta",
+    "it" to "Rome",
+    "nl" to "Amsterdam",
+    "pt" to "Brasília",
+    "ru" to "Moscow",
+    "tr" to "Ankara",
+    "zh" to "Beijing",
+  )
+
+/** Web map zoom level (256 px tiles) of a world [worldWidthDp] wide. */
+internal fun webZoom(worldWidthDp: Float): Float = kotlin.math.log2(worldWidthDp / WEB_TILE_DP)
+
+private const val CITY_NAME_COLUMN = 5
+private const val DEFAULT_MIN_ZOOM = 10f
+private const val KM_PER_DEGREE = 111.2
+private const val WEB_TILE_DP = 256f

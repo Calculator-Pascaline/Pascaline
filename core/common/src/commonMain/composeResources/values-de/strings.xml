@@ -1594,8 +1594,21 @@
     <string name="place_coordinates">Koordinaten</string>
     <string name="place_latitude">Breitengrad</string>
     <string name="place_longitude">Längengrad</string>
-    <string name="place_time_zone">Zeitzone</string>
-    <string name="place_map_hint">Tippe auf die Karte, um einen Ort zu wählen. Zum Zoomen zwei Finger oder die Tasten nutzen.</string>
+    <string name="place_panels_year">Solarmodule, ganzjährig</string>
+    <string name="place_panels_day">Solarmodule, an diesem Tag</string>
+    <string name="place_real_sun">In Wirklichkeit: Sonnenauf- und -untergang können um 1 bis 2 Minuten abweichen, mit Bergen oder Gebäuden am Horizont mehr.</string>
+    <string name="place_real_moon">In Wirklichkeit: Mondauf- und -untergang können um einige Minuten abweichen, mit Bergen oder Gebäuden am Horizont mehr.</string>
+    <string name="place_real_sky">In Wirklichkeit: Die Zeiten stimmen auf einige Minuten. Was zu sehen ist, hängt von Wolken und Stadtlicht ab.</string>
+    <string name="place_real_tides">In Wirklichkeit: Zeiten können bis zu einer Stunde und Höhen um 30 % oder mehr abweichen, da das Modell global ist und auch Wind und Luftdruck das Meer bewegen.</string>
+    <string name="place_real_temperature">In Wirklichkeit: Das sind Mittelwerte von 1991–2020. Ein einzelner Tag ist oft mehrere Grad wärmer oder kälter.</string>
+    <string name="place_real_rain">In Wirklichkeit: Das sind Mittelwerte vieler Jahre. Ein einzelner Monat kann halb oder doppelt so viel bringen.</string>
+    <string name="place_real_elevation">In Wirklichkeit: Das ist der Mittelwert der Umgebung, im Flachland Dutzende Meter daneben, in den Bergen Hunderte.</string>
+    <string name="place_real_solar">In Wirklichkeit: Das gilt für klaren Himmel ohne Schatten. Wolken nehmen oft 20 bis 50 % weg, und Module wandeln etwa 20 % dieser Energie in Strom um.</string>
+    <string name="place_south">Süden</string>
+    <string name="place_north">Norden</string>
+    <string name="place_continue">Weiter</string>
+    <string name="place_search_city">Stadt suchen</string>
+    <string name="place_no_city">Keine Stadt gefunden</string>
     <string name="place_loading_error">Die Daten konnten nicht gelesen werden: %1$s</string>
     <string name="place_sunrise">Sonnenaufgang</string>
     <string name="place_sunset">Sonnenuntergang</string>
@@ -1693,5 +1706,5 @@
     <string name="place_ground_height">Geländehöhe</string>
     <string name="place_at_sea">Auf See</string>
     <string name="place_elevation_note">Aus einem globalen Modell, über einige Kilometer gemittelt. Gipfel und Täler können stark abweichen.</string>
-    <string name="place_credits">Daten: Trail Sense (MIT, Kyle Corry), NASA MERRA-2, ERA5, EOT20, ETOPO 2022 und IANA-Zeitzonen.</string>
+    <string name="place_credits">Daten: Trail Sense (MIT, Kyle Corry), NASA MERRA-2, ERA5, EOT20, ETOPO 2022, Natural Earth und IANA-Zeitzonen.</string>
 </resources>

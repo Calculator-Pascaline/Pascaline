@@ -47,8 +47,15 @@ internal class PlaceData {
   private val kept = mutableMapOf<String, ImageBitmap>()
   private var elevationTiles: List<ElevationTile>? = null
   private var zones: List<ZoneCity>? = null
+  private var cities: List<City>? = null
 
-  suspend fun landMap(): ImageBitmap = image(LAND, keep = true)
+  /** Read once, the view model keeps it. */
+  suspend fun landMap(): LandMap =
+    LandMap(
+      colors = image(LAND_COLORS),
+      simple = CoastTiles(Res.readBytes("$ROOT/$SIMPLE_COAST")),
+      detailed = CoastTiles(Res.readBytes("$ROOT/$DETAILED_COAST")),
+    )
 
   suspend fun temperatures(point: GeoPoint): TemperatureClimate =
     TemperatureClimate(temperature(LOW_TEMPERATURES, point), temperature(HIGH_TEMPERATURES, point))
@@ -115,6 +122,11 @@ internal class PlaceData {
         ?.let { (pixel, dx, dy) -> pixel to tidePixelPoint(x + dx, y + dy) }
     }
 
+  /** Natural Earth's cities, the biggest first. */
+  suspend fun cities(): List<City> = mutex.withLock {
+    cities ?: parseCities(Res.readBytes("$ROOT/cities.tsv").decodeToString()).also { cities = it }
+  }
+
   suspend fun zones(): List<ZoneCity> = mutex.withLock {
     zones ?: parseZones(Res.readBytes("$ROOT/zone1970.tab").decodeToString()).also { zones = it }
   }
@@ -171,7 +183,9 @@ internal fun parseElevationIndex(json: String): List<ElevationTile> =
   )
 
 private const val ROOT = "files/place"
-private const val LAND = "land.webp"
+private const val LAND_COLORS = "land_fill.webp"
+private const val SIMPLE_COAST = "coast_low.bin"
+private const val DETAILED_COAST = "coast_high.bin"
 private const val TIDE_INDEX = "tides/tide-indices-1-2.webp"
 private const val PER_FILE = 3
 private const val MONTHS = 12

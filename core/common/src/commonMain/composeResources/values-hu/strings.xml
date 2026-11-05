@@ -1594,8 +1594,21 @@
     <string name="place_coordinates">Koordináták</string>
     <string name="place_latitude">Szélesség</string>
     <string name="place_longitude">Hosszúság</string>
-    <string name="place_time_zone">Időzóna</string>
-    <string name="place_map_hint">Koppints a térképre egy hely kiválasztásához, a nagyításhoz csippents vagy használd a gombokat.</string>
+    <string name="place_panels_year">Napelemek, egész évben</string>
+    <string name="place_panels_day">Napelemek, ezen a napon</string>
+    <string name="place_real_sun">A valóságban: a napkelte és a napnyugta 1–2 perccel eltérhet, hegyekkel vagy épületekkel a horizonton többel is.</string>
+    <string name="place_real_moon">A valóságban: a holdkelte és a holdnyugta néhány perccel eltérhet, hegyekkel vagy épületekkel a horizonton többel is.</string>
+    <string name="place_real_sky">A valóságban: az időpontok néhány percre pontosak. Hogy mi látszik, a felhőktől és a városi fényektől függ.</string>
+    <string name="place_real_tides">A valóságban: az időpontok akár egy órával, a magasságok 30%-kal vagy többel is eltérhetnek, mert a modell globális, és a szél meg a légnyomás is mozgatja a tengert.</string>
+    <string name="place_real_temperature">A valóságban: ezek az 1991–2020 közötti átlagok. Egy adott nap gyakran több fokkal melegebb vagy hidegebb.</string>
+    <string name="place_real_rain">A valóságban: ezek sok év átlagai. Egy adott hónap a felét vagy a kétszeresét is hozhatja.</string>
+    <string name="place_real_elevation">A valóságban: ez a környék átlaga, síkságon tíz méterekkel, hegyekben száz méterekkel térhet el.</string>
+    <string name="place_real_solar">A valóságban: ez tiszta eget és árnyékmentességet feltételez. A felhők gyakran 20–50%-ot elvesznek, a panelek pedig ennek az energiának kb. 20%-át alakítják árammá.</string>
+    <string name="place_south">Dél</string>
+    <string name="place_north">Észak</string>
+    <string name="place_continue">Tovább</string>
+    <string name="place_search_city">Város keresése</string>
+    <string name="place_no_city">Nincs ilyen város</string>
     <string name="place_loading_error">Nem sikerült beolvasni az adatokat: %1$s</string>
     <string name="place_sunrise">Napkelte</string>
     <string name="place_sunset">Napnyugta</string>
@@ -1693,5 +1706,5 @@
     <string name="place_ground_height">Terepmagasság</string>
     <string name="place_at_sea">Tengeren</string>
     <string name="place_elevation_note">Néhány kilométerre átlagolt globális modellből, a csúcsok és völgyek nagyon eltérhetnek.</string>
-    <string name="place_credits">Adatok: Trail Sense (MIT, Kyle Corry), NASA MERRA-2, ERA5, EOT20, ETOPO 2022 és IANA időzónák.</string>
+    <string name="place_credits">Adatok: Trail Sense (MIT, Kyle Corry), NASA MERRA-2, ERA5, EOT20, ETOPO 2022, Natural Earth és IANA időzónák.</string>
 </resources>

@@ -1594,8 +1594,21 @@
     <string name="place_coordinates">Coordenadas</string>
     <string name="place_latitude">Latitude</string>
     <string name="place_longitude">Longitude</string>
-    <string name="place_time_zone">Fuso horário</string>
-    <string name="place_map_hint">Toque no mapa para escolher um lugar, faça pinça ou use os botões para dar zoom.</string>
+    <string name="place_panels_year">Painéis solares, o ano todo</string>
+    <string name="place_panels_day">Painéis solares, neste dia</string>
+    <string name="place_real_sun">Na vida real: o nascer e o pôr do sol podem variar de 1 a 2 minutos, mais com montanhas ou prédios no horizonte.</string>
+    <string name="place_real_moon">Na vida real: o nascer e o pôr da lua podem variar alguns minutos, mais com montanhas ou prédios no horizonte.</string>
+    <string name="place_real_sky">Na vida real: os horários são precisos a alguns minutos. O que se vê depende das nuvens e das luzes da cidade.</string>
+    <string name="place_real_tides">Na vida real: os horários podem variar até uma hora e as alturas 30% ou mais, pois o modelo é global e o vento e a pressão também movem o mar.</string>
+    <string name="place_real_temperature">Na vida real: são médias de 1991–2020. Um dia específico costuma ser vários graus mais quente ou mais frio.</string>
+    <string name="place_real_rain">Na vida real: são médias de muitos anos. Um mês específico pode trazer metade ou o dobro.</string>
+    <string name="place_real_elevation">Na vida real: é a média da área, com erro de dezenas de metros em terreno plano e centenas nas montanhas.</string>
+    <string name="place_real_solar">Na vida real: isto supõe céu limpo e sem sombra. As nuvens costumam tirar de 20 a 50%, e os painéis convertem cerca de 20% desta energia em eletricidade.</string>
+    <string name="place_south">Sul</string>
+    <string name="place_north">Norte</string>
+    <string name="place_continue">Continuar</string>
+    <string name="place_search_city">Buscar uma cidade</string>
+    <string name="place_no_city">Nenhuma cidade encontrada</string>
     <string name="place_loading_error">Não foi possível ler os dados: %1$s</string>
     <string name="place_sunrise">Nascer do sol</string>
     <string name="place_sunset">Pôr do sol</string>
@@ -1693,5 +1706,5 @@
     <string name="place_ground_height">Altitude do terreno</string>
     <string name="place_at_sea">No mar</string>
     <string name="place_elevation_note">De um modelo global com média de alguns quilômetros, picos e vales podem diferir bastante.</string>
-    <string name="place_credits">Dados: Trail Sense (MIT, Kyle Corry), NASA MERRA-2, ERA5, EOT20, ETOPO 2022 e fusos horários da IANA.</string>
+    <string name="place_credits">Dados: Trail Sense (MIT, Kyle Corry), NASA MERRA-2, ERA5, EOT20, ETOPO 2022, Natural Earth e fusos horários da IANA.</string>
 </resources>
