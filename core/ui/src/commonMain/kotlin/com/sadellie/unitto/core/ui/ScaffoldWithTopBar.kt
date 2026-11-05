@@ -64,6 +64,8 @@ fun ScaffoldWithTopBar(
   floatingActionButton: @Composable () -> Unit = {},
   floatingActionButtonPosition: FabPosition = FabPosition.End,
   scrollBehavior: TopAppBarScrollBehavior? = null,
+  // The menu button isn't needed on wide screens, a back button still is
+  keepNavigationIconOnWideScreens: Boolean = false,
   content: @Composable (PaddingValues) -> Unit,
 ) {
   Scaffold(
@@ -79,7 +81,7 @@ fun ScaffoldWithTopBar(
           title = title,
           subtitle = {},
           navigationIcon = {
-            if (LocalWindowSize.current.widthSizeClass != WindowWidthSizeClass.Expanded) {
+            if (keepNavigationIconOnWideScreens || LocalWindowSize.current.widthSizeClass != WindowWidthSizeClass.Expanded) {
               navigationIcon()
             }
           },

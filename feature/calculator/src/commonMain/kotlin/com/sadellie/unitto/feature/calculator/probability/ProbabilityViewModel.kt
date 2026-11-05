@@ -31,6 +31,10 @@ import com.sadellie.unitto.core.common.Token
 import com.sadellie.unitto.core.common.stateIn
 import com.sadellie.unitto.core.common.trimZeros
 import com.sadellie.unitto.core.datastore.UserPreferencesRepository
+import kotlin.math.floor
+import kotlin.math.log10
+import kotlin.math.pow
+import kotlin.math.round
 import kotlinx.coroutines.flow.map
 
 /** What is calculated: P(X ≤ a), P(a ≤ X ≤ b), P(X ≥ a) or P(X = a). */
@@ -105,9 +109,28 @@ internal class ProbabilityViewModel(userPrefsRepository: UserPreferencesReposito
     isCalculating = true
   }
 
+  /** Bound moved on the graph. Each one stops at the other, so that a stays below b. */
+  fun dragBound(isUpper: Boolean, value: Double) {
+    val distribution = distribution ?: return
+    val range = distribution.visibleRange()
+    val other = (if (isUpper) a else b).toNumberOrNull()
+    val limited =
+      when {
+        !calculation.usesB || other == null -> value
+        isUpper -> value.coerceAtLeast(other)
+        else -> value.coerceAtMost(other)
+      }
+    val bound = snapBound(limited, range.endInclusive - range.start, distribution.isDiscrete)
+    if (isUpper) updateB(bound) else updateA(bound)
+  }
+
   fun selectCalculation(type: CalculationType) {
     calculation = type
     typedProbability = null
+    val distribution = distribution ?: return
+    val lower = a.toNumberOrNull() ?: return
+    // a may have moved past b while only a was used
+    if (type.usesB && (b.toNumberOrNull() ?: lower) <= lower) b = distribution.upperBoundAbove(lower).toInput()
   }
 
   fun updateA(value: String) {
@@ -173,6 +196,23 @@ internal class ProbabilityViewModel(userPrefsRepository: UserPreferencesReposito
   }
 }
 
+/** Upper bound halfway through the probability left above [lower]. */
+internal fun Distribution.upperBoundAbove(lower: Double): Double = quantile((atMost(lower) + 1) / 2)
+
+/** Bound for a dragged [value]: whole for discrete, otherwise fine steps of the visible [width]. */
+internal fun snapBound(value: Double, width: Double, isDiscrete: Boolean): String {
+  if (isDiscrete) return round(value).rounded(0)
+  val decimals = -floor(log10(width / BOUND_STEPS)).toInt()
+  val step = 10.0.pow(-decimals)
+  return (round(value / step) * step).rounded(decimals.coerceAtLeast(0))
+}
+
+/** Value of a parameter slider at [position], on steps of [step]: 0.3, not 0.30000000000000004. */
+internal fun sliderValue(position: Double, step: Double, fractional: String): String {
+  val decimals = (-floor(log10(step)).toInt()).coerceAtLeast(0)
+  return (round(position / step) * step).rounded(decimals).replace(".", fractional)
+}
+
 /** Accepts −, comma and dot: `−2,5` ==> −2.5. */
 internal fun String.toNumberOrNull(): Double? =
   replace(Token.Operator.MINUS, "-").replace(",", ".").trim().toDoubleOrNull()
@@ -195,3 +235,4 @@ internal fun Double.rounded(decimals: Int): String =
 private const val LOWER_DEFAULT = 0.5
 private const val UPPER_DEFAULT = 0.84
 private const val INPUT_DECIMALS = 3
+private const val BOUND_STEPS = 100

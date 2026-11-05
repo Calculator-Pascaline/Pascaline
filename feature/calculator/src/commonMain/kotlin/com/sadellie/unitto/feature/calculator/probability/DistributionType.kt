@@ -48,16 +48,22 @@ import unitto.core.common.generated.resources.probability_upper_bound
 /**
  * Parameter of a distribution.
  *
+ * @property step Distance between values of the slider.
+ * @property slider Range of the slider with the current values of all parameters. Numbers can still
+ *   be typed outside of it.
  * @property isValid Check of this parameter alone, others are checked in [DistributionType.create].
  */
 internal class Parameter(
   val symbol: String,
   val description: StringResource,
   val default: String,
+  val step: Double,
+  val slider: (List<Double>) -> ClosedFloatingPointRange<Double>,
   val isValid: (Double) -> Boolean,
 )
 
 /** Distributions of the NumWorks Probability app, in the same order. */
+@Suppress("MagicNumber") // Table of defaults and slider ranges
 internal enum class DistributionType(
   val title: StringResource,
   val parameters: List<Parameter>,
@@ -66,66 +72,66 @@ internal enum class DistributionType(
   BINOMIAL(
     Res.string.probability_binomial,
     listOf(
-      Parameter("n", Res.string.probability_trials, "20") { it.isWhole() && it in 0.0..MAX_TRIALS },
-      Parameter("p", Res.string.probability_success, "0.5") { it in 0.0..1.0 },
+      Parameter("n", Res.string.probability_trials, "20", 1.0, { 1.0..100.0 }) { it.isWhole() && it in 0.0..MAX_TRIALS },
+      Parameter("p", Res.string.probability_success, "0.5", 0.01, { 0.0..1.0 }) { it in 0.0..1.0 },
     ),
     { (n, p) -> Binomial(n.toInt(), p) },
   ),
   UNIFORM(
     Res.string.probability_uniform,
     listOf(
-      Parameter("a", Res.string.probability_lower_bound, "0") { true },
-      Parameter("b", Res.string.probability_upper_bound, "1") { true },
+      Parameter("a", Res.string.probability_lower_bound, "0", 0.1, { -10.0..10.0 }) { true },
+      Parameter("b", Res.string.probability_upper_bound, "1", 0.1, { -10.0..10.0 }) { true },
     ),
     { (a, b) -> if (a < b) Uniform(a, b) else null },
   ),
   EXPONENTIAL(
     Res.string.probability_exponential,
-    listOf(Parameter("λ", Res.string.probability_rate, "1") { it > 0 }),
+    listOf(Parameter("λ", Res.string.probability_rate, "1", 0.1, { 0.1..10.0 }) { it > 0 }),
     { (lambda) -> Exponential(lambda) },
   ),
   NORMAL(
     Res.string.probability_normal,
     listOf(
-      Parameter("μ", Res.string.probability_mean, "0") { true },
-      Parameter("σ", Res.string.probability_deviation, "1") { it > 0 },
+      Parameter("μ", Res.string.probability_mean, "0", 0.1, { -10.0..10.0 }) { true },
+      Parameter("σ", Res.string.probability_deviation, "1", 0.1, { 0.1..10.0 }) { it > 0 },
     ),
     { (mean, sigma) -> Normal(mean, sigma) },
   ),
   CHI_SQUARED(
     Res.string.probability_chi_squared,
-    listOf(Parameter("k", Res.string.probability_freedom, "1") { it > 0 }),
+    listOf(Parameter("k", Res.string.probability_freedom, "1", 1.0, { 1.0..50.0 }) { it > 0 }),
     { (k) -> ChiSquared(k) },
   ),
   STUDENT(
     Res.string.probability_student,
-    listOf(Parameter("k", Res.string.probability_freedom, "1") { it > 0 }),
+    listOf(Parameter("k", Res.string.probability_freedom, "1", 1.0, { 1.0..50.0 }) { it > 0 }),
     { (k) -> Student(k) },
   ),
   GEOMETRIC(
     Res.string.probability_geometric,
-    listOf(Parameter("p", Res.string.probability_success, "0.5") { it > 0 && it <= 1 }),
+    listOf(Parameter("p", Res.string.probability_success, "0.5", 0.01, { 0.01..1.0 }) { it > 0 && it <= 1 }),
     { (p) -> Geometric(p) },
   ),
   POISSON(
     Res.string.probability_poisson,
-    listOf(Parameter("λ", Res.string.probability_mean, "4") { it > 0 && it <= MAX_TRIALS }),
+    listOf(Parameter("λ", Res.string.probability_mean, "4", 0.1, { 0.1..50.0 }) { it > 0 && it <= MAX_TRIALS }),
     { (lambda) -> Poisson(lambda) },
   ),
   FISHER(
     Res.string.probability_fisher,
     listOf(
-      Parameter("d₁", Res.string.probability_freedom_numerator, "1") { it > 0 },
-      Parameter("d₂", Res.string.probability_freedom_denominator, "1") { it > 0 },
+      Parameter("d₁", Res.string.probability_freedom_numerator, "1", 1.0, { 1.0..50.0 }) { it > 0 },
+      Parameter("d₂", Res.string.probability_freedom_denominator, "1", 1.0, { 1.0..50.0 }) { it > 0 },
     ),
     { (d1, d2) -> Fisher(d1, d2) },
   ),
   HYPERGEOMETRIC(
     Res.string.probability_hypergeometric,
     listOf(
-      Parameter("N", Res.string.probability_population, "100") { it.isWhole() && it in 0.0..MAX_TRIALS },
-      Parameter("K", Res.string.probability_population_successes, "60") { it.isWhole() && it >= 0 },
-      Parameter("n", Res.string.probability_draws, "50") { it.isWhole() && it >= 0 },
+      Parameter("N", Res.string.probability_population, "100", 1.0, { 1.0..500.0 }) { it.isWhole() && it in 0.0..MAX_TRIALS },
+      Parameter("K", Res.string.probability_population_successes, "60", 1.0, { 0.0..it[0] }) { it.isWhole() && it >= 0 },
+      Parameter("n", Res.string.probability_draws, "50", 1.0, { 0.0..it[0] }) { it.isWhole() && it >= 0 },
     ),
     { (total, successes, n) ->
       if (successes <= total && n <= total) Hypergeometric(total.toInt(), successes.toInt(), n.toInt()) else null
