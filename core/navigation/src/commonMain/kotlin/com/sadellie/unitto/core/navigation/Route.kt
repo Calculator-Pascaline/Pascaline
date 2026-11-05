@@ -66,6 +66,7 @@ interface Route : NavKey {
           ),
           DeepLinkPattern(TimeZoneStartRoute.serializer(), deepLink(TimeZoneStartRoute).toKmpUri()),
           DeepLinkPattern(BodyMassStartRoute.serializer(), deepLink(BodyMassStartRoute).toKmpUri()),
+          DeepLinkPattern(PlaceStartRoute.serializer(), deepLink(PlaceStartRoute).toKmpUri()),
         )
       /** STEP 2. Parse requested deeplink */
       val request = DeepLinkRequest(uri)
@@ -173,6 +174,11 @@ data object TimeZoneStartRoute : TopLevelRoute {
 @Serializable
 data object BodyMassStartRoute : TopLevelRoute {
   override val routeId = "body_mass_route"
+}
+
+@Serializable
+data object PlaceStartRoute : TopLevelRoute {
+  override val routeId = "place_route"
 }
 
 @Serializable

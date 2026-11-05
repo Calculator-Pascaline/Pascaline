@@ -1044,4 +1044,5 @@
     <string name="unit_yard_per_second">Yard/second</string>
     <string name="unit_yard_per_second_short">yd/s</string>
     <string name="unit_yard_short">yd</string>
+    <string name="place_elevation_note">From a global model averaged over a few kilometres, peaks and valleys can be far off.</string>
 </resources>

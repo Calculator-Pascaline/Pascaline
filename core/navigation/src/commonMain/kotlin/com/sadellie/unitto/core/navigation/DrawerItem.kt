@@ -32,6 +32,7 @@ import com.sadellie.unitto.core.designsystem.icons.symbols.Event
 import com.sadellie.unitto.core.designsystem.icons.symbols.EventFill
 import com.sadellie.unitto.core.designsystem.icons.symbols.LineAxis
 import com.sadellie.unitto.core.designsystem.icons.symbols.Percent
+import com.sadellie.unitto.core.designsystem.icons.symbols.Place
 import com.sadellie.unitto.core.designsystem.icons.symbols.PriceTag
 import com.sadellie.unitto.core.designsystem.icons.symbols.ScatterPlot
 import com.sadellie.unitto.core.designsystem.icons.symbols.Schedule
@@ -51,6 +52,7 @@ import unitto.core.common.generated.resources.elements_title
 import unitto.core.common.generated.resources.finance_title
 import unitto.core.common.generated.resources.functions_title
 import unitto.core.common.generated.resources.inference_title
+import unitto.core.common.generated.resources.place_title
 import unitto.core.common.generated.resources.prices_title
 import unitto.core.common.generated.resources.probability_title
 import unitto.core.common.generated.resources.programmer_title
@@ -170,6 +172,13 @@ data object BodyMassDrawerItem : DrawerItem {
   override val name = Res.string.body_mass_title
   override val selectedIcon = Symbols.AccessibilityNew
   override val defaultIcon = Symbols.AccessibilityNew
+}
+
+data object PlaceDrawerItem : DrawerItem {
+  override val topLevelRoute = PlaceStartRoute
+  override val name = Res.string.place_title
+  override val selectedIcon = Symbols.Place
+  override val defaultIcon = Symbols.Place
 }
 
 data object SettingsDrawerItem : DrawerItem {

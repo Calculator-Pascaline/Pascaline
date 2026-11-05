@@ -119,6 +119,48 @@ data class ThirdParty(
           description =
             "Advanced Java BigDecimal math functions (pow, sqrt, log, sin, …) using arbitrary precision",
         ),
+      ) + placeData()
+
+    /** Data of the Place app. */
+    private fun placeData(): List<ThirdParty> =
+      listOf(
+        ThirdParty(
+          name = "Trail Sense",
+          dev = "Kyle Corry",
+          website = "https://github.com/kylecorry31/Trail-Sense",
+          license = "MIT",
+          description =
+            "The Place app reads the climate, tide, elevation and land data that Trail Sense bundles. Copyright (c) 2020 Kyle Corry. Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files, to deal in the Software without restriction, subject to including this notice. The software is provided \"as is\", without warranty of any kind.",
+        ),
+        ThirdParty(
+          name = "MERRA-2 and ERA5",
+          dev = "NASA GMAO, Copernicus Climate Change Service (ECMWF)",
+          website = "https://gmao.gsfc.nasa.gov/reanalysis/MERRA-2/",
+          license = "Public domain, Copernicus licence",
+          description =
+            "Daily highs and lows of 1991–2020 (MERRA-2) and monthly precipitation (ERA5), as prepared by Trail Sense. Contains modified Copernicus Climate Change Service information.",
+        ),
+        ThirdParty(
+          name = "EOT20",
+          dev = "Hart-Davis et al., DGFI-TUM",
+          website = "https://doi.org/10.17882/79489",
+          license = "CC BY 4.0",
+          description = "Global ocean tide model, its constituents as prepared by Trail Sense for tide estimates.",
+        ),
+        ThirdParty(
+          name = "ETOPO 2022",
+          dev = "NOAA National Centers for Environmental Information",
+          website = "https://www.ncei.noaa.gov/products/etopo-global-relief-model",
+          license = "Public domain",
+          description = "Global relief model, the ground height of the Place app as prepared by Trail Sense.",
+        ),
+        ThirdParty(
+          name = "tz database",
+          dev = "IANA",
+          website = "https://www.iana.org/time-zones",
+          license = "Public domain",
+          description = "The cities of zone1970.tab guess the time zone of a point.",
+        ),
       )
   }
 }
