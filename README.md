@@ -105,8 +105,8 @@
     </td>
     <td align="center" valign="top" width="33%">
       <b>Probability</b><br />
-      <img src="docs/screenshots/probability.png" width="240" alt="The bell curve of the normal distribution with its mean and standard deviation" /><br />
-      <sub>Common distributions, with examples</sub>
+      <img src="docs/screenshots/probability.png" width="240" alt="P(X ≤ 184.3) is 0.908 for heights with a mean of 175 and a standard deviation of 7, with the line dragged on the bell curve" /><br />
+      <sub>Drag the graph to get the probability, with examples</sub>
     </td>
   </tr>
 </table>
