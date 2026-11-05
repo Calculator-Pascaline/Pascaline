@@ -20,6 +20,7 @@
 package com.sadellie.unitto.feature.calculator
 
 import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -27,13 +28,13 @@ import com.sadellie.unitto.core.common.KBigDecimal
 import com.sadellie.unitto.core.common.KBigDecimalMath
 import com.sadellie.unitto.core.common.KMathContext
 import com.sadellie.unitto.core.common.KRoundingMode
+import com.sadellie.unitto.core.common.OutputFormat
 import com.sadellie.unitto.core.common.Token
 import com.sadellie.unitto.core.common.isExpression
 import com.sadellie.unitto.core.common.isGreaterThan
 import com.sadellie.unitto.core.common.isScientific
 import com.sadellie.unitto.core.common.scientificMantissa
 import com.sadellie.unitto.core.common.stateIn
-import com.sadellie.unitto.core.common.OutputFormat
 import com.sadellie.unitto.core.common.toFormattedString
 import com.sadellie.unitto.core.data.calculator.CalculatorHistoryRepository
 import com.sadellie.unitto.core.datastore.CalculatorPreferences
@@ -42,8 +43,8 @@ import com.sadellie.unitto.core.model.calculator.CalculatorHistoryItem
 import com.sadellie.unitto.core.ui.textfield.ANGLE_BOX_FUNCTIONS
 import com.sadellie.unitto.core.ui.textfield.addBracket
 import com.sadellie.unitto.core.ui.textfield.addFunctionWithAngleBox
-import com.sadellie.unitto.core.ui.textfield.chooseAngleUnit
 import com.sadellie.unitto.core.ui.textfield.addTokens
+import com.sadellie.unitto.core.ui.textfield.chooseAngleUnit
 import com.sadellie.unitto.core.ui.textfield.deleteTokens
 import com.sadellie.unitto.core.ui.textfield.getTextFieldState
 import com.sadellie.unitto.core.ui.textfield.observe
@@ -64,6 +65,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -114,9 +116,13 @@ internal class CalculatorViewModel(
   private val _result = MutableStateFlow<CalculationResult>(CalculationResult.Empty)
   private val _equalClicked = MutableStateFlow(false)
   private val _prefs = userPrefsRepository.calculatorPrefs.stateIn(viewModelScope, null)
+  /** Calculation that equal will change instead of adding a new one. */
+  private val _editing = MutableStateFlow<CalculatorHistoryItem?>(null)
+  /** Results of history in the input, equal finds out where they ended up. */
+  private val _pendingReuses = mutableListOf<PendingReuse>()
 
   val uiState: StateFlow<CalculatorUIState> =
-    combine(_result, _prefs, calculatorHistoryRepository.historyFlow) { result, prefs, history ->
+    combine(_result, _prefs, calculatorHistoryRepository.historyFlow, _editing) { result, prefs, history, editing ->
         prefs ?: return@combine CalculatorUIState.Loading
 
         return@combine CalculatorUIState.Ready(
@@ -133,6 +139,7 @@ internal class CalculatorViewModel(
           steppedPartialHistoryView = prefs.steppedPartialHistoryView,
           initialPartialHistoryView = prefs.initialPartialHistoryView,
           openHistoryViewButton = prefs.openHistoryViewButton,
+          isEditing = editing != null,
         )
       }
       .stateIn(viewModelScope, CalculatorUIState.Loading)
@@ -158,11 +165,12 @@ internal class CalculatorViewModel(
     }
     // Operator on empty input works on previous result: 12 in history, "+" ==> 12+
     if (_input.text.isEmpty()) {
-      val history = (uiState.value as? CalculatorUIState.Ready)?.history
-      history
-        ?.firstOrNull()
-        ?.let { HistoryResult.decode(it.result).operandFor(tokens) }
-        ?.let { _input.addTokens(it) }
+      val last = (uiState.value as? CalculatorUIState.Ready)?.history?.firstOrNull()
+      val operand = last?.let { HistoryResult.decode(it.result).operandFor(tokens) }
+      if (last != null && operand != null) {
+        _input.addTokens(operand)
+        rememberReuse(last, operand, position = 0)
+      }
     }
     if (tokens in ANGLE_BOX_FUNCTIONS) {
       // sin(|deg): angle unit box in the angle mode, can be switched by tapping it
@@ -172,6 +180,20 @@ internal class CalculatorViewModel(
       _input.chooseAngleUnit(tokens)
     }
     _equalClicked.update { false }
+  }
+
+  /** Result tapped in history: changes when its calculation is edited. */
+  fun addHistoryResult(item: CalculatorHistoryItem, result: String) {
+    addTokens(result)
+    rememberReuse(item, result, position = _input.selection.max - result.length)
+  }
+
+  // A calculation can only build on earlier ones, otherwise editing it would never end
+  private fun rememberReuse(source: CalculatorHistoryItem, text: String, position: Int) {
+    val editing = _editing.value
+    if (editing == null || source.timestamp < editing.timestamp) {
+      _pendingReuses += PendingReuse(source.id, text, position)
+    }
   }
 
   fun addBracket() {
@@ -194,7 +216,24 @@ internal class CalculatorViewModel(
 
   fun clearInput() {
     _input.clearText()
+    _pendingReuses.clear()
     _equalClicked.update { false }
+  }
+
+  /** Puts [item] in the input, equal then changes it instead of adding a new calculation. */
+  fun editHistoryItem(item: CalculatorHistoryItem) {
+    _pendingReuses.clear()
+    item.reused
+      .filter { it.end <= item.expression.length }
+      .forEach { _pendingReuses += PendingReuse(it.sourceId, item.expression.substring(it.start, it.end), it.start) }
+    _input.setTextAndPlaceCursorAtEnd(item.expression)
+    _editing.update { item }
+    _equalClicked.update { false }
+  }
+
+  fun cancelEdit() {
+    _editing.update { null }
+    clearInput()
   }
 
   fun updateInitialPartialHistoryView(newValue: Boolean) =
@@ -205,40 +244,70 @@ internal class CalculatorViewModel(
   fun deleteHistoryItem(item: CalculatorHistoryItem) =
     viewModelScope.launch { calculatorHistoryRepository.delete(item.id) }
 
-  fun updateHistoryItemLabel(item: CalculatorHistoryItem, label: String) =
-    viewModelScope.launch { calculatorHistoryRepository.updateLabel(item.id, label) }
-
   /**
    * Adds calculation to history (errors too, with empty result) and clears input, like NumWorks.
-   * Result is saved as lines: result, then fraction and roots if there are any.
+   * Result is saved as lines: result, then fraction and roots if there are any. A calculation that
+   * is being edited changes in place, with everything that reused its result.
    */
   fun onEqualClick() =
     viewModelScope.launch {
       val prefs = _prefs.value ?: return@launch
       var inputValue = _input.text.toString()
       // Equal again repeats last operation on the result: 2+3=5, = ==> 5+3=8
-      if (inputValue.isBlank() && prefs.constantCalculation) inputValue = repeatLastOperation().orEmpty()
+      val editing = _editing.value
+      if (inputValue.isBlank() && prefs.constantCalculation && editing == null) {
+        inputValue = repeatLastOperation().orEmpty()
+      }
       if (inputValue.isBlank()) return@launch
 
-      val evaluated =
-        try {
-          evaluate(inputValue, prefs.radianMode, prefs.precision, prefs.outputFormat)
-        } catch (e: Exception) {
-          null
-        }
+      val expression = inputValue.replace(EMPTY_INTEGRAL_BOUNDS, Token.Calculus.INTEGRAL)
+      val reused = locateReused(expression, _pendingReuses)
+      val result = historyResult(inputValue, prefs)
+      // It can be deleted while it is edited
+      val isInHistory = calculatorHistoryRepository.historyFlow.first().any { it.id == editing?.id }
+      if (editing != null && isInHistory) {
+        calculatorHistoryRepository.update(editing.id, expression, result, reused)
+        updateCalculationsAfter(editing.id, prefs)
+      } else {
+        calculatorHistoryRepository.add(expression, result, reused)
+      }
 
-      val lines = if (evaluated == null) emptyList() else resultLines(evaluated, inputValue, prefs)
-
-      val historyResult = HistoryResult(lines = lines, menu = evaluated?.menuSections() ?: emptyList())
-      calculatorHistoryRepository.add(
-        expression = inputValue.replace(EMPTY_INTEGRAL_BOUNDS, Token.Calculus.INTEGRAL),
-        result = historyResult.encode(),
-      )
-
+      _editing.update { null }
+      _pendingReuses.clear()
       _equalClicked.update { false }
       _input.clearText()
       _result.update { CalculationResult.Empty }
     }
+
+  /** [HistoryResult] of [input] ready to be saved, one without lines for an error. */
+  private suspend fun historyResult(input: String, prefs: CalculatorPreferences): String {
+    val evaluated =
+      try {
+        evaluate(input, prefs.radianMode, prefs.precision, prefs.outputFormat)
+      } catch (e: Exception) {
+        null
+      }
+    val lines = if (evaluated == null) emptyList() else resultLines(evaluated, input, prefs)
+    return HistoryResult(lines = lines, menu = evaluated?.menuSections() ?: emptyList()).encode()
+  }
+
+  /**
+   * Oldest first, so that a calculation that reused one that reused [editedId] gets the new result.
+   * What reused an error keeps its old value: there is nothing to put in its place.
+   */
+  private suspend fun updateCalculationsAfter(editedId: Int, prefs: CalculatorPreferences) {
+    val history = calculatorHistoryRepository.historyFlow.first().sortedBy { it.timestamp }
+    val results = history.associate { it.id to HistoryResult.decode(it.result).insertable }.toMutableMap()
+    val changed = mutableSetOf(editedId)
+    history.forEach { item ->
+      val operands = changed.mapNotNull { id -> results[id]?.let { id to it } }.toMap()
+      val rewritten = rewriteReused(item.expression, item.reused, operands) ?: return@forEach
+      val result = historyResult(rewritten.expression, prefs)
+      calculatorHistoryRepository.update(item.id, rewritten.expression, result, rewritten.reused)
+      results[item.id] = HistoryResult.decode(result).insertable
+      changed += item.id
+    }
+  }
 
   /** Lines of a result: exact value with square roots, approximation, then the fraction. */
   private suspend fun resultLines(
@@ -290,6 +359,7 @@ internal class CalculatorViewModel(
     val last = (uiState.value as? CalculatorUIState.Ready)?.history?.firstOrNull() ?: return null
     val operation = last.expression.repeatableOperation() ?: return null
     val operand = HistoryResult.decode(last.result).operandFor(operation.take(1)) ?: return null
+    rememberReuse(last, operand, position = 0)
     return operand + operation
   }
 

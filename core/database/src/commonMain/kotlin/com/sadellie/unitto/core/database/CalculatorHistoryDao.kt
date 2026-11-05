@@ -50,5 +50,12 @@ interface CalculatorHistoryDao {
   )
   suspend fun updateLabel(entityId: Int, label: String)
 
+  /** New calculation of an entry, its place in history stays. */
+  @Query(
+    "UPDATE calculator_history SET expression = :expression, result = :result, reused = :reused " +
+      "WHERE entityId = :entityId"
+  )
+  suspend fun updateCalculation(entityId: Int, expression: String, result: String, reused: String?)
+
   @Query("DELETE FROM calculator_history") suspend fun clear()
 }

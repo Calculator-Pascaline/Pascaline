@@ -69,7 +69,9 @@ class CalculatorScreenTest {
           onEqualClick = {},
           onClearHistoryClick = {},
           onDeleteHistoryItemClick = {},
-          onUpdateHistoryLabel = { _, _ -> },
+          onEditHistoryItem = {},
+          onHistoryResultClick = { _, _ -> },
+          onCancelEdit = {},
         )
       }
 
@@ -108,7 +110,9 @@ class CalculatorScreenTest {
           onEqualClick = {},
           onClearHistoryClick = {},
           onDeleteHistoryItemClick = {},
-          onUpdateHistoryLabel = { _, _ -> },
+          onEditHistoryItem = {},
+          onHistoryResultClick = { _, _ -> },
+          onCancelEdit = {},
         )
       }
 

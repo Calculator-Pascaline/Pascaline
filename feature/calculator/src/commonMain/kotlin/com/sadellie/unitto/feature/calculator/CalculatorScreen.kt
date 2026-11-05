@@ -26,10 +26,9 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.background
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -41,6 +40,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.TextFieldState
@@ -80,6 +80,7 @@ import com.sadellie.unitto.core.common.OutputFormat
 import com.sadellie.unitto.core.common.Token
 import com.sadellie.unitto.core.common.collectAsStateWithLifecycleKMP
 import com.sadellie.unitto.core.designsystem.LocalWindowSize
+import com.sadellie.unitto.core.designsystem.icons.symbols.Close
 import com.sadellie.unitto.core.designsystem.icons.symbols.Delete
 import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
 import com.sadellie.unitto.core.model.calculator.CalculatorHistoryItem
@@ -99,6 +100,7 @@ import unitto.core.common.generated.resources.calculator_clear_history
 import unitto.core.common.generated.resources.calculator_clear_history_support
 import unitto.core.common.generated.resources.common_cancel
 import unitto.core.common.generated.resources.common_clear
+import unitto.core.common.generated.resources.common_edit
 
 @Composable
 internal fun CalculatorRoute(openDrawer: () -> Unit) {
@@ -118,7 +120,9 @@ internal fun CalculatorRoute(openDrawer: () -> Unit) {
         onEqualClick = viewModel::onEqualClick,
         onClearHistoryClick = viewModel::clearHistory,
         onDeleteHistoryItemClick = viewModel::deleteHistoryItem,
-        onUpdateHistoryLabel = viewModel::updateHistoryItemLabel,
+        onEditHistoryItem = viewModel::editHistoryItem,
+        onHistoryResultClick = viewModel::addHistoryResult,
+        onCancelEdit = viewModel::cancelEdit,
       )
   }
 }
@@ -134,7 +138,9 @@ internal fun Ready(
   onEqualClick: () -> Unit,
   onClearHistoryClick: () -> Unit,
   onDeleteHistoryItemClick: (CalculatorHistoryItem) -> Unit,
-  onUpdateHistoryLabel: (CalculatorHistoryItem, String) -> Unit,
+  onEditHistoryItem: (CalculatorHistoryItem) -> Unit,
+  onHistoryResultClick: (CalculatorHistoryItem, String) -> Unit,
+  onCancelEdit: () -> Unit,
 ) {
   val windowSizeClass = LocalWindowSize.current
   if (
@@ -150,7 +156,9 @@ internal fun Ready(
       onEqualClick = onEqualClick,
       onClearHistoryClick = onClearHistoryClick,
       onDeleteHistoryItemClick = onDeleteHistoryItemClick,
-      onUpdateHistoryLabel = onUpdateHistoryLabel,
+      onEditHistoryItem = onEditHistoryItem,
+      onHistoryResultClick = onHistoryResultClick,
+      onCancelEdit = onCancelEdit,
     )
   } else {
     ReadyCompact(
@@ -163,7 +171,9 @@ internal fun Ready(
       onEqualClick = onEqualClick,
       onClearHistoryClick = onClearHistoryClick,
       onDeleteHistoryItemClick = onDeleteHistoryItemClick,
-      onUpdateHistoryLabel = onUpdateHistoryLabel,
+      onEditHistoryItem = onEditHistoryItem,
+      onHistoryResultClick = onHistoryResultClick,
+      onCancelEdit = onCancelEdit,
     )
   }
 }
@@ -179,7 +189,9 @@ private fun ReadyCompact(
   onEqualClick: () -> Unit,
   onClearHistoryClick: () -> Unit,
   onDeleteHistoryItemClick: (CalculatorHistoryItem) -> Unit,
-  onUpdateHistoryLabel: (CalculatorHistoryItem, String) -> Unit,
+  onEditHistoryItem: (CalculatorHistoryItem) -> Unit,
+  onHistoryResultClick: (CalculatorHistoryItem, String) -> Unit,
+  onCancelEdit: () -> Unit,
 ) {
   var showClearHistoryDialog by rememberSaveable { mutableStateOf(false) }
 
@@ -206,9 +218,10 @@ private fun ReadyCompact(
           formatterSymbols = uiState.formatterSymbols,
           addTokens = onAddTokenClick,
           onDelete = onDeleteHistoryItemClick,
-          onUpdateLabel = onUpdateHistoryLabel,
+          onEdit = onEditHistoryItem,
+          addResult = onHistoryResultClick,
         )
-        CalculatorInput(uiState = uiState, onEqualClick = onEqualClick)
+        CalculatorInput(uiState = uiState, onEqualClick = onEqualClick, onCancelEdit = onCancelEdit)
         CalculatorKeyboard(
           modifier =
             Modifier.semantics { testTag = "ready" }
@@ -248,7 +261,9 @@ private fun ReadyExpanded(
   onEqualClick: () -> Unit,
   onClearHistoryClick: () -> Unit,
   onDeleteHistoryItemClick: (CalculatorHistoryItem) -> Unit,
-  onUpdateHistoryLabel: (CalculatorHistoryItem, String) -> Unit,
+  onEditHistoryItem: (CalculatorHistoryItem) -> Unit,
+  onHistoryResultClick: (CalculatorHistoryItem, String) -> Unit,
+  onCancelEdit: () -> Unit,
 ) {
   var showClearHistoryDialog by rememberSaveable { mutableStateOf(false) }
   // Wide screens (tablets, browsers): calculations on the left, input and keyboard on the right.
@@ -265,7 +280,8 @@ private fun ReadyExpanded(
         formatterSymbols = uiState.formatterSymbols,
         addTokens = onAddTokenClick,
         onDelete = onDeleteHistoryItemClick,
-        onUpdateLabel = onUpdateHistoryLabel,
+        onEdit = onEditHistoryItem,
+        addResult = onHistoryResultClick,
       )
       Column(modifier = Modifier.width(keyboardWidth).fillMaxHeight()) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
@@ -274,7 +290,7 @@ private fun ReadyExpanded(
             isOpen = uiState.history.isNotEmpty(),
           )
         }
-        CalculatorInput(uiState = uiState, onEqualClick = onEqualClick)
+        CalculatorInput(uiState = uiState, onEqualClick = onEqualClick, onCancelEdit = onCancelEdit)
         CalculatorKeyboard(
           modifier =
             Modifier.semantics { testTag = "ready" }
@@ -307,7 +323,8 @@ private fun ReadyExpanded(
 
 /** Rounded input box, as tall as what is in it: taller for fractions and integrals. */
 @Composable
-private fun CalculatorInput(uiState: CalculatorUIState.Ready, onEqualClick: () -> Unit) {
+private fun CalculatorInput(uiState: CalculatorUIState.Ready, onEqualClick: () -> Unit, onCancelEdit: () -> Unit) {
+  AnimatedVisibility(visible = uiState.isEditing) { EditingBar(onCancel = onCancelEdit) }
   ExpressionLayoutTextField(
     modifier =
       Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
@@ -336,6 +353,25 @@ private fun CalculatorInput(uiState: CalculatorUIState.Ready, onEqualClick: () -
         it()
       },
   )
+}
+
+/** Shown above the input while a calculation of history is changed. */
+@Composable
+private fun EditingBar(onCancel: () -> Unit) {
+  Row(
+    modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 8.dp),
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    Text(
+      text = stringResource(Res.string.common_edit),
+      modifier = Modifier.weight(1f),
+      style = MaterialTheme.typography.labelLarge,
+      color = MaterialTheme.colorScheme.primary,
+    )
+    IconButton(onClick = onCancel, modifier = Modifier.size(EDITING_CLOSE_SIZE)) {
+      Icon(Symbols.Close, contentDescription = stringResource(Res.string.common_cancel))
+    }
+  }
 }
 
 /** x,n,t key types n in Σ and ∏. */
@@ -401,6 +437,7 @@ private val INPUT_MIN_HEIGHT = 56.dp
 // Taller expressions are scaled down
 private val INPUT_MAX_HEIGHT = 160.dp
 private val INPUT_SHAPE = RoundedCornerShape(20.dp)
+private val EDITING_CLOSE_SIZE = 32.dp
 private val INPUT_BORDER = 1.5.dp
 private const val INPUT_BORDER_ALPHA = 0.5f
 
@@ -457,7 +494,9 @@ private fun PreviewCalculatorScreen() {
         onEqualClick = {},
         onClearHistoryClick = {},
         onDeleteHistoryItemClick = {},
-        onUpdateHistoryLabel = { _, _ -> },
+        onEditHistoryItem = {},
+        onHistoryResultClick = { _, _ -> },
+        onCancelEdit = {},
       )
     }
   }

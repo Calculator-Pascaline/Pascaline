@@ -25,7 +25,7 @@ import androidx.room.TypeConverters
 import com.sadellie.unitto.core.database.converters.Converters
 
 @Database(
-  version = 7,
+  version = 8,
   exportSchema = true,
   entities =
     [
@@ -43,6 +43,7 @@ import com.sadellie.unitto.core.database.converters.Converters
       AutoMigration(from = 4, to = 5),
       AutoMigration(from = 5, to = 6),
       AutoMigration(from = 6, to = 7),
+      AutoMigration(from = 7, to = 8),
     ],
 )
 @TypeConverters(Converters::class)

@@ -35,6 +35,7 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -66,14 +67,15 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.unit.constrainHeight
-import androidx.compose.ui.unit.constrainWidth
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.constrainHeight
+import androidx.compose.ui.unit.constrainWidth
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sadellie.unitto.core.common.FormatterSymbols
 import com.sadellie.unitto.core.common.Token
+import com.sadellie.unitto.core.designsystem.LocalHapticFeedbackManager
 import com.sadellie.unitto.core.designsystem.theme.LocalNumberTypography
 import kotlin.math.ceil
 import kotlinx.coroutines.awaitCancellation
@@ -114,6 +116,8 @@ fun ExpressionLayoutTextField(
     }
   val cursor = state.selection.max
   val focusRequester = remember { FocusRequester() }
+  val haptics = LocalHapticFeedbackManager.current
+  val scope = rememberCoroutineScope()
 
   val caretAlpha = rememberCaretAlpha(text, cursor)
 
@@ -152,9 +156,12 @@ fun ExpressionLayoutTextField(
 
     Canvas(
       modifier =
-        Modifier.fillMaxSize().pointerInput(layout, scale, offsetX, baseline) {
+        Modifier.fillMaxSize().pointerInput(layout, scale, offsetX, baseline, haptics) {
           detectTapGestures { position ->
-            state.tap(layout, (position.x - offsetX) / scale, (position.y - baseline) / scale, focusRequester)
+            val x = (position.x - offsetX) / scale
+            val y = (position.y - baseline) / scale
+            // Switching the angle is a key press
+            if (state.tap(layout, x, y, focusRequester)) haptics.vibrateKeyboardPress(scope)
           }
         }
     ) {
@@ -201,18 +208,29 @@ private fun Modifier.heightOf(layout: ExpressionLayout): Modifier =
     layout(placeable.width, height) { placeable.place(0, 0) }
   }
 
-/** Tap at [x], [y] of [layout]: on deg or rad switches it, elsewhere places the cursor. */
-private fun TextFieldState.tap(layout: ExpressionLayout, x: Float, y: Float, focusRequester: FocusRequester) {
+/**
+ * Tap at [x], [y] of [layout]: on deg or rad switches it, elsewhere places the cursor.
+ *
+ * @return True when the angle was switched.
+ */
+private fun TextFieldState.tap(
+  layout: ExpressionLayout,
+  x: Float,
+  y: Float,
+  focusRequester: FocusRequester,
+): Boolean {
   val boxIndex = layout.angleBoxAt(x, y)
   val box = boxIndex?.let { index -> listOf(DEGREE_BOX, RADIAN_BOX).firstOrNull { text.startsWith(it, index) } }
   val index = if (boxIndex == null) layout.indexAt(x, y) else null
-  when {
-    boxIndex != null && box != null -> switchAngleBox(boxIndex until boxIndex + box.length)
-    index != null -> {
-      focusRequester.requestFocus()
-      edit { selection = TextRange(index) }
-    }
+  if (boxIndex != null && box != null) {
+    switchAngleBox(boxIndex until boxIndex + box.length)
+    return true
   }
+  if (index != null) {
+    focusRequester.requestFocus()
+    edit { selection = TextRange(index) }
+  }
+  return false
 }
 
 /**

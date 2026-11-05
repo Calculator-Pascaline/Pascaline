@@ -22,6 +22,9 @@ import com.sadellie.unitto.core.common.defaultIODispatcher
 import com.sadellie.unitto.core.database.CalculatorHistoryDao
 import com.sadellie.unitto.core.database.CalculatorHistoryEntity
 import com.sadellie.unitto.core.model.calculator.CalculatorHistoryItem
+import com.sadellie.unitto.core.model.calculator.ReusedResult
+import com.sadellie.unitto.core.model.calculator.decodeReusedResults
+import com.sadellie.unitto.core.model.calculator.encode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -39,15 +42,21 @@ class CalculatorHistoryRepositoryImpl(private val calculatorHistoryDao: Calculat
       .flowOn(defaultIODispatcher)
 
   @OptIn(ExperimentalTime::class)
-  override suspend fun add(expression: String, result: String) =
+  override suspend fun add(expression: String, result: String, reused: List<ReusedResult>) =
     withContext(defaultIODispatcher) {
       calculatorHistoryDao.insert(
         CalculatorHistoryEntity(
           timestamp = Clock.System.now().toEpochMilliseconds(),
           expression = expression,
           result = result,
+          reused = reused.encode(),
         )
       )
+    }
+
+  override suspend fun update(itemId: Int, expression: String, result: String, reused: List<ReusedResult>) =
+    withContext(defaultIODispatcher) {
+      calculatorHistoryDao.updateCalculation(itemId, expression, result, reused.encode())
     }
 
   override suspend fun delete(itemId: Int) =
@@ -62,7 +71,14 @@ class CalculatorHistoryRepositoryImpl(private val calculatorHistoryDao: Calculat
     List<CalculatorHistoryItem> =
     withContext(Dispatchers.Default) {
       this@toHistoryItemList.map {
-        CalculatorHistoryItem(it.entityId, it.expression, it.result, it.timestamp, it.label)
+        CalculatorHistoryItem(
+          id = it.entityId,
+          expression = it.expression,
+          result = it.result,
+          timestamp = it.timestamp,
+          label = it.label,
+          reused = decodeReusedResults(it.reused),
+        )
       }
     }
 }

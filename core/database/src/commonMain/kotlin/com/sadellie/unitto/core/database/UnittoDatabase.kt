@@ -107,8 +107,21 @@ class CalculatorHistoryDaoInMemory : CalculatorHistoryDao {
   override suspend fun updateLabel(entityId: Int, label: String) =
     entries.update { currentEntries -> currentEntries.map { it.withLabel(entityId, label) } }
 
+  override suspend fun updateCalculation(entityId: Int, expression: String, result: String, reused: String?) =
+    entries.update { currentEntries ->
+      currentEntries.map { it.withCalculation(entityId, expression, result, reused) }
+    }
+
   override suspend fun clear() = entries.update { emptyList() }
 }
+
+/** Calculation of entry with [entityId] set like in [CalculatorHistoryDao.updateCalculation]. */
+internal fun CalculatorHistoryEntity.withCalculation(
+  entityId: Int,
+  expression: String,
+  result: String,
+  reused: String?,
+) = if (this.entityId == entityId) copy(expression = expression, result = result, reused = reused) else this
 
 /** Label of entry with [entityId] set like in [CalculatorHistoryDao.updateLabel]. */
 internal fun CalculatorHistoryEntity.withLabel(entityId: Int, label: String) =

@@ -19,6 +19,7 @@
 package com.sadellie.unitto.core.data.calculator
 
 import com.sadellie.unitto.core.model.calculator.CalculatorHistoryItem
+import com.sadellie.unitto.core.model.calculator.ReusedResult
 import kotlinx.coroutines.flow.Flow
 
 interface CalculatorHistoryRepository {
@@ -28,8 +29,13 @@ interface CalculatorHistoryRepository {
   /**
    * Save [expression] and [result] in calculator history. Both parameters must use tokens
    * recognized by evalutatto - don't forget to replace minus symbol.
+   *
+   * @param reused Results of earlier calculations in [expression].
    */
-  suspend fun add(expression: String, result: String)
+  suspend fun add(expression: String, result: String, reused: List<ReusedResult> = emptyList())
+
+  /** New calculation of [CalculatorHistoryItem], its place in history stays. */
+  suspend fun update(itemId: Int, expression: String, result: String, reused: List<ReusedResult>)
 
   /** Delete [CalculatorHistoryItem] by id from calculator history */
   suspend fun delete(itemId: Int)

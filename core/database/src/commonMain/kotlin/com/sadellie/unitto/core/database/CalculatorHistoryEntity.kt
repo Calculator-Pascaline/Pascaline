@@ -30,4 +30,5 @@ data class CalculatorHistoryEntity(
   @ColumnInfo(name = "result") val result: String,
   @ColumnInfo(name = "is_favorite", defaultValue = "false") val isFavorite: Boolean = false,
   @ColumnInfo(name = "label") val label: String? = null,
+  @ColumnInfo(name = "reused") val reused: String? = null,
 )

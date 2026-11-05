@@ -39,6 +39,7 @@ internal sealed class CalculatorUIState {
     val steppedPartialHistoryView: Boolean,
     val initialPartialHistoryView: Boolean,
     val openHistoryViewButton: Boolean,
+    val isEditing: Boolean = false,
   ) : CalculatorUIState()
 }
 

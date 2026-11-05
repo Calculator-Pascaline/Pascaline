@@ -22,6 +22,7 @@ import com.sadellie.unitto.core.database.CalculatorHistoryDao
 import com.sadellie.unitto.core.database.CalculatorHistoryDaoInMemory
 import com.sadellie.unitto.core.database.CalculatorHistoryEntity
 import com.sadellie.unitto.core.model.calculator.CalculatorHistoryItem
+import com.sadellie.unitto.core.model.calculator.ReusedResult
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlinx.coroutines.flow.first
@@ -59,6 +60,24 @@ class CalculatorHistoryRepositoryImplTest {
     val actual = calculatorHistoryRepository.historyFlow.first()
 
     assertEquals(expected, actual)
+  }
+
+  @Test
+  fun update_keepsPlaceAndLabel() = runTest {
+    calculatorHistoryDao.insert(CalculatorHistoryEntity(0, 5, "2+3", "5", label = "Rent"))
+    calculatorHistoryDao.insert(CalculatorHistoryEntity(1, 6, "5×2", "10"))
+
+    val reused = listOf(ReusedResult(sourceId = 0, start = 0, length = 1))
+    calculatorHistoryRepository.update(1, "6×2", "12", reused)
+    calculatorHistoryRepository.update(0, "2+4", "6", emptyList())
+
+    assertEquals(
+      listOf(
+        CalculatorHistoryItem(1, "6×2", "12", timestamp = 6, reused = reused),
+        CalculatorHistoryItem(0, "2+4", "6", timestamp = 5, label = "Rent"),
+      ),
+      calculatorHistoryRepository.historyFlow.first(),
+    )
   }
 
   @Test

@@ -62,6 +62,9 @@ private class WebCalculatorHistoryDao : CalculatorHistoryDao {
     current.map { it.withLabel(entityId, label) }
   }
 
+  override suspend fun updateCalculation(entityId: Int, expression: String, result: String, reused: String?) =
+    update { current -> current.map { it.withCalculation(entityId, expression, result, reused) } }
+
   override suspend fun clear() = update { emptyList() }
 
   private fun update(change: (List<CalculatorHistoryEntity>) -> List<CalculatorHistoryEntity>) {
@@ -76,11 +79,21 @@ private class WebCalculatorHistoryDao : CalculatorHistoryDao {
       entries.value.mapNotNull { entry -> entry.label?.takeIf { it.isNotEmpty() }?.let { entry.entityId to it } }
         .flatMap { (id, label) -> listOf(id.toString(), label) }
     WebStorage.set(HISTORY_LABELS_KEY, WebStorage.encode(labels))
+    // Apart for the same reason: id, reused results
+    val reused =
+      entries.value.mapNotNull { entry -> entry.reused?.let { entry.entityId to it } }
+        .flatMap { (id, results) -> listOf(id.toString(), results) }
+    WebStorage.set(HISTORY_REUSED_KEY, WebStorage.encode(reused))
   }
 
   private fun load(): List<CalculatorHistoryEntity> {
     val labels =
       WebStorage.decode(WebStorage.get(HISTORY_LABELS_KEY) ?: "")
+        .chunked(2)
+        .filter { it.size == 2 }
+        .associate { it[0] to it[1] }
+    val reused =
+      WebStorage.decode(WebStorage.get(HISTORY_REUSED_KEY) ?: "")
         .chunked(2)
         .filter { it.size == 2 }
         .associate { it[0] to it[1] }
@@ -94,6 +107,7 @@ private class WebCalculatorHistoryDao : CalculatorHistoryDao {
         result = it[3],
         isFavorite = label != null,
         label = label,
+        reused = reused[it[0]],
       )
     }
   }
@@ -147,5 +161,6 @@ private class WebUnitsDao : UnitsDao {
 private const val HISTORY_KEY = "history"
 private const val HISTORY_FIELDS = 4
 private const val HISTORY_LABELS_KEY = "history_labels"
+private const val HISTORY_REUSED_KEY = "history_reused"
 private const val UNITS_KEY = "units"
 private const val UNITS_FIELDS = 4

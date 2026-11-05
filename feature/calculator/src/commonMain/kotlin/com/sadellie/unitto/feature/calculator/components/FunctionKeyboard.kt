@@ -649,9 +649,14 @@ private fun CategoryTile(
       }
     }
   }
+  val keyPress = rememberKeyPress()
   Surface(
     onClick = onClick,
-    modifier = Modifier.bringIntoViewRequester(bringIntoView).semantics { contentDescription = name },
+    modifier =
+      Modifier.bringIntoViewRequester(bringIntoView)
+        .semantics { contentDescription = name }
+        .trackKeyPress(keyPress)
+        .keyHaptics(keyPress),
     shape = RoundedCornerShape(CATEGORY_TILE_CORNER),
     color = background,
     contentColor = content,
@@ -724,8 +729,10 @@ private fun categoryTileIcon(name: String): ImageVector? =
 /** Symbol to insert, with its name below: hplanck alone doesn't say it's Planck's constant. */
 @Composable
 private fun UnitChip(unit: PhysicalUnit, color: Color, onClick: () -> Unit) {
+  val keyPress = rememberKeyPress()
   Surface(
     onClick = onClick,
+    modifier = Modifier.trackKeyPress(keyPress).keyHaptics(keyPress),
     shape = RoundedCornerShape(12.dp),
     color = color,
     contentColor = MaterialTheme.colorScheme.onSurface,
