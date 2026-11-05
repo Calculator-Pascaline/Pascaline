@@ -42,8 +42,8 @@ tasks.register("detektProjectReport", Detekt::class) {
   buildUponDefaultConfig = true
   ignoreFailures = false
   parallel = false
-  config = rootProject.files("/detekt/config.yml")
-  baseline = rootProject.file("/detekt/baseline.xml")
+  config = rootProject.files("detekt/config.yml")
+  baseline = rootProject.file("detekt/baseline.xml")
   setupDetektSources()
 
   reports {
@@ -52,7 +52,7 @@ tasks.register("detektProjectReport", Detekt::class) {
     md.required = false
     sarif.required = false
     html.required = true
-    html.outputLocation = rootProject.file("/detekt/report.html")
+    html.outputLocation = rootProject.file("detekt/report.html")
   }
 }
 
@@ -62,8 +62,8 @@ tasks.register("detektProjectBaseline", DetektCreateBaselineTask::class) {
   buildUponDefaultConfig = true
   ignoreFailures = true
   parallel = false
-  config = rootProject.files("/detekt/config.yml")
-  baseline = rootProject.file("/detekt/baseline.xml")
+  config = rootProject.files("detekt/config.yml")
+  baseline = rootProject.file("detekt/baseline.xml")
   setupDetektSources()
 }
 
