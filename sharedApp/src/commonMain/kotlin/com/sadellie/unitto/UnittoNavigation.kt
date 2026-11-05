@@ -51,7 +51,6 @@ import com.sadellie.unitto.core.navigation.Navigator
 import com.sadellie.unitto.core.navigation.TopLevelRoute
 import com.sadellie.unitto.core.navigation.additionalDrawerItems
 import com.sadellie.unitto.core.ui.BackHandler
-import com.sadellie.unitto.core.ui.LocalKeyAnimation
 import com.sadellie.unitto.core.ui.LocalPhoneKeypad
 import com.sadellie.unitto.core.ui.NavigationDrawer
 import com.sadellie.unitto.feature.settings.navigation.LocalThemmoController
@@ -85,13 +84,8 @@ fun MainAppContent(
     remember(userPrefsRepository) { userPrefsRepository.appData(PrefKeys.PHONE_KEYPAD_PREF_KEY) }
       .collectAsState(initial = "")
 
-  val keyAnimation by
-    remember(userPrefsRepository) { userPrefsRepository.appData(PrefKeys.KEY_ANIMATION_PREF_KEY) }
-      .collectAsState(initial = "")
-
   CompositionLocalProvider(
     LocalPhoneKeypad provides (phoneKeypad == "true"),
-    LocalKeyAnimation provides (keyAnimation != "false"),
     // A static cursor is less distracting than a blinking one
     LocalCursorBlinkEnabled provides false,
   ) {

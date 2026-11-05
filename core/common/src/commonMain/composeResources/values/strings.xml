@@ -594,8 +594,6 @@
     <string name="settings_version_name">Version</string>
     <string name="settings_vibrations">Vibrations</string>
     <string name="settings_vibrations_support">Haptic feedback when clicking keyboard buttons</string>
-    <string name="settings_key_animation">Key animation</string>
-    <string name="settings_key_animation_support">Keys grow when you press them</string>
     <string name="settings_view_source_code">View source code</string>
     <string name="time_zone_add_title">Add time zone</string>
     <string name="time_zone_reset">Reset</string>
@@ -1883,21 +1881,8 @@
     <string name="place_coordinates">Coordinates</string>
     <string name="place_latitude">Latitude</string>
     <string name="place_longitude">Longitude</string>
-    <string name="place_panels_year">Solar panels, all year</string>
-    <string name="place_panels_day">Solar panels, this day</string>
-    <string name="place_real_sun">Real life: sunrise and sunset can differ by 1 to 2 minutes, more with mountains or buildings on the horizon.</string>
-    <string name="place_real_moon">Real life: moonrise and moonset can differ by a few minutes, more with mountains or buildings on the horizon.</string>
-    <string name="place_real_sky">Real life: times are good to a few minutes. What you can see depends on clouds and city lights.</string>
-    <string name="place_real_tides">Real life: times can differ by up to an hour and heights by 30% or more, as the model is global and wind and pressure also move the sea.</string>
-    <string name="place_real_temperature">Real life: these are averages of 1991–2020. A given day is often several degrees warmer or colder.</string>
-    <string name="place_real_rain">Real life: these are averages of many years. A given month can bring half or twice as much.</string>
-    <string name="place_real_elevation">Real life: this is the average of the area, tens of meters off on flat land and hundreds in the mountains.</string>
-    <string name="place_real_solar">Real life: this assumes a clear sky and no shade. Clouds often remove 20 to 50%, and panels turn about 20% of this energy into electricity.</string>
-    <string name="place_south">South</string>
-    <string name="place_north">North</string>
-    <string name="place_continue">Continue</string>
-    <string name="place_search_city">Search a city</string>
-    <string name="place_no_city">No city found</string>
+    <string name="place_time_zone">Time zone</string>
+    <string name="place_map_hint">Tap the map to choose a place, pinch or use the buttons to zoom.</string>
     <string name="place_loading_error">Couldn't read the data: %1$s</string>
     <string name="place_sunrise">Sunrise</string>
     <string name="place_sunset">Sunset</string>
@@ -1995,5 +1980,5 @@
     <string name="place_ground_height">Ground height</string>
     <string name="place_at_sea">At sea</string>
     <string name="place_elevation_note">From a global model averaged over a few kilometers, peaks and valleys can be far off.</string>
-    <string name="place_credits">Data: Trail Sense (MIT, Kyle Corry), NASA MERRA-2, ERA5, EOT20, ETOPO 2022, Natural Earth and IANA time zones.</string>
+    <string name="place_credits">Data: Trail Sense (MIT, Kyle Corry), NASA MERRA-2, ERA5, EOT20, ETOPO 2022 and IANA time zones.</string>
 </resources>

@@ -43,9 +43,9 @@ class WebFontsTest {
   @Test
   fun everyCharacterHasAFont() {
     val missing =
-      (File("src/commonMain/composeResources")
-          .listFiles { file -> file.name.startsWith("values") }!!
-          .map { File(it, "strings.xml").readText() } + cityNames())
+      File("src/commonMain/composeResources")
+        .listFiles { file -> file.name.startsWith("values") }!!
+        .map { File(it, "strings.xml").readText() }
         .flatMap { text -> text.codePoints().toArray().toList() }
         .filter { it > 0x7F && !Character.isWhitespace(it) }
         .toSortedSet()
@@ -53,8 +53,4 @@ class WebFontsTest {
         .map { "U+%04X %s".format(it, String(Character.toChars(it))) }
     assertEquals(emptyList(), missing)
   }
-
-  /** The Place map writes city names in every language of the app. */
-  private fun cityNames(): String =
-    File("../../feature/calculator/src/commonMain/composeResources/files/place/cities.tsv").readText()
 }

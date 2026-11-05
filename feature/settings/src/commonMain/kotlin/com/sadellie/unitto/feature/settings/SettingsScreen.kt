@@ -56,7 +56,6 @@ import com.sadellie.unitto.core.designsystem.icons.symbols.Palette
 import com.sadellie.unitto.core.designsystem.icons.symbols.RateReview
 import com.sadellie.unitto.core.designsystem.icons.symbols.RestorePage
 import com.sadellie.unitto.core.designsystem.icons.symbols.SwapHoriz
-import com.sadellie.unitto.core.designsystem.icons.symbols.Keyboard
 import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
 import com.sadellie.unitto.core.designsystem.icons.symbols.Vibration
 import com.sadellie.unitto.core.designsystem.icons.symbols._123
@@ -115,8 +114,6 @@ import unitto.core.common.generated.resources.settings_title
 import unitto.core.common.generated.resources.settings_updated
 import unitto.core.common.generated.resources.settings_updated_support
 import unitto.core.common.generated.resources.settings_version_name
-import unitto.core.common.generated.resources.settings_key_animation
-import unitto.core.common.generated.resources.settings_key_animation_support
 import unitto.core.common.generated.resources.settings_vibrations
 import unitto.core.common.generated.resources.settings_vibrations_support
 import unitto.core.common.generated.resources.settings_view_source_code
@@ -134,7 +131,6 @@ internal fun SettingsRoute(openDrawer: () -> Unit, navControllerAction: (route: 
         navControllerAction = navControllerAction,
         updateLastReadChangelog = viewModel::updateLastReadChangelog,
         updateVibrations = viewModel::updateVibrations,
-        updateKeyAnimation = viewModel::updateKeyAnimation,
         updateKeepScreenOn = viewModel::updateEnableKeepScreenOn,
         updateShowOnLockScreen = viewModel::updateShowOnLockScreen,
       )
@@ -148,7 +144,6 @@ private fun SettingsScreen(
   navControllerAction: (Route) -> Unit,
   updateLastReadChangelog: (String) -> Unit,
   updateVibrations: (Boolean) -> Unit,
-  updateKeyAnimation: (Boolean) -> Unit,
   updateKeepScreenOn: (Boolean) -> Unit,
   updateShowOnLockScreen: (Boolean) -> Unit,
 ) {
@@ -190,7 +185,7 @@ private fun SettingsScreen(
       }
       GeneralSettings(navControllerAction)
       AppSettings(navControllerAction)
-      DeviceSettings(uiState, navControllerAction, updateVibrations, updateKeyAnimation, updateKeepScreenOn, updateShowOnLockScreen)
+      DeviceSettings(uiState, navControllerAction, updateVibrations, updateKeepScreenOn, updateShowOnLockScreen)
       AboutSettings(linkOpener, navControllerAction)
     }
   }
@@ -256,11 +251,9 @@ private fun DeviceSettings(
   uiState: SettingsUIState.Ready,
   navControllerAction: (Route) -> Unit,
   updateVibrations: (Boolean) -> Unit,
-  updateKeyAnimation: (Boolean) -> Unit,
   updateKeepScreenOn: (Boolean) -> Unit,
   updateShowOnLockScreen: (Boolean) -> Unit,
 ) {
-  val isAndroid = LocalPlatform.current == Platform.Android
   // Vibrations and the screen only exist in the Android app
   if (LocalPlatform.current == Platform.Android) {
     ListHeader(stringResource(Res.string.settings_phone))
@@ -289,21 +282,15 @@ private fun DeviceSettings(
       shape = ListItemExpressiveDefaults.middleShape,
     )
   }
-  ListItemExpressive(
-    icon = Symbols.Keyboard,
-    headlineText = stringResource(Res.string.settings_key_animation),
-    supportingText = stringResource(Res.string.settings_key_animation_support),
-    switchState = uiState.enableKeyAnimation,
-    onSwitchChange = updateKeyAnimation,
-    shape = if (isAndroid) ListItemExpressiveDefaults.middleShape else ListItemExpressiveDefaults.firstShape,
-  )
   // The web app has its own backup file, on its own after the apps
   ListItemExpressive(
     icon = Symbols.RestorePage,
     headlineText = stringResource(Res.string.settings_backup),
     supportingText = stringResource(Res.string.settings_backup_support),
     onClick = { navControllerAction(BackupRoute) },
-    shape = ListItemExpressiveDefaults.lastShape,
+    shape =
+      if (LocalPlatform.current == Platform.Android) ListItemExpressiveDefaults.lastShape
+      else ListItemExpressiveDefaults.singleShape,
   )
 }
 
@@ -356,7 +343,6 @@ private fun PreviewSettingsScreen() {
         showUpdateChangelog = true,
         enableKeepScreenOn = false,
         showOnLockScreen = false,
-        enableKeyAnimation = true,
       )
     )
   }
@@ -367,7 +353,6 @@ private fun PreviewSettingsScreen() {
     navControllerAction = {},
     updateLastReadChangelog = { uiState = uiState.copy(showUpdateChangelog = false) },
     updateVibrations = { uiState = uiState.copy(enableVibrations = it) },
-    updateKeyAnimation = { uiState = uiState.copy(enableKeyAnimation = it) },
     updateKeepScreenOn = { uiState = uiState.copy(enableKeepScreenOn = it) },
     updateShowOnLockScreen = { uiState = uiState.copy(showOnLockScreen = it) },
   )

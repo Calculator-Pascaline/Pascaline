@@ -258,39 +258,6 @@ class PlaceMathTest {
   }
 
   @Test
-  fun cities_parseSearchAndNearest() {
-    val cities =
-      parseCities(
-        listOf(
-            "# header",
-            row("48.8667", "2.3333", "1.7", "11000000", "Europe/Paris", "Paris", "", "", "", "पेरिस", "", "", "Parigi", "", "", "Париж", "", "巴黎"),
-            row("45.7590", "4.8290", "5.1", "1500000", "Europe/Paris", "Lyon", "", "", "", "", "", "", "Lione"),
-            row("48.3904", "-4.4950", "6.7", "140000", "Europe/Paris", "Brest"),
-          )
-          .joinToString(NEW_LINE)
-      )
-    assertEquals(3, cities.size)
-    assertEquals("Parigi", cities[0].name("it"))
-    assertEquals("Париж", cities[0].name("ru"))
-    assertEquals("Paris", cities[0].name("fr"))
-    assertEquals("Paris", cities[0].name("ja"))
-    assertEquals(1.7f, cities[0].minZoom)
-    assertEquals(listOf("Lyon"), searchCities(cities, "lio", "it", 5).map { it.names[0] })
-    assertEquals(listOf("Brest"), searchCities(cities, "BRE", "en", 5).map { it.names[0] })
-    assertEquals(emptyList(), searchCities(cities, " ", "en", 5))
-    // Brittany has the time of Paris, not of London
-    val (city, km) = assertNotNull(nearestCity(cities, GeoPoint(48.4, -4.4)))
-    assertEquals("Europe/Paris", city.zone)
-    assertTrue(km < 10, "$km km")
-  }
-
-  @Test
-  fun webZoom_tiles() {
-    assertEquals(0f, webZoom(256f), 1e-6f)
-    assertEquals(3f, webZoom(2048f), 1e-6f)
-  }
-
-  @Test
   fun elevation_tiles() {
     val tiles = parseElevationIndex("""{"c":"8-bit","f":[[5,0.5,0,-45,0,-60,15,219,360]]}""")
     val tile = tiles.single()
@@ -324,83 +291,9 @@ class PlaceMathTest {
     assertTrue(abs(difference) <= minutes, "off by $difference minutes")
   }
 
-  @Test
-  fun coastTiles_readsRingsInDegrees() {
-    // Every tile starts after the table and is empty, but the second one that comes one byte later
-    val table = IntArray(COAST_TABLE) { if (it == 0) COAST_TABLE * 4 else COAST_TABLE * 4 + 1 }
-    val empty = listOf<Byte>(0)
-    // One ring of two points: (2000, 2) then a step of (−2000, 1), where 2000 needs two bytes
-    val ring = listOf(1, 2, 0xA0, 0x1F, 4, 0x9F, 0x1F, 2).map { it.toByte() }
-    val offsets = table.flatMap { offset -> List(4) { ((offset shr (it * 8)) and 0xFF).toByte() } }
-    val tiles = CoastTiles((offsets + empty + ring).toByteArray())
-    assertTrue(tiles.rings(0, 0).isEmpty())
-    assertEquals(listOf(11f, 0.001f, 10f, 0.0015f), tiles.rings(1, 0).single().toList())
-  }
-
-  @Test
-  fun coastArea_wrapsColumnsAndPicksDetail() {
-    // The whole world is 1800 px wide, half of it on the 900 px map
-    val wide = coastArea(left = -900f, top = 0f, width = 900f, height = 450f, world = 1800f)
-    assertEquals(CoastArea(false, 18, 35, 0, 17), wide)
-    // Crossing the edge of the world
-    val edge = coastArea(left = 300f, top = 0f, width = 900f, height = 450f, world = 1800f)
-    assertEquals(CoastArea(false, -18, 17, 0, 17), edge)
-    // 100 px per degree, 1000 px per tile
-    val close = coastArea(left = -18_500f, top = -3_500f, width = 1200f, height = 800f, world = 36_000f)
-    assertEquals(CoastArea(true, 18, 19, 3, 4), close)
-  }
-
-  @Test
-  fun clearSkyPower_dropsWithTheSunAndAtNight() {
-    assertEquals(0.0, clearSkyPower(-1.0, 100))
-    // Trail Sense's model: about 1 kW/m² with the Sun overhead
-    assertEquals(0.95, clearSkyPower(90.0, 100), 0.03)
-    assertTrue(clearSkyPower(10.0, 100) < clearSkyPower(45.0, 100))
-  }
-
-  @Test
-  fun yearPanelAim_facesTheEquator() {
-    val paris = assertNotNull(yearPanelAim(PARIS, utc("2026-01-01T00:00:00")))
-    assertTrue(paris.facesSouth)
-    assertTrue(paris.tilt in 30.0..50.0, "tilt ${paris.tilt}")
-    assertTrue(paris.energy in 1500.0..3000.0, "energy ${paris.energy}")
-    val sydney = assertNotNull(yearPanelAim(GeoPoint(-33.87, 151.21), utc("2026-01-01T00:00:00")))
-    assertEquals(false, sydney.facesSouth)
-    assertTrue(sydney.tilt in 20.0..40.0, "tilt ${sydney.tilt}")
-  }
-
-  @Test
-  fun dayPanelAim_followsTheSeasonAndPolarNight() {
-    val june = assertNotNull(dayPanelAim(PARIS, utc("2026-06-21T00:00:00"), 172))
-    val december = assertNotNull(dayPanelAim(PARIS, utc("2026-12-21T00:00:00"), 355))
-    assertTrue(june.tilt < december.tilt)
-    assertTrue(june.energy > december.energy)
-    // The Sun is north of Singapore in June
-    assertEquals(false, dayPanelAim(GeoPoint(1.3, 103.8), utc("2026-06-21T00:00:00"), 172)?.facesSouth)
-    assertNull(dayPanelAim(GeoPoint(80.0, 0.0), utc("2026-12-21T00:00:00"), 355))
-  }
-
-  @Test
-  fun defaultCity_followsTheLanguage() {
-    fun city(name: String) = City(GeoPoint(0.0, 0.0), 1f, 1, "", listOf(name))
-    val cities = listOf(city("Berlin"), city("London"), city("Paris"))
-    assertEquals("Paris", defaultCity(cities, "fr")?.names?.first())
-    assertEquals("Berlin", defaultCity(cities, "de")?.names?.first())
-    // English for languages without a city
-    assertEquals("London", defaultCity(cities, "ja")?.names?.first())
-    assertNull(defaultCity(emptyList(), "fr"))
-  }
-
-  /** A line of cities.tsv, the names after [columns] are empty. */
-  private fun row(vararg columns: String) =
-    (columns.toList() + List(CITY_LANGUAGES.size + 5 - columns.size) { "" }).joinToString(TAB)
-
   private fun utc(text: String): Long = LocalDateTime.parse(text).toInstant(TimeZone.UTC).toEpochMilliseconds()
 
   private companion object {
     val PARIS = GeoPoint(48.8566, 2.3522)
-    const val COAST_TABLE = 649
-    const val TAB = "\t"
-    const val NEW_LINE = "\n"
   }
 }

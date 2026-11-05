@@ -551,8 +551,6 @@
     <string name="settings_version_name">版本号</string>
     <string name="settings_vibrations">振动</string>
     <string name="settings_vibrations_support">点击键盘按钮时的触觉反馈</string>
-    <string name="settings_key_animation">按键动画</string>
-    <string name="settings_key_animation_support">按下时按键会变大</string>
     <string name="settings_view_source_code">查看源代码</string>
     <string name="statistics_automatic">自动：%1$s</string>
     <string name="statistics_bar">[%1$s; %2$s[ ：频数 %3$s</string>
@@ -1596,21 +1594,8 @@
     <string name="place_coordinates">坐标</string>
     <string name="place_latitude">纬度</string>
     <string name="place_longitude">经度</string>
-    <string name="place_panels_year">太阳能板，全年</string>
-    <string name="place_panels_day">太阳能板，当天</string>
-    <string name="place_real_sun">实际情况：日出和日落可能相差 1 到 2 分钟，地平线上有山或建筑时相差更多。</string>
-    <string name="place_real_moon">实际情况：月出和月落可能相差几分钟，地平线上有山或建筑时相差更多。</string>
-    <string name="place_real_sky">实际情况：时间精确到几分钟。能看到什么取决于云层和城市灯光。</string>
-    <string name="place_real_tides">实际情况：时间可能相差一小时，高度可能相差 30% 或更多，因为这是全球模型，而且风和气压也会推动海水。</string>
-    <string name="place_real_temperature">实际情况：这些是 1991–2020 年的平均值。某一天常常会高出或低出几度。</string>
-    <string name="place_real_rain">实际情况：这些是多年的平均值。某个月可能只有一半，也可能达到两倍。</string>
-    <string name="place_real_elevation">实际情况：这是该区域的平均值，平地可能相差几十米，山区可能相差几百米。</string>
-    <string name="place_real_solar">实际情况：这里假设晴空且无遮挡。云层常会减少 20% 到 50%，而太阳能板约把这些能量的 20% 转化为电力。</string>
-    <string name="place_south">南</string>
-    <string name="place_north">北</string>
-    <string name="place_continue">继续</string>
-    <string name="place_search_city">搜索城市</string>
-    <string name="place_no_city">未找到城市</string>
+    <string name="place_time_zone">时区</string>
+    <string name="place_map_hint">点按地图选择地点，双指捏合或使用按钮缩放。</string>
     <string name="place_loading_error">无法读取数据：%1$s</string>
     <string name="place_sunrise">日出</string>
     <string name="place_sunset">日落</string>
@@ -1708,5 +1693,5 @@
     <string name="place_ground_height">地面海拔</string>
     <string name="place_at_sea">海上</string>
     <string name="place_elevation_note">来自按数公里平均的全球模型，山峰和山谷可能相差较大。</string>
-    <string name="place_credits">数据：Trail Sense (MIT, Kyle Corry)、NASA MERRA-2、ERA5、EOT20、ETOPO 2022、Natural Earth 和 IANA 时区。</string>
+    <string name="place_credits">数据：Trail Sense (MIT, Kyle Corry)、NASA MERRA-2、ERA5、EOT20、ETOPO 2022 和 IANA 时区。</string>
 </resources>

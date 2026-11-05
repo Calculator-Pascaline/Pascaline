@@ -551,8 +551,6 @@
     <string name="settings_version_name">Nome versione</string>
     <string name="settings_vibrations">Vibrazioni</string>
     <string name="settings_vibrations_support">Feedback aptico quando si premono i tasti della tastiera</string>
-    <string name="settings_key_animation">Animazione dei tasti</string>
-    <string name="settings_key_animation_support">I tasti si ingrandiscono quando li premi</string>
     <string name="settings_view_source_code">Visualizza codice sorgente</string>
     <string name="statistics_automatic">Automatico: %1$s</string>
     <string name="statistics_bar">[%1$s; %2$s[ : frequenza %3$s</string>
@@ -1596,21 +1594,8 @@
     <string name="place_coordinates">Coordinate</string>
     <string name="place_latitude">Latitudine</string>
     <string name="place_longitude">Longitudine</string>
-    <string name="place_panels_year">Pannelli solari, tutto l’anno</string>
-    <string name="place_panels_day">Pannelli solari, questo giorno</string>
-    <string name="place_real_sun">Nella realtà: alba e tramonto possono variare di 1 o 2 minuti, di più con montagne o edifici all’orizzonte.</string>
-    <string name="place_real_moon">Nella realtà: il sorgere e il tramontare della luna possono variare di alcuni minuti, di più con montagne o edifici all’orizzonte.</string>
-    <string name="place_real_sky">Nella realtà: gli orari sono precisi a pochi minuti. Ciò che si vede dipende da nuvole e luci della città.</string>
-    <string name="place_real_tides">Nella realtà: gli orari possono variare fino a un’ora e le altezze del 30% o più, perché il modello è globale e anche vento e pressione muovono il mare.</string>
-    <string name="place_real_temperature">Nella realtà: sono medie del 1991–2020. Un singolo giorno è spesso più caldo o più freddo di alcuni gradi.</string>
-    <string name="place_real_rain">Nella realtà: sono medie di molti anni. Un singolo mese può portare la metà o il doppio.</string>
-    <string name="place_real_elevation">Nella realtà: è la media della zona, con errori di decine di metri in pianura e centinaia in montagna.</string>
-    <string name="place_real_solar">Nella realtà: si assume cielo sereno e nessuna ombra. Le nuvole tolgono spesso dal 20 al 50%, e i pannelli trasformano circa il 20% di questa energia in elettricità.</string>
-    <string name="place_south">Sud</string>
-    <string name="place_north">Nord</string>
-    <string name="place_continue">Continua</string>
-    <string name="place_search_city">Cerca una città</string>
-    <string name="place_no_city">Nessuna città trovata</string>
+    <string name="place_time_zone">Fuso orario</string>
+    <string name="place_map_hint">Tocca la mappa per scegliere un luogo, pizzica o usa i pulsanti per lo zoom.</string>
     <string name="place_loading_error">Impossibile leggere i dati: %1$s</string>
     <string name="place_sunrise">Alba</string>
     <string name="place_sunset">Tramonto</string>
@@ -1708,5 +1693,5 @@
     <string name="place_ground_height">Altitudine del terreno</string>
     <string name="place_at_sea">In mare</string>
     <string name="place_elevation_note">Da un modello globale mediato su alcuni chilometri, cime e valli possono discostarsi molto.</string>
-    <string name="place_credits">Dati: Trail Sense (MIT, Kyle Corry), NASA MERRA-2, ERA5, EOT20, ETOPO 2022, Natural Earth e fusi orari IANA.</string>
+    <string name="place_credits">Dati: Trail Sense (MIT, Kyle Corry), NASA MERRA-2, ERA5, EOT20, ETOPO 2022 e fusi orari IANA.</string>
 </resources>

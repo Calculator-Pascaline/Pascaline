@@ -110,11 +110,7 @@ import unitto.core.common.generated.resources.place_no_sunrise
 import unitto.core.common.generated.resources.place_no_sunset
 import unitto.core.common.generated.resources.place_no_tides
 import unitto.core.common.generated.resources.place_none_today
-import unitto.core.common.generated.resources.place_north
-import unitto.core.common.generated.resources.place_panels_day
-import unitto.core.common.generated.resources.place_panels_year
 import unitto.core.common.generated.resources.place_rain_in
-import unitto.core.common.generated.resources.place_real_solar
 import unitto.core.common.generated.resources.place_season_december
 import unitto.core.common.generated.resources.place_season_june
 import unitto.core.common.generated.resources.place_season_march
@@ -134,7 +130,6 @@ import unitto.core.common.generated.resources.place_shower_ursids
 import unitto.core.common.generated.resources.place_snow_share
 import unitto.core.common.generated.resources.place_solar_eclipse
 import unitto.core.common.generated.resources.place_solar_noon
-import unitto.core.common.generated.resources.place_south
 import unitto.core.common.generated.resources.place_spring_tides
 import unitto.core.common.generated.resources.place_sunrise
 import unitto.core.common.generated.resources.place_sunrise_on
@@ -205,24 +200,6 @@ private fun SunTab(report: PlaceReport, units: PlaceUnits) {
       span(stringResource(Res.string.place_civil_twilight), sun.civilDawn, sun.civilDusk, zone),
       span(stringResource(Res.string.place_nautical_twilight), sun.nauticalDawn, sun.nauticalDusk, zone),
       span(stringResource(Res.string.place_astronomical_twilight), sun.astronomicalDawn, sun.astronomicalDusk, zone),
-    )
-  )
-  SolarPanels(report, units)
-  RealLifeNote(Res.string.place_real_solar)
-}
-
-/** The best direction and angle of a solar panel, for the year and for the chosen date. */
-@Composable
-private fun SolarPanels(report: PlaceReport, units: PlaceUnits) {
-  @Composable
-  fun aim(aim: PanelAim): String {
-    val direction = if (aim.facesSouth) Res.string.place_south else Res.string.place_north
-    return "${stringResource(direction)} · ${units.degrees(aim.tilt)}"
-  }
-  Details(
-    listOfNotNull(
-      report.yearPanel?.let { stringResource(Res.string.place_panels_year) to aim(it) },
-      report.dayPanel?.let { stringResource(Res.string.place_panels_day) to "${aim(it)} · ${units.number(it.energy, 1)} kWh/m²" },
     )
   )
 }
@@ -517,17 +494,6 @@ private fun ElevationTab(report: PlaceReport, units: PlaceUnits) {
 // Shared pieces
 
 /** The answer in big on the primary color, what it is above, more below. */
-/** How far real life can be from the numbers above. */
-@Composable
-internal fun RealLifeNote(text: StringResource) {
-  Text(
-    stringResource(text),
-    modifier = Modifier.fillMaxWidth().clip(CARD_SHAPE).background(MaterialTheme.colorScheme.surfaceContainer).padding(16.dp),
-    style = MaterialTheme.typography.bodyMedium,
-    color = MaterialTheme.colorScheme.onSurfaceVariant,
-  )
-}
-
 @Composable
 private fun BigAnswer(label: String, value: String, caption: String?) {
   val color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -597,6 +563,7 @@ private fun Note(text: String, color: Color = MaterialTheme.colorScheme.onSurfac
 }
 
 private val CARD_SHAPE = androidx.compose.foundation.shape.RoundedCornerShape(20.dp)
+private const val NOON = 43_200_000L
 private const val DAY = 86_400_000L
 private const val WEEKS = 53
 private const val DAYS_PER_WEEK = 7

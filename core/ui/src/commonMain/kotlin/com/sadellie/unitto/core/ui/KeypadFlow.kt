@@ -43,7 +43,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.State
 import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -143,14 +142,11 @@ fun KeypadFlow(
 @Composable
 fun animatePressedWeight(isPressed: Boolean, defaultWeight: Float = 1f): State<Float> {
   return animateFloatAsState(
-    targetValue = if (isPressed && LocalKeyAnimation.current) PRESSED_WEIGHT_FACTOR * defaultWeight else defaultWeight,
+    targetValue = if (isPressed) PRESSED_WEIGHT_FACTOR * defaultWeight else defaultWeight,
     animationSpec = MaterialTheme.motionScheme.fastSpatialSpec(),
     label = "Pressed key weight",
   )
 }
-
-/** Keys grow and change shape while pressed, it can be turned off in the settings. */
-val LocalKeyAnimation = staticCompositionLocalOf { true }
 
 private enum class KeypadSlots {
   Rows

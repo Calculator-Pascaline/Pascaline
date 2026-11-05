@@ -30,27 +30,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ripple
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.input.pointer.AwaitPointerEventScope
-import androidx.compose.ui.input.pointer.PointerEventPass
-import androidx.compose.ui.input.pointer.changedToUpIgnoreConsumed
-import androidx.compose.ui.input.pointer.isOutOfBounds
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
-import com.sadellie.unitto.core.designsystem.LocalHapticFeedbackManager
-import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * @param isPressed Pressed state from [trackKeyPress], it comes without the delay of clicks in
@@ -70,7 +62,7 @@ fun Modifier.squashable(
   val isKeyPressed = isPressed ?: isClickPressed
   val cornerRadius: Int by
     animateIntAsState(
-      targetValue = if (isKeyPressed && LocalKeyAnimation.current) cornerRadiusRange.first else cornerRadiusRange.last,
+      targetValue = if (isKeyPressed) cornerRadiusRange.first else cornerRadiusRange.last,
       animationSpec = animationSpec,
       label = "Squashed animation",
     )
@@ -117,27 +109,15 @@ fun Modifier.squashable(
 }
 
 /**
- * Vibration for keys that can be swiped over, on pages or in lists: only for real presses, see
- * [KeyPress.presses]. [keyPress] is updated by [trackKeyPress].
+ * Vibration of [squashable] for keys that handle clicks themselves, like a clickable `Surface`.
+ * [keyPress] is updated by [trackKeyPress].
  */
-fun Modifier.keyHaptics(keyPress: KeyPress) = composed {
-  val scope = rememberCoroutineScope()
-  val haptics = LocalHapticFeedbackManager.current
-  LaunchedEffect(keyPress.presses) { if (keyPress.presses > 0) haptics.vibrateKeyboardPress(scope) }
-  this
-}
+fun Modifier.keyHaptics(keyPress: KeyPress) = composed { haptics(keyPress.isPressed) }
 
 /** Whether a finger is on a key, see [trackKeyPress]. */
 @Stable
 class KeyPress {
   var isPressed by mutableStateOf(false)
-    internal set
-
-  /**
-   * Touches that are not swipes. A number, as a quick tap can be over before the next frame, which
-   * then would never see it [isPressed].
-   */
-  var presses by mutableIntStateOf(0)
     internal set
 }
 
@@ -147,32 +127,16 @@ class KeyPress {
  * Key is pressed as soon as a finger touches it. Clicks in scrollable containers (like pagers) are
  * pressed only after a delay, in case it is a swipe: quick taps were too short for key animations.
  * Touches are not consumed, clicks and swipes work as before. A swipe releases the key.
- *
- * It is a real press when the finger lifts, or stays still for a moment: a swipe moves right away.
- * The last pass sees what clicks and swipes did with each touch.
  */
 fun Modifier.trackKeyPress(keyPress: KeyPress) =
   pointerInput(keyPress) {
     awaitEachGesture {
-      awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Final)
+      awaitFirstDown(requireUnconsumed = false)
       keyPress.isPressed = true
-      var isLifted: Boolean? = null
-      withTimeoutOrNull(SWIPE_WAIT_MILLIS) { isLifted = awaitFingerLifted() }
-      if (isLifted != false) keyPress.presses++
-      if (isLifted == null) awaitFingerLifted()
+      // null when the touch is taken by a swipe or leaves the key
+      waitForUpOrCancellation()
       keyPress.isPressed = false
     }
   }
-
-/** True when the finger lifts from the key, false when a swipe takes it or it leaves the key. */
-private suspend fun AwaitPointerEventScope.awaitFingerLifted(): Boolean {
-  while (true) {
-    val change = awaitPointerEvent(PointerEventPass.Final).changes.first()
-    if (change.changedToUpIgnoreConsumed()) return true
-    if (change.isConsumed || change.isOutOfBounds(size, extendedTouchPadding)) return false
-  }
-}
-
-private const val SWIPE_WAIT_MILLIS = 100L
 
 internal expect fun Modifier.haptics(isPressed: Boolean): Modifier

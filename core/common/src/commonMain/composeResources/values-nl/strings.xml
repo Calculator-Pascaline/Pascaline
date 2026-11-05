@@ -551,8 +551,6 @@
     <string name="settings_version_name">Versienaam</string>
     <string name="settings_vibrations">Trillingen</string>
     <string name="settings_vibrations_support">Haptische feedback bij het indrukken van toetsenbordknoppen</string>
-    <string name="settings_key_animation">Toetsanimatie</string>
-    <string name="settings_key_animation_support">Toetsen worden groter als je ze indrukt</string>
     <string name="settings_view_source_code">Broncode bekijken</string>
     <string name="statistics_automatic">Automatisch: %1$s</string>
     <string name="statistics_bar">[%1$s; %2$s[ : frequentie %3$s</string>
@@ -1596,21 +1594,8 @@
     <string name="place_coordinates">Coördinaten</string>
     <string name="place_latitude">Breedtegraad</string>
     <string name="place_longitude">Lengtegraad</string>
-    <string name="place_panels_year">Zonnepanelen, heel het jaar</string>
-    <string name="place_panels_day">Zonnepanelen, deze dag</string>
-    <string name="place_real_sun">In werkelijkheid: zonsopkomst en zonsondergang kunnen 1 tot 2 minuten afwijken, meer met bergen of gebouwen aan de horizon.</string>
-    <string name="place_real_moon">In werkelijkheid: maanopkomst en maanondergang kunnen enkele minuten afwijken, meer met bergen of gebouwen aan de horizon.</string>
-    <string name="place_real_sky">In werkelijkheid: de tijden kloppen op enkele minuten. Wat je ziet hangt af van wolken en stadslicht.</string>
-    <string name="place_real_tides">In werkelijkheid: tijden kunnen tot een uur en hoogtes 30% of meer afwijken, want het model is wereldwijd en ook wind en luchtdruk bewegen de zee.</string>
-    <string name="place_real_temperature">In werkelijkheid: dit zijn gemiddelden van 1991–2020. Een bepaalde dag is vaak enkele graden warmer of kouder.</string>
-    <string name="place_real_rain">In werkelijkheid: dit zijn gemiddelden van vele jaren. Een bepaalde maand kan de helft of het dubbele brengen.</string>
-    <string name="place_real_elevation">In werkelijkheid: dit is het gemiddelde van het gebied, tientallen meters ernaast op vlak land en honderden in de bergen.</string>
-    <string name="place_real_solar">In werkelijkheid: dit gaat uit van een heldere hemel zonder schaduw. Wolken halen er vaak 20 tot 50% af, en panelen zetten ongeveer 20% van deze energie om in stroom.</string>
-    <string name="place_south">Zuid</string>
-    <string name="place_north">Noord</string>
-    <string name="place_continue">Doorgaan</string>
-    <string name="place_search_city">Zoek een stad</string>
-    <string name="place_no_city">Geen stad gevonden</string>
+    <string name="place_time_zone">Tijdzone</string>
+    <string name="place_map_hint">Tik op de kaart om een plaats te kiezen, knijp of gebruik de knoppen om te zoomen.</string>
     <string name="place_loading_error">Kan de gegevens niet lezen: %1$s</string>
     <string name="place_sunrise">Zonsopkomst</string>
     <string name="place_sunset">Zonsondergang</string>
@@ -1708,5 +1693,5 @@
     <string name="place_ground_height">Terreinhoogte</string>
     <string name="place_at_sea">Op zee</string>
     <string name="place_elevation_note">Uit een wereldwijd model gemiddeld over enkele kilometers, toppen en dalen kunnen flink afwijken.</string>
-    <string name="place_credits">Gegevens: Trail Sense (MIT, Kyle Corry), NASA MERRA-2, ERA5, EOT20, ETOPO 2022, Natural Earth en IANA-tijdzones.</string>
+    <string name="place_credits">Gegevens: Trail Sense (MIT, Kyle Corry), NASA MERRA-2, ERA5, EOT20, ETOPO 2022 en IANA-tijdzones.</string>
 </resources>
