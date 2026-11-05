@@ -354,7 +354,7 @@ private fun DrawScope.drawBinomialTree(
 
   // Leaves: outcome like THH, then arrows from the labels
   val labelLayouts = labels.map { measurer.measure(it, labelStyle) }
-  val labelX = size.width - labelLayouts.maxOf { it.size.width } - 2.dp.toPx()
+  val labelX = size.width - (labelLayouts.maxOfOrNull { it.size.width } ?: 0) - 2.dp.toPx()
   val leafEnds = mutableListOf<Pair<Offset, Int>>()
   for (index in 0 until leaves) {
     val outcome =
@@ -427,8 +427,9 @@ private fun FreeThrowExplanation(throws: Int, p: Double, fractional: String) {
     val branchStyle = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
     val leafStyle = MaterialTheme.typography.labelLarge.copy(color = textColor, fontWeight = FontWeight.Medium)
     val labelStyle = MaterialTheme.typography.bodySmall.copy(color = textColor)
-    val missLetter = stringResource(Res.string.probability_miss_letter).first()
-    val scoreLetter = stringResource(Res.string.probability_score_letter).first()
+    // Empty for a moment on the web, while the strings of the language load
+    val missLetter = stringResource(Res.string.probability_miss_letter).firstOrNull() ?: ' '
+    val scoreLetter = stringResource(Res.string.probability_score_letter).firstOrNull() ?: ' '
     Canvas(modifier = Modifier.fillMaxWidth().height(LEAF_HEIGHT * (1 shl throws))) {
       drawBinomialTree(
         TreeStyle(throws, miss, score, missLetter, scoreLetter, THROW_TREE_SHARE),
