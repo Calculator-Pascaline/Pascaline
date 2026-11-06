@@ -1880,19 +1880,12 @@
     <string name="place_tab_temperature">Temperature</string>
     <string name="place_tab_rain">Rain</string>
     <string name="place_tab_elevation">Elevation</string>
-    <string name="place_coordinates">Coordinates</string>
-    <string name="place_latitude">Latitude</string>
-    <string name="place_longitude">Longitude</string>
     <string name="place_panels_year">Solar panels, all year</string>
     <string name="place_panels_day">Solar panels, this day</string>
-    <string name="place_real_sun">Real life: sunrise and sunset can differ by 1 to 2 minutes, more with mountains or buildings on the horizon.</string>
-    <string name="place_real_moon">Real life: moonrise and moonset can differ by a few minutes, more with mountains or buildings on the horizon.</string>
-    <string name="place_real_sky">Real life: times are good to a few minutes. What you can see depends on clouds and city lights.</string>
-    <string name="place_real_tides">Real life: times can differ by up to an hour and heights by 30% or more, as the model is global and wind and pressure also move the sea.</string>
-    <string name="place_real_temperature">Real life: these are averages of 1991–2020. A given day is often several degrees warmer or colder.</string>
-    <string name="place_real_rain">Real life: these are averages of many years. A given month can bring half or twice as much.</string>
-    <string name="place_real_elevation">Real life: this is the average of the area, tens of meters off on flat land and hundreds in the mountains.</string>
-    <string name="place_real_solar">Real life: this assumes a clear sky and no shade. Clouds often remove 20 to 50%, and panels turn about 20% of this energy into electricity.</string>
+    <string name="place_panels_help">How is this worked out?</string>
+    <string name="place_panels_help_angle">The angle is measured from flat ground: 0° lies flat and 90° stands upright. South or North is the way the face of the panel points.</string>
+    <string name="place_panels_help_method">Both values use the same calculation. The app follows the Sun across the sky of this place, works out how much clear sky sunlight a fixed panel would catch, and keeps the direction and angle that catch the most.</string>
+    <string name="place_panels_help_values">All year looks at every fifth day of the year, for a panel that stays in place. This day looks at the chosen date only, so its angle is steeper when the Sun is low in winter. kWh/m² is the sunlight reaching one square meter of panel on that day.</string>
     <string name="place_south">South</string>
     <string name="place_north">North</string>
     <string name="place_continue">Continue</string>
@@ -1995,5 +1988,5 @@
     <string name="place_ground_height">Ground height</string>
     <string name="place_at_sea">At sea</string>
     <string name="place_elevation_note">From a global model averaged over a few kilometers, peaks and valleys can be far off.</string>
-    <string name="place_credits">Data: Trail Sense (MIT, Kyle Corry), NASA MERRA-2, ERA5, EOT20, ETOPO 2022, Natural Earth and IANA time zones.</string>
+    <string name="place_credits">Data: Trail Sense (MIT, Kyle Corry), NASA MERRA-2, ERA5, EOT20, ETOPO 2022, Natural Earth, GeoNames and IANA time zones.</string>
 </resources>

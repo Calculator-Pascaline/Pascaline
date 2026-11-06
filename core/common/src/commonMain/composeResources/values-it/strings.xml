@@ -1593,19 +1593,12 @@
     <string name="place_tab_temperature">Temperatura</string>
     <string name="place_tab_rain">Pioggia</string>
     <string name="place_tab_elevation">Altitudine</string>
-    <string name="place_coordinates">Coordinate</string>
-    <string name="place_latitude">Latitudine</string>
-    <string name="place_longitude">Longitudine</string>
     <string name="place_panels_year">Pannelli solari, tutto l’anno</string>
     <string name="place_panels_day">Pannelli solari, questo giorno</string>
-    <string name="place_real_sun">Nella realtà: alba e tramonto possono variare di 1 o 2 minuti, di più con montagne o edifici all’orizzonte.</string>
-    <string name="place_real_moon">Nella realtà: il sorgere e il tramontare della luna possono variare di alcuni minuti, di più con montagne o edifici all’orizzonte.</string>
-    <string name="place_real_sky">Nella realtà: gli orari sono precisi a pochi minuti. Ciò che si vede dipende da nuvole e luci della città.</string>
-    <string name="place_real_tides">Nella realtà: gli orari possono variare fino a un’ora e le altezze del 30% o più, perché il modello è globale e anche vento e pressione muovono il mare.</string>
-    <string name="place_real_temperature">Nella realtà: sono medie del 1991–2020. Un singolo giorno è spesso più caldo o più freddo di alcuni gradi.</string>
-    <string name="place_real_rain">Nella realtà: sono medie di molti anni. Un singolo mese può portare la metà o il doppio.</string>
-    <string name="place_real_elevation">Nella realtà: è la media della zona, con errori di decine di metri in pianura e centinaia in montagna.</string>
-    <string name="place_real_solar">Nella realtà: si assume cielo sereno e nessuna ombra. Le nuvole tolgono spesso dal 20 al 50%, e i pannelli trasformano circa il 20% di questa energia in elettricità.</string>
+    <string name="place_panels_help">Come viene calcolato?</string>
+    <string name="place_panels_help_angle">L’angolo si misura dal suolo piano: 0° è in piano e 90° è in verticale. Sud o Nord indica dove guarda la faccia del pannello.</string>
+    <string name="place_panels_help_method">Entrambi i valori usano lo stesso calcolo. L’app segue il Sole nel cielo di questo luogo, calcola quanta luce catturerebbe un pannello fisso a cielo sereno e tiene la direzione e l’angolo che ne catturano di più.</string>
+    <string name="place_panels_help_values">Tutto l’anno considera un giorno ogni cinque, per un pannello che resta fermo. Questo giorno considera solo la data scelta, quindi l’angolo è maggiore quando il Sole è basso in inverno. kWh/m² è la luce che raggiunge un metro quadrato di pannello in quel giorno.</string>
     <string name="place_south">Sud</string>
     <string name="place_north">Nord</string>
     <string name="place_continue">Continua</string>
@@ -1708,5 +1701,5 @@
     <string name="place_ground_height">Altitudine del terreno</string>
     <string name="place_at_sea">In mare</string>
     <string name="place_elevation_note">Da un modello globale mediato su alcuni chilometri, cime e valli possono discostarsi molto.</string>
-    <string name="place_credits">Dati: Trail Sense (MIT, Kyle Corry), NASA MERRA-2, ERA5, EOT20, ETOPO 2022, Natural Earth e fusi orari IANA.</string>
+    <string name="place_credits">Dati: Trail Sense (MIT, Kyle Corry), NASA MERRA-2, ERA5, EOT20, ETOPO 2022, Natural Earth, GeoNames e fusi orari IANA.</string>
 </resources>

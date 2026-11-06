@@ -162,6 +162,13 @@ data class ThirdParty(
           description = "Populated places: the cities of the Place map, their names and time zones.",
         ),
         ThirdParty(
+          name = "GeoNames",
+          dev = "GeoNames",
+          website = "https://www.geonames.org",
+          license = "CC BY 4.0",
+          description = "Towns and cities of the Place map and their time zones.",
+        ),
+        ThirdParty(
           name = "tz database",
           dev = "IANA",
           website = "https://www.iana.org/time-zones",

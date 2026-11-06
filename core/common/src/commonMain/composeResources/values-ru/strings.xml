@@ -1593,19 +1593,12 @@
     <string name="place_tab_temperature">Температура</string>
     <string name="place_tab_rain">Осадки</string>
     <string name="place_tab_elevation">Высота</string>
-    <string name="place_coordinates">Координаты</string>
-    <string name="place_latitude">Широта</string>
-    <string name="place_longitude">Долгота</string>
     <string name="place_panels_year">Солнечные панели, весь год</string>
     <string name="place_panels_day">Солнечные панели, в этот день</string>
-    <string name="place_real_sun">В реальности: восход и закат могут отличаться на 1–2 минуты, больше при горах или зданиях на горизонте.</string>
-    <string name="place_real_moon">В реальности: восход и заход Луны могут отличаться на несколько минут, больше при горах или зданиях на горизонте.</string>
-    <string name="place_real_sky">В реальности: время точно до нескольких минут. Что будет видно, зависит от облаков и городского света.</string>
-    <string name="place_real_tides">В реальности: время может отличаться до часа, а высота на 30 % и больше, так как модель глобальная, а ветер и давление тоже двигают море.</string>
-    <string name="place_real_temperature">В реальности: это средние значения за 1991–2020 годы. Конкретный день часто на несколько градусов теплее или холоднее.</string>
-    <string name="place_real_rain">В реальности: это средние значения за много лет. Конкретный месяц может принести вдвое меньше или вдвое больше.</string>
-    <string name="place_real_elevation">В реальности: это среднее по местности, ошибка в десятки метров на равнине и в сотни метров в горах.</string>
-    <string name="place_real_solar">В реальности: здесь принято ясное небо без тени. Облака часто убирают от 20 до 50 %, а панели превращают в электричество около 20 % этой энергии.</string>
+    <string name="place_panels_help">Как это рассчитывается?</string>
+    <string name="place_panels_help_angle">Угол отсчитывается от ровной земли: 0° — панель лежит, 90° — стоит вертикально. Юг или Север — куда смотрит лицевая сторона панели.</string>
+    <string name="place_panels_help_method">Оба значения получены одним расчётом. Приложение следит за Солнцем на небе этого места, вычисляет, сколько света поймает неподвижная панель при ясном небе, и выбирает направление и угол с наибольшим количеством света.</string>
+    <string name="place_panels_help_values">Весь год — это каждый пятый день года, для панели, которая стоит на месте. Этот день — только выбранная дата, поэтому угол больше, когда зимой Солнце стоит низко. кВт·ч/м² — это свет, попадающий на один квадратный метр панели за этот день.</string>
     <string name="place_south">Юг</string>
     <string name="place_north">Север</string>
     <string name="place_continue">Продолжить</string>
@@ -1708,5 +1701,5 @@
     <string name="place_ground_height">Высота местности</string>
     <string name="place_at_sea">В море</string>
     <string name="place_elevation_note">По глобальной модели, усреднённой на несколько километров: вершины и долины могут сильно отличаться.</string>
-    <string name="place_credits">Данные: Trail Sense (MIT, Kyle Corry), NASA MERRA-2, ERA5, EOT20, ETOPO 2022, Natural Earth и часовые пояса IANA.</string>
+    <string name="place_credits">Данные: Trail Sense (MIT, Kyle Corry), NASA MERRA-2, ERA5, EOT20, ETOPO 2022, Natural Earth, GeoNames и часовые пояса IANA.</string>
 </resources>

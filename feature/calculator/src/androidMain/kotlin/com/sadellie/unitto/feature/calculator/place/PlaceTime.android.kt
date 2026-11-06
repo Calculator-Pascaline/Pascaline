@@ -42,11 +42,6 @@ internal actual fun formatDate(millis: Long, zone: String): String {
   return format(SimpleDateFormat(pattern, Locale.getDefault()), millis, zone)
 }
 
-internal actual fun formatShortDay(millis: Long, zone: String): String {
-  val pattern = android.text.format.DateFormat.getBestDateTimePattern(Locale.getDefault(), "EEEd")
-  return format(SimpleDateFormat(pattern, Locale.getDefault()), millis, zone)
-}
-
 private fun format(format: java.text.DateFormat, millis: Long, zone: String): String {
   format.timeZone = TimeZone.getTimeZone(zone)
   return format.format(Date(millis))

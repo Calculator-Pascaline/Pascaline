@@ -212,8 +212,12 @@ internal fun WorldMap(
         )
       val labels = CityLabels(measurer, labelStyle, bigLabelStyle, dotColor, language)
       val pins = (-1..1).map { screen(point, it) }
+      val south = MAX_LATITUDE - (size.height - top) / (world / 2) * (2 * MAX_LATITUDE)
+      val north = MAX_LATITUDE + top / (world / 2) * (2 * MAX_LATITUDE)
       view.labeled =
-        labels.draw(this, cities, webZoom(world / density), pins) { city -> (-1..1).map { screen(city.point, it) } }
+        labels.draw(this, cities, webZoom(world / density), south..north, pins) { city ->
+          (-1..1).map { screen(city.point, it) }
+        }
       for (copy in -1..1) drawPin(screen(point, copy), pin, ring)
     }
     Column(modifier = Modifier.align(Alignment.BottomEnd).padding(end = 8.dp, bottom = buttonsBottom)) {
@@ -235,6 +239,7 @@ private class CityLabels(
     scope: DrawScope,
     cities: List<City>,
     zoom: Float,
+    latitudes: ClosedFloatingPointRange<Double>,
     pins: List<Offset>,
     positions: (City) -> List<Offset>,
   ): List<Pair<City, Offset>> =
@@ -248,7 +253,7 @@ private class CityLabels(
       // The file is sorted by population, so big cities win the space
       cities
         .asSequence()
-        .filter { it.minZoom <= zoom + LABEL_EARLIER }
+        .filter { it.minZoom <= zoom + LABEL_EARLIER && it.point.latitude in latitudes }
         .mapNotNull { city -> positions(city).firstOrNull { bounds.contains(it) }?.let { city to it } }
         .takeWhile { labeled.size < MAX_LABELS }
         .forEach { (city, at) ->

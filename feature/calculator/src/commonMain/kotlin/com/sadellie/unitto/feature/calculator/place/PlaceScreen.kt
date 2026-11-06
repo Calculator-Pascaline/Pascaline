@@ -36,9 +36,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -66,7 +64,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.sadellie.unitto.core.common.FormatterSymbols
 import com.sadellie.unitto.core.common.collectAsStateWithLifecycleKMP
@@ -79,7 +76,6 @@ import com.sadellie.unitto.core.ui.BackHandler
 import com.sadellie.unitto.core.ui.DrawerButton
 import com.sadellie.unitto.core.ui.EmptyScreen
 import com.sadellie.unitto.core.ui.ScaffoldWithTopBar
-import com.sadellie.unitto.feature.calculator.probability.toNumberOrNull
 import kotlin.math.abs
 import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
@@ -93,19 +89,9 @@ import unitto.core.common.generated.resources.Res
 import unitto.core.common.generated.resources.common_cancel
 import unitto.core.common.generated.resources.common_clear
 import unitto.core.common.generated.resources.common_ok
-import unitto.core.common.generated.resources.place_coordinates
 import unitto.core.common.generated.resources.place_credits
-import unitto.core.common.generated.resources.place_latitude
 import unitto.core.common.generated.resources.place_loading_error
-import unitto.core.common.generated.resources.place_longitude
 import unitto.core.common.generated.resources.place_no_city
-import unitto.core.common.generated.resources.place_real_elevation
-import unitto.core.common.generated.resources.place_real_moon
-import unitto.core.common.generated.resources.place_real_rain
-import unitto.core.common.generated.resources.place_real_sky
-import unitto.core.common.generated.resources.place_real_sun
-import unitto.core.common.generated.resources.place_real_temperature
-import unitto.core.common.generated.resources.place_real_tides
 import unitto.core.common.generated.resources.place_search_city
 import unitto.core.common.generated.resources.place_tab_elevation
 import unitto.core.common.generated.resources.place_tab_moon
@@ -134,7 +120,7 @@ internal fun PlaceRoute(openDrawer: () -> Unit) {
  */
 @Composable
 private fun PlaceScreen(openDrawer: () -> Unit, viewModel: PlaceViewModel, symbols: FormatterSymbols) {
-  var dialog by remember { mutableStateOf<PlaceDialog?>(null) }
+  var isChoosingDate by remember { mutableStateOf(false) }
   var isChoosing by rememberSaveable { mutableStateOf(true) }
   val language = LocalLocale.current.language
   val units = rememberPlaceUnits(viewModel.isMetric, symbols)
@@ -172,13 +158,13 @@ private fun PlaceScreen(openDrawer: () -> Unit, viewModel: PlaceViewModel, symbo
       },
     ) { choosing ->
       if (choosing) {
-        PlaceChooser(viewModel, language, { dialog = it }) { isChoosing = false }
+        PlaceChooser(viewModel, language, { isChoosingDate = true }) { isChoosing = false }
       } else {
         PlaceMenu(viewModel, units)
       }
     }
   }
-  PlaceDialogs(dialog, viewModel) { dialog = null }
+  if (isChoosingDate) DateDialog(viewModel.date, viewModel::chooseDate) { isChoosingDate = false }
 }
 
 /** What the place is like on the chosen date, one chip at a time. */
@@ -201,10 +187,7 @@ private fun PlaceMenu(viewModel: PlaceViewModel, units: PlaceUnits) {
         )
       }
       val report = viewModel.report
-      if (report != null) {
-        PlaceTabContent(viewModel.tab, report, viewModel, units)
-        RealLifeNote(viewModel.tab.realLife)
-      }
+      if (report != null) PlaceTabContent(viewModel.tab, report, viewModel, units)
       Text(
         stringResource(Res.string.place_credits),
         style = MaterialTheme.typography.bodySmall,
@@ -212,11 +195,6 @@ private fun PlaceMenu(viewModel: PlaceViewModel, units: PlaceUnits) {
       )
     }
   }
-}
-
-internal enum class PlaceDialog {
-  COORDINATES,
-  DATE,
 }
 
 /** 48.86° N, 2.35° E */
@@ -298,18 +276,6 @@ private fun TabChips(selected: PlaceTab, onSelect: (PlaceTab) -> Unit) {
   }
 }
 
-private val PlaceTab.realLife: StringResource
-  get() =
-    when (this) {
-      PlaceTab.SUN -> Res.string.place_real_sun
-      PlaceTab.MOON -> Res.string.place_real_moon
-      PlaceTab.SKY -> Res.string.place_real_sky
-      PlaceTab.TIDES -> Res.string.place_real_tides
-      PlaceTab.TEMPERATURE -> Res.string.place_real_temperature
-      PlaceTab.RAIN -> Res.string.place_real_rain
-      PlaceTab.ELEVATION -> Res.string.place_real_elevation
-    }
-
 private val PlaceTab.title: StringResource
   get() =
     when (this) {
@@ -321,58 +287,6 @@ private val PlaceTab.title: StringResource
       PlaceTab.RAIN -> Res.string.place_tab_rain
       PlaceTab.ELEVATION -> Res.string.place_tab_elevation
     }
-
-@Composable
-private fun PlaceDialogs(dialog: PlaceDialog?, viewModel: PlaceViewModel, close: () -> Unit) {
-  when (dialog) {
-    PlaceDialog.COORDINATES -> CoordinatesDialog(viewModel.point, { viewModel.choosePoint(it) }, close)
-    PlaceDialog.DATE -> DateDialog(viewModel.date, viewModel::chooseDate, close)
-    null -> Unit
-  }
-}
-
-@Composable
-private fun CoordinatesDialog(point: GeoPoint, onConfirm: (GeoPoint) -> Unit, close: () -> Unit) {
-  var latitude by remember { mutableStateOf(point.latitude.toString().take(COORDINATE_LENGTH)) }
-  var longitude by remember { mutableStateOf(point.longitude.toString().take(COORDINATE_LENGTH)) }
-  val lat = latitude.toNumberOrNull()?.takeIf { it in -90.0..90.0 }
-  val lon = longitude.toNumberOrNull()?.takeIf { it in -180.0..180.0 }
-  AlertDialog(
-    onDismissRequest = close,
-    title = { Text(stringResource(Res.string.place_coordinates)) },
-    text = {
-      Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        CoordinateField(latitude, { latitude = it }, stringResource(Res.string.place_latitude), lat == null)
-        CoordinateField(longitude, { longitude = it }, stringResource(Res.string.place_longitude), lon == null)
-      }
-    },
-    confirmButton = {
-      TextButton(
-        onClick = {
-          if (lat != null && lon != null) {
-            onConfirm(GeoPoint(lat, lon))
-            close()
-          }
-        }
-      ) {
-        Text(stringResource(Res.string.common_ok))
-      }
-    },
-    dismissButton = { TextButton(onClick = close) { Text(stringResource(Res.string.common_cancel)) } },
-  )
-}
-
-@Composable
-private fun CoordinateField(value: String, onChange: (String) -> Unit, label: String, isError: Boolean) {
-  OutlinedTextField(
-    value = value,
-    onValueChange = onChange,
-    label = { Text(label) },
-    singleLine = true,
-    isError = isError,
-    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-  )
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -400,5 +314,4 @@ private fun DateDialog(date: LocalDate, onConfirm: (LocalDate) -> Unit, close: (
 
 private val MENU_WIDTH = 720.dp
 internal const val NOON = 43_200_000L
-private const val COORDINATE_LENGTH = 9
 private const val SEARCH_RESULTS = 6

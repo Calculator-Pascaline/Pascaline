@@ -1593,19 +1593,12 @@
     <string name="place_tab_temperature">Suhu</string>
     <string name="place_tab_rain">Hujan</string>
     <string name="place_tab_elevation">Ketinggian</string>
-    <string name="place_coordinates">Koordinat</string>
-    <string name="place_latitude">Lintang</string>
-    <string name="place_longitude">Bujur</string>
     <string name="place_panels_year">Panel surya, sepanjang tahun</string>
     <string name="place_panels_day">Panel surya, pada hari ini</string>
-    <string name="place_real_sun">Kenyataannya: matahari terbit dan terbenam dapat berbeda 1 sampai 2 menit, lebih jika ada gunung atau gedung di cakrawala.</string>
-    <string name="place_real_moon">Kenyataannya: bulan terbit dan terbenam dapat berbeda beberapa menit, lebih jika ada gunung atau gedung di cakrawala.</string>
-    <string name="place_real_sky">Kenyataannya: waktu akurat hingga beberapa menit. Yang terlihat bergantung pada awan dan lampu kota.</string>
-    <string name="place_real_tides">Kenyataannya: waktu dapat berbeda hingga satu jam dan ketinggian 30% atau lebih, karena modelnya global dan angin serta tekanan udara juga menggerakkan laut.</string>
-    <string name="place_real_temperature">Kenyataannya: ini rata-rata 1991–2020. Satu hari tertentu sering beberapa derajat lebih hangat atau lebih dingin.</string>
-    <string name="place_real_rain">Kenyataannya: ini rata-rata banyak tahun. Satu bulan tertentu dapat membawa setengah atau dua kali lipat.</string>
-    <string name="place_real_elevation">Kenyataannya: ini rata-rata wilayah, meleset puluhan meter di dataran dan ratusan meter di pegunungan.</string>
-    <string name="place_real_solar">Kenyataannya: ini mengasumsikan langit cerah tanpa bayangan. Awan sering mengurangi 20 sampai 50%, dan panel mengubah sekitar 20% energi ini menjadi listrik.</string>
+    <string name="place_panels_help">Bagaimana ini dihitung?</string>
+    <string name="place_panels_help_angle">Sudut diukur dari tanah datar: 0° rata dan 90° tegak. Selatan atau Utara adalah arah hadap permukaan panel.</string>
+    <string name="place_panels_help_method">Kedua nilai memakai perhitungan yang sama. Aplikasi mengikuti Matahari di langit tempat ini, menghitung berapa banyak sinar matahari yang ditangkap panel tetap saat langit cerah, lalu memilih arah dan sudut yang menangkap paling banyak.</string>
+    <string name="place_panels_help_values">Sepanjang tahun melihat setiap hari kelima dalam setahun, untuk panel yang tetap di tempat. Hari ini hanya melihat tanggal yang dipilih, sehingga sudutnya lebih curam saat Matahari rendah di musim dingin. kWh/m² adalah sinar matahari yang mencapai satu meter persegi panel pada hari itu.</string>
     <string name="place_south">Selatan</string>
     <string name="place_north">Utara</string>
     <string name="place_continue">Lanjutkan</string>
@@ -1708,5 +1701,5 @@
     <string name="place_ground_height">Ketinggian tanah</string>
     <string name="place_at_sea">Di laut</string>
     <string name="place_elevation_note">Dari model global yang dirata-rata beberapa kilometer, puncak dan lembah bisa jauh berbeda.</string>
-    <string name="place_credits">Data: Trail Sense (MIT, Kyle Corry), NASA MERRA-2, ERA5, EOT20, ETOPO 2022, Natural Earth dan zona waktu IANA.</string>
+    <string name="place_credits">Data: Trail Sense (MIT, Kyle Corry), NASA MERRA-2, ERA5, EOT20, ETOPO 2022, Natural Earth, GeoNames dan zona waktu IANA.</string>
 </resources>

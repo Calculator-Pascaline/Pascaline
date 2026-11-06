@@ -33,9 +33,6 @@ internal actual fun formatTime(millis: Long, zone: String): String =
 internal actual fun formatDate(millis: Long, zone: String): String =
   browserFormat(millis.toDouble(), zone, window.navigator.language, "date")
 
-internal actual fun formatShortDay(millis: Long, zone: String): String =
-  browserShortDay(millis.toDouble(), zone, window.navigator.language)
-
 internal actual fun monthName(month: Int): String =
   browserMonth(month - 1, window.navigator.language).replaceFirstChar { it.uppercaseChar() }
 
@@ -86,11 +83,3 @@ private external fun browserFormat(millis: Double, zone: String, tag: String, ki
 }"""
 )
 private external fun browserMonth(month: Int, tag: String): String
-
-@JsFun(
-  """(millis, zone, tag) => {
-  try { return new Intl.DateTimeFormat(tag, { weekday: 'short', day: 'numeric', timeZone: zone }).format(new Date(millis)); }
-  catch (e) { return new Date(millis).toDateString().slice(0, 3); }
-}"""
-)
-private external fun browserShortDay(millis: Double, zone: String, tag: String): String
