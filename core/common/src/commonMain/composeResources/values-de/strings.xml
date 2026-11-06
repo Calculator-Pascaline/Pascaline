@@ -1584,7 +1584,11 @@
     <string name="units_menu_resistance">Widerstand</string>
     <string name="units_menu_time_and_frequency">Zeit und Frequenz</string>
     <string name="units_menu_voltage">Spannung</string>
-    <string name="place_title">Ort</string>
+    <string name="place_title">Himmel und Erde</string>
+    <string name="home_title">Startseite</string>
+    <string name="home_hidden">Ausgeblendet</string>
+    <string name="home_edit_hint">Ziehe Werkzeuge an die gewünschte Stelle.</string>
+    <string name="home_reset">Zurück zu A bis Z</string>
     <string name="projectile_title">Wurfbahn</string>
     <string name="projectile_initial">Anfangsbedingungen</string>
     <string name="projectile_speed">Abwurfgeschwindigkeit</string>

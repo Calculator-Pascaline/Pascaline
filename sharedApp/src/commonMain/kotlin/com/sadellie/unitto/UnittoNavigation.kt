@@ -45,6 +45,8 @@ import com.sadellie.unitto.core.designsystem.unittoFadeIn
 import com.sadellie.unitto.core.designsystem.unittoFadeOut
 import com.sadellie.unitto.core.navigation.DRAWER_LAYOUT_KEY
 import com.sadellie.unitto.core.navigation.DrawerItem
+import com.sadellie.unitto.core.navigation.HomeDrawerItem
+import com.sadellie.unitto.core.navigation.HomeStartRoute
 import com.sadellie.unitto.core.navigation.DrawerLayout
 import com.sadellie.unitto.core.navigation.LocalNavigator
 import com.sadellie.unitto.core.navigation.Navigator
@@ -74,8 +76,6 @@ fun MainAppContent(
 
   val currentRoute = backStack.lastOrNull()
   val currentTopLevelRoute = remember(currentRoute) { backStack.currentTopLevelRoute() }
-  // allow opening drawer only when at top level route
-  val edgeGesture = remember(currentRoute) { currentRoute is TopLevelRoute }
   val userPrefsRepository = koinInject<UserPreferencesRepository>()
   val savedLayout by
     remember(userPrefsRepository) { userPrefsRepository.appData(DRAWER_LAYOUT_KEY) }
@@ -98,8 +98,9 @@ fun MainAppContent(
     NavigationDrawer(
       modifier = Modifier,
       state = drawerState,
-      edgeGesture = edgeGesture,
-      mainTabs = drawerItems,
+      // Phones go through the grid of tools, the menu is at the side of wide screens
+      edgeGesture = false,
+      mainTabs = listOf(HomeDrawerItem) + drawerItems,
       additionalTabs = additionalDrawerItems,
       currentDestination = currentTopLevelRoute,
       onItemClick = { destination ->
@@ -112,6 +113,10 @@ fun MainAppContent(
         backStack = backStack,
         themmoController = themmoController,
         drawerState = drawerState,
+        onOpenTool = { tool ->
+          navigateToTab(tool, backStack)
+          onDrawerItemClick(tool)
+        },
       )
     }
   }
@@ -123,14 +128,19 @@ private fun UnittoNavigation(
   backStack: NavBackStack<NavKey>,
   themmoController: ThemmoController,
   drawerState: DrawerState,
+  onOpenTool: (DrawerItem) -> Unit,
 ) {
   val drawerScope = rememberCoroutineScope()
   val navigator =
     remember(backStack, drawerState) {
       Navigator(
         backStack = backStack,
-        openDrawerAction = { drawerScope.launch { drawerState.open() } },
+        openDrawerAction = {
+          backStack.add(HomeStartRoute)
+          while (backStack.size > 1) backStack.removeAt(0)
+        },
         navigateToUnitGroupsAction = backStack::navigateToUnitGroups,
+        openToolAction = onOpenTool,
       )
     }
   CompositionLocalProvider(

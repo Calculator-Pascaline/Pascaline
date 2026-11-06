@@ -68,6 +68,7 @@ interface Route : NavKey {
           DeepLinkPattern(BodyMassStartRoute.serializer(), deepLink(BodyMassStartRoute).toKmpUri()),
           DeepLinkPattern(PlaceStartRoute.serializer(), deepLink(PlaceStartRoute).toKmpUri()),
           DeepLinkPattern(ProjectileStartRoute.serializer(), deepLink(ProjectileStartRoute).toKmpUri()),
+          DeepLinkPattern(HomeStartRoute.serializer(), deepLink(HomeStartRoute).toKmpUri()),
         )
       /** STEP 2. Parse requested deeplink */
       val request = DeepLinkRequest(uri)
@@ -178,6 +179,11 @@ data object BodyMassStartRoute : TopLevelRoute {
 }
 
 @Serializable
+data object HomeStartRoute : TopLevelRoute {
+  override val routeId = "home_route"
+}
+
+@Serializable
 data object ProjectileStartRoute : TopLevelRoute {
   override val routeId = "projectile_route"
 }
@@ -192,7 +198,7 @@ data object SettingsStartRoute : TopLevelRoute {
   override val routeId = "settings_route"
 }
 
-val graphRoutes = (mainDrawerItems + additionalDrawerItems).map { it.topLevelRoute }
+val graphRoutes = (listOf(HomeDrawerItem) + mainDrawerItems + additionalDrawerItems).map { it.topLevelRoute }
 
 fun deepLink(graphRoute: TopLevelRoute): String = "$NAVIGATION_BASE_URI/${graphRoute.routeId}"
 

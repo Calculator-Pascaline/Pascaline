@@ -1584,7 +1584,11 @@
     <string name="units_menu_resistance">Resistencia</string>
     <string name="units_menu_time_and_frequency">Tiempo y frecuencia</string>
     <string name="units_menu_voltage">Tensión</string>
-    <string name="place_title">Lugar</string>
+    <string name="place_title">Cielo y Tierra</string>
+    <string name="home_title">Inicio</string>
+    <string name="home_hidden">Ocultas</string>
+    <string name="home_edit_hint">Arrastra las herramientas donde quieras.</string>
+    <string name="home_reset">Volver a A–Z</string>
     <string name="projectile_title">Proyectil</string>
     <string name="projectile_initial">Condiciones iniciales</string>
     <string name="projectile_speed">Velocidad de lanzamiento</string>

@@ -27,6 +27,7 @@ import com.sadellie.unitto.core.navigation.InferenceStartRoute
 import com.sadellie.unitto.core.navigation.PricesStartRoute
 import com.sadellie.unitto.core.navigation.FunctionsStartRoute
 import com.sadellie.unitto.core.navigation.LocalNavigator
+import com.sadellie.unitto.core.navigation.HomeStartRoute
 import com.sadellie.unitto.core.navigation.PlaceStartRoute
 import com.sadellie.unitto.core.navigation.ProjectileStartRoute
 import com.sadellie.unitto.core.navigation.ProbabilityStartRoute
@@ -40,6 +41,7 @@ import com.sadellie.unitto.feature.calculator.programmer.ProgrammerRoute
 import com.sadellie.unitto.feature.calculator.inference.InferenceRoute
 import com.sadellie.unitto.feature.calculator.prices.PricesRoute
 import com.sadellie.unitto.feature.calculator.functions.FunctionsRoute
+import com.sadellie.unitto.feature.calculator.home.HomeRoute
 import com.sadellie.unitto.feature.calculator.place.PlaceRoute
 import com.sadellie.unitto.feature.calculator.projectile.ProjectileRoute
 import com.sadellie.unitto.feature.calculator.probability.ProbabilityRoute
@@ -96,6 +98,7 @@ fun Module.calculatorNavigation() {
     val navigator = LocalNavigator.current
     ProgrammerRoute(openDrawer = navigator::openDrawer)
   }
+  navigation<HomeStartRoute> { HomeRoute() }
   navigation<ProjectileStartRoute> {
     val navigator = LocalNavigator.current
     ProjectileRoute(openDrawer = navigator::openDrawer)

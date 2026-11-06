@@ -1584,7 +1584,11 @@
     <string name="units_menu_resistance">Сопротивление</string>
     <string name="units_menu_time_and_frequency">Время и частота</string>
     <string name="units_menu_voltage">Напряжение</string>
-    <string name="place_title">Место</string>
+    <string name="place_title">Небо и Земля</string>
+    <string name="home_title">Главная</string>
+    <string name="home_hidden">Скрытые</string>
+    <string name="home_edit_hint">Перетащите инструменты туда, где они вам удобны.</string>
+    <string name="home_reset">Вернуть А–Я</string>
     <string name="projectile_title">Снаряд</string>
     <string name="projectile_initial">Начальные условия</string>
     <string name="projectile_speed">Начальная скорость</string>

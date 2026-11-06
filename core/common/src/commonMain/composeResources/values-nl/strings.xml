@@ -1584,7 +1584,11 @@
     <string name="units_menu_resistance">Weerstand</string>
     <string name="units_menu_time_and_frequency">Tijd en frequentie</string>
     <string name="units_menu_voltage">Spanning</string>
-    <string name="place_title">Plaats</string>
+    <string name="place_title">Hemel en Aarde</string>
+    <string name="home_title">Start</string>
+    <string name="home_hidden">Verborgen</string>
+    <string name="home_edit_hint">Sleep tools naar de plek die je wilt.</string>
+    <string name="home_reset">Terug naar A–Z</string>
     <string name="projectile_title">Projectiel</string>
     <string name="projectile_initial">Beginvoorwaarden</string>
     <string name="projectile_speed">Beginsnelheid</string>

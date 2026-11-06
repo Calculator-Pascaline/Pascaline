@@ -1871,7 +1871,11 @@
     <string name="units_menu_resistance">Resistance</string>
     <string name="units_menu_time_and_frequency">Time and frequency</string>
     <string name="units_menu_voltage">Voltage</string>
-    <string name="place_title">Place</string>
+    <string name="place_title">Sky and Earth</string>
+    <string name="home_title">Home</string>
+    <string name="home_hidden">Hidden</string>
+    <string name="home_edit_hint">Drag tools to move them where you like.</string>
+    <string name="home_reset">Back to A to Z</string>
     <string name="projectile_title">Projectile</string>
     <string name="projectile_initial">Initial conditions</string>
     <string name="projectile_speed">Launch speed</string>

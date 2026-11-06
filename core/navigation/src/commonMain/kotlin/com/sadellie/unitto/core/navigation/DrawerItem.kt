@@ -32,6 +32,7 @@ import com.sadellie.unitto.core.designsystem.icons.symbols.Event
 import com.sadellie.unitto.core.designsystem.icons.symbols.EventFill
 import com.sadellie.unitto.core.designsystem.icons.symbols.LineAxis
 import com.sadellie.unitto.core.designsystem.icons.symbols.Percent
+import com.sadellie.unitto.core.designsystem.icons.symbols.Home
 import com.sadellie.unitto.core.designsystem.icons.symbols.Place
 import com.sadellie.unitto.core.designsystem.icons.symbols.Projectile
 import com.sadellie.unitto.core.designsystem.icons.symbols.PriceTag
@@ -53,6 +54,7 @@ import unitto.core.common.generated.resources.elements_title
 import unitto.core.common.generated.resources.finance_title
 import unitto.core.common.generated.resources.functions_title
 import unitto.core.common.generated.resources.inference_title
+import unitto.core.common.generated.resources.home_title
 import unitto.core.common.generated.resources.place_title
 import unitto.core.common.generated.resources.projectile_title
 import unitto.core.common.generated.resources.prices_title
@@ -174,6 +176,14 @@ data object BodyMassDrawerItem : DrawerItem {
   override val name = Res.string.body_mass_title
   override val selectedIcon = Symbols.AccessibilityNew
   override val defaultIcon = Symbols.AccessibilityNew
+}
+
+/** The grid of tools. Not a tool itself, so not in [mainDrawerItems]. */
+data object HomeDrawerItem : DrawerItem {
+  override val topLevelRoute = HomeStartRoute
+  override val name = Res.string.home_title
+  override val selectedIcon = Symbols.Home
+  override val defaultIcon = Symbols.Home
 }
 
 data object ProjectileDrawerItem : DrawerItem {

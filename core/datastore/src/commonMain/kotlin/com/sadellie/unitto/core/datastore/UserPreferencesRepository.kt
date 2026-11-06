@@ -25,7 +25,7 @@ import com.sadellie.unitto.core.common.Token
 import com.sadellie.unitto.core.data.converter.UnitID
 import com.sadellie.unitto.core.model.converter.UnitGroup
 import com.sadellie.unitto.core.model.converter.UnitsListSorting
-import com.sadellie.unitto.core.navigation.CalculatorStartRoute
+import com.sadellie.unitto.core.navigation.HomeStartRoute
 import com.sadellie.unitto.core.navigation.TopLevelRoute
 import io.github.sadellie.themmo.core.MonetMode
 import io.github.sadellie.themmo.core.ThemingMode
@@ -67,7 +67,7 @@ interface UserPreferencesRepository {
       get() = MonetMode.TonalSpot
 
     val startingScreen: TopLevelRoute
-      get() = CalculatorStartRoute
+      get() = HomeStartRoute
 
     val enableToolsExperiment: Boolean
       get() = false

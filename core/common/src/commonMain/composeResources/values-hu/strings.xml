@@ -1584,7 +1584,11 @@
     <string name="units_menu_resistance">Ellenállás</string>
     <string name="units_menu_time_and_frequency">Idő és frekvencia</string>
     <string name="units_menu_voltage">Feszültség</string>
-    <string name="place_title">Hely</string>
+    <string name="place_title">Ég és Föld</string>
+    <string name="home_title">Kezdőlap</string>
+    <string name="home_hidden">Rejtett</string>
+    <string name="home_edit_hint">Húzd az eszközöket oda, ahová szeretnéd.</string>
+    <string name="home_reset">Vissza az A–Z sorrendhez</string>
     <string name="projectile_title">Hajítás</string>
     <string name="projectile_initial">Kezdeti feltételek</string>
     <string name="projectile_speed">Kezdősebesség</string>

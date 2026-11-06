@@ -70,6 +70,9 @@ class ExtractRouteFromDeepLinkTest {
     assertExtractedRoute(TimeZoneStartRoute, "app://com.sadellie.unitto/time_zone_route")
 
   @Test
+  fun test_homeStartRoute() = assertExtractedRoute(HomeStartRoute, "app://com.sadellie.unitto/home_route")
+
+  @Test
   fun test_projectileStartRoute() =
     assertExtractedRoute(ProjectileStartRoute, "app://com.sadellie.unitto/projectile_route")
 

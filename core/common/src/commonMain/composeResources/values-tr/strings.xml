@@ -1584,7 +1584,11 @@
     <string name="units_menu_resistance">Direnç</string>
     <string name="units_menu_time_and_frequency">Zaman ve frekans</string>
     <string name="units_menu_voltage">Gerilim</string>
-    <string name="place_title">Yer</string>
+    <string name="place_title">Gök ve Yer</string>
+    <string name="home_title">Ana sayfa</string>
+    <string name="home_hidden">Gizli</string>
+    <string name="home_edit_hint">Araçları istediğin yere sürükle.</string>
+    <string name="home_reset">A–Z sırasına dön</string>
     <string name="projectile_title">Eğik atış</string>
     <string name="projectile_initial">Başlangıç koşulları</string>
     <string name="projectile_speed">Atış hızı</string>

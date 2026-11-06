@@ -25,7 +25,7 @@ import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.sadellie.unitto.core.designsystem.icons.symbols.Menu
+import com.sadellie.unitto.core.designsystem.icons.symbols.Home
 import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
 import org.jetbrains.compose.resources.stringResource
 import unitto.core.common.generated.resources.Res
@@ -51,7 +51,7 @@ fun DrawerButton(
       ),
   ) {
     Icon(
-      imageVector = Symbols.Menu,
+      imageVector = Symbols.Home,
       contentDescription = stringResource(Res.string.common_open_menu_description),
       modifier = Modifier.size(IconButtonDefaults.smallIconSize),
     )

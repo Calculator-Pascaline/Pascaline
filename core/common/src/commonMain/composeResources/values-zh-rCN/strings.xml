@@ -1584,7 +1584,11 @@
     <string name="units_menu_resistance">电阻</string>
     <string name="units_menu_time_and_frequency">时间和频率</string>
     <string name="units_menu_voltage">电压</string>
-    <string name="place_title">地点</string>
+    <string name="place_title">天空与大地</string>
+    <string name="home_title">主页</string>
+    <string name="home_hidden">已隐藏</string>
+    <string name="home_edit_hint">把工具拖到你想要的位置。</string>
+    <string name="home_reset">恢复字母顺序</string>
     <string name="projectile_title">抛体运动</string>
     <string name="projectile_initial">初始条件</string>
     <string name="projectile_speed">初速度</string>

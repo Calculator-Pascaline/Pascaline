@@ -1584,7 +1584,11 @@
     <string name="units_menu_resistance">प्रतिरोध</string>
     <string name="units_menu_time_and_frequency">समय और आवृत्ति</string>
     <string name="units_menu_voltage">वोल्टेज</string>
-    <string name="place_title">स्थान</string>
+    <string name="place_title">आकाश और पृथ्वी</string>
+    <string name="home_title">होम</string>
+    <string name="home_hidden">छिपे हुए</string>
+    <string name="home_edit_hint">टूल को मनचाही जगह पर खींचें।</string>
+    <string name="home_reset">A से Z पर लौटें</string>
     <string name="projectile_title">प्रक्षेप्य</string>
     <string name="projectile_initial">प्रारंभिक स्थितियाँ</string>
     <string name="projectile_speed">प्रक्षेपण गति</string>

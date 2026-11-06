@@ -143,6 +143,7 @@ private fun generateShortcut(drawerItem: DrawerItem): Shortcut? {
     ProgrammerDrawerItem,
     PlaceDrawerItem,
     ProjectileDrawerItem,
+    HomeDrawerItem,
     SettingsDrawerItem -> null
   }
 }

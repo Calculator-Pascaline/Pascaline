@@ -29,6 +29,7 @@ class Navigator(
   val backStack: NavBackStack<NavKey>,
   private val openDrawerAction: () -> Unit = {},
   private val navigateToUnitGroupsAction: () -> Unit = {},
+  private val openToolAction: (DrawerItem) -> Unit = {},
 ) {
   fun goTo(destination: Route) {
     if (destination != backStack.lastOrNull()) backStack.add(destination)
@@ -36,7 +37,10 @@ class Navigator(
 
   fun goBack() = backStack.removeLastOrNull()
 
+  /** Goes to the grid of tools on phones, wide screens have the menu at the side. */
   fun openDrawer() = openDrawerAction()
+
+  fun openTool(item: DrawerItem) = openToolAction(item)
 
   fun navigateToUnitGroups() = navigateToUnitGroupsAction()
 }

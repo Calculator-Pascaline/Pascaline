@@ -30,6 +30,7 @@ import com.sadellie.unitto.core.common.collectAsStateWithLifecycleKMP
 import com.sadellie.unitto.core.designsystem.shapes.Sizes
 import com.sadellie.unitto.core.navigation.CalculatorStartRoute
 import com.sadellie.unitto.core.navigation.DrawerItem
+import com.sadellie.unitto.core.navigation.HomeDrawerItem
 import com.sadellie.unitto.core.navigation.mainDrawerItems
 import com.sadellie.unitto.core.ui.EmptyScreen
 import com.sadellie.unitto.core.ui.ListItemExpressive
@@ -71,12 +72,12 @@ private fun StartingScreenScreen(
       modifier = Modifier.padding(start = Sizes.large, end = Sizes.large, bottom = Sizes.large),
       verticalArrangement = ListItemExpressiveDefaults.ListArrangement,
     ) {
-      itemsIndexed(mainDrawerItems, { _, destination -> destination.topLevelRoute.routeId }) {
+      itemsIndexed(listOf(HomeDrawerItem) + mainDrawerItems, { _, destination -> destination.topLevelRoute.routeId }) {
         index,
         destination ->
         ListItemExpressive(
           onClick = { updateStartingScreen(destination.topLevelRoute.routeId) },
-          shape = ListItemExpressiveDefaults.listedShaped(index, mainDrawerItems.size),
+          shape = ListItemExpressiveDefaults.listedShaped(index, mainDrawerItems.size + 1),
           headlineContent = { Text(stringResource(destination.name)) },
           leadingContent = {
             RadioButton(
