@@ -168,10 +168,10 @@ private class FunctionKey(
 )
 
 /** Not a key, switches trigonometric keys to their inverses. */
-private val INVERSE_SWITCH = FunctionKey("inv", "", width = INVERSE_SWITCH_WIDTH)
+private val INVERSE_SWITCH = FunctionKey("inv", "", width = SWITCH_WIDTH)
 
-/** Not a key that types, shows the angle mode and changes it. */
-private val ANGLE_KEY = FunctionKey("", "", width = ANGLE_KEY_WIDTH)
+/** Not a key, switches the angle mode. */
+private val ANGLE_SWITCH = FunctionKey("", "", width = SWITCH_WIDTH)
 
 /**
  * Function keys on pages that are swiped horizontally. Keys fill the page: fewer rows are taller,
@@ -221,9 +221,9 @@ internal fun FunctionRows(
               val growth by animatePressedWeight(keyPress.isPressed, key.width)
               val keyModifier = Modifier.weight(growth).fillMaxHeight().trackKeyPress(keyPress)
               if (key === INVERSE_SWITCH) {
-                InverseSwitch(keyModifier, keyPress, inverse) { inverse = it }
-              } else if (key === ANGLE_KEY) {
-                AngleKey(keyModifier, keyPress)
+                KeySwitch(keyModifier, keyPress, INVERSE_SWITCH.label, inverse) { inverse = it }
+              } else if (key === ANGLE_SWITCH) {
+                AngleSwitch(keyModifier, keyPress)
               } else {
                 FunctionKeyButton(
                   modifier = keyModifier,
@@ -297,37 +297,30 @@ private fun FunctionKeyButton(
   }
 }
 
-/** deg or rad, the angle mode of sin, cos and tan and of every tool. A tap changes it. */
+/** Switch for the angle mode of sin, cos and tan and of every tool: on is rad, off is deg. */
 @Composable
-private fun AngleKey(modifier: Modifier, keyPress: KeyPress) {
+private fun AngleSwitch(modifier: Modifier, keyPress: KeyPress) {
   val userPrefsRepository = koinInject<UserPreferencesRepository>()
   val radianMode by
     remember(userPrefsRepository) { userPrefsRepository.calculatorPrefs.map { it.radianMode } }
-      .collectAsState(initial = null)
+      .collectAsState(initial = true)
   val scope = rememberCoroutineScope()
-  val name = stringResource(if (radianMode == false) Res.string.keyboard_degree else Res.string.keyboard_radian)
-  Surface(
-    modifier = modifier.keyHaptics(keyPress).semantics { contentDescription = name },
-    onClick = { radianMode?.let { scope.launch { userPrefsRepository.updateRadianMode(!it) } } },
-    shape = squashedKeyShape(keyPress.isPressed),
-    color = MaterialTheme.colorScheme.surfaceContainerHigh,
-    contentColor = MaterialTheme.colorScheme.onSurface,
-  ) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-      Text(
-        text = if (radianMode == false) ANGLE_LABEL_DEGREES else ANGLE_LABEL_RADIANS,
-        style = MaterialTheme.typography.titleLarge,
-        fontWeight = FontWeight.Medium,
-        maxLines = 1,
-      )
-    }
-  }
+  val name = stringResource(if (radianMode) Res.string.keyboard_radian else Res.string.keyboard_degree)
+  KeySwitch(
+    modifier = modifier.semantics { contentDescription = name },
+    keyPress = keyPress,
+    label = if (radianMode) ANGLE_LABEL_RADIANS else ANGLE_LABEL_DEGREES,
+    checked = radianMode,
+    onCheckedChange = { scope.launch { userPrefsRepository.updateRadianMode(it) } },
+  )
 }
 
+/** A key that stays on or off, like the inverse functions and the angle mode. */
 @Composable
-private fun InverseSwitch(
+private fun KeySwitch(
   modifier: Modifier,
   keyPress: KeyPress,
+  label: String,
   checked: Boolean,
   onCheckedChange: (Boolean) -> Unit,
 ) {
@@ -344,7 +337,7 @@ private fun InverseSwitch(
       horizontalArrangement = Arrangement.Center,
       verticalAlignment = Alignment.CenterVertically,
     ) {
-      Text(text = INVERSE_SWITCH.label, style = MaterialTheme.typography.titleLarge)
+      Text(text = label, style = MaterialTheme.typography.titleLarge, maxLines = 1)
       Spacer(Modifier.width(6.dp))
       Switch(checked = checked, onCheckedChange = null)
     }
@@ -410,7 +403,7 @@ private val TRIGONOMETRY_PAGE =
       trig(Token.Func.SINH, Token.Func.ARSINH),
       trig(Token.Func.TANH, Token.Func.ARTANH),
       INVERSE_SWITCH,
-      ANGLE_KEY,
+      ANGLE_SWITCH,
     ),
   )
 
@@ -872,8 +865,7 @@ private fun squashedKeyShape(isPressed: Boolean): RoundedCornerShape {
   return RoundedCornerShape(percent = corner)
 }
 
-private const val INVERSE_SWITCH_WIDTH = 1.45f
-private const val ANGLE_KEY_WIDTH = 0.9f
+private const val SWITCH_WIDTH = 1.45f
 private const val ANGLE_LABEL_DEGREES = "deg"
 private const val ANGLE_LABEL_RADIANS = "rad"
 private const val KEY_CORNER = 36
