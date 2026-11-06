@@ -219,13 +219,7 @@ private fun TextFieldState.tap(
   y: Float,
   focusRequester: FocusRequester,
 ): Boolean {
-  val boxIndex = layout.angleBoxAt(x, y)
-  val box = boxIndex?.let { index -> listOf(DEGREE_BOX, RADIAN_BOX).firstOrNull { text.startsWith(it, index) } }
-  val index = if (boxIndex == null) layout.indexAt(x, y) else null
-  if (boxIndex != null && box != null) {
-    switchAngleBox(boxIndex until boxIndex + box.length)
-    return true
-  }
+  val index = layout.indexAt(x, y)
   if (index != null) {
     focusRequester.requestFocus()
     edit { selection = TextRange(index) }

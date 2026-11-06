@@ -57,12 +57,6 @@ internal data class ExpressionLayout(
     carets.firstOrNull { it.index == index }
       ?: carets.minByOrNull { abs(it.index - index) }
 
-  /** Index in raw text of the angle box at [x], [y], `null` when there is none. */
-  fun angleBoxAt(x: Float, y: Float): Int? =
-    placeholders
-      .firstOrNull { it.angleBoxIndex != null && it.rect.inflate(it.rect.height * BOX_TAP_MARGIN).contains(Offset(x, y)) }
-      ?.angleBoxIndex
-
   /** Index in raw text for a tap at [x], [y]. */
   fun indexAt(x: Float, y: Float): Int? =
     carets
@@ -738,8 +732,6 @@ private const val FRACTION_BAR_POSITION = 0.3f
 private const val FRACTION_GAP = 0.1f
 private const val DERIVATIVE_SCALE = 0.7f
 private const val UNIT_GAP = 0.12f
-/** Angle box can be tapped a bit outside of it, it is small */
-private const val BOX_TAP_MARGIN = 0.3f
 // Angle box: label size compared to text, padding and height compared to label
 private const val ANGLE_BOX_TEXT_SCALE = 0.55f
 private const val ANGLE_BOX_PADDING = 0.35f

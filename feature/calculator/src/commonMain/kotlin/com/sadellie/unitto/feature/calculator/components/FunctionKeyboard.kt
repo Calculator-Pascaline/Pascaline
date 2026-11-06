@@ -140,27 +140,38 @@ import com.sadellie.unitto.core.designsystem.icons.symbols.Weight
 import com.sadellie.unitto.core.designsystem.icons.symbols.WeightFill
 import com.sadellie.unitto.core.designsystem.icons.symbols._123
 import com.sadellie.unitto.core.ui.KeyPress
-import com.sadellie.unitto.core.ui.animatePressedWeight
 import com.sadellie.unitto.core.ui.LocalKeyAnimation
+import com.sadellie.unitto.core.ui.animatePressedWeight
 import com.sadellie.unitto.core.ui.keyHaptics
 import com.sadellie.unitto.core.ui.rememberKeyPress
 import com.sadellie.unitto.core.ui.trackKeyPress
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import unitto.core.common.generated.resources.Res
 import unitto.core.common.generated.resources.calculator_units_and_constants
 import unitto.core.common.generated.resources.common_close
+import unitto.core.common.generated.resources.keyboard_degree
+import unitto.core.common.generated.resources.keyboard_radian
 
 /**
  * Function key: [label] is shown, [token] is inserted. [inverse] is used instead when inverse switch
  * is on: cos ==> acos.
  */
-private class FunctionKey(val label: String, val token: String, val inverse: FunctionKey? = null)
+private class FunctionKey(
+  val label: String,
+  val token: String,
+  val inverse: FunctionKey? = null,
+  val width: Float = 1f,
+)
 
 /** Not a key, switches trigonometric keys to their inverses. */
-private val INVERSE_SWITCH = FunctionKey("inv", "")
+private val INVERSE_SWITCH = FunctionKey("inv", "", width = INVERSE_SWITCH_WIDTH)
+
+/** Not a key that types, shows the angle mode and changes it. */
+private val ANGLE_KEY = FunctionKey("", "", width = ANGLE_KEY_WIDTH)
 
 /**
  * Function keys on pages that are swiped horizontally. Keys fill the page: fewer rows are taller,
@@ -207,10 +218,12 @@ internal fun FunctionRows(
               // Wider and squashed while pressed, like keys of the keypad. Pressed right away:
               // clicks on pages that are swiped come too late for that
               val keyPress = rememberKeyPress()
-              val growth by animatePressedWeight(keyPress.isPressed)
+              val growth by animatePressedWeight(keyPress.isPressed, key.width)
               val keyModifier = Modifier.weight(growth).fillMaxHeight().trackKeyPress(keyPress)
               if (key === INVERSE_SWITCH) {
                 InverseSwitch(keyModifier, keyPress, inverse) { inverse = it }
+              } else if (key === ANGLE_KEY) {
+                AngleKey(keyModifier, keyPress)
               } else {
                 FunctionKeyButton(
                   modifier = keyModifier,
@@ -276,6 +289,33 @@ private fun FunctionKeyButton(
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
       Text(
         text = key.label.withSuperscript(),
+        style = MaterialTheme.typography.titleLarge,
+        fontWeight = FontWeight.Medium,
+        maxLines = 1,
+      )
+    }
+  }
+}
+
+/** deg or rad, the angle mode of sin, cos and tan and of every tool. A tap changes it. */
+@Composable
+private fun AngleKey(modifier: Modifier, keyPress: KeyPress) {
+  val userPrefsRepository = koinInject<UserPreferencesRepository>()
+  val radianMode by
+    remember(userPrefsRepository) { userPrefsRepository.calculatorPrefs.map { it.radianMode } }
+      .collectAsState(initial = null)
+  val scope = rememberCoroutineScope()
+  val name = stringResource(if (radianMode == false) Res.string.keyboard_degree else Res.string.keyboard_radian)
+  Surface(
+    modifier = modifier.keyHaptics(keyPress).semantics { contentDescription = name },
+    onClick = { radianMode?.let { scope.launch { userPrefsRepository.updateRadianMode(!it) } } },
+    shape = squashedKeyShape(keyPress.isPressed),
+    color = MaterialTheme.colorScheme.surfaceContainerHigh,
+    contentColor = MaterialTheme.colorScheme.onSurface,
+  ) {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+      Text(
+        text = if (radianMode == false) ANGLE_LABEL_DEGREES else ANGLE_LABEL_RADIANS,
         style = MaterialTheme.typography.titleLarge,
         fontWeight = FontWeight.Medium,
         maxLines = 1,
@@ -370,6 +410,7 @@ private val TRIGONOMETRY_PAGE =
       trig(Token.Func.SINH, Token.Func.ARSINH),
       trig(Token.Func.TANH, Token.Func.ARTANH),
       INVERSE_SWITCH,
+      ANGLE_KEY,
     ),
   )
 
@@ -831,5 +872,9 @@ private fun squashedKeyShape(isPressed: Boolean): RoundedCornerShape {
   return RoundedCornerShape(percent = corner)
 }
 
+private const val INVERSE_SWITCH_WIDTH = 1.45f
+private const val ANGLE_KEY_WIDTH = 0.9f
+private const val ANGLE_LABEL_DEGREES = "deg"
+private const val ANGLE_LABEL_RADIANS = "rad"
 private const val KEY_CORNER = 36
 private const val KEY_PRESSED_CORNER = 24

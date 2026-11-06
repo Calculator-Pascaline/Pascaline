@@ -29,7 +29,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 /**
- * The expression editor (typing, brackets, slots, angle boxes, deleting) step by step, compared
+ * The expression editor (typing, brackets, slots, deleting) step by step, compared
  * with a recording (editor_recording.txt): any change in what the keys do shows here. The keys are
  * pressed in random order, always the same (fixed seed), from random cursor positions.
  *
@@ -44,7 +44,7 @@ class EditorCharacterizationTest {
       Token.Layout.POWER, Token.Layout.EXP, Token.Layout.POWER_10, Token.Layout.LOG_10,
       Token.Layout.SQRT, Token.Layout.FRACTION, Token.Layout.INTEGRAL, Token.Layout.INDEFINITE_INTEGRAL,
       Token.Layout.SUM, Token.Layout.PRODUCT, Token.Layout.DERIVATIVE,
-      Token.Func.LN_BRACKET, Token.Func.ABS_BRACKET,
+      Token.Func.SIN_BRACKET, Token.Func.COS_BRACKET, Token.Func.LN_BRACKET, Token.Func.ABS_BRACKET,
       Token.Const.PI, Token.Const.E, Token.Const.I, Token.Const.INFINITY,
       Token.Calculus.X, Token.Calculus.N, Token.Calculus.EVALUATED_AT,
       "${Token.Units.PREFIX}km", "${Token.Units.PREFIX}m", "${Token.Units.PREFIX}s",
@@ -70,17 +70,9 @@ class EditorCharacterizationTest {
         state.addBracket()
         "bracket"
       }
-      3 -> {
-        val radians = random.nextBoolean()
-        state.addFunctionWithAngleBox(Token.Func.SIN, radians)
-        "sin $radians"
-      }
-      4 -> "skip ${state.skipAngleBox()}"
-      5 -> "delete function ${state.deleteFunctionWithEmptyAngleBox()}"
       else -> {
         val key = keys[random.nextInt(keys.size)]
         state.addTokens(key)
-        state.chooseAngleUnit(key)
         "type $key"
       }
     }
@@ -102,7 +94,7 @@ class EditorCharacterizationTest {
 
   /**
    * What the helpers say at every cursor position: in a series (s), in a calculus bound (b),
-   * fixed cursor, token length ahead, angle box; and how slots are drawn.
+   * fixed cursor and token length ahead; and how slots are drawn.
    */
   private fun helpers(text: String): String {
     val positions = 0..text.length
@@ -110,11 +102,10 @@ class EditorCharacterizationTest {
     val bound = positions.joinToString("") { if (text.isInCalculusBound(it)) "1" else "0" }
     val fixed = positions.joinToString(",") { text.fixCursor(it).toString() }
     val lengths = positions.joinToString(",") { text.tokenLengthAhead(it).toString() }
-    val angle = positions.joinToString(",") { text.angleBoxAt(it)?.toString() ?: "-" }
     val rendering = text.renderSlots(Color.Gray)
     val replacements = rendering.replacements.toSortedMap().entries.joinToString(",") { "${it.key}=${it.value.code}" }
     val styles = rendering.styles.joinToString(",") { "${it.start}-${it.end}:${it.item}" }
-    return "  s=$series b=$bound fix=$fixed len=$lengths angle=$angle draw=$replacements styles=$styles"
+    return "  s=$series b=$bound fix=$fixed len=$lengths draw=$replacements styles=$styles"
   }
 
   // Layout characters as letters, for a readable recording
