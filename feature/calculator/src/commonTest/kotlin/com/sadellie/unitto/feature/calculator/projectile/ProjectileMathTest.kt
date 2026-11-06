@@ -22,6 +22,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class ProjectileMathTest {
   private fun flight(speed: Double, angle: Double, height: Double = 0.0, gravity: Double = 9.81) =
@@ -41,8 +42,8 @@ class ProjectileMathTest {
   fun fortyFiveDegreesGoesFurthestFromTheGround() {
     val best = flight(30.0, 45.0).range
     assertEquals(best, 30.0 * 30.0 / 9.81, 1e-9)
-    assert(flight(30.0, 44.0).range < best)
-    assert(flight(30.0, 46.0).range < best)
+    assertTrue(flight(30.0, 44.0).range < best)
+    assertTrue(flight(30.0, 46.0).range < best)
   }
 
   @Test
