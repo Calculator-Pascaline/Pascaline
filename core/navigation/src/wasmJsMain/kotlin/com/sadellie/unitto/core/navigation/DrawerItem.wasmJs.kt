@@ -35,6 +35,7 @@ actual val mainDrawerItems: List<DrawerItem> by lazy {
     PricesDrawerItem,
     BodyMassDrawerItem,
     PlaceDrawerItem,
+    ProjectileDrawerItem,
     DateCalculatorDrawerItem,
     TimeZonesDrawerItem,
   )

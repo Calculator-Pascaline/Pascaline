@@ -48,6 +48,7 @@ import com.sadellie.unitto.core.navigation.FunctionsStartRoute
 import com.sadellie.unitto.core.navigation.InferenceStartRoute
 import com.sadellie.unitto.core.navigation.PricesStartRoute
 import com.sadellie.unitto.core.navigation.PlaceStartRoute
+import com.sadellie.unitto.core.navigation.ProjectileStartRoute
 import com.sadellie.unitto.core.navigation.ProbabilityStartRoute
 import com.sadellie.unitto.core.navigation.ProgrammerStartRoute
 import com.sadellie.unitto.core.navigation.RegressionStartRoute
@@ -185,6 +186,7 @@ private val navBackStackConfig = SavedStateConfiguration {
       this.subclass(PricesStartRoute::class, PricesStartRoute.serializer())
       this.subclass(BodyMassStartRoute::class, BodyMassStartRoute.serializer())
       this.subclass(PlaceStartRoute::class, PlaceStartRoute.serializer())
+      this.subclass(ProjectileStartRoute::class, ProjectileStartRoute.serializer())
       this.subclass(DateCalculatorStartRoute::class, DateCalculatorStartRoute.serializer())
       this.subclass(TimeZoneStartRoute::class, TimeZoneStartRoute.serializer())
       this.subclass(ConverterStartRoute::class, ConverterStartRoute.serializer())

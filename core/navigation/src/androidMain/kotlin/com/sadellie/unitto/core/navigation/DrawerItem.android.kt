@@ -59,6 +59,7 @@ actual val mainDrawerItems: List<DrawerItem> by lazy {
       TimeZonesDrawerItem,
       BodyMassDrawerItem,
       PlaceDrawerItem,
+      ProjectileDrawerItem,
     )
 
   if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
@@ -141,6 +142,7 @@ private fun generateShortcut(drawerItem: DrawerItem): Shortcut? {
     FinanceDrawerItem,
     ProgrammerDrawerItem,
     PlaceDrawerItem,
+    ProjectileDrawerItem,
     SettingsDrawerItem -> null
   }
 }
