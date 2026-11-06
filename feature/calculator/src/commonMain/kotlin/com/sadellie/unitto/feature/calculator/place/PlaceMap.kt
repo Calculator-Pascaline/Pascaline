@@ -164,7 +164,9 @@ internal fun WorldMap(
       color = MaterialTheme.colorScheme.onSurface,
       shadow = Shadow(MaterialTheme.colorScheme.surface, blurRadius = HALO),
     )
-  val bigLabelStyle = MaterialTheme.typography.labelLarge.merge(labelStyle)
+  val typography = MaterialTheme.typography
+  val labelStyles =
+    listOf(typography.titleMedium, typography.labelLarge, typography.labelMedium).map { labelStyle.merge(it) } + labelStyle
   val dotColor = MaterialTheme.colorScheme.onSurfaceVariant
   Box(modifier = modifier.background(sea)) {
     Canvas(
@@ -210,7 +212,7 @@ internal fun WorldMap(
           left + copy * world + ((p.longitude + HALF_TURN) / FULL_TURN * world).toFloat(),
           top + ((MAX_LATITUDE - p.latitude) / (2 * MAX_LATITUDE) * world / 2).toFloat(),
         )
-      val labels = CityLabels(measurer, labelStyle, bigLabelStyle, dotColor, language)
+      val labels = CityLabels(measurer, labelStyles, dotColor, language)
       val pins = (-1..1).map { screen(point, it) }
       val south = MAX_LATITUDE - (size.height - top) / (world / 2) * (2 * MAX_LATITUDE)
       val north = MAX_LATITUDE + top / (world / 2) * (2 * MAX_LATITUDE)
@@ -230,8 +232,7 @@ internal fun WorldMap(
 /** Places names without overlaps, the biggest cities first, and returns those it named. */
 private class CityLabels(
   private val measurer: TextMeasurer,
-  private val style: TextStyle,
-  private val bigStyle: TextStyle,
+  private val styles: List<TextStyle>,
   private val dotColor: Color,
   private val language: String,
 ) {
@@ -248,7 +249,7 @@ private class CityLabels(
       val labeled = mutableListOf<Pair<City, Offset>>()
       val bounds = Rect(Offset.Zero, size)
       val gap = LABEL_GAP.dp.toPx()
-      val dot = DOT_RADIUS.dp.toPx()
+      val dotRadius = DOT_RADIUS.dp.toPx()
       val pinRadius = (PIN_RADIUS + 2).dp.toPx()
       // The file is sorted by population, so big cities win the space
       cities
@@ -257,7 +258,9 @@ private class CityLabels(
         .mapNotNull { city -> positions(city).firstOrNull { bounds.contains(it) }?.let { city to it } }
         .takeWhile { labeled.size < MAX_LABELS }
         .forEach { (city, at) ->
-          val layout = measurer.measure(city.name(language), if (city.population >= BIG_CITY) bigStyle else style)
+          val size = citySize(city.population)
+          val layout = measurer.measure(city.name(language), styles[size])
+          val dot = dotRadius * DOT_SCALES[size]
           // A label starts after the pin when the pin sits on its city
           val start = if (pins.any { (it - at).getDistance() < pinRadius }) pinRadius else dot
           val box =
@@ -346,6 +349,12 @@ private const val MAX_LABELS = 250
 private const val LABEL_CACHE = 400
 /** Natural Earth's zooms are for 256 px tiles, labels can come a bit earlier on a phone. */
 private const val LABEL_EARLIER = 1.5f
-private const val BIG_CITY = 5_000_000L
+
+/** Where [population] is in [CITY_SIZES], so 0 for the biggest cities. Labels and dots follow it. */
+internal fun citySize(population: Long): Int =
+  CITY_SIZES.indexOfFirst { population >= it }.takeIf { it >= 0 } ?: CITY_SIZES.size
+
+private val CITY_SIZES = listOf(5_000_000L, 1_000_000L, 200_000L)
+private val DOT_SCALES = listOf(1.5f, 1.25f, 1.1f, 1f)
 private const val HALO = 6f
 private const val TOUCH_RADIUS = 16

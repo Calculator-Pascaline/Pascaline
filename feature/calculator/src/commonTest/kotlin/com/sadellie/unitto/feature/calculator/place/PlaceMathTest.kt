@@ -381,6 +381,14 @@ class PlaceMathTest {
   }
 
   @Test
+  fun citySize_growsWithPopulation() {
+    assertEquals(0, citySize(9_000_000))
+    assertEquals(1, citySize(5_000_000 - 1))
+    assertEquals(2, citySize(200_000))
+    assertEquals(3, citySize(15_000))
+  }
+
+  @Test
   fun defaultCity_followsTheLanguage() {
     fun city(name: String) = City(GeoPoint(0.0, 0.0), 1f, 1, "", listOf(name))
     val cities = listOf(city("Berlin"), city("London"), city("Paris"))

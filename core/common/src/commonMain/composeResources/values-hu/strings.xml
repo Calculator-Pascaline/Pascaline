@@ -1594,10 +1594,6 @@
     <string name="place_tab_elevation">Magasság</string>
     <string name="place_panels_year">Napelemek, egész évben</string>
     <string name="place_panels_day">Napelemek, ezen a napon</string>
-    <string name="place_panels_help">Hogyan számoljuk ezt?</string>
-    <string name="place_panels_help_angle">A szöget a vízszintes talajtól mérjük: 0° vízszintes, 90° függőleges. A Dél vagy Észak azt mutatja, merre néz a panel eleje.</string>
-    <string name="place_panels_help_method">Mindkét érték ugyanabból a számításból jön. Az alkalmazás követi a Napot ezen a helyen, kiszámolja, mennyi napfényt fogna fel egy rögzített panel tiszta égbolt mellett, és azt az irányt és szöget tartja meg, amely a legtöbbet fogja fel.</string>
-    <string name="place_panels_help_values">Az egész év az év minden ötödik napját nézi, egy helyben maradó panelhez. A nap csak a választott dátumot nézi, ezért a szög nagyobb, amikor télen alacsonyan jár a Nap. A kWh/m² az a napfény, amely aznap egy négyzetméter panelt ér.</string>
     <string name="place_south">Dél</string>
     <string name="place_north">Észak</string>
     <string name="place_continue">Tovább</string>

@@ -22,22 +22,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -47,8 +38,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.sadellie.unitto.core.designsystem.icons.symbols.Help
-import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
 import kotlin.time.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
@@ -56,7 +45,6 @@ import kotlinx.datetime.plus
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import unitto.core.common.generated.resources.Res
-import unitto.core.common.generated.resources.common_ok
 import unitto.core.common.generated.resources.place_astronomical_twilight
 import unitto.core.common.generated.resources.place_at_sea
 import unitto.core.common.generated.resources.place_blue_hour
@@ -124,10 +112,6 @@ import unitto.core.common.generated.resources.place_no_tides
 import unitto.core.common.generated.resources.place_none_today
 import unitto.core.common.generated.resources.place_north
 import unitto.core.common.generated.resources.place_panels_day
-import unitto.core.common.generated.resources.place_panels_help
-import unitto.core.common.generated.resources.place_panels_help_angle
-import unitto.core.common.generated.resources.place_panels_help_method
-import unitto.core.common.generated.resources.place_panels_help_values
 import unitto.core.common.generated.resources.place_panels_year
 import unitto.core.common.generated.resources.place_rain_in
 import unitto.core.common.generated.resources.place_season_december
@@ -238,33 +222,6 @@ private fun SolarPanels(report: PlaceReport, units: PlaceUnits) {
       report.yearPanel?.let { stringResource(Res.string.place_panels_year) to aim(it) },
       report.dayPanel?.let { stringResource(Res.string.place_panels_day) to "${aim(it)} · ${units.number(it.energy, 0)} kWh/m²" },
     )
-  )
-  var showsHelp by remember { mutableStateOf(false) }
-  TextButton(onClick = { showsHelp = true }) {
-    Icon(Symbols.Help, null, modifier = Modifier.size(18.dp))
-    Spacer(Modifier.width(8.dp))
-    Text(stringResource(Res.string.place_panels_help))
-  }
-  if (showsHelp) SolarPanelsHelp { showsHelp = false }
-}
-
-/** What the angles mean and where both of them come from. */
-@Composable
-private fun SolarPanelsHelp(close: () -> Unit) {
-  AlertDialog(
-    onDismissRequest = close,
-    title = { Text(stringResource(Res.string.place_panels_help)) },
-    text = {
-      Column(
-        modifier = Modifier.verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-      ) {
-        Text(stringResource(Res.string.place_panels_help_angle))
-        Text(stringResource(Res.string.place_panels_help_method))
-        Text(stringResource(Res.string.place_panels_help_values))
-      }
-    },
-    confirmButton = { TextButton(onClick = close) { Text(stringResource(Res.string.common_ok)) } },
   )
 }
 

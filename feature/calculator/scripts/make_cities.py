@@ -1,6 +1,7 @@
 """Adds the cities of GeoNames (CC BY 4.0) to cities.tsv of the Place map.
 
-Natural Earth's cities stay, with their names in every language. GeoNames adds the towns it doesn't
+Natural Earth's cities stay, with their names in every language: run it on the file with only
+those (git show c602d272:<path of cities.tsv>). GeoNames adds the towns it doesn't
 have, under one name, for the search and to show when the map is zoomed in far enough.
 
     pip install fonttools
@@ -17,9 +18,9 @@ LANGUAGES = 13
 # Same name this close is the same city
 SAME_CITY_KM = 25
 CELL_DEGREES = 0.5
-# Zoom of the map where towns appear, by population
-ZOOMS = ((1_000_000, 4.5), (300_000, 5.5), (100_000, 6.5), (50_000, 7.5), (30_000, 8.0))
-SMALL_TOWN_ZOOM = 8.5
+# Zoom of the map where places appear, by population: small towns wait until it is zoomed in
+ZOOMS = ((1_000_000, 4.5), (300_000, 6.5), (100_000, 8.5), (50_000, 10.0), (30_000, 11.0))
+SMALL_TOWN_ZOOM = 12.0
 
 
 def plain(name):
@@ -46,7 +47,6 @@ def main(source):
     lines = open(FILE, encoding='utf-8').read().split('\n')
     header = lines[0] if lines[0].startswith('#') else None
     rows = [l.split('\t') for l in lines if l and not l.startswith('#')]
-    rows = [r for r in rows if len(r) > 6 or r[2] not in {str(z) for _, z in ZOOMS} | {str(SMALL_TOWN_ZOOM)}]
     known = {}
     for r in rows:
         known.setdefault(cell(float(r[0]), float(r[1])), []).append(((float(r[0]), float(r[1])), {plain(n) for n in r[5:] if n}))
@@ -63,10 +63,13 @@ def main(source):
         shown = name if all(ord(ch) < 0x80 or ord(ch) in fonts for ch in name) else ascii_name
         if not shown or '\t' in shown:
             continue
-        zoom = next((z for size, z in ZOOMS if population >= size), SMALL_TOWN_ZOOM)
-        rows.append([f'{lat:.4f}', f'{lon:.4f}', str(zoom), str(population), zone, shown])
+        rows.append([f'{lat:.4f}', f'{lon:.4f}', '0', str(population), zone, shown])
         known.setdefault(here, []).append(((lat, lon), wanted))
         added += 1
+    for r in rows:
+        population = int(r[3] or 0)
+        zoom = next((z for size, z in ZOOMS if population >= size), SMALL_TOWN_ZOOM)
+        r[2] = str(max(float(r[2] or 0), zoom))
     rows.sort(key=lambda r: -int(r[3] or 0))
     with open(FILE, 'w', encoding='utf-8', newline='\n') as f:
         if header:

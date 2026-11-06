@@ -1594,10 +1594,6 @@
     <string name="place_tab_elevation">Altitude</string>
     <string name="place_panels_year">Panneaux solaires, toute l’année</string>
     <string name="place_panels_day">Panneaux solaires, ce jour-là</string>
-    <string name="place_panels_help">Comment est-ce calculé ?</string>
-    <string name="place_panels_help_angle">L’angle se mesure depuis le sol à plat : 0° est à plat et 90° est à la verticale. Sud ou Nord indique où regarde la face du panneau.</string>
-    <string name="place_panels_help_method">Les deux valeurs viennent du même calcul. L’application suit le Soleil dans le ciel de ce lieu, calcule la lumière qu’un panneau fixe recevrait par ciel clair et garde la direction et l’angle qui en reçoivent le plus.</string>
-    <string name="place_panels_help_values">Toute l’année regarde un jour sur cinq, pour un panneau qui reste en place. Ce jour-là regarde seulement la date choisie, l’angle est donc plus grand quand le Soleil est bas en hiver. kWh/m² est la lumière qui atteint un mètre carré de panneau ce jour-là.</string>
     <string name="place_south">Sud</string>
     <string name="place_north">Nord</string>
     <string name="place_continue">Continuer</string>

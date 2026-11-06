@@ -1594,10 +1594,6 @@
     <string name="place_tab_elevation">Ketinggian</string>
     <string name="place_panels_year">Panel surya, sepanjang tahun</string>
     <string name="place_panels_day">Panel surya, pada hari ini</string>
-    <string name="place_panels_help">Bagaimana ini dihitung?</string>
-    <string name="place_panels_help_angle">Sudut diukur dari tanah datar: 0° rata dan 90° tegak. Selatan atau Utara adalah arah hadap permukaan panel.</string>
-    <string name="place_panels_help_method">Kedua nilai memakai perhitungan yang sama. Aplikasi mengikuti Matahari di langit tempat ini, menghitung berapa banyak sinar matahari yang ditangkap panel tetap saat langit cerah, lalu memilih arah dan sudut yang menangkap paling banyak.</string>
-    <string name="place_panels_help_values">Sepanjang tahun melihat setiap hari kelima dalam setahun, untuk panel yang tetap di tempat. Hari ini hanya melihat tanggal yang dipilih, sehingga sudutnya lebih curam saat Matahari rendah di musim dingin. kWh/m² adalah sinar matahari yang mencapai satu meter persegi panel pada hari itu.</string>
     <string name="place_south">Selatan</string>
     <string name="place_north">Utara</string>
     <string name="place_continue">Lanjutkan</string>

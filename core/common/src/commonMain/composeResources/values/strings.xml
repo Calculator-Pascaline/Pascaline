@@ -1881,10 +1881,6 @@
     <string name="place_tab_elevation">Elevation</string>
     <string name="place_panels_year">Solar panels, all year</string>
     <string name="place_panels_day">Solar panels, this day</string>
-    <string name="place_panels_help">How is this worked out?</string>
-    <string name="place_panels_help_angle">The angle is measured from flat ground: 0° lies flat and 90° stands upright. South or North is the way the face of the panel points.</string>
-    <string name="place_panels_help_method">Both values use the same calculation. The app follows the Sun across the sky of this place, works out how much clear sky sunlight a fixed panel would catch, and keeps the direction and angle that catch the most.</string>
-    <string name="place_panels_help_values">All year looks at every fifth day of the year, for a panel that stays in place. This day looks at the chosen date only, so its angle is steeper when the Sun is low in winter. kWh/m² is the sunlight reaching one square meter of panel on that day.</string>
     <string name="place_south">South</string>
     <string name="place_north">North</string>
     <string name="place_continue">Continue</string>

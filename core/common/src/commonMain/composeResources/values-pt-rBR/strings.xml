@@ -1594,10 +1594,6 @@
     <string name="place_tab_elevation">Altitude</string>
     <string name="place_panels_year">Painéis solares, o ano todo</string>
     <string name="place_panels_day">Painéis solares, neste dia</string>
-    <string name="place_panels_help">Como isso é calculado?</string>
-    <string name="place_panels_help_angle">O ângulo é medido a partir do chão plano: 0° fica deitado e 90° fica em pé. Sul ou Norte é para onde a face do painel aponta.</string>
-    <string name="place_panels_help_method">Os dois valores usam o mesmo cálculo. O app acompanha o Sol no céu deste lugar, calcula quanta luz solar um painel fixo captaria com céu limpo e fica com a direção e o ângulo que captam mais.</string>
-    <string name="place_panels_help_values">O ano todo olha um dia a cada cinco, para um painel que fica no lugar. Neste dia olha só a data escolhida, então o ângulo é maior quando o Sol está baixo no inverno. kWh/m² é a luz solar que chega a um metro quadrado de painel nesse dia.</string>
     <string name="place_south">Sul</string>
     <string name="place_north">Norte</string>
     <string name="place_continue">Continuar</string>

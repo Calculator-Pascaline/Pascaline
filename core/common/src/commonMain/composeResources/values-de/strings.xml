@@ -1594,10 +1594,6 @@
     <string name="place_tab_elevation">Höhe</string>
     <string name="place_panels_year">Solarmodule, ganzjährig</string>
     <string name="place_panels_day">Solarmodule, an diesem Tag</string>
-    <string name="place_panels_help">Wie wird das berechnet?</string>
-    <string name="place_panels_help_angle">Der Winkel wird vom flachen Boden aus gemessen: 0° liegt flach, 90° steht senkrecht. Süden oder Norden gibt an, wohin die Vorderseite des Moduls zeigt.</string>
-    <string name="place_panels_help_method">Beide Werte nutzen dieselbe Berechnung. Die App verfolgt die Sonne über den Himmel dieses Ortes, berechnet, wie viel Sonnenlicht ein festes Modul bei klarem Himmel auffängt, und behält die Richtung und den Winkel mit dem meisten Licht.</string>
-    <string name="place_panels_help_values">Ganzjährig betrachtet jeden fünften Tag des Jahres, für ein Modul, das an seinem Platz bleibt. An diesem Tag betrachtet nur das gewählte Datum, daher ist der Winkel steiler, wenn die Sonne im Winter tief steht. kWh/m² ist das Sonnenlicht, das an diesem Tag einen Quadratmeter Modul erreicht.</string>
     <string name="place_south">Süden</string>
     <string name="place_north">Norden</string>
     <string name="place_continue">Weiter</string>

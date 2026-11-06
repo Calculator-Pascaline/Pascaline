@@ -1594,10 +1594,6 @@
     <string name="place_tab_elevation">Yükseklik</string>
     <string name="place_panels_year">Güneş panelleri, tüm yıl</string>
     <string name="place_panels_day">Güneş panelleri, bu gün</string>
-    <string name="place_panels_help">Bu nasıl hesaplanıyor?</string>
-    <string name="place_panels_help_angle">Açı düz zeminden ölçülür: 0° yatay, 90° dikey demektir. Güney veya Kuzey, panelin ön yüzünün baktığı yöndür.</string>
-    <string name="place_panels_help_method">İki değer de aynı hesaptan gelir. Uygulama Güneş’i bu yerin gökyüzünde izler, sabit bir panelin açık havada ne kadar ışık alacağını hesaplar ve en çok ışık alan yön ile açıyı seçer.</string>
-    <string name="place_panels_help_values">Tüm yıl, yerinde duran bir panel için yılın her beşinci gününe bakar. Bu gün yalnızca seçilen tarihe bakar, bu yüzden Güneş kışın alçaktayken açı daha diktir. kWh/m², o gün panelin bir metrekaresine ulaşan güneş ışığıdır.</string>
     <string name="place_south">Güney</string>
     <string name="place_north">Kuzey</string>
     <string name="place_continue">Devam et</string>

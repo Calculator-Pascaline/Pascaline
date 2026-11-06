@@ -1594,10 +1594,6 @@
     <string name="place_tab_elevation">海拔</string>
     <string name="place_panels_year">太阳能板，全年</string>
     <string name="place_panels_day">太阳能板，当天</string>
-    <string name="place_panels_help">这是怎么算出来的？</string>
-    <string name="place_panels_help_angle">角度从水平地面量起：0° 是平放，90° 是竖直。南或北是太阳能板正面朝向的方向。</string>
-    <string name="place_panels_help_method">两个数值来自同一种计算。应用跟踪太阳在此地天空中的路径，算出固定的太阳能板在晴天能接收多少阳光，并保留接收阳光最多的方向和角度。</string>
-    <string name="place_panels_help_values">全年取一年中每隔五天的一天，适用于固定不动的太阳能板。当天只看所选日期，因此冬天太阳较低时角度更大。kWh/m² 是当天照到一平方米太阳能板上的阳光。</string>
     <string name="place_south">南</string>
     <string name="place_north">北</string>
     <string name="place_continue">继续</string>

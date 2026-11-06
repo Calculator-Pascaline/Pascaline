@@ -1594,10 +1594,6 @@
     <string name="place_tab_elevation">ऊँचाई</string>
     <string name="place_panels_year">सौर पैनल, पूरे साल</string>
     <string name="place_panels_day">सौर पैनल, इस दिन</string>
-    <string name="place_panels_help">इसकी गणना कैसे होती है?</string>
-    <string name="place_panels_help_angle">कोण समतल ज़मीन से मापा जाता है: 0° सपाट है और 90° सीधा खड़ा है। दक्षिण या उत्तर बताता है कि पैनल का मुख किस ओर है।</string>
-    <string name="place_panels_help_method">दोनों मान एक ही गणना से आते हैं। ऐप इस स्थान के आकाश में सूर्य का पथ देखता है, गणना करता है कि साफ़ आकाश में एक स्थिर पैनल कितनी धूप पाएगा, और सबसे अधिक धूप देने वाली दिशा और कोण चुनता है।</string>
-    <string name="place_panels_help_values">पूरे साल का मान हर पाँचवें दिन को देखता है, उस पैनल के लिए जो अपनी जगह रहता है। इस दिन का मान केवल चुनी गई तारीख को देखता है, इसलिए सर्दियों में सूर्य नीचा होने पर कोण अधिक होता है। kWh/m² उस दिन पैनल के एक वर्ग मीटर तक पहुँचने वाली धूप है।</string>
     <string name="place_south">दक्षिण</string>
     <string name="place_north">उत्तर</string>
     <string name="place_continue">जारी रखें</string>

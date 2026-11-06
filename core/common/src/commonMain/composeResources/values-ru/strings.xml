@@ -1594,10 +1594,6 @@
     <string name="place_tab_elevation">Высота</string>
     <string name="place_panels_year">Солнечные панели, весь год</string>
     <string name="place_panels_day">Солнечные панели, в этот день</string>
-    <string name="place_panels_help">Как это рассчитывается?</string>
-    <string name="place_panels_help_angle">Угол отсчитывается от ровной земли: 0° — панель лежит, 90° — стоит вертикально. Юг или Север — куда смотрит лицевая сторона панели.</string>
-    <string name="place_panels_help_method">Оба значения получены одним расчётом. Приложение следит за Солнцем на небе этого места, вычисляет, сколько света поймает неподвижная панель при ясном небе, и выбирает направление и угол с наибольшим количеством света.</string>
-    <string name="place_panels_help_values">Весь год — это каждый пятый день года, для панели, которая стоит на месте. Этот день — только выбранная дата, поэтому угол больше, когда зимой Солнце стоит низко. кВт·ч/м² — это свет, попадающий на один квадратный метр панели за этот день.</string>
     <string name="place_south">Юг</string>
     <string name="place_north">Север</string>
     <string name="place_continue">Продолжить</string>

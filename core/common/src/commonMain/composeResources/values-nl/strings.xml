@@ -1594,10 +1594,6 @@
     <string name="place_tab_elevation">Hoogte</string>
     <string name="place_panels_year">Zonnepanelen, heel het jaar</string>
     <string name="place_panels_day">Zonnepanelen, deze dag</string>
-    <string name="place_panels_help">Hoe wordt dit berekend?</string>
-    <string name="place_panels_help_angle">De hoek wordt gemeten vanaf de vlakke grond: 0° ligt plat en 90° staat rechtop. Zuid of Noord is de kant waar de voorkant van het paneel naartoe wijst.</string>
-    <string name="place_panels_help_method">Beide waarden komen uit dezelfde berekening. De app volgt de zon langs de hemel van deze plek, berekent hoeveel zonlicht een vast paneel bij heldere hemel opvangt en houdt de richting en hoek met het meeste licht.</string>
-    <string name="place_panels_help_values">Heel het jaar kijkt naar elke vijfde dag van het jaar, voor een paneel dat blijft staan. Deze dag kijkt alleen naar de gekozen datum, dus de hoek is steiler als de zon in de winter laag staat. kWh/m² is het zonlicht dat die dag één vierkante meter paneel bereikt.</string>
     <string name="place_south">Zuid</string>
     <string name="place_north">Noord</string>
     <string name="place_continue">Doorgaan</string>
