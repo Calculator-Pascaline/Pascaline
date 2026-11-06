@@ -19,8 +19,14 @@
 package com.sadellie.unitto.feature.calculator.functions
 
 import androidx.compose.ui.geometry.Offset
+import kotlin.math.abs
+import kotlin.math.cbrt
+import kotlin.math.cos
+import kotlin.math.ln
+import kotlin.math.sin
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 private val window = GraphWindow(xMin = -10.0, xMax = 10.0, yMin = -5.0, yMax = 5.0)
 private val center = Offset(500f, 1000f)
@@ -49,4 +55,28 @@ class GraphWindowTest {
   @Test
   fun pan() =
     assertWindow(GraphWindow(-12.0, 8.0, -4.0, 6.0), window.transformed(center, Offset(100f, 200f), 1f, 1f, 1000, 2000))
+
+  @Test
+  fun slopeOfCurves() {
+    assertEquals(6.0, slopeAt({ it * it }, 3.0), 1e-6)
+    assertEquals(1.0, slopeAt(::sin, 0.0), 1e-6)
+    assertEquals(0.0, slopeAt(::cos, 0.0))
+    assertEquals(1000.0, slopeAt({ 1000 * it }, 1e6), 1e-3)
+  }
+
+  @Test
+  fun noSlopeWhereThereIsNoDerivative() {
+    assertTrue(slopeAt(::abs, 0.0).isNaN())
+    assertTrue(slopeAt({ 1 / it }, 0.0).isNaN())
+    assertTrue(slopeAt(::ln, -1.0).isNaN())
+    assertTrue(slopeAt({ if (it < 1) 0.0 else 1.0 }, 1.0).isNaN())
+    assertTrue(slopeAt(::cbrt, 0.0).isNaN())
+  }
+
+  @Test
+  fun labelOfAPoint() {
+    val format = { value: Double -> value.toString() }
+    assertEquals("f(1.0) = 1.0\nf'(1.0) = 2.0\ny = 2.0x − 1.0", traceLabel("f", 1.0, 1.0, 2.0, format))
+    assertEquals("f(0.0) = 0.0", traceLabel("f", 0.0, 0.0, Double.NaN, format))
+  }
 }

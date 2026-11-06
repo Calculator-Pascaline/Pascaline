@@ -26,39 +26,38 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.SmallFloatingActionButton
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -67,6 +66,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -82,7 +82,7 @@ import com.sadellie.unitto.core.common.collectAsStateWithLifecycleKMP
 import com.sadellie.unitto.core.common.toFormattedString
 import com.sadellie.unitto.core.designsystem.icons.symbols.Add
 import com.sadellie.unitto.core.designsystem.icons.symbols.CenterFocusWeak
-import com.sadellie.unitto.core.designsystem.icons.symbols.Delete
+import com.sadellie.unitto.core.designsystem.icons.symbols.Close
 import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
 import com.sadellie.unitto.core.ui.DrawerButton
 import com.sadellie.unitto.core.ui.EmptyScreen
@@ -99,7 +99,6 @@ import unitto.core.common.generated.resources.Res
 import unitto.core.common.generated.resources.functions_add
 import unitto.core.common.generated.resources.functions_delete
 import unitto.core.common.generated.resources.functions_empty
-import unitto.core.common.generated.resources.functions_expressions
 import unitto.core.common.generated.resources.functions_graph
 import unitto.core.common.generated.resources.functions_reset_view
 import unitto.core.common.generated.resources.functions_show
@@ -118,14 +117,17 @@ internal fun FunctionsRoute(openDrawer: () -> Unit) {
   }
 }
 
-/** Like the Functions app of NumWorks: expressions, their graph and a table of values. */
+/**
+ * One screen: the graph, or the table of values, with the functions under it. The graph follows
+ * what is typed. On wide screens the functions are at the side.
+ */
 @Composable
 private fun FunctionsScreen(
   uiState: FunctionsUIState.Ready,
   openDrawer: () -> Unit,
   viewModel: FunctionsViewModel,
 ) {
-  var tab by rememberSaveable { mutableIntStateOf(0) }
+  var showsTable by rememberSaveable { mutableStateOf(false) }
   var window by remember { mutableStateOf<GraphWindow?>(null) }
   val undefined = stringResource(Res.string.functions_undefined)
   val formatValue = { value: Double ->
@@ -150,116 +152,144 @@ private fun FunctionsScreen(
   ScaffoldWithTopBar(
     title = { Text(stringResource(Res.string.functions_title)) },
     navigationIcon = { DrawerButton(onClick = openDrawer) },
+    actions = {
+      TextButton(onClick = { showsTable = !showsTable }) {
+        Text(stringResource(if (showsTable) Res.string.functions_graph else Res.string.functions_table))
+      }
+    },
     colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
   ) { paddingValues ->
-    Column(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
-      PrimaryTabRow(selectedTabIndex = tab, containerColor = MaterialTheme.colorScheme.surface) {
-        listOf(Res.string.functions_expressions, Res.string.functions_graph, Res.string.functions_table)
-          .forEachIndexed { index, title ->
-            Tab(
-              selected = tab == index,
-              onClick = {
-                tab = index
-                viewModel.done()
-              },
-              text = { Text(stringResource(title)) },
-            )
-          }
+    BoxWithConstraints(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
+      val picture: @Composable (Modifier) -> Unit = { modifier ->
+        if (showsTable) {
+          ValuesTable(modifier = modifier, plots = plots, formatValue = formatValue)
+        } else {
+          GraphPane(modifier, plots, window, { window = it }, formatValue)
+        }
       }
-      when (tab) {
-        EXPRESSIONS_TAB ->
-          ExpressionsTab(
-            modifier = Modifier.weight(1f),
-            uiState = uiState,
-            isValid = { index -> uiState.functions[index].input.text.isBlank() || parsed.getOrNull(index) != null },
-            viewModel = viewModel,
-          )
-        GRAPH_TAB ->
-          Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-            FunctionGraph(
-              modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface),
-              functions = plots,
-              window = window,
-              onWindowChange = { window = it },
-              formatValue = formatValue,
-            )
-            if (plots.isEmpty()) {
-              Text(
-                modifier = Modifier.align(Alignment.Center).padding(24.dp),
-                text = stringResource(Res.string.functions_empty),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-              )
-            }
-            if (window != null) {
-              SmallFloatingActionButton(
-                modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
-                onClick = { window = null },
-              ) {
-                Icon(Symbols.CenterFocusWeak, stringResource(Res.string.functions_reset_view))
-              }
-            }
+      val isValid = { index: Int -> uiState.functions[index].input.text.isBlank() || parsed.getOrNull(index) != null }
+      val keyboardHeight = maxHeight * KEYBOARD_HEIGHT_FACTOR
+      val keyboard: @Composable () -> Unit = {
+        FunctionsKeyboard(Modifier.height(keyboardHeight).fillMaxWidth(), uiState, viewModel)
+      }
+      if (maxWidth >= WIDE_LAYOUT_WIDTH) {
+        Row(modifier = Modifier.fillMaxSize()) {
+          Column(modifier = Modifier.width(PANEL_WIDTH).fillMaxHeight()) {
+            FunctionList(Modifier.weight(1f).fillMaxWidth(), uiState, isValid, viewModel)
+            keyboard()
           }
-        else -> ValuesTable(modifier = Modifier.weight(1f), plots = plots, formatValue = formatValue)
+          VerticalDivider()
+          picture(Modifier.weight(1f).fillMaxHeight())
+        }
+      } else {
+        val listHeight = maxHeight * if (uiState.selected != null) LIST_HEIGHT_EDITING else LIST_HEIGHT
+        Column(modifier = Modifier.fillMaxSize()) {
+          picture(Modifier.weight(1f).fillMaxWidth())
+          HorizontalDivider()
+          FunctionList(
+            Modifier.heightIn(max = listHeight).fillMaxWidth(),
+            uiState,
+            isValid,
+            viewModel,
+          )
+          keyboard()
+        }
       }
     }
   }
 }
 
-/** List of functions. Tap one to edit it with the calculator keyboard. */
+/** The graph with what goes over it. */
 @Composable
-private fun ExpressionsTab(
+private fun GraphPane(
+  modifier: Modifier,
+  plots: List<PlotFunction>,
+  window: GraphWindow?,
+  onWindowChange: (GraphWindow?) -> Unit,
+  formatValue: (Double) -> String,
+) {
+  Box(modifier = modifier) {
+    FunctionGraph(
+      modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface),
+      functions = plots,
+      window = window,
+      onWindowChange = onWindowChange,
+      formatValue = formatValue,
+    )
+    if (plots.isEmpty()) {
+      Text(
+        modifier = Modifier.align(Alignment.Center).padding(24.dp),
+        text = stringResource(Res.string.functions_empty),
+        style = MaterialTheme.typography.bodyLarge,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        textAlign = TextAlign.Center,
+      )
+    }
+    if (window != null) {
+      SmallFloatingActionButton(
+        modifier = Modifier.align(Alignment.BottomEnd).padding(8.dp),
+        onClick = { onWindowChange(null) },
+        containerColor = MaterialTheme.colorScheme.surface,
+        contentColor = MaterialTheme.colorScheme.onSurface,
+      ) {
+        Icon(Symbols.CenterFocusWeak, stringResource(Res.string.functions_reset_view))
+      }
+    }
+  }
+}
+
+/** Flat rows of functions, the one being edited stays in view. Tap one to edit it. */
+@Composable
+private fun FunctionList(
   modifier: Modifier,
   uiState: FunctionsUIState.Ready,
   isValid: (Int) -> Boolean,
   viewModel: FunctionsViewModel,
 ) {
-  BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
-    val keyboardHeight = maxHeight * KEYBOARD_HEIGHT_FACTOR
-    Column(modifier = Modifier.fillMaxSize()) {
-      LazyColumn(
-        modifier = Modifier.weight(1f).fillMaxWidth(),
-        contentPadding = PaddingValues(CARD_SPACING),
-        verticalArrangement = Arrangement.spacedBy(CARD_SPACING),
-      ) {
-        itemsIndexed(uiState.functions, key = { _, item -> item.name }) { index, item ->
-          FunctionRow(
-            item = item,
-            isSelected = uiState.selected == index,
-            isValid = isValid(index),
-            formatterSymbols = uiState.formatterSymbols,
-            onClick = { viewModel.select(index) },
-            onVisibleChange = { viewModel.setVisible(index, it) },
-            onDelete = { viewModel.delete(index) },
-          )
-        }
-        if (uiState.functions.size < FUNCTION_NAMES.size) {
-          item {
-            TextButton(onClick = viewModel::add) {
-              Icon(Symbols.Add, contentDescription = null)
-              Spacer(Modifier.width(8.dp))
-              Text(stringResource(Res.string.functions_add))
-            }
-          }
+  val listState = rememberLazyListState()
+  LaunchedEffect(uiState.selected) { uiState.selected?.let { listState.animateScrollToItem(it) } }
+  LazyColumn(modifier = modifier, state = listState) {
+    itemsIndexed(uiState.functions, key = { _, item -> item.name }) { index, item ->
+      FunctionRow(
+        item = item,
+        isSelected = uiState.selected == index,
+        isValid = isValid(index),
+        formatterSymbols = uiState.formatterSymbols,
+        onClick = { viewModel.select(index) },
+        onVisibleChange = { viewModel.setVisible(index, it) },
+        onDelete = { viewModel.delete(index) },
+      )
+      HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+    }
+    if (uiState.functions.size < FUNCTION_NAMES.size) {
+      item {
+        TextButton(modifier = Modifier.padding(horizontal = 8.dp), onClick = viewModel::add) {
+          Icon(Symbols.Add, contentDescription = null)
+          Spacer(Modifier.width(8.dp))
+          Text(stringResource(Res.string.functions_add))
         }
       }
-      val selected = uiState.selected?.let { uiState.functions[it] } ?: return@Column
-      CalculatorKeyboard(
-        modifier = Modifier.height(keyboardHeight).fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
-        onAddTokenClick = viewModel::addTokens,
-        onBracketsClick = viewModel::addBracket,
-        onDeleteClick = viewModel::deleteTokens,
-        onClearClick = viewModel::clearInput,
-        onEqualClick = viewModel::done,
-        fractional = uiState.formatterSymbols.fractional,
-        isInSeries = isInSeries(selected.input),
-      )
     }
   }
 }
 
-/** `● f(x)=x²  ☑ 🗑`. The expression is editable when [isSelected]. */
+/** Calculator keyboard while a function is being edited, its equal key finishes. */
+@Composable
+private fun FunctionsKeyboard(modifier: Modifier, uiState: FunctionsUIState.Ready, viewModel: FunctionsViewModel) {
+  val selected = uiState.selected?.let { uiState.functions.getOrNull(it) } ?: return
+  CalculatorKeyboard(
+    modifier = modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+    onAddTokenClick = viewModel::addTokens,
+    onBracketsClick = viewModel::addBracket,
+    onDeleteClick = viewModel::deleteTokens,
+    onClearClick = viewModel::clearInput,
+    onEqualClick = viewModel::done,
+    fractional = uiState.formatterSymbols.fractional,
+    isInSeries = isInSeries(selected.input),
+  )
+}
+
+/** `● f(x)=x²  ×`. The dot shows or hides the curve, the expression is editable when [isSelected]. */
 @Composable
 private fun FunctionRow(
   item: GraphFunctionItem,
@@ -271,27 +301,32 @@ private fun FunctionRow(
   onDelete: () -> Unit,
 ) {
   val color = FUNCTION_COLORS[item.color]
-  val background =
-    if (isSelected) MaterialTheme.colorScheme.surfaceContainerHighest else MaterialTheme.colorScheme.surfaceContainer
-  val border = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = BORDER_ALPHA) else Color.Transparent
+  val background = if (isSelected) color.copy(alpha = SELECTED_TINT) else Color.Transparent
   val textColor = if (isValid) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error
   Row(
-    modifier =
-      Modifier.fillMaxWidth()
-        .clip(CARD_SHAPE)
-        .background(background)
-        .border(CARD_BORDER, border, CARD_SHAPE)
-        .clickable(onClick = onClick)
-        .padding(start = 16.dp, end = 4.dp),
+    modifier = Modifier.fillMaxWidth().background(background).clickable(onClick = onClick).padding(end = 4.dp),
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    Box(Modifier.size(12.dp).clip(CircleShape).background(color))
+    val showLabel = stringResource(Res.string.functions_show)
+    Box(
+      modifier =
+        Modifier.size(ROW_HEIGHT)
+          .toggleable(value = item.visible, role = Role.Checkbox, onValueChange = onVisibleChange)
+          .semantics { contentDescription = showLabel },
+      contentAlignment = Alignment.Center,
+    ) {
+      Box(
+        Modifier.size(DOT_SIZE)
+          .clip(CircleShape)
+          .background(if (item.visible) color else Color.Transparent)
+          .border(DOT_BORDER, color, CircleShape)
+      )
+    }
     Text(
-      modifier = Modifier.padding(start = 12.dp, end = 4.dp),
+      modifier = Modifier.padding(end = 4.dp),
       text = "${item.name}(x)=",
-      style = MaterialTheme.typography.headlineSmall,
-      color = color,
-      fontWeight = FontWeight.Medium,
+      style = MaterialTheme.typography.titleLarge,
+      color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
     // Same text size while editing and not, aligned to the start
     Box(modifier = Modifier.weight(1f).height(ROW_HEIGHT), contentAlignment = Alignment.CenterStart) {
@@ -304,28 +339,25 @@ private fun FunctionRow(
           minRatio = INPUT_MIN_RATIO,
           alignStart = true,
           keyboardOptions = KeyboardOptions.Default,
-          textStyle = MaterialTheme.typography.headlineSmall,
+          textStyle = MaterialTheme.typography.titleLarge,
         )
       } else {
         ExpressionLayoutText(
           modifier = Modifier.padding(start = TEXT_START_PADDING),
           value = item.input.text.toString(),
           formatterSymbols = formatterSymbols,
-          style = MaterialTheme.typography.headlineSmall,
+          style = MaterialTheme.typography.titleLarge,
           textColor = textColor,
           minScale = INPUT_MIN_RATIO,
         )
       }
     }
-    val showLabel = stringResource(Res.string.functions_show)
-    Checkbox(
-      modifier = Modifier.semantics { contentDescription = showLabel },
-      checked = item.visible,
-      onCheckedChange = onVisibleChange,
-      colors = CheckboxDefaults.colors(checkedColor = color),
-    )
     IconButton(onClick = onDelete) {
-      Icon(Symbols.Delete, stringResource(Res.string.functions_delete))
+      Icon(
+        Symbols.Close,
+        stringResource(Res.string.functions_delete),
+        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+      )
     }
   }
 }
@@ -434,16 +466,17 @@ private fun isInSeries(input: TextFieldState): Boolean {
   return inSeries
 }
 
-private const val EXPRESSIONS_TAB = 0
-private const val GRAPH_TAB = 1
 private const val TABLE_ROWS = 101
-private const val KEYBOARD_HEIGHT_FACTOR = 0.62f
+private const val KEYBOARD_HEIGHT_FACTOR = 0.5f
+private const val LIST_HEIGHT = 0.4f
+private const val LIST_HEIGHT_EDITING = 0.16f
+private const val SELECTED_TINT = 0.08f
+private val WIDE_LAYOUT_WIDTH = 720.dp
+private val PANEL_WIDTH = 360.dp
+private val DOT_SIZE = 18.dp
+private val DOT_BORDER = 2.dp
 private const val INPUT_MIN_RATIO = 0.5f
-private val ROW_HEIGHT = 64.dp
-private val CARD_SPACING = 8.dp
-private val CARD_SHAPE = RoundedCornerShape(20.dp)
-private val CARD_BORDER = 1.5.dp
-private const val BORDER_ALPHA = 0.5f
+private val ROW_HEIGHT = 56.dp
 // Same as the caret margin of the editable field
 private val TEXT_START_PADDING = 4.dp
 private val MIN_COLUMN_WIDTH = 110.dp

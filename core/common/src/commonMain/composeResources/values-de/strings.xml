@@ -170,7 +170,6 @@
     <string name="functions_add">Funktion hinzufügen</string>
     <string name="functions_delete">Funktion löschen</string>
     <string name="functions_empty">Füge eine Funktion hinzu, um ihren Graphen zu sehen</string>
-    <string name="functions_expressions">Terme</string>
     <string name="functions_graph">Graph</string>
     <string name="functions_reset_view">Ansicht zurücksetzen</string>
     <string name="functions_show">Im Graphen zeigen</string>

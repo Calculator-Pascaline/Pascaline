@@ -170,7 +170,6 @@
     <string name="functions_add">Függvény hozzáadása</string>
     <string name="functions_delete">Függvény törlése</string>
     <string name="functions_empty">Adj hozzá egy függvényt, hogy lásd a grafikonját</string>
-    <string name="functions_expressions">Kifejezések</string>
     <string name="functions_graph">Grafikon</string>
     <string name="functions_reset_view">Nézet visszaállítása</string>
     <string name="functions_show">Megjelenítés a grafikonon</string>

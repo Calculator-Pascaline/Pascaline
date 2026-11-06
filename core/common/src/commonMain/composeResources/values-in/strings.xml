@@ -170,7 +170,6 @@
     <string name="functions_add">Tambah fungsi</string>
     <string name="functions_delete">Hapus fungsi</string>
     <string name="functions_empty">Tambahkan fungsi untuk melihat grafiknya</string>
-    <string name="functions_expressions">Ekspresi</string>
     <string name="functions_graph">Grafik</string>
     <string name="functions_reset_view">Atur ulang tampilan</string>
     <string name="functions_show">Tampilkan di grafik</string>

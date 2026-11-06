@@ -170,7 +170,6 @@
     <string name="functions_add">Aggiungi una funzione</string>
     <string name="functions_delete">Elimina funzione</string>
     <string name="functions_empty">Aggiungi una funzione per vederne il grafico</string>
-    <string name="functions_expressions">Espressioni</string>
     <string name="functions_graph">Grafico</string>
     <string name="functions_reset_view">Ripristina vista</string>
     <string name="functions_show">Mostra sul grafico</string>

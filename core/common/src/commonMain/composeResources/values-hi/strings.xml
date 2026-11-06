@@ -170,7 +170,6 @@
     <string name="functions_add">फलन जोड़ें</string>
     <string name="functions_delete">फलन हटाएँ</string>
     <string name="functions_empty">ग्राफ़ देखने के लिए एक फलन जोड़ें</string>
-    <string name="functions_expressions">व्यंजक</string>
     <string name="functions_graph">ग्राफ़</string>
     <string name="functions_reset_view">दृश्य रीसेट करें</string>
     <string name="functions_show">ग्राफ़ पर दिखाएँ</string>

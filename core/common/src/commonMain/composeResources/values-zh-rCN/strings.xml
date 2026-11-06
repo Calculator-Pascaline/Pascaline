@@ -170,7 +170,6 @@
     <string name="functions_add">添加函数</string>
     <string name="functions_delete">删除函数</string>
     <string name="functions_empty">添加一个函数以查看其图像</string>
-    <string name="functions_expressions">表达式</string>
     <string name="functions_graph">图像</string>
     <string name="functions_reset_view">重置视图</string>
     <string name="functions_show">在图像中显示</string>

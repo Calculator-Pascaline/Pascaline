@@ -170,7 +170,6 @@
     <string name="functions_add">Добавить функцию</string>
     <string name="functions_delete">Удалить функцию</string>
     <string name="functions_empty">Добавьте функцию, чтобы увидеть её график</string>
-    <string name="functions_expressions">Выражения</string>
     <string name="functions_graph">График</string>
     <string name="functions_reset_view">Сбросить вид</string>
     <string name="functions_show">Показать на графике</string>

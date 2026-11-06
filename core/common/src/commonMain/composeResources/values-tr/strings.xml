@@ -170,7 +170,6 @@
     <string name="functions_add">Fonksiyon ekle</string>
     <string name="functions_delete">Fonksiyonu sil</string>
     <string name="functions_empty">Grafiğini görmek için bir fonksiyon ekleyin</string>
-    <string name="functions_expressions">İfadeler</string>
     <string name="functions_graph">Grafik</string>
     <string name="functions_reset_view">Görünümü sıfırla</string>
     <string name="functions_show">Grafikte göster</string>

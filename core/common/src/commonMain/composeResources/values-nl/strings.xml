@@ -170,7 +170,6 @@
     <string name="functions_add">Functie toevoegen</string>
     <string name="functions_delete">Functie verwijderen</string>
     <string name="functions_empty">Voeg een functie toe om de grafiek te zien</string>
-    <string name="functions_expressions">Uitdrukkingen</string>
     <string name="functions_graph">Grafiek</string>
     <string name="functions_reset_view">Weergave herstellen</string>
     <string name="functions_show">Tonen in grafiek</string>

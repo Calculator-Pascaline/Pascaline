@@ -44,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
@@ -51,6 +52,7 @@ import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.sadellie.unitto.core.common.KBigDecimal
 import com.sadellie.unitto.core.common.OutputFormat
@@ -99,8 +101,9 @@ internal data class GraphWindow(val xMin: Double, val xMax: Double, val yMin: Do
 
 /**
  * Graph of [functions] like the Functions app of NumWorks. Pinch along an axis to zoom it, or use
- * + and − buttons to zoom both, drag to move, tap to read a value of the closest function, double tap to go back to the automatic
- * view.
+ * + and − buttons to zoom both, drag to move, double tap to go back to the automatic view. A tap
+ * puts a point on the closest function with its value, its derivative and its tangent, and the point
+ * can be dragged along the curve.
  *
  * @param window Visible part, null for automatic: x from −10 to 10 and y fitted to the functions,
  *   or fitted to [points] when there are some.
@@ -121,6 +124,7 @@ internal fun FunctionGraph(
   val traceStyle = MaterialTheme.typography.labelLarge
   val surface = MaterialTheme.colorScheme.surfaceContainerHigh
   var trace by remember { mutableStateOf<Pair<Int, Double>?>(null) }
+  var isMovingPoint by remember { mutableStateOf(false) }
 
   BoxWithConstraints(modifier = modifier.clipToBounds()) {
     val aspect = (constraints.maxHeight.toDouble() / constraints.maxWidth.coerceAtLeast(1))
@@ -134,8 +138,19 @@ internal fun FunctionGraph(
       modifier =
         Modifier.matchParentSize()
           .pointerInput(Unit) {
-            detectPanAndAxisZoom(minSpan = MIN_PINCH_SPAN.toPx()) { centroid, pan, zoomX, zoomY ->
-              onChange(currentWindow.transformed(centroid, pan, zoomX, zoomY, size.width, size.height))
+            detectPanAndAxisZoom(
+              minSpan = MIN_PINCH_SPAN.toPx(),
+              onDown = { offset ->
+                val point = trace?.let { (index, x) -> currentFunctions.getOrNull(index)?.let { it to x } }
+                isMovingPoint =
+                  point != null && (currentWindow.onScreen(point.first, point.second, size) - offset).getDistance() < POINT_TOUCH.toPx()
+              },
+            ) { centroid, pan, zoomX, zoomY ->
+              if (isMovingPoint) {
+                trace = trace?.copy(second = currentWindow.xMin + centroid.x / size.width * currentWindow.width)
+              } else {
+                onChange(currentWindow.transformed(centroid, pan, zoomX, zoomY, size.width, size.height))
+              }
             }
           }
           .pointerInput(Unit) {
@@ -159,17 +174,30 @@ internal fun FunctionGraph(
 
       val (index, x) = trace ?: return@Canvas
       val function = functions.getOrNull(index) ?: return@Canvas
-      drawTrace(function, x, current, measurer, traceStyle, surface, formatValue)
+      val y = function.valueAt(x)
+      val slope = slopeAt(function.valueAt, x)
+      if (!y.isNaN() && !slope.isNaN()) drawTangent(function.color, x, y, slope, current)
+      drawTrace(function, x, y, current)
+      drawTraceLabel(traceLabel(function.name, x, y, slope, formatValue), function.color, measurer, traceStyle, surface)
     }
 
     Column(
-      modifier = Modifier.align(Alignment.CenterEnd).padding(end = 16.dp),
-      verticalArrangement = Arrangement.spacedBy(12.dp),
+      modifier = Modifier.align(Alignment.TopEnd).padding(8.dp),
+      verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-      SmallFloatingActionButton(onClick = { onWindowChange(current.zoomed(ZOOM_STEP)) }) {
+      val colors = MaterialTheme.colorScheme
+      SmallFloatingActionButton(
+        onClick = { onWindowChange(current.zoomed(ZOOM_STEP)) },
+        containerColor = colors.surface,
+        contentColor = colors.onSurface,
+      ) {
         Icon(Symbols.Add, stringResource(Res.string.functions_zoom_in))
       }
-      SmallFloatingActionButton(onClick = { onWindowChange(current.zoomed(1 / ZOOM_STEP)) }) {
+      SmallFloatingActionButton(
+        onClick = { onWindowChange(current.zoomed(1 / ZOOM_STEP)) },
+        containerColor = colors.surface,
+        contentColor = colors.onSurface,
+      ) {
         Icon(Symbols.Remove, stringResource(Res.string.functions_zoom_out))
       }
     }
@@ -193,9 +221,10 @@ private fun GraphWindow.zoomed(factor: Double): GraphWindow {
  */
 private suspend fun PointerInputScope.detectPanAndAxisZoom(
   minSpan: Float,
+  onDown: (Offset) -> Unit,
   onGesture: (centroid: Offset, pan: Offset, zoomX: Float, zoomY: Float) -> Unit,
 ) = awaitEachGesture {
-  awaitFirstDown(requireUnconsumed = false)
+  onDown(awaitFirstDown(requireUnconsumed = false).position)
   var moved = Offset.Zero
   var isDragging = false
   do {
@@ -252,8 +281,9 @@ internal fun GraphWindow.transformed(
 }
 
 /**
- * x from −10 to 10, y fitted to most values of the functions (ignoring asymptotes). Without
- * functions, units on both axes have the same size. With [points], all of them are visible.
+ * x from −10 to 10 with units of the same size on both axes, so that a circle looks round. When no
+ * curve would show, y is fitted to most values of the functions (ignoring asymptotes). With
+ * [points], all of them are visible.
  */
 private fun autoWindow(functions: List<PlotFunction>, points: List<PlotPoint>, aspect: Double): GraphWindow {
   if (points.isNotEmpty()) return pointsWindow(points)
@@ -266,7 +296,9 @@ private fun autoWindow(functions: List<PlotFunction>, points: List<PlotPoint>, a
       .filter { it.isFinite() }
       .sorted()
   val sameScale = (AUTO_X_MAX - AUTO_X_MIN) * aspect / 2
-  if (values.isEmpty()) return GraphWindow(AUTO_X_MIN, AUTO_X_MAX, -sameScale, sameScale)
+  if (values.isEmpty() || values.any { it in -sameScale..sameScale }) {
+    return GraphWindow(AUTO_X_MIN, AUTO_X_MAX, -sameScale, sameScale)
+  }
 
   var low = values[(values.size * OUTLIER_SHARE).toInt()]
   var high = values[((values.size - 1) * (1 - OUTLIER_SHARE)).toInt()]
@@ -329,17 +361,26 @@ private fun DrawScope.drawGrid(
   // Labels stick to the axes, or to the edges when an axis is out of view
   val axisX = window.toScreenX(0.0, size.width).coerceIn(0f, size.width - LABEL_PADDING.toPx())
   val axisY = window.toScreenY(0.0, size.height).coerceIn(0f, size.height - LABEL_HEIGHT.toPx())
+  val minorColor = gridColor.copy(alpha = MINOR_GRID_ALPHA)
+  gridValues(window.xMin, window.xMax, stepX / MINOR_LINES).forEach { x ->
+    val sx = window.toScreenX(x, size.width)
+    drawLine(minorColor, Offset(sx, 0f), Offset(sx, size.height), 1f)
+  }
+  gridValues(window.yMin, window.yMax, stepY / MINOR_LINES).forEach { y ->
+    val sy = window.toScreenY(y, size.height)
+    drawLine(minorColor, Offset(0f, sy), Offset(size.width, sy), 1f)
+  }
 
   gridValues(window.xMin, window.xMax, stepX).forEach { x ->
     val sx = window.toScreenX(x, size.width)
     val isAxis = abs(x) < stepX / 2
-    drawLine(if (isAxis) axisColor else gridColor, Offset(sx, 0f), Offset(sx, size.height), if (isAxis) 2f else 1f)
+    drawLine(if (isAxis) axisColor else gridColor, Offset(sx, 0f), Offset(sx, size.height), if (isAxis) AXIS_WIDTH.toPx() else 1f)
     if (!isAxis) drawLabel(measurer, formatTick(x, stepX), Offset(sx + TICK_LABEL_SHIFT_X, axisY + TICK_LABEL_SHIFT_Y), labelStyle)
   }
   gridValues(window.yMin, window.yMax, stepY).forEach { y ->
     val sy = window.toScreenY(y, size.height)
     val isAxis = abs(y) < stepY / 2
-    drawLine(if (isAxis) axisColor else gridColor, Offset(0f, sy), Offset(size.width, sy), if (isAxis) 2f else 1f)
+    drawLine(if (isAxis) axisColor else gridColor, Offset(0f, sy), Offset(size.width, sy), if (isAxis) AXIS_WIDTH.toPx() else 1f)
     if (!isAxis) drawLabel(measurer, formatTick(y, stepY), Offset(axisX + TICK_LABEL_SHIFT_X, sy + TICK_LABEL_SHIFT_Y), labelStyle)
   }
 }
@@ -374,23 +415,72 @@ private fun DrawScope.drawFunction(plot: PlotFunction, window: GraphWindow) {
   drawPath(path, plot.color, style = Stroke(width = CURVE_WIDTH.toPx()))
 }
 
-/** Point on the curve and its coordinates in the corner: `f(1.5) = 2.25`. */
-private fun DrawScope.drawTrace(
-  plot: PlotFunction,
-  x: Double,
-  window: GraphWindow,
+private fun GraphWindow.onScreen(plot: PlotFunction, x: Double, size: IntSize): Offset =
+  Offset(toScreenX(x, size.width.toFloat()), toScreenY(plot.valueAt(x), size.height.toFloat()))
+
+/**
+ * Derivative of [f] at [x] from nearby values, NaN where there is none: the slopes on both sides
+ * must agree, so that |x| at 0, a jump or the end of a domain don't look like a real value.
+ */
+internal fun slopeAt(f: (Double) -> Double, x: Double): Double {
+  val h = max(abs(x), 1.0) * SLOPE_STEP
+  val before = f(x - h)
+  val center = f(x)
+  val after = f(x + h)
+  val far = f(x + 2 * h) - f(x - 2 * h)
+  val left = (center - before) / h
+  val right = (after - center) / h
+  val slope = (8 * (after - before) - far) / (12 * h)
+  // Slopes that keep growing closer to x are a vertical tangent, like the cube root at 0
+  val wide = (f(x + SLOPE_WIDE * h) - f(x - SLOPE_WIDE * h)) / (2 * SLOPE_WIDE * h)
+  val tolerance = SLOPE_AGREEMENT * max(1.0, abs(slope))
+  return when {
+    !center.isFinite() || !slope.isFinite() || !wide.isFinite() -> Double.NaN
+    abs(left - right) > tolerance || abs(wide - slope) > tolerance -> Double.NaN
+    abs(slope) > MAX_SLOPE -> Double.NaN
+    abs(slope) < MIN_SLOPE -> 0.0
+    else -> slope
+  }
+}
+
+/** `f(1.5) = 2.25`, then its derivative and tangent line when it has one. */
+internal fun traceLabel(name: String, x: Double, y: Double, slope: Double, format: (Double) -> String): String {
+  val value = "$name(${format(x)}) = ${format(y)}"
+  if (slope.isNaN() || y.isNaN()) return value
+  val intercept = y - slope * x
+  val sign = if (intercept < 0) "−" else "+"
+  return "$value\n$name'(${format(x)}) = ${format(slope)}\ny = ${format(slope)}x $sign ${format(abs(intercept))}"
+}
+
+/** The line that touches the curve at the point, across the whole graph. */
+private fun DrawScope.drawTangent(color: Color, x: Double, y: Double, slope: Double, window: GraphWindow) {
+  fun end(endX: Double) = Offset(window.toScreenX(endX, size.width), window.toScreenY(y + slope * (endX - x), size.height))
+  val dash = TANGENT_DASH.toPx()
+  drawLine(
+    color = color.copy(alpha = TANGENT_ALPHA),
+    start = end(window.xMin),
+    end = end(window.xMax),
+    strokeWidth = TANGENT_WIDTH.toPx(),
+    pathEffect = PathEffect.dashPathEffect(floatArrayOf(dash, dash)),
+  )
+}
+
+/** Point on the curve. */
+private fun DrawScope.drawTrace(plot: PlotFunction, x: Double, y: Double, window: GraphWindow) {
+  if (y.isNaN()) return
+  val point = Offset(window.toScreenX(x, size.width), window.toScreenY(y, size.height))
+  drawCircle(plot.color, radius = TRACE_RADIUS.toPx(), center = point)
+}
+
+/** What the point says, in the corner. */
+private fun DrawScope.drawTraceLabel(
+  text: String,
+  color: Color,
   measurer: TextMeasurer,
   style: TextStyle,
   background: Color,
-  formatValue: (Double) -> String,
 ) {
-  val y = plot.valueAt(x)
-  if (!y.isNaN()) {
-    val point = Offset(window.toScreenX(x, size.width), window.toScreenY(y, size.height))
-    drawCircle(plot.color, radius = TRACE_RADIUS.toPx(), center = point)
-  }
-  val text = "${plot.name}(${formatValue(x)}) = ${formatValue(y)}"
-  val layout = measurer.measure(text, style.copy(color = plot.color))
+  val layout = measurer.measure(text, style.copy(color = color))
   val padding = LABEL_PADDING.toPx()
   drawRect(
     background,
@@ -456,8 +546,20 @@ private const val MAX_GRID_LINES = 200
 private const val PIXELS_PER_SAMPLE = 2f
 private const val OFF_SCREEN = 2f
 private const val MAX_JUMP = 1.5f
-private val CURVE_WIDTH = 2.5.dp
+private val CURVE_WIDTH = 3.dp
 private val TRACE_RADIUS = 5.dp
+private const val MINOR_LINES = 5
+private const val MINOR_GRID_ALPHA = 0.45f
+private val POINT_TOUCH = 32.dp
+private val AXIS_WIDTH = 1.5.dp
+private val TANGENT_WIDTH = 1.5.dp
+private val TANGENT_DASH = 6.dp
+private const val TANGENT_ALPHA = 0.7f
+private const val SLOPE_STEP = 1e-4
+private const val SLOPE_AGREEMENT = 0.01
+private const val SLOPE_WIDE = 10
+private const val MAX_SLOPE = 1e7
+private const val MIN_SLOPE = 1e-7
 private val POINT_RADIUS = 4.dp
 private const val POINTS_MARGIN = 0.12
 private val LABEL_PADDING = 6.dp
