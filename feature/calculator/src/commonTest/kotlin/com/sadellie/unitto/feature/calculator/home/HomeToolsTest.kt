@@ -20,19 +20,22 @@ package com.sadellie.unitto.feature.calculator.home
 
 import com.sadellie.unitto.core.navigation.ElementsDrawerItem
 import com.sadellie.unitto.core.navigation.FinanceDrawerItem
+import com.sadellie.unitto.core.navigation.NamedTool
 import com.sadellie.unitto.core.navigation.ProjectileDrawerItem
+import com.sadellie.unitto.core.navigation.alphabetical
+import com.sadellie.unitto.core.navigation.ordered
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class HomeToolsTest {
   private val tools =
     listOf(
-      HomeTool(ProjectileDrawerItem, "Projectile"),
-      HomeTool(FinanceDrawerItem, "Énergie"),
-      HomeTool(ElementsDrawerItem, "éléments"),
+      NamedTool(ProjectileDrawerItem, "Projectile"),
+      NamedTool(FinanceDrawerItem, "Énergie"),
+      NamedTool(ElementsDrawerItem, "éléments"),
     )
 
-  private fun List<HomeTool>.names() = map { it.name }
+  private fun List<NamedTool>.names() = map { it.name }
 
   @Test
   fun alphabeticalIgnoresAccentsAndCapitals() =

@@ -32,6 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.sadellie.unitto.core.datastore.AppPreferences
 import com.sadellie.unitto.core.designsystem.theme.isDark
+import com.sadellie.unitto.core.navigation.HomeStartRoute
 import com.sadellie.unitto.core.navigation.Route
 import com.sadellie.unitto.core.navigation.pushDynamicShortcut
 import io.github.sadellie.themmo.Themmo
@@ -46,7 +47,7 @@ internal fun ComponentActivity.App(deepLinkRoute: Route?, prefs: AppPreferences?
     val backgroundColor = MaterialTheme.colorScheme.surfaceContainer
     val isDarkThemeEnabled = remember(backgroundColor) { backgroundColor.isDark() }
     val shortcutsScope = rememberCoroutineScope()
-    val backStack = rememberNavBackStack(deepLinkRoute ?: prefs.startingScreen)
+    val backStack = rememberNavBackStack(deepLinkRoute ?: HomeStartRoute)
     MainAppContent(
       backStack = backStack,
       onDrawerItemClick = { drawerItem ->

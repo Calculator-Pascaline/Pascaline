@@ -495,14 +495,6 @@
     <string name="settings_language">Lingua</string>
     <string name="settings_language_support">Cambia la lingua dell'app</string>
     <string name="settings_light_mode">Chiaro</string>
-    <string name="settings_menu">Menu</string>
-    <string name="settings_menu_hidden">Nascoste</string>
-    <string name="settings_menu_hide">Nascondi dal menu</string>
-    <string name="settings_menu_reorder">Trascina per riordinare</string>
-    <string name="settings_menu_reset">Ripristina il menu</string>
-    <string name="settings_menu_show">Mostra nel menu</string>
-    <string name="settings_menu_shown">Mostrate</string>
-    <string name="settings_menu_support">Ordine delle app e quali sono mostrate</string>
     <string name="settings_note">Nota</string>
     <string name="settings_partial_history_view">Vista cronologia parziale</string>
     <string name="settings_partial_history_view_support">Visualizza l'ultima voce nella cronologia</string>
@@ -529,8 +521,6 @@
     <string name="settings_sort_by_scale_desc">Scala (Decrescente)</string>
     <string name="settings_sort_by_usage">Utilizzo</string>
     <string name="settings_space">Spazio</string>
-    <string name="settings_starting_screen">Schermata iniziale</string>
-    <string name="settings_starting_screen_support">Schermata iniziale e scorciatoie</string>
     <string name="settings_stepped_drag_gesture">Gesto di trascinamento graduale</string>
     <string name="settings_stepped_drag_gesture_support">Non saltare la vista cronologia parziale quando si trascina troppo</string>
     <string name="settings_system">Sistema</string>
@@ -1587,6 +1577,8 @@
     <string name="place_title">Cielo e Terra</string>
     <string name="home_title">Home</string>
     <string name="home_hidden">Nascosti</string>
+    <string name="home_hide">Nascondi</string>
+    <string name="home_show">Mostra</string>
     <string name="home_edit_hint">Trascina gli strumenti dove preferisci.</string>
     <string name="home_reset">Torna ad A–Z</string>
     <string name="projectile_title">Proiettile</string>

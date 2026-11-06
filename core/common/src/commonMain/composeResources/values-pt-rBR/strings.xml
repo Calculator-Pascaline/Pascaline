@@ -495,14 +495,6 @@
     <string name="settings_language">Idioma</string>
     <string name="settings_language_support">Alterar o idioma do aplicativo</string>
     <string name="settings_light_mode">Claro</string>
-    <string name="settings_menu">Menu</string>
-    <string name="settings_menu_hidden">Ocultos</string>
-    <string name="settings_menu_hide">Ocultar do menu</string>
-    <string name="settings_menu_reorder">Arraste para reordenar</string>
-    <string name="settings_menu_reset">Redefinir o menu</string>
-    <string name="settings_menu_show">Mostrar no menu</string>
-    <string name="settings_menu_shown">Mostrados</string>
-    <string name="settings_menu_support">Ordem dos apps e quais são mostrados</string>
     <string name="settings_note">Nota</string>
     <string name="settings_partial_history_view">Visualização parcial do histórico</string>
     <string name="settings_partial_history_view_support">Ver a última entrada no histórico</string>
@@ -529,8 +521,6 @@
     <string name="settings_sort_by_scale_desc">Escala (Decrescente)</string>
     <string name="settings_sort_by_usage">Uso</string>
     <string name="settings_space">Espaço</string>
-    <string name="settings_starting_screen">Tela inicial</string>
-    <string name="settings_starting_screen_support">Tela inicial e atalhos</string>
     <string name="settings_stepped_drag_gesture">Gesto de arrasto escalonado</string>
     <string name="settings_stepped_drag_gesture_support">Não pular a visualização parcial do histórico ao arrastar demais</string>
     <string name="settings_system">Sistema</string>
@@ -1587,6 +1577,8 @@
     <string name="place_title">Céu e Terra</string>
     <string name="home_title">Início</string>
     <string name="home_hidden">Ocultas</string>
+    <string name="home_hide">Ocultar</string>
+    <string name="home_show">Mostrar</string>
     <string name="home_edit_hint">Arraste as ferramentas para onde quiser.</string>
     <string name="home_reset">Voltar para A–Z</string>
     <string name="projectile_title">Projétil</string>

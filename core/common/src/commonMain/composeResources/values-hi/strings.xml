@@ -495,14 +495,6 @@
     <string name="settings_language">भाषा</string>
     <string name="settings_language_support">ऐप की भाषा बदलें</string>
     <string name="settings_light_mode">हल्का</string>
-    <string name="settings_menu">मेन्यू</string>
-    <string name="settings_menu_hidden">छिपाए गए</string>
-    <string name="settings_menu_hide">मेन्यू से छिपाएँ</string>
-    <string name="settings_menu_reorder">क्रम बदलने के लिए खींचें</string>
-    <string name="settings_menu_reset">मेन्यू रीसेट करें</string>
-    <string name="settings_menu_show">मेन्यू में दिखाएँ</string>
-    <string name="settings_menu_shown">दिखाए गए</string>
-    <string name="settings_menu_support">ऐप का क्रम और कौन से दिखाए जाते हैं</string>
     <string name="settings_note">नोट</string>
     <string name="settings_partial_history_view">आंशिक इतिहास दृश्य</string>
     <string name="settings_partial_history_view_support">इतिहास में सबसे हाल की प्रविष्टि की झलक देखें</string>
@@ -529,8 +521,6 @@
     <string name="settings_sort_by_scale_desc">मापक्रम (अवरोही)</string>
     <string name="settings_sort_by_usage">उपयोग</string>
     <string name="settings_space">स्थान</string>
-    <string name="settings_starting_screen">प्रारंभिक स्क्रीन</string>
-    <string name="settings_starting_screen_support">प्रारंभिक स्क्रीन और शॉर्टकट</string>
     <string name="settings_stepped_drag_gesture">चरणबद्ध ड्रैग जेस्चर</string>
     <string name="settings_stepped_drag_gesture_support">ज़्यादा खींचने पर आंशिक इतिहास दृश्य को न छोड़ें</string>
     <string name="settings_system">सिस्टम</string>
@@ -1587,6 +1577,8 @@
     <string name="place_title">आकाश और पृथ्वी</string>
     <string name="home_title">होम</string>
     <string name="home_hidden">छिपे हुए</string>
+    <string name="home_hide">छिपाएँ</string>
+    <string name="home_show">दिखाएँ</string>
     <string name="home_edit_hint">टूल को मनचाही जगह पर खींचें।</string>
     <string name="home_reset">A से Z पर लौटें</string>
     <string name="projectile_title">प्रक्षेप्य</string>

@@ -81,7 +81,6 @@ abstract class SharedUserPreferencesRepository : UserPreferencesRepository {
           enableAmoledTheme = preferences.enableAmoledTheme(),
           customColor = preferences.customColor(),
           monetMode = preferences.monetMode(),
-          startingScreen = preferences.startingScreen(),
           enableToolsExperiment = preferences.enableToolsExperiment(),
           enableVibrations = preferences.enableVibrations(),
           enableKeepScreenOn = preferences.enableKeepScreenOn(),
@@ -161,9 +160,6 @@ abstract class SharedUserPreferencesRepository : UserPreferencesRepository {
   override val aboutPrefs: Flow<AboutPreferences>
     get() = values.map { AboutPreferences(enableToolsExperiment = it.enableToolsExperiment()) }
 
-  override val startingScreenPrefs: Flow<StartingScreenPreferences>
-    get() = values.map { StartingScreenPreferences(startingScreen = it.startingScreen()) }
-
   override suspend fun updateDigitsPrecision(precision: Int) =
     edit { set(PrefKeys.DIGITS_PRECISION_PREF_KEY, precision) }
 
@@ -196,9 +192,6 @@ abstract class SharedUserPreferencesRepository : UserPreferencesRepository {
 
   override suspend fun updateMonetMode(monetMode: MonetMode) =
     edit { set(PrefKeys.MONET_MODE_PREF_KEY, monetMode.name) }
-
-  override suspend fun updateStartingScreen(graphId: String) =
-    edit { set(PrefKeys.STARTING_SCREEN_PREF_KEY, graphId) }
 
   override suspend fun updateShownUnitGroups(shownUnitGroups: List<UnitGroup>) =
     edit { set(PrefKeys.SHOWN_UNIT_GROUPS_PREF_KEY, shownUnitGroups.packToString()) }
@@ -281,10 +274,6 @@ abstract class SharedUserPreferencesRepository : UserPreferencesRepository {
 
   private fun PreferenceValues.monetMode() =
     string(PrefKeys.MONET_MODE_PREF_KEY)?.letTryOrNull { MonetMode.valueOf(it) } ?: Defaults.monetMode
-
-  private fun PreferenceValues.startingScreen() =
-    graphRoutes.firstOrNull { it.routeId == string(PrefKeys.STARTING_SCREEN_PREF_KEY) }
-      ?: Defaults.startingScreen
 
   private fun PreferenceValues.lastReadChangelog() =
     string(PrefKeys.LAST_READ_CHANGELOG_PREF_KEY) ?: Defaults.lastReadChangelog

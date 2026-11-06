@@ -495,14 +495,6 @@
     <string name="settings_language">Idioma</string>
     <string name="settings_language_support">Cambiar el idioma de la app</string>
     <string name="settings_light_mode">Claro</string>
-    <string name="settings_menu">Menú</string>
-    <string name="settings_menu_hidden">Ocultas</string>
-    <string name="settings_menu_hide">Ocultar del menú</string>
-    <string name="settings_menu_reorder">Arrastra para reordenar</string>
-    <string name="settings_menu_reset">Restablecer el menú</string>
-    <string name="settings_menu_show">Mostrar en el menú</string>
-    <string name="settings_menu_shown">Visibles</string>
-    <string name="settings_menu_support">Orden de las apps y cuáles se muestran</string>
     <string name="settings_note">Nota</string>
     <string name="settings_partial_history_view">Vista parcial del historial</string>
     <string name="settings_partial_history_view_support">Ver el último registro en el historial</string>
@@ -529,8 +521,6 @@
     <string name="settings_sort_by_scale_desc">Escala (Desc.)</string>
     <string name="settings_sort_by_usage">Uso</string>
     <string name="settings_space">Espacio</string>
-    <string name="settings_starting_screen">Pantalla inicial</string>
-    <string name="settings_starting_screen_support">Pantalla inicial y accesos directos</string>
     <string name="settings_stepped_drag_gesture">Gesto de arrastre escalonado</string>
     <string name="settings_stepped_drag_gesture_support">No omitir la vista parcial del historial al arrastrar demasiado</string>
     <string name="settings_system">Sistema</string>
@@ -1587,6 +1577,8 @@
     <string name="place_title">Cielo y Tierra</string>
     <string name="home_title">Inicio</string>
     <string name="home_hidden">Ocultas</string>
+    <string name="home_hide">Ocultar</string>
+    <string name="home_show">Mostrar</string>
     <string name="home_edit_hint">Arrastra las herramientas donde quieras.</string>
     <string name="home_reset">Volver a A–Z</string>
     <string name="projectile_title">Proyectil</string>

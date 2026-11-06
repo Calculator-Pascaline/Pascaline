@@ -495,14 +495,6 @@
     <string name="settings_language">Nyelv</string>
     <string name="settings_language_support">Alkalmazás nyelvének módosítása</string>
     <string name="settings_light_mode">Világos</string>
-    <string name="settings_menu">Menü</string>
-    <string name="settings_menu_hidden">Rejtett</string>
-    <string name="settings_menu_hide">Elrejtés a menüből</string>
-    <string name="settings_menu_reorder">Húzd az átrendezéshez</string>
-    <string name="settings_menu_reset">Menü visszaállítása</string>
-    <string name="settings_menu_show">Megjelenítés a menüben</string>
-    <string name="settings_menu_shown">Látható</string>
-    <string name="settings_menu_support">Az alkalmazások sorrendje és hogy melyik látszik</string>
     <string name="settings_note">Megjegyzés</string>
     <string name="settings_partial_history_view">Részleges előzménynézet</string>
     <string name="settings_partial_history_view_support">Legutóbbi bejegyzés megtekintése az előzményekben</string>
@@ -529,8 +521,6 @@
     <string name="settings_sort_by_scale_desc">Skála (Csökkenő)</string>
     <string name="settings_sort_by_usage">Használat</string>
     <string name="settings_space">Szóköz</string>
-    <string name="settings_starting_screen">Kezdőképernyő</string>
-    <string name="settings_starting_screen_support">Kezdőképernyő és parancsikonok</string>
     <string name="settings_stepped_drag_gesture">Lépcsőzetes húzási gesztus</string>
     <string name="settings_stepped_drag_gesture_support">Ne ugorja át a részleges előzménynézetet túlzott húzáskor</string>
     <string name="settings_system">Rendszer</string>
@@ -1587,6 +1577,8 @@
     <string name="place_title">Ég és Föld</string>
     <string name="home_title">Kezdőlap</string>
     <string name="home_hidden">Rejtett</string>
+    <string name="home_hide">Elrejtés</string>
+    <string name="home_show">Megjelenítés</string>
     <string name="home_edit_hint">Húzd az eszközöket oda, ahová szeretnéd.</string>
     <string name="home_reset">Vissza az A–Z sorrendhez</string>
     <string name="projectile_title">Hajítás</string>

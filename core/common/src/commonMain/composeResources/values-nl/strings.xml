@@ -495,14 +495,6 @@
     <string name="settings_language">Taal</string>
     <string name="settings_language_support">De app-taal wijzigen</string>
     <string name="settings_light_mode">Licht</string>
-    <string name="settings_menu">Menu</string>
-    <string name="settings_menu_hidden">Verborgen</string>
-    <string name="settings_menu_hide">Verbergen uit het menu</string>
-    <string name="settings_menu_reorder">Sleep om te ordenen</string>
-    <string name="settings_menu_reset">Menu herstellen</string>
-    <string name="settings_menu_show">Tonen in het menu</string>
-    <string name="settings_menu_shown">Getoond</string>
-    <string name="settings_menu_support">Volgorde van de apps en welke getoond worden</string>
     <string name="settings_note">Opmerking</string>
     <string name="settings_partial_history_view">Gedeeltelijke geschiedenisweergave</string>
     <string name="settings_partial_history_view_support">Bekijk de laatste invoer in de geschiedenis</string>
@@ -529,8 +521,6 @@
     <string name="settings_sort_by_scale_desc">Schaal (Aflopend)</string>
     <string name="settings_sort_by_usage">Gebruik</string>
     <string name="settings_space">Spatie</string>
-    <string name="settings_starting_screen">Startscherm</string>
-    <string name="settings_starting_screen_support">Startscherm en snelkoppelingen</string>
     <string name="settings_stepped_drag_gesture">Gestapt sleepgebaar</string>
     <string name="settings_stepped_drag_gesture_support">Sla de gedeeltelijke geschiedenisweergave niet over bij te veel slepen</string>
     <string name="settings_system">Systeem</string>
@@ -1587,6 +1577,8 @@
     <string name="place_title">Hemel en Aarde</string>
     <string name="home_title">Start</string>
     <string name="home_hidden">Verborgen</string>
+    <string name="home_hide">Verbergen</string>
+    <string name="home_show">Tonen</string>
     <string name="home_edit_hint">Sleep tools naar de plek die je wilt.</string>
     <string name="home_reset">Terug naar A–Z</string>
     <string name="projectile_title">Projectiel</string>

@@ -55,6 +55,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -90,7 +91,12 @@ import com.sadellie.unitto.core.navigation.DRAWER_LAYOUT_KEY
 import com.sadellie.unitto.core.navigation.DrawerItem
 import com.sadellie.unitto.core.navigation.DrawerLayout
 import com.sadellie.unitto.core.navigation.LocalNavigator
+import com.sadellie.unitto.core.navigation.NamedTool
+import com.sadellie.unitto.core.navigation.ORDER_SEPARATOR
 import com.sadellie.unitto.core.navigation.SettingsDrawerItem
+import com.sadellie.unitto.core.navigation.TOOL_ORDER_KEY
+import com.sadellie.unitto.core.navigation.alphabetical
+import com.sadellie.unitto.core.navigation.ordered
 import com.sadellie.unitto.core.ui.ScaffoldWithTopBar
 import com.sadellie.unitto.core.ui.rememberKeyPress
 import com.sadellie.unitto.core.ui.squashable
@@ -105,30 +111,13 @@ import unitto.core.common.generated.resources.common_edit
 import unitto.core.common.generated.resources.common_ok
 import unitto.core.common.generated.resources.home_edit_hint
 import unitto.core.common.generated.resources.home_hidden
+import unitto.core.common.generated.resources.home_hide
 import unitto.core.common.generated.resources.home_reset
-import unitto.core.common.generated.resources.settings_menu_hide
-import unitto.core.common.generated.resources.settings_menu_show
-
-/** A tool with its name in the language of the app. */
-internal class HomeTool(val item: DrawerItem, val name: String) {
-  val id = item.topLevelRoute.routeId
-}
-
-/** Tools from A to Z, ignoring accents and capitals. */
-internal fun List<HomeTool>.alphabetical(): List<HomeTool> = sortedBy { sortKey(it.name) }
-
-/** Tools in the saved order, the ones that aren't in it stay as they were after them. */
-internal fun List<HomeTool>.ordered(saved: String): List<HomeTool> {
-  val first = saved.split(LIST_SEPARATOR).mapNotNull { id -> firstOrNull { it.id == id } }
-  return first + (this - first.toSet())
-}
+import unitto.core.common.generated.resources.home_show
 
 /** The list with the element at [from] moved to [to]. */
 internal fun <T> List<T>.moved(from: Int, to: Int): List<T> =
   toMutableList().also { list -> list.add(to, list.removeAt(from)) }
-
-private fun sortKey(text: String) =
-  text.lowercase().map { character -> ACCENTS.entries.firstOrNull { character in it.key }?.value ?: character }.joinToString("")
 
 /** The tile being dragged around its section, and the order that gives. */
 @Stable
@@ -196,8 +185,8 @@ private fun key(section: String?, id: String) = "$section$KEY_SEPARATOR$id"
 private class TileActions(
   val isEditing: Boolean,
   val reorder: HomeReorder,
-  val onOpen: (HomeTool) -> Unit,
-  val onHiddenChange: (HomeTool, Boolean) -> Unit,
+  val onOpen: (NamedTool) -> Unit,
+  val onHiddenChange: (NamedTool, Boolean) -> Unit,
   val onDrop: (List<String>) -> Unit,
 )
 
@@ -209,14 +198,16 @@ internal fun HomeRoute() {
   val savedLayout by
     remember(preferences) { preferences.appData(DRAWER_LAYOUT_KEY) }.collectAsState(initial = "")
   val savedOrder by
-    remember(preferences) { preferences.appData(ORDER_KEY) }.collectAsState(initial = "")
+    remember(preferences) { preferences.appData(TOOL_ORDER_KEY) }.collectAsState(initial = "")
   val scope = rememberCoroutineScope()
   val layout = DrawerLayout.parse(savedLayout)
-  val tools = layout.shown.map { HomeTool(it, stringResource(it.name)) }.alphabetical().ordered(savedOrder)
-  val hidden = layout.hidden.map { HomeTool(it, stringResource(it.name)) }.alphabetical()
+  val tools = layout.shown.map { NamedTool(it, stringResource(it.name)) }.alphabetical().ordered(savedOrder)
+  val hidden = layout.hidden.map { NamedTool(it, stringResource(it.name)) }.alphabetical()
   var isEditing by rememberSaveable { mutableStateOf(false) }
   val grid = rememberLazyGridState()
   val reorder = remember(grid, scope) { HomeReorder(grid, scope) }
+  // Names load after the first frame: the grid would follow its old first key down the list
+  LaunchedEffect(tools.firstOrNull()?.id) { grid.scrollToItem(0) }
   fun save(key: String, value: String) {
     scope.launch { preferences.updateAppData(key, value) }
   }
@@ -232,7 +223,7 @@ internal fun HomeRoute() {
           tools.size > 1 -> save(DRAWER_LAYOUT_KEY, DrawerLayout(layout.shown - tool.item, layout.hidden + tool.item).save())
         }
       },
-      onDrop = { ids -> save(ORDER_KEY, ids.joinToString(LIST_SEPARATOR)) },
+      onDrop = { ids -> save(TOOL_ORDER_KEY, ids.joinToString(ORDER_SEPARATOR)) },
     )
 
   ScaffoldWithTopBar(
@@ -252,7 +243,7 @@ internal fun HomeRoute() {
     colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
   ) { paddingValues ->
     Column(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
-      if (isEditing) EditBar(showsReset = savedOrder.isNotEmpty()) { save(ORDER_KEY, "") }
+      if (isEditing) EditBar(showsReset = savedOrder.isNotEmpty()) { save(TOOL_ORDER_KEY, "") }
       val hiddenTitle = stringResource(Res.string.home_hidden)
       LazyVerticalGrid(
         modifier = Modifier.weight(1f),
@@ -301,7 +292,7 @@ private fun LazyGridScope.header(text: String) {
   }
 }
 
-private fun LazyGridScope.tiles(section: String, tools: List<HomeTool>, actions: TileActions) {
+private fun LazyGridScope.tiles(section: String, tools: List<NamedTool>, actions: TileActions) {
   val reorder = actions.reorder
   val shown =
     if (reorder.section == section) reorder.draft.mapNotNull { id -> tools.firstOrNull { it.id == id } } else tools
@@ -314,8 +305,8 @@ private fun LazyGridScope.tiles(section: String, tools: List<HomeTool>, actions:
 @Composable
 private fun LazyGridItemScope.ToolTile(
   section: String,
-  tool: HomeTool,
-  sectionTools: List<HomeTool>,
+  tool: NamedTool,
+  sectionTools: List<NamedTool>,
   actions: TileActions,
 ) {
   val reorder = actions.reorder
@@ -389,7 +380,7 @@ private fun LazyGridItemScope.ToolTile(
       EditBadge(
         modifier = Modifier.align(Alignment.TopEnd).padding(2.dp),
         icon = if (isHidden) Symbols.Add else Symbols.Remove,
-        label = stringResource(if (isHidden) Res.string.settings_menu_show else Res.string.settings_menu_hide),
+        label = stringResource(if (isHidden) Res.string.home_show else Res.string.home_hide),
         color = if (isHidden) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
         onClick = { actions.onHiddenChange(tool, !isHidden) },
       )
@@ -424,10 +415,8 @@ private fun EditBadge(modifier: Modifier, icon: ImageVector, label: String, colo
   }
 }
 
-private const val ORDER_KEY = "HOME_ORDER"
 private const val ALL_SECTION = "all"
 private const val HIDDEN_SECTION = "hidden"
-private const val LIST_SEPARATOR = ","
 private const val KEY_SEPARATOR = "/"
 private const val DRAGGED_SCALE = 1.08f
 private const val HIDDEN_ALPHA = 0.5f
@@ -435,8 +424,6 @@ private const val WIGGLE_ANGLE = 1f
 private const val WIGGLE_MILLIS = 130
 private const val SCROLL_EDGE = 120
 private const val SCROLL_STEP = 12f
-private val ACCENTS =
-  mapOf("àáâãäå" to 'a', "ç" to 'c', "èéêë" to 'e', "ìíîï" to 'i', "ñ" to 'n', "òóôõöő" to 'o', "ùúûüű" to 'u', "ş" to 's', "ğ" to 'g', "ı" to 'i')
 private val KEY_WIDTH = 104.dp
 private val KEY_HEIGHT = 92.dp
 private const val KEY_CORNER = 26

@@ -495,14 +495,6 @@
     <string name="settings_language">Dil</string>
     <string name="settings_language_support">Uygulama dilini değiştir</string>
     <string name="settings_light_mode">Açık</string>
-    <string name="settings_menu">Menü</string>
-    <string name="settings_menu_hidden">Gizli</string>
-    <string name="settings_menu_hide">Menüden gizle</string>
-    <string name="settings_menu_reorder">Sıralamak için sürükleyin</string>
-    <string name="settings_menu_reset">Menüyü sıfırla</string>
-    <string name="settings_menu_show">Menüde göster</string>
-    <string name="settings_menu_shown">Gösterilen</string>
-    <string name="settings_menu_support">Uygulamaların sırası ve hangilerinin gösterildiği</string>
     <string name="settings_note">Not</string>
     <string name="settings_partial_history_view">Kısmi geçmiş görünümü</string>
     <string name="settings_partial_history_view_support">Geçmişteki son girdiye göz at</string>
@@ -529,8 +521,6 @@
     <string name="settings_sort_by_scale_desc">Ölçek (Azalan)</string>
     <string name="settings_sort_by_usage">Kullanım</string>
     <string name="settings_space">Boşluk</string>
-    <string name="settings_starting_screen">Başlangıç ekranı</string>
-    <string name="settings_starting_screen_support">Başlangıç ekranı ve kısayollar</string>
     <string name="settings_stepped_drag_gesture">Kademeli sürükleme hareketi</string>
     <string name="settings_stepped_drag_gesture_support">Çok fazla sürüklerken kısmi geçmiş görünümünü atlama</string>
     <string name="settings_system">Sistem</string>
@@ -1587,6 +1577,8 @@
     <string name="place_title">Gök ve Yer</string>
     <string name="home_title">Ana sayfa</string>
     <string name="home_hidden">Gizli</string>
+    <string name="home_hide">Gizle</string>
+    <string name="home_show">Göster</string>
     <string name="home_edit_hint">Araçları istediğin yere sürükle.</string>
     <string name="home_reset">A–Z sırasına dön</string>
     <string name="projectile_title">Eğik atış</string>

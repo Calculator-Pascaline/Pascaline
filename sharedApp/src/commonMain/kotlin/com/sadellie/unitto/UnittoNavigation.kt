@@ -47,6 +47,10 @@ import com.sadellie.unitto.core.navigation.DRAWER_LAYOUT_KEY
 import com.sadellie.unitto.core.navigation.DrawerItem
 import com.sadellie.unitto.core.navigation.HomeDrawerItem
 import com.sadellie.unitto.core.navigation.HomeStartRoute
+import com.sadellie.unitto.core.navigation.NamedTool
+import com.sadellie.unitto.core.navigation.TOOL_ORDER_KEY
+import com.sadellie.unitto.core.navigation.alphabetical
+import com.sadellie.unitto.core.navigation.ordered
 import com.sadellie.unitto.core.navigation.DrawerLayout
 import com.sadellie.unitto.core.navigation.LocalNavigator
 import com.sadellie.unitto.core.navigation.Navigator
@@ -61,6 +65,7 @@ import com.sadellie.unitto.feature.settings.navigation.navigateToUnitGroups
 import io.github.sadellie.themmo.ThemmoController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.navigation3.koinEntryProvider
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -80,7 +85,17 @@ fun MainAppContent(
   val savedLayout by
     remember(userPrefsRepository) { userPrefsRepository.appData(DRAWER_LAYOUT_KEY) }
       .collectAsState(initial = "")
-  val drawerItems = remember(savedLayout) { DrawerLayout.parse(savedLayout).shown }
+  val savedOrder by
+    remember(userPrefsRepository) { userPrefsRepository.appData(TOOL_ORDER_KEY) }
+      .collectAsState(initial = "")
+  // The order of the home grid
+  val drawerItems =
+    DrawerLayout.parse(savedLayout)
+      .shown
+      .map { NamedTool(it, stringResource(it.name)) }
+      .alphabetical()
+      .ordered(savedOrder)
+      .map { it.item }
   val phoneKeypad by
     remember(userPrefsRepository) { userPrefsRepository.appData(PrefKeys.PHONE_KEYPAD_PREF_KEY) }
       .collectAsState(initial = "")

@@ -19,7 +19,7 @@
 package com.sadellie.unitto.core.navigation
 
 /**
- * Apps of the menu in the order chosen by the user, and the ones they hid.
+ * Tools that are shown and the ones hidden in the edit mode of the home grid.
  *
  * Saved as `shown;hidden` with route ids separated by commas. Apps that are in neither, like new
  * ones, are shown at the end.

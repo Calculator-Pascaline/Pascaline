@@ -47,10 +47,8 @@ import com.sadellie.unitto.core.designsystem.icons.symbols.Calculate
 import com.sadellie.unitto.core.designsystem.icons.symbols.Code
 import com.sadellie.unitto.core.designsystem.icons.symbols.Copyright
 import com.sadellie.unitto.core.designsystem.icons.symbols.Favorite
-import com.sadellie.unitto.core.designsystem.icons.symbols.Home
 import com.sadellie.unitto.core.designsystem.icons.symbols.Info
 import com.sadellie.unitto.core.designsystem.icons.symbols.LockScreen
-import com.sadellie.unitto.core.designsystem.icons.symbols.Menu
 import com.sadellie.unitto.core.designsystem.icons.symbols.NewReleases
 import com.sadellie.unitto.core.designsystem.icons.symbols.Palette
 import com.sadellie.unitto.core.designsystem.icons.symbols.RateReview
@@ -78,8 +76,6 @@ import com.sadellie.unitto.feature.settings.navigation.CalculatorSettingsRoute
 import com.sadellie.unitto.feature.settings.navigation.ConverterSettingsRoute
 import com.sadellie.unitto.feature.settings.navigation.DisplayRoute
 import com.sadellie.unitto.feature.settings.navigation.FormattingRoute
-import com.sadellie.unitto.feature.settings.navigation.MenuRoute
-import com.sadellie.unitto.feature.settings.navigation.StartingScreenRoute
 import com.sadellie.unitto.feature.settings.navigation.ThirdPartyRoute
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -101,15 +97,11 @@ import unitto.core.common.generated.resources.settings_formatting_support
 import unitto.core.common.generated.resources.settings_general
 import unitto.core.common.generated.resources.settings_keep_screen_on
 import unitto.core.common.generated.resources.settings_keep_screen_on_support
-import unitto.core.common.generated.resources.settings_menu
-import unitto.core.common.generated.resources.settings_menu_support
 import unitto.core.common.generated.resources.settings_phone
 import unitto.core.common.generated.resources.settings_report_issue
 import unitto.core.common.generated.resources.settings_report_issue_support
 import unitto.core.common.generated.resources.settings_show_on_lock_screen
 import unitto.core.common.generated.resources.settings_show_on_lock_screen_support
-import unitto.core.common.generated.resources.settings_starting_screen
-import unitto.core.common.generated.resources.settings_starting_screen_support
 import unitto.core.common.generated.resources.settings_third_party_licenses
 import unitto.core.common.generated.resources.settings_title
 import unitto.core.common.generated.resources.settings_updated
@@ -196,7 +188,7 @@ private fun SettingsScreen(
   }
 }
 
-/** Display, formatting, menu and starting screen. */
+/** Display and formatting. */
 @Composable
 private fun GeneralSettings(navControllerAction: (Route) -> Unit) {
   ListHeader(stringResource(Res.string.settings_general))
@@ -212,20 +204,6 @@ private fun GeneralSettings(navControllerAction: (Route) -> Unit) {
     headlineText = stringResource(Res.string.settings_formatting),
     supportingText = stringResource(Res.string.settings_formatting_support),
     onClick = { navControllerAction(FormattingRoute) },
-    shape = ListItemExpressiveDefaults.middleShape,
-  )
-  ListItemExpressive(
-    icon = Symbols.Menu,
-    headlineText = stringResource(Res.string.settings_menu),
-    supportingText = stringResource(Res.string.settings_menu_support),
-    onClick = { navControllerAction(MenuRoute) },
-    shape = ListItemExpressiveDefaults.middleShape,
-  )
-  ListItemExpressive(
-    icon = Symbols.Home,
-    headlineText = stringResource(Res.string.settings_starting_screen),
-    supportingText = stringResource(Res.string.settings_starting_screen_support),
-    onClick = { navControllerAction(StartingScreenRoute) },
     shape = ListItemExpressiveDefaults.lastShape,
   )
 }

@@ -495,14 +495,6 @@
     <string name="settings_language">语言</string>
     <string name="settings_language_support">更改应用语言</string>
     <string name="settings_light_mode">浅色</string>
-    <string name="settings_menu">菜单</string>
-    <string name="settings_menu_hidden">隐藏</string>
-    <string name="settings_menu_hide">从菜单中隐藏</string>
-    <string name="settings_menu_reorder">拖动以重新排序</string>
-    <string name="settings_menu_reset">重置菜单</string>
-    <string name="settings_menu_show">在菜单中显示</string>
-    <string name="settings_menu_shown">显示</string>
-    <string name="settings_menu_support">应用的顺序和显示哪些应用</string>
     <string name="settings_note">注意</string>
     <string name="settings_partial_history_view">部分历史视图</string>
     <string name="settings_partial_history_view_support">预览历史记录中的最新条目</string>
@@ -529,8 +521,6 @@
     <string name="settings_sort_by_scale_desc">按量级（降序）</string>
     <string name="settings_sort_by_usage">按使用频率</string>
     <string name="settings_space">空格</string>
-    <string name="settings_starting_screen">启动屏幕</string>
-    <string name="settings_starting_screen_support">启动屏幕和快捷方式</string>
     <string name="settings_stepped_drag_gesture">步进拖动手势</string>
     <string name="settings_stepped_drag_gesture_support">拖动过多时不跳过部分历史视图</string>
     <string name="settings_system">跟随系统</string>
@@ -1587,6 +1577,8 @@
     <string name="place_title">天空与大地</string>
     <string name="home_title">主页</string>
     <string name="home_hidden">已隐藏</string>
+    <string name="home_hide">隐藏</string>
+    <string name="home_show">显示</string>
     <string name="home_edit_hint">把工具拖到你想要的位置。</string>
     <string name="home_reset">恢复字母顺序</string>
     <string name="projectile_title">抛体运动</string>

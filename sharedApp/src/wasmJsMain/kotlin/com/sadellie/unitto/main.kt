@@ -158,7 +158,7 @@ private fun App() {
   val appPreferences = userPrefsRepository.appPrefs.collectAsState(null).value ?: return
   val themmoController = rememberUnittoThemmoController(appPreferences)
   Themmo(themmoController = themmoController) {
-    val backStack = rememberNavBackStack(navBackStackConfig, appPreferences.startingScreen)
+    val backStack = rememberNavBackStack(navBackStackConfig, HomeStartRoute)
     // The browser's back button closes the open screen. Before the content, so a drawer or a
     // search inside it is closed first
     BackHandler(backStack.size > 1) { backStack.removeLastOrNull() }

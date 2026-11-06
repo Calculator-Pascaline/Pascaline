@@ -495,14 +495,6 @@
     <string name="settings_language">Sprache</string>
     <string name="settings_language_support">App-Sprache ändern</string>
     <string name="settings_light_mode">Hell</string>
-    <string name="settings_menu">Menü</string>
-    <string name="settings_menu_hidden">Ausgeblendet</string>
-    <string name="settings_menu_hide">Aus dem Menü ausblenden</string>
-    <string name="settings_menu_reorder">Zum Sortieren ziehen</string>
-    <string name="settings_menu_reset">Menü zurücksetzen</string>
-    <string name="settings_menu_show">Im Menü anzeigen</string>
-    <string name="settings_menu_shown">Angezeigt</string>
-    <string name="settings_menu_support">Reihenfolge der Apps und welche angezeigt werden</string>
     <string name="settings_note">Hinweis</string>
     <string name="settings_partial_history_view">Teilweise Verlaufansicht</string>
     <string name="settings_partial_history_view_support">Letzten Eintrag im Verlauf anzeigen</string>
@@ -529,8 +521,6 @@
     <string name="settings_sort_by_scale_desc">Skala (Abst.)</string>
     <string name="settings_sort_by_usage">Nutzung</string>
     <string name="settings_space">Leerzeichen</string>
-    <string name="settings_starting_screen">Startbildschirm</string>
-    <string name="settings_starting_screen_support">Startbildschirm und Verknüpfungen</string>
     <string name="settings_stepped_drag_gesture">Gestufter Ziehvorgang</string>
     <string name="settings_stepped_drag_gesture_support">Teilweise Verlaufansicht beim Ziehen nicht überspringen</string>
     <string name="settings_system">System</string>
@@ -1587,6 +1577,8 @@
     <string name="place_title">Himmel und Erde</string>
     <string name="home_title">Startseite</string>
     <string name="home_hidden">Ausgeblendet</string>
+    <string name="home_hide">Ausblenden</string>
+    <string name="home_show">Einblenden</string>
     <string name="home_edit_hint">Ziehe Werkzeuge an die gewünschte Stelle.</string>
     <string name="home_reset">Zurück zu A bis Z</string>
     <string name="projectile_title">Wurfbahn</string>

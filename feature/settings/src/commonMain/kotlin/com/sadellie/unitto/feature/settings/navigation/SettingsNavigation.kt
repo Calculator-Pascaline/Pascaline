@@ -32,8 +32,6 @@ import com.sadellie.unitto.feature.settings.calculator.CalculatorSettingsRoute
 import com.sadellie.unitto.feature.settings.converter.ConverterSettingsRoute
 import com.sadellie.unitto.feature.settings.display.DisplayRoute
 import com.sadellie.unitto.feature.settings.formatting.FormattingRoute
-import com.sadellie.unitto.feature.settings.menu.MenuRoute
-import com.sadellie.unitto.feature.settings.startingscreen.StartingScreenRoute
 import com.sadellie.unitto.feature.settings.thirdparty.ThirdPartyLicensesScreen
 import com.sadellie.unitto.feature.settings.unitgroups.UnitGroupsRoute
 import io.github.sadellie.themmo.ThemmoController
@@ -62,14 +60,6 @@ fun Module.settingNavigation() {
     )
   }
   languageNavigation()
-  navigation<StartingScreenRoute>(metadata = NavDisplay.stackedTransition()) {
-    val navigator = LocalNavigator.current
-    StartingScreenRoute(navigateUp = navigator::goBack)
-  }
-  navigation<MenuRoute>(metadata = NavDisplay.stackedTransition()) {
-    val navigator = LocalNavigator.current
-    MenuRoute(navigateUp = navigator::goBack)
-  }
   navigation<FormattingRoute>(metadata = NavDisplay.stackedTransition()) {
     val navigator = LocalNavigator.current
     FormattingRoute(navigateUpAction = navigator::goBack)
@@ -108,16 +98,6 @@ internal data object DisplayRoute : Route {
 @Serializable
 internal data object LanguageRoute : Route {
   override val routeId = "language_route"
-}
-
-@Serializable
-internal data object StartingScreenRoute : Route {
-  override val routeId = "starting_screen_route"
-}
-
-@Serializable
-internal data object MenuRoute : Route {
-  override val routeId = "menu_route"
 }
 
 @Serializable

@@ -495,14 +495,6 @@
     <string name="settings_language">Langue</string>
     <string name="settings_language_support">Changer la langue de l'application</string>
     <string name="settings_light_mode">Clair</string>
-    <string name="settings_menu">Menu</string>
-    <string name="settings_menu_hidden">Masquées</string>
-    <string name="settings_menu_hide">Masquer du menu</string>
-    <string name="settings_menu_reorder">Faites glisser pour réordonner</string>
-    <string name="settings_menu_reset">Réinitialiser le menu</string>
-    <string name="settings_menu_show">Afficher dans le menu</string>
-    <string name="settings_menu_shown">Affichées</string>
-    <string name="settings_menu_support">Ordre des apps et celles qui sont affichées</string>
     <string name="settings_note">Note</string>
     <string name="settings_partial_history_view">Vue partielle de l'historique</string>
     <string name="settings_partial_history_view_support">Aperçu de la dernière entrée dans l'historique</string>
@@ -529,8 +521,6 @@
     <string name="settings_sort_by_scale_desc">Échelle (Décroiss.)</string>
     <string name="settings_sort_by_usage">Utilisation</string>
     <string name="settings_space">Espace</string>
-    <string name="settings_starting_screen">Écran d'accueil</string>
-    <string name="settings_starting_screen_support">Écran d'accueil et raccourcis</string>
     <string name="settings_stepped_drag_gesture">Geste de glissement par étapes</string>
     <string name="settings_stepped_drag_gesture_support">Ne pas sauter la vue partielle de l'historique lors d'un glissement excessif</string>
     <string name="settings_system">Système</string>
@@ -1587,6 +1577,8 @@
     <string name="place_title">Ciel et Terre</string>
     <string name="home_title">Accueil</string>
     <string name="home_hidden">Masqués</string>
+    <string name="home_hide">Masquer</string>
+    <string name="home_show">Afficher</string>
     <string name="home_edit_hint">Fais glisser les outils où tu veux.</string>
     <string name="home_reset">Revenir à A–Z</string>
     <string name="projectile_title">Projectile</string>

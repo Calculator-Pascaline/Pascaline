@@ -33,7 +33,6 @@ data class AppPreferences(
   val enableAmoledTheme: Boolean,
   val customColor: Long,
   val monetMode: MonetMode,
-  val startingScreen: Route,
   val enableToolsExperiment: Boolean,
   val enableVibrations: Boolean,
   val enableKeepScreenOn: Boolean,
@@ -88,4 +87,3 @@ data class BodyMassPreferences(val formatterSymbols: FormatterSymbols)
 
 data class AboutPreferences(val enableToolsExperiment: Boolean)
 
-data class StartingScreenPreferences(val startingScreen: TopLevelRoute)

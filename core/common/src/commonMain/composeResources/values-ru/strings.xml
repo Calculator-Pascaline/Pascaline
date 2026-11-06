@@ -495,14 +495,6 @@
     <string name="settings_language">Язык</string>
     <string name="settings_language_support">Изменить язык приложения</string>
     <string name="settings_light_mode">Светлая</string>
-    <string name="settings_menu">Меню</string>
-    <string name="settings_menu_hidden">Скрыты</string>
-    <string name="settings_menu_hide">Скрыть из меню</string>
-    <string name="settings_menu_reorder">Перетащите, чтобы изменить порядок</string>
-    <string name="settings_menu_reset">Сбросить меню</string>
-    <string name="settings_menu_show">Показать в меню</string>
-    <string name="settings_menu_shown">Показаны</string>
-    <string name="settings_menu_support">Порядок приложений и какие из них показаны</string>
     <string name="settings_note">Примечание</string>
     <string name="settings_partial_history_view">Частичный просмотр истории</string>
     <string name="settings_partial_history_view_support">Показывать последнюю запись в истории</string>
@@ -529,8 +521,6 @@
     <string name="settings_sort_by_scale_desc">Шкала (по убыванию)</string>
     <string name="settings_sort_by_usage">По использованию</string>
     <string name="settings_space">Пробел</string>
-    <string name="settings_starting_screen">Начальный экран</string>
-    <string name="settings_starting_screen_support">Начальный экран и ярлыки</string>
     <string name="settings_stepped_drag_gesture">Пошаговый жест перетаскивания</string>
     <string name="settings_stepped_drag_gesture_support">Не пропускать частичный просмотр истории при слишком сильном перетаскивании</string>
     <string name="settings_system">Системная</string>
@@ -1587,6 +1577,8 @@
     <string name="place_title">Небо и Земля</string>
     <string name="home_title">Главная</string>
     <string name="home_hidden">Скрытые</string>
+    <string name="home_hide">Скрыть</string>
+    <string name="home_show">Показать</string>
     <string name="home_edit_hint">Перетащите инструменты туда, где они вам удобны.</string>
     <string name="home_reset">Вернуть А–Я</string>
     <string name="projectile_title">Снаряд</string>

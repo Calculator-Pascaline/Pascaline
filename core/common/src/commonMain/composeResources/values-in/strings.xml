@@ -495,14 +495,6 @@
     <string name="settings_language">Bahasa</string>
     <string name="settings_language_support">Ubah bahasa aplikasi</string>
     <string name="settings_light_mode">Terang</string>
-    <string name="settings_menu">Menu</string>
-    <string name="settings_menu_hidden">Disembunyikan</string>
-    <string name="settings_menu_hide">Sembunyikan dari menu</string>
-    <string name="settings_menu_reorder">Seret untuk mengurutkan</string>
-    <string name="settings_menu_reset">Atur ulang menu</string>
-    <string name="settings_menu_show">Tampilkan di menu</string>
-    <string name="settings_menu_shown">Ditampilkan</string>
-    <string name="settings_menu_support">Urutan aplikasi dan mana yang ditampilkan</string>
     <string name="settings_note">Catatan</string>
     <string name="settings_partial_history_view">Tampilan sebagian riwayat</string>
     <string name="settings_partial_history_view_support">Lihat masukan terbaru dalam riwayat</string>
@@ -529,8 +521,6 @@
     <string name="settings_sort_by_scale_desc">Skala (Turun)</string>
     <string name="settings_sort_by_usage">Sering digunakan</string>
     <string name="settings_space">Spasi</string>
-    <string name="settings_starting_screen">Layar mulai</string>
-    <string name="settings_starting_screen_support">Layar mulai dan pintasan</string>
     <string name="settings_stepped_drag_gesture">Gestur seret bertahap</string>
     <string name="settings_stepped_drag_gesture_support">Jangan lewati tampilan riwayat sebagian saat menyeret terlalu jauh</string>
     <string name="settings_system">Sistem</string>
@@ -1587,6 +1577,8 @@
     <string name="place_title">Langit dan Bumi</string>
     <string name="home_title">Beranda</string>
     <string name="home_hidden">Tersembunyi</string>
+    <string name="home_hide">Sembunyikan</string>
+    <string name="home_show">Tampilkan</string>
     <string name="home_edit_hint">Seret alat ke tempat yang kamu mau.</string>
     <string name="home_reset">Kembali ke A–Z</string>
     <string name="projectile_title">Proyektil</string>
