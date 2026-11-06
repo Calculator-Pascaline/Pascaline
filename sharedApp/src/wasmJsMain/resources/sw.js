@@ -50,9 +50,16 @@ self.addEventListener("fetch", (event) => {
   );
 });
 
+// Not saved here, the install does that: copying a file this big can fail on iPhones. Storage that
+// can't be read must not stop the download either
 async function cacheFirst(request) {
-  const cached = await caches.match(request);
-  return cached || fetchAndKeep(request);
+  try {
+    const cached = await caches.match(request);
+    if (cached) return cached;
+  } catch (error) {
+    console.warn("Offline files can't be read", error);
+  }
+  return fetch(request);
 }
 
 // Asks the server whether the file changed (a short answer when it didn't), the saved one offline

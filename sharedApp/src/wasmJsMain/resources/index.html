@@ -23,6 +23,33 @@
         );
       }
 
+      // Safari can drop big downloads partway, and nothing else tries again. Each .wasm file comes
+      // whole, one at a time, and a dropped one starts over. A file that works isn't touched
+      const fetchFile = window.fetch.bind(window);
+      let wasmDownloads = Promise.resolve();
+      let wasmRetries = 0;
+      async function fetchWhole(input, init) {
+        for (let attempt = 1; ; attempt++) {
+          try {
+            const response = await fetchFile(input, attempt > 1 ? { ...init, cache: "no-store" } : init);
+            if (!response.ok) return response;
+            return new Response(await response.arrayBuffer(), { headers: { "Content-Type": "application/wasm" } });
+          } catch (error) {
+            if (attempt > WASM_RETRIES) throw error;
+            wasmRetries++;
+            await new Promise((resolve) => setTimeout(resolve, attempt * 1000));
+          }
+        }
+      }
+      const WASM_RETRIES = 4;
+      window.fetch = (input, init) => {
+        const url = String(input instanceof Request ? input.url : input).split("?")[0];
+        if (!url.endsWith(".wasm")) return fetchFile(input, init);
+        const download = wasmDownloads.then(() => fetchWhole(input, init));
+        wasmDownloads = download.catch(() => {});
+        return download;
+      };
+
       // Errors show what went wrong instead of a white page: the first few, the first one is often
       // only a consequence
       const startErrors = [];
@@ -33,8 +60,38 @@
         }
         return String(value);
       }
+      // Safari can fail to load the app through an offline copy. Online, that copy is dropped and
+      // the page loads once more without it. Once only, a real error must stay visible
+      function retryWithoutOfflineCopy(text) {
+        if (!/Load failed/.test(text) || !navigator.onLine) return false;
+        try {
+          if (sessionStorage.getItem("retried-without-offline-copy")) return false;
+          sessionStorage.setItem("retried-without-offline-copy", "true");
+        } catch (e) {
+          return false;
+        }
+        const registrations = "serviceWorker" in navigator ? navigator.serviceWorker.getRegistrations() : Promise.resolve([]);
+        registrations
+          .then((list) => Promise.all(list.map((registration) => registration.unregister())))
+          .then(() => ("caches" in window ? caches.keys() : []))
+          .then((keys) => Promise.all(keys.map((key) => caches.delete(key))))
+          .catch(() => {})
+          .then(() => location.reload());
+        return true;
+      }
+      // What the browser knows about the app's biggest files: a blocked download or a slow one
+      function loadDetails() {
+        const seconds = (performance.now() / 1000).toFixed(1);
+        const files = performance
+          .getEntriesByType("resource")
+          .filter((entry) => entry.name.endsWith(".wasm"))
+          .map((entry) => entry.name.split("/").pop().slice(0, 6) + " " + Math.round(entry.duration) + " ms " + entry.encodedBodySize + " b");
+        const source = "serviceWorker" in navigator && navigator.serviceWorker.controller ? "offline copy" : "network";
+        return [seconds + " s, " + source + ", " + wasmRetries + " retries" + (navigator.onLine ? "" : ", offline"), ...files].join("\n");
+      }
       function showStartError(reason) {
         const text = String(reason).slice(0, 400);
+        if (retryWithoutOfflineCopy(text)) return;
         if (startErrors.length >= 5 || startErrors.includes(text)) return;
         startErrors.push(text);
         let box = document.getElementById("start-error");
@@ -51,7 +108,7 @@
           // Not in body: the app puts its own content there and hides the rest
           document.documentElement.appendChild(box);
         }
-        box.querySelector("code").textContent = startErrors.join("\n\n");
+        box.querySelector("code").textContent = startErrors.concat(loadDetails()).join("\n\n");
       }
       // The app reports some of its errors only to the console
       const consoleError = console.error.bind(console);
