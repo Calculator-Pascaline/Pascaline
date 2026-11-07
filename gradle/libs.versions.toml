@@ -1,6 +1,6 @@
 [versions]
-versionCode = "82"
-versionName = "1.5.0"
+versionCode = "83"
+versionName = "1.6.0"
 
 # https://mvnrepository.com/artifact/androidx.browser/browser
 androidxBrowserBrowser = "1.10.0"
