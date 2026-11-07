@@ -235,6 +235,16 @@ Ideas, bugs or anything that could make Pascaline better are welcome.
 
 Pascaline is based on [Unitto](https://github.com/sadellie/unitto) by Elshan Agaev. Thanks for building the foundation this app grew from. Pascaline is not affiliated with or endorsed by Unitto.
 
+How much comes from each, as of version 1.6.0, leaving out the bundled math library and the icon drawings:
+
+| | From Unitto | From Pascaline |
+|---|---|---|
+| All code | 46% | 54% |
+| Calculator and its tools | 5% | 95% |
+| Math engine | 12% | 88% |
+
+Unitto's code is mostly the base underneath: storage, settings, the unit converter and the home screen widget. The calculator, its math engine and the tools are mostly Pascaline's. The shares come from `git blame` line counts, so they are approximate.
+
 ## 📄 License
 
 Pascaline is free software under the [GNU General Public License v3.0](./LICENSE), like Unitto. Files changed from Unitto keep their original copyright notice next to the new one.
