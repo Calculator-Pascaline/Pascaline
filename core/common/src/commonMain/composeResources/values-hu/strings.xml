@@ -1926,4 +1926,10 @@
     <string name="home_edit_sections_hint">Húzz egy eszközt a helye módosításához, koppints rá, hogy másik szakaszba tedd.</string>
     <string name="projectile_bullet">Lövedék</string>
     <string name="units_menu_astronomy">Csillagászat</string>
+    <string name="projectile_max_range">Legnagyobb távolság</string>
+    <string name="projectile_max_range_hint">A szög, amellyel ezzel a sebességgel és magasságból a legmesszebbre jut.</string>
+    <string name="projectile_max_range_air">Levegővel nincs képlet: minden szöget kipróbál fokonként. A levegő miatt a legjobb szög kisebb, mint nélküle.</string>
+    <string name="projectile_max_range_how">Hogyan kapjuk</string>
+    <string name="projectile_max_range_how_text">A földről a legjobb szög 45°. Minél magasabbról dobunk, annál laposabb.</string>
+    <string name="projectile_your_throw">A te dobásod</string>
 </resources>

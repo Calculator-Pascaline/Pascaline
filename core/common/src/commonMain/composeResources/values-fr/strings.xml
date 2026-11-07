@@ -1926,4 +1926,10 @@
     <string name="home_edit_sections_hint">Glissez un outil pour changer sa place, touchez-le pour le mettre dans une autre section.</string>
     <string name="projectile_bullet">Balle de pistolet</string>
     <string name="units_menu_astronomy">Astronomie</string>
+    <string name="projectile_max_range">Portée maximale</string>
+    <string name="projectile_max_range_hint">L’angle auquel lancer pour aller le plus loin possible, avec cette vitesse et cette hauteur.</string>
+    <string name="projectile_max_range_air">Avec l’air il n’y a pas de formule : chaque angle est essayé, au degré près. L’air rend le meilleur angle plus bas que sans air.</string>
+    <string name="projectile_max_range_how">Comment on le trouve</string>
+    <string name="projectile_max_range_how_text">Depuis le sol, le meilleur angle est 45°. Plus on lance de haut, plus il est bas.</string>
+    <string name="projectile_your_throw">Votre lancer</string>
 </resources>

@@ -1926,4 +1926,10 @@
     <string name="home_edit_sections_hint">Arraste uma ferramenta para mudar o lugar dela, toque nela para colocá-la em outra seção.</string>
     <string name="projectile_bullet">Bala</string>
     <string name="units_menu_astronomy">Astronomia</string>
+    <string name="projectile_max_range">Alcance máximo</string>
+    <string name="projectile_max_range_hint">O ângulo para lançar e ir o mais longe possível, com esta velocidade e altura.</string>
+    <string name="projectile_max_range_air">Com ar não há fórmula: cada ângulo é testado, ao grau. O ar deixa o melhor ângulo mais baixo do que sem ele.</string>
+    <string name="projectile_max_range_how">Como é encontrado</string>
+    <string name="projectile_max_range_how_text">Do chão o melhor ângulo é 45°. Quanto mais alto o lançamento, mais baixo ele fica.</string>
+    <string name="projectile_your_throw">Seu lançamento</string>
 </resources>

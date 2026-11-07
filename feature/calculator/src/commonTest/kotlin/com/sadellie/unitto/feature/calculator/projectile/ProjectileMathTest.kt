@@ -110,6 +110,20 @@ class ProjectileMathTest {
   }
 
   @Test
+  fun maxRangeWithoutAir() {
+    val (ground, groundRange) = assertNotNull(Launch(20.0, 10.0, 0.0, 9.81).maxRange(null))
+    assertEquals(45.0, ground, 1e-9)
+    assertEquals(400 / 9.81, groundRange, 1e-9)
+    val (high, highRange) = assertNotNull(Launch(20.0, 10.0, 10.0, 9.81).maxRange(null))
+    assertTrue(high < 45.0, "angle $high")
+    // The formula gives the same range as flying at that angle, and nearby angles go less far
+    assertEquals(highRange, assertNotNull(Launch(20.0, high, 10.0, 9.81).flight()).range, 1e-9)
+    assertTrue(assertNotNull(Launch(20.0, high + 2, 10.0, 9.81).flight()).range < highRange)
+    assertTrue(assertNotNull(Launch(20.0, high - 2, 10.0, 9.81).flight()).range < highRange)
+    assertNull(Launch(0.0, 10.0, 0.0, 9.81).maxRange(null))
+  }
+
+  @Test
   fun airLowersTheBestAngle() {
     val (angle, range) = Launch(40.0, 45.0, 0.0, 9.81).bestAngle(tennis)
     assertTrue(angle < 45.0, "angle $angle")

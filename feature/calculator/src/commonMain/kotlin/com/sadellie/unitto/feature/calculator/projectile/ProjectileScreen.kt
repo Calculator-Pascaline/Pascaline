@@ -66,6 +66,7 @@ import com.sadellie.unitto.core.ui.ScaffoldWithTopBar
 import com.sadellie.unitto.feature.calculator.probability.rounded
 import com.sadellie.unitto.feature.calculator.probability.sliderValue
 import com.sadellie.unitto.feature.calculator.probability.toNumberOrNull
+import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.round
 import kotlinx.coroutines.flow.map
@@ -116,6 +117,11 @@ import unitto.core.common.generated.resources.projectile_launch
 import unitto.core.common.generated.resources.projectile_mars
 import unitto.core.common.generated.resources.projectile_mass
 import unitto.core.common.generated.resources.projectile_max_height
+import unitto.core.common.generated.resources.projectile_max_range
+import unitto.core.common.generated.resources.projectile_max_range_air
+import unitto.core.common.generated.resources.projectile_max_range_hint
+import unitto.core.common.generated.resources.projectile_max_range_how
+import unitto.core.common.generated.resources.projectile_max_range_how_text
 import unitto.core.common.generated.resources.projectile_ping_pong
 import unitto.core.common.generated.resources.projectile_range
 import unitto.core.common.generated.resources.projectile_bullet
@@ -129,6 +135,7 @@ import unitto.core.common.generated.resources.projectile_title
 import unitto.core.common.generated.resources.projectile_use_angle
 import unitto.core.common.generated.resources.projectile_with_air
 import unitto.core.common.generated.resources.projectile_without_air
+import unitto.core.common.generated.resources.projectile_your_throw
 
 /** One starting condition, typed or on its slider. */
 internal class Condition(
@@ -245,10 +252,11 @@ internal fun ProjectileRoute(openDrawer: () -> Unit) {
       }
     }
     val explanation: @Composable () -> Unit = {
+      MaxRangeCard(launch, air, flight, format) { angle = it.rounded(0) }
       when {
         flight == null -> Unit
         air != null && withoutAir != null -> {
-          AirResults(flight, withoutAir, air, format) { angle = it.rounded(0) }
+          AirResults(flight, withoutAir, air, format)
           AirExplanation(flight, air, format)
         }
         else -> Explanation(flight, format)
@@ -422,24 +430,58 @@ private fun AirSwitch(hasAir: Boolean, onChange: (Boolean) -> Unit) {
   }
 }
 
-/** What the air changes: how far it goes, the fastest fall, and the angle that goes furthest. */
+/** What the air changes: how far it goes and the fastest fall. */
 @Composable
 private fun AirResults(
   flight: Trajectory,
   withoutAir: Trajectory,
   air: Air,
   format: (Double) -> String,
-  onUseAngle: (Double) -> Unit,
 ) {
   val launch = flight.launch
-  val best = remember(launch, air) { launch.bestAngle(air) }
   val lost = (1 - flight.range / withoutAir.range) * PERCENT
   Card(stringResource(Res.string.projectile_air_effect)) {
     AirLine(Res.string.projectile_without_air, "${format(withoutAir.range)} m")
     AirLine(Res.string.projectile_with_air, "${format(flight.range)} m (−${format(lost)} %)")
     AirLine(Res.string.projectile_terminal, "${format(air.terminalSpeed(launch.gravity))} m/s")
-    AirLine(Res.string.projectile_best_angle, "${format(best.first)}° → ${format(best.second)} m")
-    TextButton(onClick = { onUseAngle(best.first) }) { Text(stringResource(Res.string.projectile_use_angle)) }
+  }
+}
+
+/** The angle to throw at to go furthest with this speed and height, and how this throw compares. */
+@Composable
+private fun MaxRangeCard(launch: Launch, air: Air?, flight: Trajectory?, format: (Double) -> String, onUseAngle: (Double) -> Unit) {
+  // The angle doesn't change the answer, so moving it doesn't search again
+  val aimless = launch.copy(angle = 0.0)
+  val best = remember(aimless, air) { aimless.maxRange(air) } ?: return
+  val (angle, range) = best
+  val hasAir = air != null && air.density > 0
+  Card(stringResource(Res.string.projectile_max_range)) {
+    Text(
+      stringResource(Res.string.projectile_max_range_hint),
+      style = MaterialTheme.typography.bodyMedium,
+      color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+      Answer(Modifier.weight(1f), Res.string.projectile_best_angle, "${format(angle)}°")
+      Answer(Modifier.weight(1f), Res.string.projectile_range, "${format(range)} m")
+    }
+    if (hasAir) {
+      Text(stringResource(Res.string.projectile_max_range_air), style = MaterialTheme.typography.bodySmall)
+    } else {
+      val v = format(launch.speed)
+      val g = format(launch.gravity)
+      val h = format(launch.height)
+      Step(
+        Res.string.projectile_max_range_how,
+        Res.string.projectile_max_range_how_text,
+        "tan θ = v₀ / √(v₀² + 2 · g · h₀) = $v / √($v² + 2 · $g · $h) → θ = ${format(angle)}°",
+        "x = v₀ · √(v₀² + 2 · g · h₀) / g = ${format(range)} m",
+      )
+    }
+    if (flight != null && abs(launch.angle - angle) >= HALF) {
+      AirLine(Res.string.projectile_your_throw, "${format(flight.range)} m (${format(flight.range / range * PERCENT)} %)")
+      TextButton(onClick = { onUseAngle(angle) }) { Text(stringResource(Res.string.projectile_use_angle)) }
+    }
   }
 }
 
@@ -574,6 +616,7 @@ private const val DECIMALS = 2
 private const val SMALL_DECIMALS = 5
 private const val CENTIMETERS = 100
 private const val PERCENT = 100
+private const val HALF = 0.5
 private const val MILLIS_PER_SECOND = 1000
 private const val MIN_ANIMATION = 1500
 private const val MAX_ANIMATION = 6000

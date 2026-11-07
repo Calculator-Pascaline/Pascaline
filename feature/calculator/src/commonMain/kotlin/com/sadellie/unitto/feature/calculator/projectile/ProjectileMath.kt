@@ -20,6 +20,7 @@ package com.sadellie.unitto.feature.calculator.projectile
 
 import kotlin.math.PI
 import kotlin.math.abs
+import kotlin.math.atan
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.hypot
@@ -103,6 +104,21 @@ internal fun Launch.bestAngle(air: Air): Pair<Double, Double> {
     }
   return best to copy(angle = best).simulate(air, TIME_STEP).range
 }
+
+/**
+ * The angle that goes furthest and how far that is. Without air it is exact: tan θ = v₀ / √(v₀² + 2gh₀), 45° from the
+ * ground and lower from higher up. Null when the launch isn't valid or doesn't move.
+ */
+internal fun Launch.maxRange(air: Air?): Pair<Double, Double>? =
+  when {
+    !isValid || speed <= 0 -> null
+    air == null || air.density == 0.0 -> {
+      val root = sqrt(speed * speed + 2 * gravity * height)
+      atan(speed / root) * HALF_TURN / PI to speed * root / gravity
+    }
+    !air.isValid -> null
+    else -> bestAngle(air)
+  }
 
 /** Runge-Kutta: gravity down and air against the motion, [step] seconds at a time. */
 private fun Launch.simulate(air: Air, step: Double): Trajectory {
