@@ -235,15 +235,15 @@ Ideas, bugs or anything that could make Pascaline better are welcome.
 
 Pascaline is based on [Unitto](https://github.com/sadellie/unitto) by Elshan Agaev. Thanks for building the foundation this app grew from. Pascaline is not affiliated with or endorsed by Unitto.
 
-How much comes from each, as of version 1.6.0, in lines of Kotlin code. The bundled math library (`kt-math`), the icon drawings and the translations are left out:
+How much comes from each, as of version 1.6.0, in lines of Kotlin code. Only real code is counted: license headers, blank lines, comments, the bundled math library (`kt-math`), the icon drawings and the translations are left out.
 
 | | From Unitto | From Pascaline |
 |---|---|---|
-| All code | 36,627 lines (45.5%) | 43,840 lines (54.5%) |
-| Calculator and its tools | 1,391 lines (4.9%) | 26,733 lines (95.1%) |
-| Math engine | 929 lines (12.1%) | 6,737 lines (87.9%) |
+| All code | 27,339 lines (45.6%) | 32,560 lines (54.4%) |
+| Calculator and its tools | 1,487 lines (6.7%) | 20,629 lines (93.3%) |
+| Math engine | 572 lines (11.0%) | 4,624 lines (89.0%) |
 
-Unitto's code is mostly the base underneath: storage, settings, the unit converter and the home screen widget. The calculator, its math engine and the tools are mostly Pascaline's. Each line is counted for whoever changed it last (`git blame`): a Unitto line that was only reformatted counts as Pascaline's.
+Unitto's code is mostly the base underneath: storage, settings, the unit converter and the home screen widget. The calculator, its math engine and the tools are mostly Pascaline's. Each line is counted for whoever wrote it (`git blame -w -M -C`): a Unitto line that was only reformatted or moved still counts as Unitto's.
 
 ## 📄 License
 
