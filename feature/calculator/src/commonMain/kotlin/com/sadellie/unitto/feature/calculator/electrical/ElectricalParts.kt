@@ -55,9 +55,25 @@ internal fun <T : Enum<T>> ModeChips(entries: EnumEntries<T>, selected: T, title
   }
 }
 
+/** Like [ModeChips], for names that are the same in every language. */
+@Composable
+internal fun <T> NameChips(entries: List<T>, selected: T, label: (T) -> String, onChoose: (T) -> Unit) {
+  Row(
+    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+    horizontalArrangement = Arrangement.spacedBy(8.dp),
+  ) {
+    entries.forEach {
+      FilterChip(selected = it == selected, onClick = { onChoose(it) }, label = { Text(label(it)) })
+    }
+  }
+}
+
 /** Tiles of the same width with the results. */
 @Composable
-internal fun Answers(vararg answers: Pair<StringResource, String>) {
+internal fun Answers(vararg answers: Pair<StringResource, String>) = AnswerList(answers.asList())
+
+@Composable
+internal fun AnswerList(answers: List<Pair<StringResource, String>>) {
   Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
     answers.forEach { (label, value) -> Answer(Modifier.weight(1f), label, value) }
   }

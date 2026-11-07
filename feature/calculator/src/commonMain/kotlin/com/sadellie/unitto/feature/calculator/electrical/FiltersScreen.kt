@@ -77,6 +77,7 @@ import unitto.core.common.generated.resources.filters_hint
 import unitto.core.common.generated.resources.filters_low_pass
 import unitto.core.common.generated.resources.filters_middle
 import unitto.core.common.generated.resources.filters_phase
+import unitto.core.common.generated.resources.filters_order
 import unitto.core.common.generated.resources.filters_quality
 import unitto.core.common.generated.resources.filters_test
 import unitto.core.common.generated.resources.filters_title
@@ -107,11 +108,13 @@ internal fun FiltersRoute(openDrawer: () -> Unit) {
   val fractional = rememberFractional()
   val format = numberFormat(fractional)
   var kind by rememberSaveable { mutableStateOf(FilterKind.LOW_PASS) }
+  var chosenBuild by rememberSaveable { mutableStateOf(FilterBuild.RC) }
+  val build = if (chosenBuild in kind.builds) chosenBuild else kind.builds.first()
   var resistance by rememberSaveable { mutableStateOf("1000") }
   var capacitance by rememberSaveable { mutableStateOf("0.1") }
   var inductance by rememberSaveable { mutableStateOf("10") }
   var test by rememberSaveable { mutableStateOf("1000") }
-  val filter = Filter(kind, resistance.number(), capacitance.number() / MICRO, inductance.number() / MILLI)
+  val filter = Filter(kind, build, resistance.number(), capacitance.number() / MICRO, inductance.number() / MILLI)
   val frequency = test.number()
   val isValid = filter.isValid && frequency > 0
 
@@ -120,6 +123,7 @@ internal fun FiltersRoute(openDrawer: () -> Unit) {
     openDrawer = openDrawer,
     live = {
       ModeChips(FilterKind.entries, kind, { it.title }) { kind = it }
+      if (kind.builds.size > 1) NameChips(kind.builds, build, { it.label }) { chosenBuild = it }
       if (isValid) {
         FilterCard(filter, frequency, format) { test = it.rounded(if (it < FINE_BELOW) 2 else 0).replace(".", fractional) }
       } else {
@@ -129,8 +133,8 @@ internal fun FiltersRoute(openDrawer: () -> Unit) {
     settings = {
       Card(stringResource(Res.string.projectile_initial)) {
         ConditionRow(RESISTANCE, resistance, fractional) { resistance = it }
-        ConditionRow(CAPACITANCE, capacitance, fractional) { capacitance = it }
-        if (kind.isResonant) ConditionRow(INDUCTANCE, inductance, fractional) { inductance = it }
+        if (build.usesCapacitor) ConditionRow(CAPACITANCE, capacitance, fractional) { capacitance = it }
+        if (build.usesCoil) ConditionRow(INDUCTANCE, inductance, fractional) { inductance = it }
         val top = if (filter.isValid) max(filter.cornerFrequency * 10, 1.0) else 1.0
         ConditionRow(Condition("f", "Hz", Res.string.filters_test, 0.0..top, top / SLIDER_STEPS), test, fractional) { test = it }
       }
@@ -159,6 +163,7 @@ private fun FilterCard(filter: Filter, frequency: Double, format: (Double) -> St
         }
       }
   LiveCard {
+    FilterCircuit(filter, format)
     Canvas(Modifier.fillMaxWidth().height(GAIN_HEIGHT).then(touch)) { drawGain(filter, share, line, mark, grid) }
     Canvas(Modifier.fillMaxWidth().height(PHASE_HEIGHT).then(touch)) { drawPhase(filter, share, line, mark, grid) }
     Hint(stringResource(Res.string.filters_hint))
@@ -168,17 +173,18 @@ private fun FilterCard(filter: Filter, frequency: Double, format: (Double) -> St
       drawSignal(turn, filter.gain(frequency).coerceAtMost(1.0), filter.phase(frequency) * PI / HALF_TURN, line, LINE)
     }
     Answers(
-      (if (filter.kind.isResonant) Res.string.filters_middle else Res.string.filters_corner) to
+      (if (filter.kind.isBand) Res.string.filters_middle else Res.string.filters_corner) to
         engineering(filter.cornerFrequency, "Hz", format),
       Res.string.filters_gain to "${format(filter.decibels(frequency))} dB",
       Res.string.filters_phase to "${format(filter.phase(frequency))}°",
     )
-    if (filter.kind.isResonant) {
-      Answers(
-        Res.string.filters_bandwidth to engineering(filter.bandwidth, "Hz", format),
-        Res.string.filters_quality to format(filter.quality),
+    AnswerList(
+      listOfNotNull(
+          Res.string.filters_order to filter.build.order.toString(),
+          filter.quality?.let { Res.string.filters_quality to format(it) },
+          (Res.string.filters_bandwidth to engineering(filter.bandwidth, "Hz", format)).takeIf { filter.kind.isBand },
       )
-    }
+    )
   }
 }
 
@@ -227,7 +233,12 @@ private fun FilterExplanation(filter: Filter, frequency: Double, format: (Double
     Step(
       Res.string.filters_explain_corner,
       Res.string.filters_explain_corner_text,
-      if (filter.kind.isResonant) "f₀ = 1 / (2π · √(L · C)) = $corner Hz" else "f(c) = 1 / (2π · R · C) = $corner Hz",
+      when (filter.build) {
+        FilterBuild.RC -> "f(c) = 1 / (2π · R · C) = $corner Hz"
+        FilterBuild.RL -> "f(c) = R / (2π · L) = $corner Hz"
+        FilterBuild.TWO_RC -> "f₀ = 1 / (2π · R · C) = $corner Hz"
+        FilterBuild.RLC -> "f₀ = 1 / (2π · √(L · C)) = $corner Hz"
+      },
     )
     Step(
       Res.string.filters_explain_gain,
@@ -235,12 +246,12 @@ private fun FilterExplanation(filter: Filter, frequency: Double, format: (Double
       "|H| = ${format(filter.gain(frequency))}",
       "G = 20 · log₁₀|H| = ${format(filter.decibels(frequency))} dB",
     )
-    if (filter.kind.isResonant) {
+    filter.quality?.let { quality ->
       Step(
         Res.string.filters_explain_resonance,
         Res.string.filters_explain_resonance_text,
-        "Q = √(L / C) / R = ${format(filter.quality)}",
-        "Δf = f₀ / Q = ${format(filter.bandwidth)} Hz",
+        if (filter.build == FilterBuild.RLC) "Q = √(L / C) / R = ${format(quality)}" else "Q = 1 / 3",
+        if (filter.kind.isBand) "Δf = f₀ / Q = ${format(filter.bandwidth)} Hz" else "H(f₀) = Q = ${format(quality)}",
       )
     }
   }

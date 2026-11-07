@@ -53,6 +53,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -79,7 +81,6 @@ import unitto.core.common.generated.resources.prices_delete
 import unitto.core.common.generated.resources.prices_different_kinds
 import unitto.core.common.generated.resources.prices_not_enough
 import unitto.core.common.generated.resources.prices_offer
-import unitto.core.common.generated.resources.prices_other
 import unitto.core.common.generated.resources.prices_per
 import unitto.core.common.generated.resources.prices_piece
 import unitto.core.common.generated.resources.prices_price
@@ -119,15 +120,18 @@ private fun PricesScreen(openDrawer: () -> Unit, viewModel: PricesViewModel, for
       item {
         CurrencyField(currency = viewModel.currency, onCurrencyChange = { viewModel.currency = it })
       }
+      val comparison = (result as? ComparisonResult.Compared)?.comparison
       itemsIndexed(offers) { index, offer ->
         OfferCard(
           letter = letter(index),
           offer = offer,
           currency = viewModel.currency,
-          isCheapest = (result as? ComparisonResult.Compared)?.comparison?.let { it.cheapest == index && !it.isTie } == true,
+          isCheapest = comparison?.let { it.cheapest == index && !it.isTie } == true,
           canDelete = offers.size > MIN_OFFERS,
           onDelete = { viewModel.delete(index) },
-        )
+        ) {
+          comparison?.let { UnitPrice(it, index, money, formatterSymbols) }
+        }
       }
       if (offers.size < MAX_OFFERS) {
         item {
@@ -138,7 +142,8 @@ private fun PricesScreen(openDrawer: () -> Unit, viewModel: PricesViewModel, for
           }
         }
       }
-      item { ResultCard(result, money, formatterSymbols) }
+      // Only when the offers can't be compared, or all cost the same
+      if (comparison == null || comparison.isTie) item { ResultCard(result, money) }
     }
   }
 }
@@ -152,9 +157,15 @@ private fun OfferCard(
   isCheapest: Boolean,
   canDelete: Boolean,
   onDelete: () -> Unit,
+  price: @Composable () -> Unit,
 ) {
+  val isDark = MaterialTheme.colorScheme.surface.luminance() < HALF
   val background =
-    if (isCheapest) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainer
+    when {
+      !isCheapest -> MaterialTheme.colorScheme.surfaceContainer
+      isDark -> CHEAPEST_DARK
+      else -> CHEAPEST_LIGHT
+    }
   Column(
     modifier = Modifier.fillMaxWidth().clip(CARD_SHAPE).background(background).padding(16.dp),
     verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -210,6 +221,35 @@ private fun OfferCard(
         }
       }
     }
+    price()
+  }
+}
+
+/** The price per kg, liter… of offer [index] in big, and how much more it costs than the cheapest. */
+@Composable
+private fun UnitPrice(comparison: Comparison, index: Int, money: (Double) -> String, formatterSymbols: FormatterSymbols) {
+  val price = comparison.unitPrices[index]
+  if (price.isNaN()) return
+  val unit = if (comparison.kind == QuantityKind.COUNT) stringResource(Res.string.prices_piece) else comparison.kind.baseSymbol
+  val cheapest = comparison.unitPrices[comparison.cheapest]
+  val isCheapest = index == comparison.cheapest && !comparison.isTie
+  val isDark = MaterialTheme.colorScheme.surface.luminance() < HALF
+  val green = if (isDark) CHEAPEST_TEXT_DARK else CHEAPEST_TEXT_LIGHT
+  Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    Text(
+      text = stringResource(Res.string.prices_per, money(price), unit),
+      style = MaterialTheme.typography.headlineMedium,
+      fontWeight = FontWeight.Bold,
+      color = if (isCheapest) green else MaterialTheme.colorScheme.onSurface,
+    )
+    if (!isCheapest && price > cheapest) {
+      Text(
+        text = "+" + percent(price / cheapest - 1, formatterSymbols),
+        modifier = Modifier.padding(bottom = 4.dp),
+        style = MaterialTheme.typography.titleMedium,
+        color = MaterialTheme.colorScheme.error,
+      )
+    }
   }
 }
 
@@ -257,9 +297,9 @@ private fun CurrencyField(currency: String, onCurrencyChange: (String) -> Unit) 
   }
 }
 
-/** Cheapest offer and how much is saved compared to every other one. */
+/** Why the offers can't be compared, or that they all cost the same. */
 @Composable
-private fun ResultCard(result: ComparisonResult, money: (Double) -> String, formatterSymbols: FormatterSymbols) {
+private fun ResultCard(result: ComparisonResult, money: (Double) -> String) {
   Column(
     modifier =
       Modifier.fillMaxWidth().clip(CARD_SHAPE).background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(16.dp),
@@ -291,21 +331,6 @@ private fun ResultCard(result: ComparisonResult, money: (Double) -> String, form
           color = MaterialTheme.colorScheme.primary,
         )
         Text(perUnit(comparison.unitPrices[comparison.cheapest]), style = MaterialTheme.typography.titleMedium)
-        if (comparison.isTie) return@Column
-        comparison.unitPrices.forEachIndexed { index, price ->
-          if (index == comparison.cheapest || price.isNaN()) return@forEachIndexed
-          Text(
-            text =
-              stringResource(
-                Res.string.prices_other,
-                letter(index),
-                perUnit(price),
-                perUnit(comparison.savingPerUnit(index)),
-                percent(comparison.savingShare(index), formatterSymbols),
-              ),
-            style = MaterialTheme.typography.bodyLarge,
-          )
-        }
       }
     }
   }
@@ -378,6 +403,11 @@ private val COMMON_CURRENCIES =
     "₱" to "PHP",
   )
 private const val SMALL_PRICE = 0.1
+private const val HALF = 0.5f
+private val CHEAPEST_LIGHT = Color(0xFFD4EEE2)
+private val CHEAPEST_DARK = Color(0xFF22453A)
+private val CHEAPEST_TEXT_LIGHT = Color(0xFF1C5C42)
+private val CHEAPEST_TEXT_DARK = Color(0xFFB9EBD4)
 private const val PRICE_DECIMALS = 2
 private const val SMALL_PRICE_DECIMALS = 4
 private const val MAX_CURRENCY_LENGTH = 5

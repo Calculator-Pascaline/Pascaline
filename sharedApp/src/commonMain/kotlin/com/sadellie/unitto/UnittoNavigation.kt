@@ -57,7 +57,7 @@ import com.sadellie.unitto.core.navigation.ORDER_SEPARATOR
 import com.sadellie.unitto.core.navigation.TOOL_ORDER_KEY
 import com.sadellie.unitto.core.navigation.TopLevelRoute
 import com.sadellie.unitto.core.navigation.additionalDrawerItems
-import com.sadellie.unitto.core.navigation.alphabetical
+import com.sadellie.unitto.core.navigation.inDefaultOrder
 import com.sadellie.unitto.core.navigation.mainDrawerItems
 import com.sadellie.unitto.core.navigation.ordered
 import com.sadellie.unitto.core.ui.BackHandler
@@ -101,7 +101,7 @@ fun MainAppContent(
       DrawerLayout.parse(savedLayout)
         .shown
         .map { NamedTool(it, stringResource(it.name)) }
-        .alphabetical()
+        .inDefaultOrder()
         .ordered(savedOrder)
         .map { it.item }
     } else {

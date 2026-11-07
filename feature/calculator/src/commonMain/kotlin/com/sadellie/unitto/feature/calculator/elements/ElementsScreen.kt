@@ -34,6 +34,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -58,6 +59,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.sadellie.unitto.core.common.KBigDecimal
 import com.sadellie.unitto.core.common.OutputFormat
@@ -99,17 +101,72 @@ internal fun ElementsRoute(openDrawer: () -> Unit) {
     navigationIcon = { DrawerButton(onClick = openDrawer) },
     colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
   ) { paddingValues ->
-    Column(modifier = Modifier.padding(paddingValues).fillMaxSize().verticalScroll(rememberScrollState())) {
-      ElementCard(element, Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp))
-      PeriodicTable(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 8.dp),
-        selected = selected,
-        onClick = { selected = it },
-      )
-      ElementDetails(element)
-      HorizontalDivider()
-      FamilyLegend()
+    BoxWithConstraints(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
+      val height = maxHeight
+      if (maxWidth >= WIDE_LAYOUT_WIDTH) {
+        // The table on the left, the chosen element on the right
+        Row(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+          Column(modifier = Modifier.weight(TABLE_WEIGHT).fillMaxHeight().verticalScroll(rememberScrollState())) {
+            PeriodicTable(
+              modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+              selected = selected,
+              onClick = { selected = it },
+              fitHeight = height - LEGEND_SPACE,
+            )
+            FamilyLegend()
+          }
+          ElementPanel(element, Modifier.weight(1f).fillMaxHeight().padding(vertical = 8.dp))
+        }
+      } else {
+        Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+          ElementCard(element, Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp))
+          PeriodicTable(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 8.dp),
+            selected = selected,
+            onClick = { selected = it },
+          )
+          ElementDetails(element)
+          HorizontalDivider()
+          FamilyLegend()
+        }
+      }
     }
+  }
+}
+
+/** The chosen element on wide screens: its atom in big, then everything about it. */
+@Composable
+private fun ElementPanel(element: Element, modifier: Modifier) {
+  val color by animateColorAsState(element.family.color, label = "Element color")
+  Column(
+    modifier = modifier.clip(TILE_SHAPE).background(MaterialTheme.colorScheme.surfaceContainer).verticalScroll(rememberScrollState()),
+  ) {
+    Column(
+      modifier = Modifier.fillMaxWidth().clip(TILE_SHAPE).background(color).padding(20.dp),
+      horizontalAlignment = Alignment.CenterHorizontally,
+      verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+      AtomView(
+        modifier = Modifier.size(PANEL_ATOM_SIZE),
+        shells = element.shells,
+        nucleus = CELL_TEXT,
+        line = CELL_TEXT.copy(alpha = ATOM_LINE_ALPHA),
+        electron = CELL_TEXT,
+      )
+      AnimatedContent(
+        targetState = element,
+        transitionSpec = { (fadeIn() + slideInVertically { it / NAME_RISE }) togetherWith fadeOut() },
+        label = "Element name",
+      ) { shown ->
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+          Text(shown.number.toString(), color = CELL_TEXT, style = MaterialTheme.typography.titleMedium)
+          Text(shown.symbol, color = CELL_TEXT, style = MaterialTheme.typography.displayLarge, fontWeight = FontWeight.Bold)
+          Text(shown.name, color = CELL_TEXT, style = MaterialTheme.typography.headlineSmall, maxLines = 1)
+          Text(stringResource(shown.family.title), color = CELL_TEXT, style = MaterialTheme.typography.bodyLarge)
+        }
+      }
+    }
+    Column(modifier = Modifier.padding(vertical = 8.dp)) { ElementDetails(element) }
   }
 }
 
@@ -152,9 +209,10 @@ private fun ElementCard(element: Element, modifier: Modifier) {
 
 /** 18 columns, as wide as the screen. Lanthanides and actinides under it. */
 @Composable
-private fun PeriodicTable(modifier: Modifier, selected: Int, onClick: (Int) -> Unit) {
+private fun PeriodicTable(modifier: Modifier, selected: Int, onClick: (Int) -> Unit, fitHeight: Dp = Dp.Infinity) {
   BoxWithConstraints(modifier = modifier) {
-    val cellWidth = maxWidth / COLUMNS
+    val cellWidth = minOf(maxWidth / COLUMNS, fitHeight / (ROWS * CELL_ASPECT))
+    val start = (maxWidth - cellWidth * COLUMNS) / 2
     val cellHeight = cellWidth * CELL_ASPECT
     val fontSize = with(LocalDensity.current) { (cellWidth * SYMBOL_SIZE).toSp() }
     Box(modifier = Modifier.fillMaxWidth().height(cellHeight * ROWS)) {
@@ -163,7 +221,7 @@ private fun PeriodicTable(modifier: Modifier, selected: Int, onClick: (Int) -> U
         val isSelected = element.number == selected
         Box(
           modifier =
-            Modifier.offset(x = cellWidth * column, y = cellHeight * row)
+            Modifier.offset(x = start + cellWidth * column, y = cellHeight * row)
               .size(cellWidth, cellHeight)
               .padding(CELL_GAP)
               .clip(CELL_SHAPE)
@@ -262,3 +320,7 @@ private val TILE_SHAPE = RoundedCornerShape(24.dp)
 private const val ATOM_LINE_ALPHA = 0.35f
 private const val NAME_RISE = 4
 private val LEGEND_DOT = 14.dp
+private val WIDE_LAYOUT_WIDTH = 840.dp
+private val LEGEND_SPACE = 110.dp
+private val PANEL_ATOM_SIZE = 220.dp
+private const val TABLE_WEIGHT = 1.9f

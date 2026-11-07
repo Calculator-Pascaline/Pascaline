@@ -74,9 +74,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -89,16 +90,37 @@ import com.sadellie.unitto.core.designsystem.icons.symbols.Edit
 import com.sadellie.unitto.core.designsystem.icons.symbols.Remove
 import com.sadellie.unitto.core.designsystem.icons.symbols.Settings
 import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
+import com.sadellie.unitto.core.navigation.BodyMassDrawerItem
 import com.sadellie.unitto.core.navigation.CalculatorDrawerItem
+import com.sadellie.unitto.core.navigation.ChargingDrawerItem
+import com.sadellie.unitto.core.navigation.ConverterDrawerItem
 import com.sadellie.unitto.core.navigation.DRAWER_LAYOUT_KEY
+import com.sadellie.unitto.core.navigation.DateCalculatorDrawerItem
 import com.sadellie.unitto.core.navigation.DrawerItem
 import com.sadellie.unitto.core.navigation.DrawerLayout
+import com.sadellie.unitto.core.navigation.ElementsDrawerItem
+import com.sadellie.unitto.core.navigation.FiltersDrawerItem
+import com.sadellie.unitto.core.navigation.FinanceDrawerItem
+import com.sadellie.unitto.core.navigation.FunctionsDrawerItem
+import com.sadellie.unitto.core.navigation.InferenceDrawerItem
 import com.sadellie.unitto.core.navigation.LocalNavigator
+import com.sadellie.unitto.core.navigation.LogicDrawerItem
 import com.sadellie.unitto.core.navigation.NamedTool
 import com.sadellie.unitto.core.navigation.ORDER_SEPARATOR
+import com.sadellie.unitto.core.navigation.OrbitsDrawerItem
+import com.sadellie.unitto.core.navigation.PlaceDrawerItem
+import com.sadellie.unitto.core.navigation.PricesDrawerItem
+import com.sadellie.unitto.core.navigation.ProbabilityDrawerItem
+import com.sadellie.unitto.core.navigation.ProgrammerDrawerItem
+import com.sadellie.unitto.core.navigation.ProjectileDrawerItem
+import com.sadellie.unitto.core.navigation.RegressionDrawerItem
+import com.sadellie.unitto.core.navigation.ResistorsDrawerItem
+import com.sadellie.unitto.core.navigation.SequencesDrawerItem
 import com.sadellie.unitto.core.navigation.SettingsDrawerItem
+import com.sadellie.unitto.core.navigation.StatisticsDrawerItem
 import com.sadellie.unitto.core.navigation.TOOL_ORDER_KEY
-import com.sadellie.unitto.core.navigation.alphabetical
+import com.sadellie.unitto.core.navigation.TimeZonesDrawerItem
+import com.sadellie.unitto.core.navigation.inDefaultOrder
 import com.sadellie.unitto.core.navigation.ordered
 import com.sadellie.unitto.core.ui.ScaffoldWithTopBar
 import com.sadellie.unitto.core.ui.rememberKeyPress
@@ -194,7 +216,7 @@ private class TileActions(
   val onDrop: (List<String>) -> Unit,
 )
 
-/** Every tool as a tile, from A to Z until they are moved. In the edit mode tiles can be dragged and hidden. */
+/** Every tool as a tile, the most used first until they are moved. In the edit mode tiles can be dragged and hidden. */
 @Composable
 internal fun HomeRoute() {
   val navigator = LocalNavigator.current
@@ -205,8 +227,8 @@ internal fun HomeRoute() {
     remember(preferences) { preferences.appData(TOOL_ORDER_KEY) }.collectAsState(initial = "")
   val scope = rememberCoroutineScope()
   val layout = DrawerLayout.parse(savedLayout)
-  val tools = layout.shown.map { NamedTool(it, stringResource(it.name)) }.alphabetical().ordered(savedOrder)
-  val hidden = layout.hidden.map { NamedTool(it, stringResource(it.name)) }.alphabetical()
+  val tools = layout.shown.map { NamedTool(it, stringResource(it.name)) }.inDefaultOrder().ordered(savedOrder)
+  val hidden = layout.hidden.map { NamedTool(it, stringResource(it.name)) }.inDefaultOrder()
   var isEditing by rememberSaveable { mutableStateOf(false) }
   val grid = rememberLazyGridState()
   val reorder = remember(grid, scope) { HomeReorder(grid, scope) }
@@ -346,9 +368,7 @@ private fun LazyGridItemScope.ToolTile(
     } else {
       Modifier
     }
-  val isCalculator = tool.item == CalculatorDrawerItem
-  val background = if (isCalculator) Color(CALCULATOR_KEY) else MaterialTheme.colorScheme.surfaceContainerHigh
-  val content = if (isCalculator) Color.White else MaterialTheme.colorScheme.onSurface
+  val colors = tileColors(tool.item)
   val keyPress = rememberKeyPress()
   val interactionSource = remember { MutableInteractionSource() }
   // The badge is outside of the key: keys clip what is in them
@@ -366,17 +386,16 @@ private fun LazyGridItemScope.ToolTile(
             animationSpec = MaterialTheme.motionScheme.fastSpatialSpec(),
             isPressed = keyPress.isPressed,
           )
-          .background(background)
-          .padding(horizontal = 6.dp),
-      horizontalAlignment = Alignment.CenterHorizontally,
-      verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically),
+          .background(colors.first)
+          .padding(horizontal = 14.dp, vertical = 12.dp),
+      verticalArrangement = Arrangement.SpaceBetween,
     ) {
-      Icon(tool.item.defaultIcon, null, tint = content)
+      Icon(tool.item.defaultIcon, null, modifier = Modifier.size(ICON_SIZE), tint = colors.second)
       Text(
         tool.name,
-        style = MaterialTheme.typography.labelLarge,
-        color = content,
-        textAlign = TextAlign.Center,
+        style = MaterialTheme.typography.titleSmall,
+        fontWeight = FontWeight.SemiBold,
+        color = colors.second,
         maxLines = 2,
         overflow = TextOverflow.Ellipsis,
       )
@@ -391,6 +410,54 @@ private fun LazyGridItemScope.ToolTile(
       )
     }
   }
+}
+
+/**
+ * Soft color of a tile and the darker one of its name, close tools share one. In the dark theme
+ * the tile is dark and the name light.
+ */
+private class TilePalette(val light: Color, val onLight: Color, val dark: Color, val onDark: Color)
+
+private val PURPLE = TilePalette(Color(0xFFE6DEFA), Color(0xFF4A2E8C), Color(0xFF3A3058), Color(0xFFDCCFFF))
+private val GREEN = TilePalette(Color(0xFFD4EEE2), Color(0xFF1C5C42), Color(0xFF22453A), Color(0xFFB9EBD4))
+private val PEACH = TilePalette(Color(0xFFFBE1CB), Color(0xFF8A4512), Color(0xFF4B3424), Color(0xFFFFD3B0))
+private val PINK = TilePalette(Color(0xFFFBDCE5), Color(0xFF8E2547), Color(0xFF4D2833), Color(0xFFFFCAD9))
+private val SKY = TilePalette(Color(0xFFD5ECF6), Color(0xFF1C5B77), Color(0xFF203F4C), Color(0xFFBDE6F7))
+private val INDIGO = TilePalette(Color(0xFFDCE3FB), Color(0xFF2B3F8F), Color(0xFF2A3352), Color(0xFFCBD6FF))
+
+private val TILE_PALETTES =
+  mapOf(
+    FunctionsDrawerItem to PURPLE,
+    SequencesDrawerItem to PURPLE,
+    ProgrammerDrawerItem to PURPLE,
+    ConverterDrawerItem to PURPLE,
+    StatisticsDrawerItem to GREEN,
+    RegressionDrawerItem to GREEN,
+    InferenceDrawerItem to GREEN,
+    ProbabilityDrawerItem to GREEN,
+    FinanceDrawerItem to PEACH,
+    PricesDrawerItem to PEACH,
+    ProjectileDrawerItem to PEACH,
+    ElementsDrawerItem to PINK,
+    FiltersDrawerItem to PINK,
+    ResistorsDrawerItem to PINK,
+    ChargingDrawerItem to PINK,
+    LogicDrawerItem to PINK,
+    PlaceDrawerItem to SKY,
+    OrbitsDrawerItem to SKY,
+    TimeZonesDrawerItem to INDIGO,
+    DateCalculatorDrawerItem to INDIGO,
+    BodyMassDrawerItem to INDIGO,
+  )
+
+/** Background and content of a tile: the calculator is the one in the color of the app. */
+@Composable
+private fun tileColors(item: DrawerItem): Pair<Color, Color> {
+  val scheme = MaterialTheme.colorScheme
+  if (item == CalculatorDrawerItem) return scheme.primary to scheme.onPrimary
+  val palette = TILE_PALETTES[item] ?: INDIGO
+  val isDark = scheme.surface.luminance() < HALF
+  return if (isDark) palette.dark to palette.onDark else palette.light to palette.onLight
 }
 
 /** The key rises and grows into place, a moment after the one before it. */
@@ -450,11 +517,12 @@ private const val APPEAR_DELAY = 28L
 private const val MAX_APPEAR_DELAY = 400L
 private const val APPEAR_SCALE = 0.7f
 private val APPEAR_RISE = 24.dp
-private val KEY_WIDTH = 104.dp
+private val KEY_WIDTH = 150.dp
 private val KEY_HEIGHT = 92.dp
-private const val KEY_CORNER = 26
-private const val KEY_PRESSED_CORNER = 36
-private const val CALCULATOR_KEY = 0xFFF08A24
+private val ICON_SIZE = 26.dp
+private const val KEY_CORNER = 22
+private const val KEY_PRESSED_CORNER = 32
+private const val HALF = 0.5f
 private val BADGE_SIZE = 22.dp
 private val BADGE_ICON = 16.dp
 private val BADGE_TOUCH = 36.dp

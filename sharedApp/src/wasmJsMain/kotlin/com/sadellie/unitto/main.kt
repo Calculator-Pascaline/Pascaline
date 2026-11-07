@@ -61,7 +61,6 @@ import com.sadellie.unitto.core.navigation.HomeStartRoute
 import com.sadellie.unitto.core.navigation.InferenceStartRoute
 import com.sadellie.unitto.core.navigation.LogicStartRoute
 import com.sadellie.unitto.core.navigation.OrbitsStartRoute
-import com.sadellie.unitto.core.navigation.PendulumStartRoute
 import com.sadellie.unitto.core.navigation.PlaceStartRoute
 import com.sadellie.unitto.core.navigation.PricesStartRoute
 import com.sadellie.unitto.core.navigation.ProbabilityStartRoute
@@ -72,7 +71,6 @@ import com.sadellie.unitto.core.navigation.ResistorsStartRoute
 import com.sadellie.unitto.core.navigation.SequencesStartRoute
 import com.sadellie.unitto.core.navigation.StatisticsStartRoute
 import com.sadellie.unitto.core.navigation.TimeZoneStartRoute
-import com.sadellie.unitto.core.navigation.WavesStartRoute
 import com.sadellie.unitto.core.ui.BackHandler
 import com.sadellie.unitto.core.ui.datetime.LocalPlatformDateFormatSettings
 import com.sadellie.unitto.core.ui.datetime.PlatformDateFormatSettings
@@ -196,8 +194,6 @@ private val navBackStackConfig = SavedStateConfiguration {
       this.subclass(HomeStartRoute::class, HomeStartRoute.serializer())
       this.subclass(PlaceStartRoute::class, PlaceStartRoute.serializer())
       this.subclass(ProjectileStartRoute::class, ProjectileStartRoute.serializer())
-      this.subclass(PendulumStartRoute::class, PendulumStartRoute.serializer())
-      this.subclass(WavesStartRoute::class, WavesStartRoute.serializer())
       this.subclass(OrbitsStartRoute::class, OrbitsStartRoute.serializer())
       this.subclass(FiltersStartRoute::class, FiltersStartRoute.serializer())
       this.subclass(ResistorsStartRoute::class, ResistorsStartRoute.serializer())

@@ -181,8 +181,8 @@ internal class CalculatorViewModel(
   fun addTokens(tokens: String) {
     if (_isCalculating.value) return
     when {
-      // Equal was clicked and user tries to type a digit or dot
-      _equalClicked.value && tokens in Token.Digit.allWithDot -> _input.clearText()
+      // Equal was clicked and user tries to type a digit, a dot or a minus for a new number
+      _equalClicked.value && (tokens in Token.Digit.allWithDot || tokens == Token.Operator.MINUS) -> _input.clearText()
       // Equal was clicked and user tries to add operator or something
       _equalClicked.value -> _input.placeCursorAtTheEnd()
     }
@@ -406,7 +406,7 @@ internal class CalculatorViewModel(
   private fun repeatLastOperation(): String? {
     val last = (uiState.value as? CalculatorUIState.Ready)?.history?.firstOrNull() ?: return null
     val operation = last.expression.repeatableOperation() ?: return null
-    val operand = HistoryResult.decode(last.result).operandFor(operation.take(1)) ?: return null
+    val operand = HistoryResult.decode(last.result).operandFor(operation.take(1), isRepeat = true) ?: return null
     rememberReuse(last, operand, position = 0)
     return operand + operation
   }

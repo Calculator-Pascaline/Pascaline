@@ -66,20 +66,6 @@ internal fun rememberClock(): State<Double> {
   return seconds
 }
 
-/** Calls [onFrame] with the seconds since the last frame, for as long as [key] stays. */
-@Composable
-internal fun OnEveryFrame(key: Any, onFrame: (Double) -> Unit) {
-  LaunchedEffect(key) {
-    var last = withFrameNanos { it }
-    while (true) {
-      withFrameNanos { now ->
-        onFrame((now - last) / NANOS_PER_SECOND)
-        last = now
-      }
-    }
-  }
-}
-
 /** The decimal separator the user chose. */
 @Composable
 internal fun rememberFractional(): String {

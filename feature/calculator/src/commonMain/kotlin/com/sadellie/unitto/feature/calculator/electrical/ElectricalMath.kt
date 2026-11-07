@@ -44,46 +44,87 @@ internal fun engineering(value: Double, unit: String, format: (Double) -> String
   return "${format(value / KILO.pow(thousands))} ${PREFIXES[thousands - SMALLEST_PREFIX]}$unit"
 }
 
-internal enum class FilterKind(val isResonant: Boolean) {
-  LOW_PASS(false),
-  HIGH_PASS(false),
-  BAND_PASS(true),
-  BAND_STOP(true),
+/** What a filter keeps. */
+internal enum class FilterKind {
+  LOW_PASS,
+  HIGH_PASS,
+  BAND_PASS,
+  BAND_STOP;
+
+  /** The ways it can be built: a band needs a coil and a capacitor. */
+  val builds: List<FilterBuild>
+    get() = if (this == LOW_PASS || this == HIGH_PASS) FilterBuild.entries else listOf(FilterBuild.RLC)
+
+  val isBand: Boolean
+    get() = this == BAND_PASS || this == BAND_STOP
 }
 
 /**
- * RC filter, or series RLC filter that takes the output from the resistor (band-pass) or from the
- * coil and capacitor (band-stop).
+ * The parts of a filter. The order is how fast it cuts: 20 dB less for every ten times the
+ * frequency for the first order, 40 dB for the second.
+ *
+ * @property label The same in every language.
  */
-internal class Filter(val kind: FilterKind, val resistance: Double, val capacitance: Double, val inductance: Double) {
-  /** Where an RC filter is at −3 dB, or the middle of an RLC filter. */
-  val cornerFrequency =
-    if (kind.isResonant) 1 / (2 * PI * sqrt(inductance * capacitance)) else 1 / (2 * PI * resistance * capacitance)
+internal enum class FilterBuild(val label: String, val order: Int, val usesCapacitor: Boolean, val usesCoil: Boolean) {
+  RC("RC", 1, true, false),
+  RL("RL", 1, false, true),
+  TWO_RC("RC + RC", 2, true, false),
+  RLC("RLC", 2, true, true),
+}
 
-  val quality = sqrt(inductance / capacitance) / resistance
-  val bandwidth = cornerFrequency / quality
+/**
+ * A passive filter on a voltage, in ohms, farads and henries. Two RC stages use the same R and C,
+ * the second one loading the first. RLC parts are in series, with the output across one or two.
+ */
+internal class Filter(
+  val kind: FilterKind,
+  val build: FilterBuild,
+  val resistance: Double,
+  val capacitance: Double,
+  val inductance: Double,
+) {
+  /** Where a first order filter is at −3 dB, or the natural frequency f₀ of a second order one. */
+  val cornerFrequency =
+    when (build) {
+      FilterBuild.RC,
+      FilterBuild.TWO_RC -> 1 / (2 * PI * resistance * capacitance)
+      FilterBuild.RL -> resistance / (2 * PI * inductance)
+      FilterBuild.RLC -> 1 / (2 * PI * sqrt(inductance * capacitance))
+    }
+
+  /** How sharp a second order filter is, null for the first order. */
+  val quality: Double? =
+    when (build) {
+      FilterBuild.RLC -> sqrt(inductance / capacitance) / resistance
+      FilterBuild.TWO_RC -> ONE_THIRD
+      else -> null
+    }
+
+  val bandwidth = cornerFrequency / (quality ?: 1.0)
 
   val isValid: Boolean
-    get() = resistance > 0 && capacitance > 0 && (!kind.isResonant || inductance > 0)
+    get() =
+      resistance > 0 && (!build.usesCapacitor || capacitance > 0) && (!build.usesCoil || inductance > 0) && build in kind.builds
 
-  /** Output / input at [frequency]: the input side is always resonant + j · resistive. */
-  private class Transfer(val topReal: Double, val topImaginary: Double, val resonant: Double, val resistive: Double)
+  /** Output / input at [frequency], with the input side as 1 − x² + j · x / Q (1 + j · x for the first order). */
+  private class Transfer(val topReal: Double, val topImaginary: Double, val bottomReal: Double, val bottomImaginary: Double)
 
   private fun transfer(frequency: Double): Transfer {
-    val omega = 2 * PI * frequency
-    val resistive = omega * resistance * capacitance
-    val resonant = if (kind.isResonant) 1 - omega * omega * inductance * capacitance else 1.0
+    val x = frequency / cornerFrequency
+    val q = quality
+    val square = if (q == null) 0.0 else x * x
+    val damping = if (q == null) x else x / q
     return when (kind) {
-      FilterKind.LOW_PASS -> Transfer(1.0, 0.0, resonant, resistive)
-      FilterKind.HIGH_PASS,
-      FilterKind.BAND_PASS -> Transfer(0.0, resistive, resonant, resistive)
-      FilterKind.BAND_STOP -> Transfer(resonant, 0.0, resonant, resistive)
+      FilterKind.LOW_PASS -> Transfer(1.0, 0.0, 1 - square, damping)
+      FilterKind.HIGH_PASS -> if (q == null) Transfer(0.0, x, 1.0, x) else Transfer(-square, 0.0, 1 - square, damping)
+      FilterKind.BAND_PASS -> Transfer(0.0, damping, 1 - square, damping)
+      FilterKind.BAND_STOP -> Transfer(1 - square, 0.0, 1 - square, damping)
     }
   }
 
   fun gain(frequency: Double): Double {
     val h = transfer(frequency)
-    return hypot(h.topReal, h.topImaginary) / hypot(h.resonant, h.resistive)
+    return hypot(h.topReal, h.topImaginary) / hypot(h.bottomReal, h.bottomImaginary)
   }
 
   fun decibels(frequency: Double): Double = voltageDecibels(gain(frequency))
@@ -91,7 +132,7 @@ internal class Filter(val kind: FilterKind, val resistance: Double, val capacita
   /** Degrees the output is ahead of the input, from −180 to 180. */
   fun phase(frequency: Double): Double {
     val h = transfer(frequency)
-    val radians = atan2(h.topImaginary, h.topReal) - atan2(h.resistive, h.resonant)
+    val radians = atan2(h.topImaginary, h.topReal) - atan2(h.bottomImaginary, h.bottomReal)
     val degrees = radians * HALF_TURN / PI
     return when {
       degrees > HALF_TURN -> degrees - 2 * HALF_TURN
@@ -100,6 +141,8 @@ internal class Filter(val kind: FilterKind, val resistance: Double, val capacita
     }
   }
 }
+
+private const val ONE_THIRD = 1.0 / 3
 
 /** A color of the bands on a resistor. */
 internal enum class BandColor {

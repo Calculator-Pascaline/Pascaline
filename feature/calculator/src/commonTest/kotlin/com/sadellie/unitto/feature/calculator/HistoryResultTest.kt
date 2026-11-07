@@ -30,7 +30,6 @@ class HistoryResultTest {
   @Test
   fun numberGoesAsIs() {
     assertEquals("12", operand("12", Token.Operator.PLUS))
-    assertEquals("12", operand("12", Token.Operator.MINUS))
     assertEquals("12", operand("12", Token.Operator.MULTIPLY))
     assertEquals("12", operand("12", Token.Layout.FRACTION))
     assertEquals("−1.5", operand("−1.5", Token.Operator.MULTIPLY))
@@ -42,7 +41,6 @@ class HistoryResultTest {
   @Test
   fun bracketsForMultiplyAndDivide() {
     assertEquals("1+√2", operand("1+√2", Token.Operator.PLUS))
-    assertEquals("1+√2", operand("1+√2", Token.Operator.MINUS))
     assertEquals("(1+√2)", operand("1+√2", Token.Operator.MULTIPLY))
     assertEquals("(1+√2)", operand("1+√2", Token.Operator.DIVIDE))
     assertEquals("(1+√2)", operand("1+√2", Token.Layout.FRACTION))
@@ -52,6 +50,12 @@ class HistoryResultTest {
   fun otherKeysDontUseResult() {
     assertNull(operand("12", Token.Digit.DIGIT_5))
     assertNull(operand("12", Token.Operator.LEFT_BRACKET))
+  }
+
+  @Test
+  fun minusStartsANewNumber() {
+    assertNull(operand("12", Token.Operator.MINUS))
+    assertEquals("12", HistoryResult(lines = listOf("12")).operandFor(Token.Operator.MINUS, isRepeat = true))
   }
 
   @Test

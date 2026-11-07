@@ -129,8 +129,10 @@ internal data class HistoryResult(
  *
  * @return `null` if [operator] doesn't use previous result or there is no result (error).
  */
-internal fun HistoryResult.operandFor(operator: String): String? {
+internal fun HistoryResult.operandFor(operator: String, isRepeat: Boolean = false): String? {
   if (operator !in OPERATORS_ON_PREVIOUS_RESULT) return null
+  // Minus first is a negative number: −3, not 12−3. Repeating "−0.5" with equal still uses it
+  if (operator == Token.Operator.MINUS && !isRepeat) return null
   val result = insertable?.takeIf { it.isNotBlank() } ?: return null
   val isNumber = result.removePrefix(Token.Operator.MINUS).all { it.toString() in Token.Digit.allWithDot }
   val needsBrackets = !isNumber && operator != Token.Operator.PLUS && operator != Token.Operator.MINUS

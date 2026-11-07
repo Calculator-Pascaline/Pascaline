@@ -172,7 +172,10 @@ private fun DataCard(table: SavedTable, rows: List<List<String>>) {
   var text by rememberSaveable { mutableStateOf("") }
   var editing by rememberSaveable { mutableStateOf<Int?>(null) }
   fun add() {
-    splitValues(text).forEach { value -> table.setCell(table.rows?.size ?: 0, 0, value) }
+    splitValues(text).forEach { value ->
+      val (row, count) = table.rows.orEmpty().placeFor(value)
+      if (count == null) table.setCell(row, 0, value) else table.setCell(row, 1, count)
+    }
     text = ""
   }
   LiveCard {

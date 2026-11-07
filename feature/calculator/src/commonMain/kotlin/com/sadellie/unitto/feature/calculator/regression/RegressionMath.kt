@@ -184,29 +184,30 @@ private fun determination(points: List<DataPoint>, curve: (Double) -> Double): D
   return 1 - residual / total
 }
 
-/**
- * A fitted curve and how well it did against the others.
- *
- * @property score r² that loses a little for every coefficient, because more of them always get
- *   closer to the points. Null without points to spare: the curve then goes through all of them,
- *   which says nothing.
- */
-internal class RankedFit(val result: RegressionResult, val score: Double?)
+/** A fitted curve, and whether it is the one to use. */
+internal class RankedFit(val result: RegressionResult, val isBest: Boolean)
 
-/** Every kind of curve that fits [points], the best first. */
+/**
+ * Every kind of curve that fits [points]: the best first, then from the highest r² down.
+ *
+ * More coefficients always get closer to the points, so the best is the simplest curve that is
+ * almost as close as the closest one. A curve with as many coefficients as there are points goes
+ * through all of them, which says nothing: it can't be the best.
+ */
 internal fun rankedFits(points: List<DataPoint>): List<RankedFit> {
   if (points.size < 2) return emptyList()
-  return RegressionModel.entries
-    .mapNotNull { regression(points, it) }
-    .map { RankedFit(it, adjusted(it, points.size)) }
-    .sortedByDescending { it.score ?: Double.NEGATIVE_INFINITY }
+  val fits = RegressionModel.entries.mapNotNull { regression(points, it) }.sortedByDescending { it.r2 }
+  val candidates = fits.filter { points.size > it.coefficients.size && it.determination != null }
+  val closest = candidates.maxOfOrNull { it.r2 }
+  val best =
+    closest?.let { top ->
+      candidates.filter { it.r2 >= top - CLOSE_ENOUGH }.minWith(compareBy({ it.coefficients.size }, { -it.r2 }))
+    }
+  return (listOfNotNull(best) + fits.filter { it !== best }).map { RankedFit(it, it === best) }
 }
 
-private fun adjusted(result: RegressionResult, count: Int): Double? {
-  val free = count - result.coefficients.size
-  val determination = result.determination
-  return if (free <= 0 || determination == null) null else 1 - (1 - determination) * (count - 1) / free
-}
+private val RegressionResult.r2: Double
+  get() = determination ?: Double.NEGATIVE_INFINITY
 
 /** Usual distance between the points and the curve, in units of y. */
 internal fun typicalGap(points: List<DataPoint>, result: RegressionResult): Double =
@@ -281,6 +282,7 @@ internal fun pointStatistics(points: List<DataPoint>): PointStatistics? {
 
 private const val SINGULAR = 1e-12
 private const val GRID_LINES = 5
+private const val CLOSE_ENOUGH = 0.02
 private const val FIVE = 5.0
 private const val TEN = 10.0
 private const val EMPTY_SPAN = 10.0

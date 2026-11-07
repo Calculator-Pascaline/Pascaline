@@ -22,7 +22,7 @@ import kotlin.math.abs
 import kotlin.math.exp
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class FitRankingTest {
@@ -54,10 +54,24 @@ class FitRankingTest {
   }
 
   @Test
-  fun curveThroughEveryPointHasNoScore() {
+  fun curveThroughEveryPointIsNotTheBest() {
     val points = listOf(DataPoint(1.0, 2.0), DataPoint(2.0, 5.0))
-    assertNull(rankedFits(points).first { it.result.model == RegressionModel.LINEAR }.score)
+    assertFalse(rankedFits(points).first { it.result.model == RegressionModel.LINEAR }.isBest)
     assertTrue(rankedFits(listOf(DataPoint(1.0, 2.0))).isEmpty())
+  }
+
+  @Test
+  fun bestIsCloseToTheHighestAndTheRestGoDown() {
+    // Bends a lot: a straight line through the origin is far from the closest curves
+    val points = listOf(1.0 to 9.0, 2.0 to 4.0, 3.0 to 2.0, 4.0 to 3.0, 5.0 to 7.0, 6.0 to 12.0).map { (x, y) -> DataPoint(x, y) }
+    val fits = rankedFits(points)
+    val best = fits.first()
+    assertTrue(best.isBest)
+    val highest = fits.maxOf { it.result.determination ?: 0.0 }
+    assertTrue((best.result.determination ?: 0.0) >= highest - 0.02)
+    assertTrue(best.result.model != RegressionModel.PROPORTIONAL && best.result.model != RegressionModel.LINEAR)
+    val rest = fits.drop(1).map { it.result.determination ?: Double.NEGATIVE_INFINITY }
+    assertEquals(rest.sortedDescending(), rest)
   }
 
   @Test

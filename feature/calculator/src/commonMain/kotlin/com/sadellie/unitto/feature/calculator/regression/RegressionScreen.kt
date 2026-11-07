@@ -276,11 +276,10 @@ private fun FitRanking(
   format: NumberFormat,
   onSelect: (RegressionModel) -> Unit,
 ) {
-  val hasWinner = fits.first().score != null
   Card(stringResource(Res.string.regression_best_title)) {
     Hint(stringResource(Res.string.regression_best_note))
-    fits.forEachIndexed { index, fit ->
-      FitRow(fit.result, fit.result.model == selected, hasWinner && index == 0, format) { onSelect(fit.result.model) }
+    fits.forEach { fit ->
+      FitRow(fit.result, fit.result.model == selected, fit.isBest, format) { onSelect(fit.result.model) }
     }
   }
 }

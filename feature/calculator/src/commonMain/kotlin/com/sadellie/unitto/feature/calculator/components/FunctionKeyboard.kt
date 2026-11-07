@@ -64,11 +64,14 @@ import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
@@ -94,6 +97,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -287,11 +292,13 @@ private fun FunctionKeyButton(
     contentColor = MaterialTheme.colorScheme.onSurface,
   ) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+      val hasSlots = SLOT in key.label
       Text(
-        text = key.label.withSuperscript(),
+        text = if (hasSlots) key.label.withSlotKeys() else key.label.withSuperscript(),
         style = MaterialTheme.typography.titleLarge,
         fontWeight = FontWeight.Medium,
         maxLines = 1,
+        inlineContent = if (hasSlots) slotKeyContent() else emptyMap(),
       )
     }
   }
@@ -362,6 +369,31 @@ private fun String.withSuperscript(): AnnotatedString {
   }
 }
 
+/** Empty places to fill in, drawn as the same soft keys as in the expression. */
+private fun String.withSlotKeys(): AnnotatedString = buildAnnotatedString {
+  split(SLOT).forEachIndexed { index, part ->
+    if (index > 0) appendInlineContent(SLOT_KEY, SLOT.toString())
+    append(part)
+  }
+}
+
+@Composable
+private fun slotKeyContent(): Map<String, InlineTextContent> {
+  val color = LocalContentColor.current.copy(alpha = SLOT_ALPHA)
+  return mapOf(
+    SLOT_KEY to
+      InlineTextContent(Placeholder(SLOT_WIDTH.em, SLOT_HEIGHT.em, PlaceholderVerticalAlign.TextCenter)) {
+        Box(Modifier.fillMaxSize().clip(RoundedCornerShape(SLOT_CORNER)).background(color))
+      }
+  )
+}
+
+private const val SLOT = '□'
+private const val SLOT_KEY = "slot"
+private const val SLOT_ALPHA = 0.2f
+private const val SLOT_WIDTH = 0.75f
+private const val SLOT_HEIGHT = 0.9f
+private const val SLOT_CORNER = 30
 private const val SUPERSCRIPT = '^'
 private const val SUPERSCRIPT_SIZE = 0.75f
 /** About as high as ² on the x² key, Superscript (0.5) is too low */

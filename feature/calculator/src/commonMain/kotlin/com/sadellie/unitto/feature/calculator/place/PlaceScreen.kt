@@ -18,12 +18,6 @@
 
 package com.sadellie.unitto.feature.calculator.place
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -47,7 +41,6 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
@@ -63,16 +56,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.sadellie.unitto.core.common.FormatterSymbols
 import com.sadellie.unitto.core.common.collectAsStateWithLifecycleKMP
 import com.sadellie.unitto.core.designsystem.LocalLocale
-import com.sadellie.unitto.core.designsystem.icons.symbols.ArrowBack
 import com.sadellie.unitto.core.designsystem.icons.symbols.Close
 import com.sadellie.unitto.core.designsystem.icons.symbols.Search
 import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
-import com.sadellie.unitto.core.ui.BackHandler
 import com.sadellie.unitto.core.ui.DrawerButton
 import com.sadellie.unitto.core.ui.EmptyScreen
 import com.sadellie.unitto.core.ui.ScaffoldWithTopBar
@@ -101,7 +94,6 @@ import unitto.core.common.generated.resources.place_tab_sun
 import unitto.core.common.generated.resources.place_tab_temperature
 import unitto.core.common.generated.resources.place_tab_tides
 import unitto.core.common.generated.resources.place_title
-import unitto.core.common.generated.resources.probability_back
 
 @Composable
 internal fun PlaceRoute(openDrawer: () -> Unit) {
@@ -115,69 +107,52 @@ internal fun PlaceRoute(openDrawer: () -> Unit) {
 }
 
 /**
- * First the city and the date, on [PlaceChooser], then one chip at a time: a big answer, a graph to
- * drag along and the details. Everything is worked out on the device.
+ * A city search on top, the chosen city and its date, then one chip at a time: a big answer, a
+ * graph to drag along and the details. Everything is worked out on the device.
  */
 @Composable
 private fun PlaceScreen(openDrawer: () -> Unit, viewModel: PlaceViewModel, symbols: FormatterSymbols) {
   var isChoosingDate by remember { mutableStateOf(false) }
-  var isChoosing by rememberSaveable { mutableStateOf(true) }
   val language = LocalLocale.current.language
   val units = rememberPlaceUnits(viewModel.isMetric, symbols)
   LaunchedEffect(viewModel.cities, language) { viewModel.startAt(language) }
-  BackHandler(enabled = !isChoosing) { isChoosing = true }
   ScaffoldWithTopBar(
-    title = {
-      val city = viewModel.nearCity?.name(language)
-      Text(if (isChoosing || city == null) stringResource(Res.string.place_title) else city)
-    },
-    navigationIcon = {
-      if (isChoosing) {
-        DrawerButton(onClick = openDrawer)
-      } else {
-        IconButton(onClick = { isChoosing = true }) {
-          Icon(Symbols.ArrowBack, stringResource(Res.string.probability_back))
-        }
-      }
-    },
-    keepNavigationIconOnWideScreens = !isChoosing,
-    actions = {
-      if (!isChoosing) {
-        TextButton(onClick = { viewModel.isMetric = !viewModel.isMetric }) { Text(units.temperatureUnit) }
-      }
-    },
+    title = { Text(stringResource(Res.string.place_title)) },
+    navigationIcon = { DrawerButton(onClick = openDrawer) },
+    actions = { TextButton(onClick = { viewModel.isMetric = !viewModel.isMetric }) { Text(units.temperatureUnit) } },
     colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
   ) { paddingValues ->
-    AnimatedContent(
-      targetState = isChoosing,
-      modifier = Modifier.padding(paddingValues).fillMaxSize(),
-      transitionSpec = {
-        val direction = if (targetState) -1 else 1
-        (slideInHorizontally { it * direction } + fadeIn()) togetherWith
-          (slideOutHorizontally { -it * direction } + fadeOut())
-      },
-    ) { choosing ->
-      if (choosing) {
-        PlaceChooser(viewModel, language, { isChoosingDate = true }) { isChoosing = false }
-      } else {
-        PlaceMenu(viewModel, units)
-      }
-    }
+    PlaceMenu(Modifier.padding(paddingValues), viewModel, units, language) { isChoosingDate = true }
   }
   if (isChoosingDate) DateDialog(viewModel.date, viewModel::chooseDate) { isChoosingDate = false }
 }
 
-/** What the place is like on the chosen date, one chip at a time. */
+/** The search, the city and what it is like on the chosen date, one chip at a time. */
 @Composable
-private fun PlaceMenu(viewModel: PlaceViewModel, units: PlaceUnits) {
+private fun PlaceMenu(modifier: Modifier, viewModel: PlaceViewModel, units: PlaceUnits, language: String, onDateClick: () -> Unit) {
+  var isSearching by rememberSaveable { mutableStateOf(false) }
   Box(
-    modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
+    modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
     contentAlignment = Alignment.TopCenter,
   ) {
     Column(
       modifier = Modifier.widthIn(max = MENU_WIDTH).fillMaxWidth(),
       verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
+      // The city is a card until it is tapped, then a search for another one
+      if (isSearching) {
+        CitySearch(
+          cities = viewModel.cities,
+          language = language,
+          onChoose = {
+            viewModel.chooseCity(it)
+            isSearching = false
+          },
+          onClose = { isSearching = false },
+        )
+      } else {
+        CityAndDate(viewModel, language, onCityClick = { isSearching = true }, onDateClick = onDateClick)
+      }
       TabChips(viewModel.tab) { viewModel.tab = it }
       viewModel.error?.let {
         Text(
@@ -207,32 +182,28 @@ internal fun formatPoint(point: GeoPoint): String {
   return "${part(point.latitude, 'N', 'S')}, ${part(point.longitude, 'E', 'W')}"
 }
 
-/** A search box, the cities found under it, a tap chooses one and flies the map there. */
+/** A search box that is ready to type in and the cities found under it, a tap chooses one. */
 @Composable
-internal fun CitySearch(cities: List<City>, language: String, onChoose: (City) -> Unit, modifier: Modifier = Modifier) {
+internal fun CitySearch(cities: List<City>, language: String, onChoose: (City) -> Unit, onClose: () -> Unit) {
   var query by remember { mutableStateOf("") }
   val focusManager = LocalFocusManager.current
+  val focus = remember { FocusRequester() }
+  LaunchedEffect(Unit) { focus.requestFocus() }
   val results = remember(query, cities, language) { searchCities(cities, query, language, SEARCH_RESULTS) }
-  Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+  Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
     OutlinedTextField(
       value = query,
       onValueChange = { query = it },
-      modifier = Modifier.fillMaxWidth(),
+      modifier = Modifier.fillMaxWidth().focusRequester(focus),
       placeholder = { Text(stringResource(Res.string.place_search_city)) },
       leadingIcon = { Icon(Symbols.Search, null) },
       trailingIcon = {
-        if (query.isNotEmpty()) {
-          IconButton(onClick = { query = "" }) { Icon(Symbols.Close, stringResource(Res.string.common_clear)) }
+        IconButton(onClick = { if (query.isEmpty()) onClose() else query = "" }) {
+          Icon(Symbols.Close, stringResource(Res.string.common_clear))
         }
       },
       singleLine = true,
       shape = MaterialTheme.shapes.extraLarge,
-      // Over the map
-      colors =
-        OutlinedTextFieldDefaults.colors(
-          focusedContainerColor = MaterialTheme.colorScheme.surface,
-          unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-        ),
     )
     if (query.isNotBlank()) {
       Column(

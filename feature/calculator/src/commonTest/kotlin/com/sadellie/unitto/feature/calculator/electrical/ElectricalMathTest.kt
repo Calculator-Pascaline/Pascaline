@@ -42,24 +42,60 @@ class ElectricalMathTest {
 
   @Test
   fun rcFilterIsThreeDecibelsDownAtTheCorner() {
-    val low = Filter(FilterKind.LOW_PASS, 1000.0, 1e-7, 0.0)
+    val low = Filter(FilterKind.LOW_PASS, FilterBuild.RC, 1000.0, 1e-7, 0.0)
     assertClose(1591.549, low.cornerFrequency, 1e-5)
     assertClose(-3.0103, low.decibels(low.cornerFrequency), 1e-4)
     assertClose(-45.0, low.phase(low.cornerFrequency))
     assertClose(1.0, low.gain(1e-3), 1e-5)
-    val high = Filter(FilterKind.HIGH_PASS, 1000.0, 1e-7, 0.0)
+    val high = Filter(FilterKind.HIGH_PASS, FilterBuild.RC, 1000.0, 1e-7, 0.0)
     assertClose(45.0, high.phase(high.cornerFrequency))
     assertTrue(high.gain(1.0) < 0.01)
   }
 
   @Test
   fun rlcFiltersMeetAtTheMiddle() {
-    val pass = Filter(FilterKind.BAND_PASS, 100.0, 1e-6, 1e-2)
-    val stop = Filter(FilterKind.BAND_STOP, 100.0, 1e-6, 1e-2)
+    val pass = Filter(FilterKind.BAND_PASS, FilterBuild.RLC, 100.0, 1e-6, 1e-2)
+    val stop = Filter(FilterKind.BAND_STOP, FilterBuild.RLC, 100.0, 1e-6, 1e-2)
     assertClose(1.0, pass.gain(pass.cornerFrequency))
     assertClose(0.0, stop.gain(stop.cornerFrequency))
-    assertClose(1.0, pass.quality)
+    assertClose(1.0, pass.quality ?: 0.0)
     assertClose(pass.cornerFrequency, pass.bandwidth)
+  }
+
+  @Test
+  fun rlFilterTurnsAtROverL() {
+    val low = Filter(FilterKind.LOW_PASS, FilterBuild.RL, 100.0, 0.0, 0.01)
+    assertClose(1591.549, low.cornerFrequency, 1e-5)
+    assertClose(-3.0103, low.decibels(low.cornerFrequency), 1e-4)
+    val high = Filter(FilterKind.HIGH_PASS, FilterBuild.RL, 100.0, 0.0, 0.01)
+    assertClose(45.0, high.phase(high.cornerFrequency))
+  }
+
+  @Test
+  fun secondOrderCutsTwiceAsFast() {
+    val rlc = Filter(FilterKind.LOW_PASS, FilterBuild.RLC, 100.0, 1e-6, 1e-2)
+    // 40 dB less ten times higher, and Q times more at f₀
+    assertClose(-40.0, rlc.decibels(rlc.cornerFrequency * 10), 0.01)
+    assertClose(rlc.quality ?: 0.0, rlc.gain(rlc.cornerFrequency))
+    assertClose(-90.0, rlc.phase(rlc.cornerFrequency))
+    val first = Filter(FilterKind.LOW_PASS, FilterBuild.RC, 1000.0, 1e-7, 0.0)
+    assertClose(-20.0, first.decibels(first.cornerFrequency * 100) - first.decibels(first.cornerFrequency * 10), 0.01)
+  }
+
+  @Test
+  fun twoRcStagesLoadEachOther() {
+    val low = Filter(FilterKind.LOW_PASS, FilterBuild.TWO_RC, 1000.0, 1e-7, 0.0)
+    assertClose(1.0 / 3, low.gain(low.cornerFrequency))
+    val high = Filter(FilterKind.HIGH_PASS, FilterBuild.TWO_RC, 1000.0, 1e-7, 0.0)
+    assertClose(1.0, high.gain(high.cornerFrequency * 1000), 1e-5)
+    assertTrue(high.gain(high.cornerFrequency / 10) < 0.011)
+  }
+
+  @Test
+  fun bandFiltersOnlyComeAsRlc() {
+    assertFalse(Filter(FilterKind.BAND_PASS, FilterBuild.RC, 100.0, 1e-6, 0.0).isValid)
+    assertFalse(Filter(FilterKind.LOW_PASS, FilterBuild.RL, 100.0, 1e-6, 0.0).isValid)
+    assertTrue(Filter(FilterKind.LOW_PASS, FilterBuild.RL, 100.0, 0.0, 1e-3).isValid)
   }
 
   @Test

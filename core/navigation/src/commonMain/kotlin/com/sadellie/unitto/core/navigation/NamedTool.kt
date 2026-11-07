@@ -26,6 +26,9 @@ class NamedTool(val item: DrawerItem, val name: String) {
 /** Tools from A to Z, ignoring accents and capitals. */
 fun List<NamedTool>.alphabetical(): List<NamedTool> = sortedBy { sortKey(it.name) }
 
+/** The most used tools first, in the order of [mainDrawerItems]. */
+fun List<NamedTool>.inDefaultOrder(): List<NamedTool> = sortedBy { mainDrawerItems.indexOf(it.item) }
+
 /** Tools in the [saved] order, the ones that aren't in it stay as they were after them. */
 fun List<NamedTool>.ordered(saved: String): List<NamedTool> {
   val first = saved.split(ORDER_SEPARATOR).mapNotNull { id -> firstOrNull { it.id == id } }

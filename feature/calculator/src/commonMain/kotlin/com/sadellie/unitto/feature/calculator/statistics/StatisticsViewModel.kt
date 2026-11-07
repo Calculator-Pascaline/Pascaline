@@ -24,6 +24,7 @@ import com.sadellie.unitto.core.common.stateIn
 import com.sadellie.unitto.core.datastore.UserPreferencesRepository
 import com.sadellie.unitto.feature.calculator.datatable.NumberFormat
 import com.sadellie.unitto.feature.calculator.datatable.SavedTable
+import com.sadellie.unitto.feature.calculator.probability.rounded
 import com.sadellie.unitto.feature.calculator.probability.toNumberOrNull
 import kotlinx.coroutines.flow.map
 
@@ -50,3 +51,17 @@ internal fun List<List<String>>.weightedValues(): List<WeightedValue> = mapNotNu
 }
 
 private const val DATA_KEY = "STATISTICS_DATA"
+
+/**
+ * Where a typed [value] goes: the row that already has it with its count one higher, so that 5 typed
+ * twice is 5 ×2, or a new row at the end with no count.
+ */
+internal fun List<List<String>>.placeFor(value: String): Pair<Int, String?> {
+  val number = value.toNumberOrNull() ?: return size to null
+  val index = indexOfFirst { it.getOrNull(0)?.toNumberOrNull() == number }
+  if (index < 0) return size to null
+  val count = this[index].getOrNull(1)?.toNumberOrNull() ?: 1.0
+  return index to (count + 1).rounded(COUNT_DECIMALS)
+}
+
+private const val COUNT_DECIMALS = 6

@@ -30,7 +30,6 @@ import com.sadellie.unitto.core.navigation.InferenceStartRoute
 import com.sadellie.unitto.core.navigation.LocalNavigator
 import com.sadellie.unitto.core.navigation.LogicStartRoute
 import com.sadellie.unitto.core.navigation.OrbitsStartRoute
-import com.sadellie.unitto.core.navigation.PendulumStartRoute
 import com.sadellie.unitto.core.navigation.PlaceStartRoute
 import com.sadellie.unitto.core.navigation.PricesStartRoute
 import com.sadellie.unitto.core.navigation.ProbabilityStartRoute
@@ -40,7 +39,6 @@ import com.sadellie.unitto.core.navigation.RegressionStartRoute
 import com.sadellie.unitto.core.navigation.ResistorsStartRoute
 import com.sadellie.unitto.core.navigation.SequencesStartRoute
 import com.sadellie.unitto.core.navigation.StatisticsStartRoute
-import com.sadellie.unitto.core.navigation.WavesStartRoute
 import com.sadellie.unitto.feature.calculator.CalculatorRoute
 import com.sadellie.unitto.feature.calculator.electrical.ChargingRoute
 import com.sadellie.unitto.feature.calculator.electrical.FiltersRoute
@@ -52,8 +50,6 @@ import com.sadellie.unitto.feature.calculator.functions.FunctionsRoute
 import com.sadellie.unitto.feature.calculator.home.HomeRoute
 import com.sadellie.unitto.feature.calculator.inference.InferenceRoute
 import com.sadellie.unitto.feature.calculator.physics.OrbitsRoute
-import com.sadellie.unitto.feature.calculator.physics.PendulumRoute
-import com.sadellie.unitto.feature.calculator.physics.WavesRoute
 import com.sadellie.unitto.feature.calculator.place.PlaceRoute
 import com.sadellie.unitto.feature.calculator.prices.PricesRoute
 import com.sadellie.unitto.feature.calculator.probability.ProbabilityRoute
@@ -116,14 +112,6 @@ fun Module.calculatorNavigation() {
   navigation<ProjectileStartRoute> {
     val navigator = LocalNavigator.current
     ProjectileRoute(openDrawer = navigator::openDrawer)
-  }
-  navigation<PendulumStartRoute> {
-    val navigator = LocalNavigator.current
-    PendulumRoute(openDrawer = navigator::openDrawer)
-  }
-  navigation<WavesStartRoute> {
-    val navigator = LocalNavigator.current
-    WavesRoute(openDrawer = navigator::openDrawer)
   }
   navigation<OrbitsStartRoute> {
     val navigator = LocalNavigator.current

@@ -219,6 +219,7 @@ private fun CurveCard(curve: ChargeCurve, time: Double, format: (Double) -> Stri
   val scheme = MaterialTheme.colorScheme
   val colors = CurveColors(scheme.primary, scheme.tertiary, scheme.outlineVariant, scheme.secondary)
   LiveCard {
+    ChargeCircuit(isCoil = curve.part == ChargePart.INDUCTOR, isCharging = curve.isCharging)
     Canvas(Modifier.fillMaxWidth().height(CURVE_HEIGHT)) {
       drawChargeCurve(clock.value, curve.isCharging, colors, measurer, label)
       val share = (time / (curve.timeConstant * SHOWN_CONSTANTS)).coerceIn(0.0, 1.0).toFloat()
