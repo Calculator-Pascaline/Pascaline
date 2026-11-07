@@ -45,6 +45,21 @@
 
 ## ✨ Features
 
+### 🏠 Every tool on one screen
+
+<table>
+  <tr>
+    <td align="center" valign="top" width="33%">
+      <img src="docs/screenshots/home.png" width="240" alt="Home with a search box, the recent tools, then the Math, Everyday and Data sections" /><br />
+    </td>
+    <td valign="top">
+      Home lists every tool, grouped by topic: <b>Math</b>, <b>Everyday</b>, <b>Data</b>, <b>Science</b> and <b>Electronics</b>.<br /><br />
+      Search a tool by its name, or find the ones you used last at the top.<br /><br />
+      In the edit mode, rename, move and add sections, drag tools to change their place, move them to another section, and hide the ones you don't need.
+    </td>
+  </tr>
+</table>
+
 ### 🧮 Advanced math
 
 <table>
@@ -78,13 +93,30 @@
     </td>
     <td align="center" valign="top" width="33%">
       <b>Functions</b><br />
-      <img src="docs/screenshots/functions.png" width="240" alt="The graph of sin(x)" /><br />
-      <sub>Graphs and tables of values</sub>
+      <img src="docs/screenshots/functions.png" width="240" alt="The graphs of x² and sin(x) with their zeros" /><br />
+      <sub>Graphs, zeros, derivatives and tangents</sub>
     </td>
     <td align="center" valign="top" width="33%">
       <b>Programmer</b><br />
       <img src="docs/screenshots/programmer.png" width="240" alt="FF AND 0F is F, shown in hexadecimal, decimal, octal and binary" /><br />
       <sub>HEX, DEC, OCT and BIN with bitwise operators</sub>
+    </td>
+  </tr>
+</table>
+
+### 🧊 In 3D and in the plane
+
+<table>
+  <tr>
+    <td align="center" valign="top" width="50%">
+      <b>Multiple integrals</b><br />
+      <img src="docs/screenshots/multiple-integrals.png" width="240" alt="The double integral of 4 − x² − y² over the unit disk drawn as a volume in 3D, equal to 10.9957" /><br />
+      <sub>Double and triple integrals in 3D you turn with a finger, with bounds that depend on x and y</sub>
+    </td>
+    <td align="center" valign="top" width="50%">
+      <b>Vector fields</b><br />
+      <img src="docs/screenshots/vector-fields.png" width="240" alt="The gradient of e^(−x²−y²) as arrows over a map of colors, with every value at a point" /><br />
+      <sub>Fields as arrows, with gradient, divergence, rotation and Laplacian at any point</sub>
     </td>
   </tr>
 </table>
@@ -95,18 +127,71 @@
   <tr>
     <td align="center" valign="top" width="33%">
       <b>Statistics</b><br />
-      <img src="docs/screenshots/statistics.png" width="240" alt="A histogram of values with their frequencies" /><br />
+      <img src="docs/screenshots/statistics.png" width="240" alt="Values with their counts, the mean, median and standard deviation, and a histogram with a box plot" /><br />
       <sub>Histograms, box plots and every statistic</sub>
     </td>
     <td align="center" valign="top" width="33%">
       <b>Regression</b><br />
-      <img src="docs/screenshots/regression.png" width="240" alt="Points with the line y = 2.02x − 0.02 through them" /><br />
-      <sub>Find the curve through your points</sub>
+      <img src="docs/screenshots/regression.png" width="240" alt="Points with the line y = 2.02x − 0.02 through them, explaining 99.8% of how y changes, and a prediction" /><br />
+      <sub>Drag your points, the best curve follows</sub>
     </td>
+    <td align="center" valign="top" width="33%">
+      <b>Inference</b><br />
+      <img src="docs/screenshots/inference.png" width="240" alt="A one proportion test with the two bell curves, the p-value shaded, and the verdict A real difference" /><br />
+      <sub>Tests and intervals, with both distributions and a plain answer</sub>
+    </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <b>Probability</b><br />
       <img src="docs/screenshots/probability.png" width="240" alt="P(X ≤ 184.3) is 0.908 for heights with a mean of 175 and a standard deviation of 7, with the line dragged on the bell curve" /><br />
       <sub>Drag the graph to get the probability, with examples</sub>
+    </td>
+    <td></td>
+    <td></td>
+  </tr>
+</table>
+
+### 🔭 Science
+
+<table>
+  <tr>
+    <td align="center" valign="top" width="33%">
+      <b>Sky and Earth</b><br />
+      <img src="docs/screenshots/sky-and-earth.png" width="240" alt="Sunset at 4:23 PM in London, the height of the sun through the day, and the twilights" /><br />
+      <sub>Sun, moon, sky, tides, temperature and rain for any city, offline</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <b>Projectile</b><br />
+      <img src="docs/screenshots/projectile.png" width="240" alt="An animated throw reaching 66.69 m with its highest point at 23.69 m" /><br />
+      <sub>An animated throw, with air, and how it is calculated</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <b>Elements</b><br />
+      <img src="docs/screenshots/elements.png" width="240" alt="Sulfur with its atom, its place in the periodic table and its details" /><br />
+      <sub>The periodic table, with an animated atom</sub>
+    </td>
+  </tr>
+</table>
+
+### ⚡ Electronics
+
+<table>
+  <tr>
+    <td align="center" valign="top" width="33%">
+      <b>Filters</b><br />
+      <img src="docs/screenshots/filters.png" width="240" alt="A band-pass RLC filter with its circuit, its gain and phase curves, and the output against the input" /><br />
+      <sub>RC, RL and RLC filters with their circuit and Bode plot</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <b>Charging</b><br />
+      <img src="docs/screenshots/charging.png" width="240" alt="A capacitor charging through a resistor, with its circuit and its curve over five time constants" /><br />
+      <sub>Capacitors, coils and the 555 timer</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <b>Resistor colors</b><br />
+      <img src="docs/screenshots/resistor-colors.png" width="240" alt="A 470 Ω resistor with its color bands, and the nearest standard values" /><br />
+      <sub>Read the bands, or find a standard value</sub>
     </td>
   </tr>
 </table>
@@ -122,13 +207,12 @@
     </td>
     <td align="center" valign="top" width="33%">
       <b>Finance</b><br />
-      <img src="docs/screenshots/finance.png" width="240" alt="Simple interest of 5% on 1000 for 365 days is 50" /><br />
-      <sub>Simple and compound interest</sub>
+      <img src="docs/screenshots/finance.png" width="240" alt="A loan of 200 000 at 5% over 20 years: 1 319.91 a month, with what is repaid and the interest year by year" /><br />
+      <sub>Loans, savings, and simple and compound interest</sub>
     </td>
     <td align="center" valign="top" width="33%">
-      <b>Elements</b><br />
-      <img src="docs/screenshots/elements.png" width="240" alt="The periodic table with the details of carbon" /><br />
-      <sub>The periodic table, element by element</sub>
+      <b>And more</b><br />
+      <sub>Sequences, Orbits, Logic gates, Price comparison, Date calculator and Body mass</sub>
     </td>
   </tr>
 </table>
