@@ -2219,4 +2219,11 @@
     <string name="projectile_max_range_how">How it is found</string>
     <string name="projectile_max_range_how_text">From the ground the best angle is 45°. The higher you throw from, the flatter it gets.</string>
     <string name="projectile_your_throw">Your throw</string>
+    <string name="projectile_object">What you throw</string>
+    <string name="projectile_water_drop">Water drop</string>
+    <string name="projectile_stone">Stone</string>
+    <string name="projectile_shuttlecock">Shuttlecock</string>
+    <string name="projectile_golf">Golf</string>
+    <string name="projectile_volleyball">Volleyball</string>
+    <string name="projectile_cannonball">Cannonball</string>
 </resources>

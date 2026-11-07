@@ -1932,4 +1932,11 @@
     <string name="projectile_max_range_how">Cómo se encuentra</string>
     <string name="projectile_max_range_how_text">Desde el suelo el mejor ángulo es 45°. Cuanto más alto se lanza, más bajo es.</string>
     <string name="projectile_your_throw">Tu lanzamiento</string>
+    <string name="projectile_object">Lo que lanzas</string>
+    <string name="projectile_water_drop">Gota de agua</string>
+    <string name="projectile_stone">Piedra</string>
+    <string name="projectile_shuttlecock">Volante</string>
+    <string name="projectile_golf">Golf</string>
+    <string name="projectile_volleyball">Vóley</string>
+    <string name="projectile_cannonball">Bala de cañón</string>
 </resources>

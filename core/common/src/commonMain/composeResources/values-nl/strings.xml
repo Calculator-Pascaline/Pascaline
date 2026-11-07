@@ -1932,4 +1932,11 @@
     <string name="projectile_max_range_how">Hoe je hem vindt</string>
     <string name="projectile_max_range_how_text">Vanaf de grond is de beste hoek 45°. Hoe hoger je gooit, hoe vlakker hij wordt.</string>
     <string name="projectile_your_throw">Jouw worp</string>
+    <string name="projectile_object">Wat je gooit</string>
+    <string name="projectile_water_drop">Waterdruppel</string>
+    <string name="projectile_stone">Steen</string>
+    <string name="projectile_shuttlecock">Shuttle</string>
+    <string name="projectile_golf">Golf</string>
+    <string name="projectile_volleyball">Volleybal</string>
+    <string name="projectile_cannonball">Kanonskogel</string>
 </resources>

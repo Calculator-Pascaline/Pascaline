@@ -1932,4 +1932,11 @@
     <string name="projectile_max_range_how">Как его найти</string>
     <string name="projectile_max_range_how_text">С земли лучший угол 45°. Чем выше точка броска, тем он меньше.</string>
     <string name="projectile_your_throw">Ваш бросок</string>
+    <string name="projectile_object">Что вы бросаете</string>
+    <string name="projectile_water_drop">Капля воды</string>
+    <string name="projectile_stone">Камень</string>
+    <string name="projectile_shuttlecock">Волан</string>
+    <string name="projectile_golf">Гольф</string>
+    <string name="projectile_volleyball">Волейбол</string>
+    <string name="projectile_cannonball">Пушечное ядро</string>
 </resources>

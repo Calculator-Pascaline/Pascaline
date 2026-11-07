@@ -229,6 +229,12 @@ internal const val SPHERE_DRAG = 0.47
 /** Drag coefficient of a pistol bullet below the speed of sound. */
 internal const val BULLET_DRAG = 0.3
 
+/** Dimples let a golf ball slip through the air with half the drag of a smooth ball. */
+internal const val GOLF_DRAG = 0.25
+
+/** The feathers of a shuttlecock brake it hard. */
+internal const val SHUTTLECOCK_DRAG = 0.6
+
 /** Seconds between two steps of the simulation. */
 internal const val TIME_STEP = 0.005
 private const val ROUGH_TIME_STEP = 0.02

@@ -67,6 +67,8 @@ import com.sadellie.unitto.feature.calculator.probability.rounded
 import com.sadellie.unitto.feature.calculator.probability.sliderValue
 import com.sadellie.unitto.feature.calculator.probability.toNumberOrNull
 import kotlin.math.abs
+import kotlin.math.floor
+import kotlin.math.log10
 import kotlin.math.max
 import kotlin.math.round
 import kotlinx.coroutines.flow.map
@@ -107,6 +109,7 @@ import unitto.core.common.generated.resources.projectile_explain_steps_text
 import unitto.core.common.generated.resources.projectile_explain_time
 import unitto.core.common.generated.resources.projectile_explain_time_text
 import unitto.core.common.generated.resources.projectile_explain_title
+import unitto.core.common.generated.resources.projectile_golf
 import unitto.core.common.generated.resources.projectile_gravity
 import unitto.core.common.generated.resources.projectile_height
 import unitto.core.common.generated.resources.projectile_hint
@@ -116,6 +119,7 @@ import unitto.core.common.generated.resources.projectile_jupiter
 import unitto.core.common.generated.resources.projectile_launch
 import unitto.core.common.generated.resources.projectile_mars
 import unitto.core.common.generated.resources.projectile_mass
+import unitto.core.common.generated.resources.projectile_object
 import unitto.core.common.generated.resources.projectile_max_height
 import unitto.core.common.generated.resources.projectile_max_range
 import unitto.core.common.generated.resources.projectile_max_range_air
@@ -125,14 +129,19 @@ import unitto.core.common.generated.resources.projectile_max_range_how_text
 import unitto.core.common.generated.resources.projectile_ping_pong
 import unitto.core.common.generated.resources.projectile_range
 import unitto.core.common.generated.resources.projectile_bullet
+import unitto.core.common.generated.resources.projectile_cannonball
 import unitto.core.common.generated.resources.projectile_shot_put
+import unitto.core.common.generated.resources.projectile_shuttlecock
 import unitto.core.common.generated.resources.projectile_soccer
+import unitto.core.common.generated.resources.projectile_stone
 import unitto.core.common.generated.resources.projectile_speed
 import unitto.core.common.generated.resources.projectile_tennis
 import unitto.core.common.generated.resources.projectile_terminal
 import unitto.core.common.generated.resources.projectile_time
 import unitto.core.common.generated.resources.projectile_title
 import unitto.core.common.generated.resources.projectile_use_angle
+import unitto.core.common.generated.resources.projectile_volleyball
+import unitto.core.common.generated.resources.projectile_water_drop
 import unitto.core.common.generated.resources.projectile_with_air
 import unitto.core.common.generated.resources.projectile_without_air
 import unitto.core.common.generated.resources.projectile_your_throw
@@ -166,25 +175,36 @@ private val PLANETS =
     Planet(Res.string.projectile_jupiter, "24.79", "0.16"),
   )
 
-/** A ball you could throw, its size in centimeters and its weight in kilograms. */
-/** A thing to throw, with the drag of its shape, and its own speed when it has one, like a bullet. */
+/**
+ * A thing to throw: its size in centimeters, its weight in kilograms, the drag of its shape, and the speed it
+ * usually leaves at in m/s.
+ */
 private class Ball(
   val name: StringResource,
   val diameter: String,
   val mass: String,
+  val speed: String,
   val drag: Double = SPHERE_DRAG,
-  val speed: String? = null,
 )
 
 private val BALLS =
   listOf(
-    Ball(Res.string.projectile_ping_pong, "4", "0.0027"),
-    Ball(Res.string.projectile_tennis, "6.7", "0.058"),
-    Ball(Res.string.projectile_baseball, "7.4", "0.145"),
-    Ball(Res.string.projectile_soccer, "22", "0.43"),
-    Ball(Res.string.projectile_basketball, "24", "0.62"),
-    Ball(Res.string.projectile_shot_put, "12", "7.26"),
-    Ball(Res.string.projectile_bullet, "0.9", "0.008", BULLET_DRAG, speed = "360"),
+    // A 4 mm drop out of a garden hose, and a stone thrown by hand
+    Ball(Res.string.projectile_water_drop, "0.4", "0.0000335", "10"),
+    Ball(Res.string.projectile_stone, "5", "0.15", "20"),
+    // A smash, a clear, a drive, a rally shot, a pitch, a serve, a long kick, a three-pointer and a shot put throw
+    Ball(Res.string.projectile_ping_pong, "4", "0.0027", "15"),
+    Ball(Res.string.projectile_shuttlecock, "6.5", "0.005", "50", SHUTTLECOCK_DRAG),
+    Ball(Res.string.projectile_golf, "4.27", "0.0459", "70", GOLF_DRAG),
+    Ball(Res.string.projectile_tennis, "6.7", "0.058", "30"),
+    Ball(Res.string.projectile_baseball, "7.4", "0.145", "40"),
+    Ball(Res.string.projectile_volleyball, "21", "0.27", "15"),
+    Ball(Res.string.projectile_soccer, "22", "0.43", "25"),
+    Ball(Res.string.projectile_basketball, "24", "0.62", "8"),
+    Ball(Res.string.projectile_shot_put, "12", "7.26", "13"),
+    // A six-pound cannonball and a pistol bullet
+    Ball(Res.string.projectile_cannonball, "9.3", "2.7", "440"),
+    Ball(Res.string.projectile_bullet, "0.9", "0.008", "360", BULLET_DRAG),
   )
 
 /** A throw without air: the conditions, the flight it gives and how that is worked out. */
@@ -217,6 +237,13 @@ internal fun ProjectileRoute(openDrawer: () -> Unit) {
     colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
   ) { paddingValues ->
     val conditions: @Composable () -> Unit = {
+      Card(stringResource(Res.string.projectile_object)) {
+        BallChips(diameter, mass) { ball ->
+          diameter = ball.diameter.replace(".", symbols)
+          mass = ball.mass.replace(".", symbols)
+          speed = ball.speed
+        }
+      }
       Card(stringResource(Res.string.projectile_initial)) {
         ConditionRow(SPEED, speed, symbols) { speed = it }
         ConditionRow(ANGLE, angle, symbols) { angle = it }
@@ -230,11 +257,6 @@ internal fun ProjectileRoute(openDrawer: () -> Unit) {
       Card(stringResource(Res.string.projectile_air)) {
         AirSwitch(hasAir) { hasAir = it }
         if (hasAir) {
-          BallChips(diameter, mass) { ball ->
-            diameter = ball.diameter.replace(".", symbols)
-            mass = ball.mass.replace(".", symbols)
-            ball.speed?.let { speed = it }
-          }
           ConditionRow(DIAMETER, diameter, symbols) { diameter = it }
           ConditionRow(MASS, mass, symbols) { mass = it }
           ConditionRow(DENSITY, density, symbols) { density = it }
@@ -525,7 +547,9 @@ private fun AirExplanation(flight: Trajectory, air: Air, format: (Double) -> Str
   }
 }
 
-private fun formatSmall(value: Double) = value.rounded(SMALL_DECIMALS)
+/** Keeps 4 significant digits on tiny values, like the area of a water drop. */
+private fun formatSmall(value: Double) =
+  value.rounded(if (value == 0.0) SMALL_DECIMALS else max(SMALL_DECIMALS, SIGNIFICANT - floor(log10(abs(value))).toInt()))
 
 @Composable
 internal fun PlanetChips(gravity: String, onChoose: (Planet) -> Unit) {
@@ -614,6 +638,7 @@ internal fun Step(title: StringResource, text: StringResource, vararg formulas: 
 
 private const val DECIMALS = 2
 private const val SMALL_DECIMALS = 5
+private const val SIGNIFICANT = 3
 private const val CENTIMETERS = 100
 private const val PERCENT = 100
 private const val HALF = 0.5

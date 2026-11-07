@@ -1932,4 +1932,11 @@
     <string name="projectile_max_range_how">यह कैसे मिलता है</string>
     <string name="projectile_max_range_how_text">ज़मीन से सबसे अच्छा कोण 45° है। जितनी ऊँचाई से फेंकें, कोण उतना कम होता है।</string>
     <string name="projectile_your_throw">आपका फेंकना</string>
+    <string name="projectile_object">आप क्या फेंकते हैं</string>
+    <string name="projectile_water_drop">पानी की बूँद</string>
+    <string name="projectile_stone">पत्थर</string>
+    <string name="projectile_shuttlecock">शटलकॉक</string>
+    <string name="projectile_golf">गोल्फ़</string>
+    <string name="projectile_volleyball">वॉलीबॉल</string>
+    <string name="projectile_cannonball">तोप का गोला</string>
 </resources>

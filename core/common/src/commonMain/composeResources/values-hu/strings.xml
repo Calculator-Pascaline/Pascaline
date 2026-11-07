@@ -1932,4 +1932,11 @@
     <string name="projectile_max_range_how">Hogyan kapjuk</string>
     <string name="projectile_max_range_how_text">A földről a legjobb szög 45°. Minél magasabbról dobunk, annál laposabb.</string>
     <string name="projectile_your_throw">A te dobásod</string>
+    <string name="projectile_object">Amit eldobsz</string>
+    <string name="projectile_water_drop">Vízcsepp</string>
+    <string name="projectile_stone">Kő</string>
+    <string name="projectile_shuttlecock">Tollaslabda</string>
+    <string name="projectile_golf">Golf</string>
+    <string name="projectile_volleyball">Röplabda</string>
+    <string name="projectile_cannonball">Ágyúgolyó</string>
 </resources>

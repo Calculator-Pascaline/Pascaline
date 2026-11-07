@@ -1932,4 +1932,11 @@
     <string name="projectile_max_range_how">Nasıl bulunur</string>
     <string name="projectile_max_range_how_text">Yerden en iyi açı 45°’dir. Ne kadar yüksekten atılırsa o kadar düşük olur.</string>
     <string name="projectile_your_throw">Senin atışın</string>
+    <string name="projectile_object">Ne atıyorsun</string>
+    <string name="projectile_water_drop">Su damlası</string>
+    <string name="projectile_stone">Taş</string>
+    <string name="projectile_shuttlecock">Badminton topu</string>
+    <string name="projectile_golf">Golf</string>
+    <string name="projectile_volleyball">Voleybol</string>
+    <string name="projectile_cannonball">Top güllesi</string>
 </resources>
