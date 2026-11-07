@@ -192,6 +192,63 @@ private fun bisection(f: (Double) -> Double, low: Double, high: Double): Double 
   return (a + b) / 2
 }
 
+/**
+ * Money of one year.
+ *
+ * @property base What was repaid that year on a loan, all that was put in so far on savings.
+ * @property interest What interest took that year on a loan, all it brought so far on savings.
+ */
+internal data class MoneyYear(val base: Double, val interest: Double)
+
+/**
+ * A loan repaid every month.
+ *
+ * @property payment What is paid each month.
+ * @property totalInterest What it costs on top of the amount.
+ */
+internal class Loan(val payment: Double, val totalInterest: Double, val years: List<MoneyYear>)
+
+/** Null without an amount or a length. */
+internal fun loan(amount: Double, annualPercent: Double, years: Int): Loan? {
+  if (!(amount > 0) || !(annualPercent >= 0) || years !in 1..MAX_YEARS) return null
+  val months = years * MONTHS
+  val known =
+    mapOf(
+      CompoundValue.N to months.toDouble(),
+      CompoundValue.RATE to annualPercent,
+      CompoundValue.PRESENT_VALUE to amount,
+      CompoundValue.FUTURE_VALUE to 0.0,
+    )
+  val payment = -(compoundInterest(known, CompoundValue.PAYMENT, CompoundSettings()) ?: return null)
+  val monthRate = annualPercent / PERCENT / MONTHS
+  var balance = amount
+  val schedule =
+    List(years) {
+      var interest = 0.0
+      repeat(MONTHS) {
+        val part = balance * monthRate
+        interest += part
+        balance -= payment - part
+      }
+      MoneyYear(payment * MONTHS - interest, interest)
+    }
+  return Loan(payment, schedule.sumOf { it.interest }, schedule)
+}
+
+/** Savings at the end of each year, with [deposit] added at the end of each month. */
+internal fun savings(start: Double, deposit: Double, annualPercent: Double, years: Int): List<MoneyYear>? {
+  if (listOf(start, deposit, annualPercent).any { !(it >= 0) } || years !in 1..MAX_YEARS) return null
+  val monthRate = annualPercent / PERCENT / MONTHS
+  var balance = start
+  return List(years) { year ->
+    repeat(MONTHS) { balance = balance * (1 + monthRate) + deposit }
+    val paidIn = start + deposit * MONTHS * (year + 1)
+    MoneyYear(paidIn, balance - paidIn)
+  }
+}
+
+private const val MONTHS = 12
+private const val MAX_YEARS = 100
 private const val NO_RATE = 1e-12
 private const val MAX_RATE = 10_000.0
 private const val MIN_RATE = -99.0

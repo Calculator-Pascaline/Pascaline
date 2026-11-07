@@ -18,11 +18,14 @@
 
 package com.sadellie.unitto.feature.calculator.home
 
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -45,7 +48,7 @@ import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
@@ -102,6 +105,7 @@ import com.sadellie.unitto.core.ui.rememberKeyPress
 import com.sadellie.unitto.core.ui.squashable
 import com.sadellie.unitto.core.ui.trackKeyPress
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -296,8 +300,8 @@ private fun LazyGridScope.tiles(section: String, tools: List<NamedTool>, actions
   val reorder = actions.reorder
   val shown =
     if (reorder.section == section) reorder.draft.mapNotNull { id -> tools.firstOrNull { it.id == id } } else tools
-  items(shown, key = { key(section, it.id) }) { tool ->
-    ToolTile(section, tool, tools, actions)
+  itemsIndexed(shown, key = { _, tool -> key(section, tool.id) }) { index, tool ->
+    ToolTile(section, tool, tools, actions, Modifier.appearing(index))
   }
 }
 
@@ -308,6 +312,7 @@ private fun LazyGridItemScope.ToolTile(
   tool: NamedTool,
   sectionTools: List<NamedTool>,
   actions: TileActions,
+  appearance: Modifier,
 ) {
   val reorder = actions.reorder
   val isDragged = reorder.section == section && reorder.dragged == tool.id
@@ -347,7 +352,7 @@ private fun LazyGridItemScope.ToolTile(
   val keyPress = rememberKeyPress()
   val interactionSource = remember { MutableInteractionSource() }
   // The badge is outside of the key: keys clip what is in them
-  Box(modifier = placed.then(wiggle(actions.isEditing)).then(dragging).height(KEY_HEIGHT)) {
+  Box(modifier = placed.then(appearance).then(wiggle(actions.isEditing)).then(dragging).height(KEY_HEIGHT)) {
     Column(
       modifier =
         Modifier.fillMaxSize()
@@ -388,6 +393,23 @@ private fun LazyGridItemScope.ToolTile(
   }
 }
 
+/** The key rises and grows into place, a moment after the one before it. */
+@Composable
+private fun Modifier.appearing(index: Int): Modifier {
+  val appeared = remember { Animatable(0f) }
+  LaunchedEffect(Unit) {
+    delay((index * APPEAR_DELAY).coerceAtMost(MAX_APPEAR_DELAY))
+    appeared.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMediumLow))
+  }
+  return graphicsLayer {
+    val part = appeared.value
+    alpha = part.coerceIn(0f, 1f)
+    scaleX = APPEAR_SCALE + (1 - APPEAR_SCALE) * part
+    scaleY = APPEAR_SCALE + (1 - APPEAR_SCALE) * part
+    translationY = (1 - part) * APPEAR_RISE.toPx()
+  }
+}
+
 /** Keys gently shake while they can be moved. */
 @Composable
 private fun wiggle(isEditing: Boolean): Modifier {
@@ -424,6 +446,10 @@ private const val WIGGLE_ANGLE = 1f
 private const val WIGGLE_MILLIS = 130
 private const val SCROLL_EDGE = 120
 private const val SCROLL_STEP = 12f
+private const val APPEAR_DELAY = 28L
+private const val MAX_APPEAR_DELAY = 400L
+private const val APPEAR_SCALE = 0.7f
+private val APPEAR_RISE = 24.dp
 private val KEY_WIDTH = 104.dp
 private val KEY_HEIGHT = 92.dp
 private const val KEY_CORNER = 26

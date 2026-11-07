@@ -19,14 +19,8 @@
 
 package com.sadellie.unitto.feature.settings
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -42,14 +36,12 @@ import com.sadellie.unitto.core.common.Config
 import com.sadellie.unitto.core.common.collectAsStateWithLifecycleKMP
 import com.sadellie.unitto.core.designsystem.LocalWindowSize
 import com.sadellie.unitto.core.designsystem.icons.symbols.BacklightHigh
-import com.sadellie.unitto.core.designsystem.icons.symbols.Cached
 import com.sadellie.unitto.core.designsystem.icons.symbols.Calculate
 import com.sadellie.unitto.core.designsystem.icons.symbols.Code
 import com.sadellie.unitto.core.designsystem.icons.symbols.Copyright
 import com.sadellie.unitto.core.designsystem.icons.symbols.Favorite
 import com.sadellie.unitto.core.designsystem.icons.symbols.Info
 import com.sadellie.unitto.core.designsystem.icons.symbols.LockScreen
-import com.sadellie.unitto.core.designsystem.icons.symbols.NewReleases
 import com.sadellie.unitto.core.designsystem.icons.symbols.Palette
 import com.sadellie.unitto.core.designsystem.icons.symbols.RateReview
 import com.sadellie.unitto.core.designsystem.icons.symbols.RestorePage
@@ -70,7 +62,6 @@ import com.sadellie.unitto.core.ui.LocalPlatform
 import com.sadellie.unitto.core.ui.Platform
 import com.sadellie.unitto.core.ui.ScaffoldWithLargeTopBar
 import com.sadellie.unitto.core.ui.rememberLinkOpener
-import com.sadellie.unitto.feature.settings.components.AnnoyingBox
 import com.sadellie.unitto.feature.settings.navigation.BackupRoute
 import com.sadellie.unitto.feature.settings.navigation.CalculatorSettingsRoute
 import com.sadellie.unitto.feature.settings.navigation.ConverterSettingsRoute
@@ -80,7 +71,6 @@ import com.sadellie.unitto.feature.settings.navigation.ThirdPartyRoute
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import unitto.core.common.generated.resources.Res
-import unitto.core.common.generated.resources.app_name
 import unitto.core.common.generated.resources.calculator_title
 import unitto.core.common.generated.resources.converter_title
 import unitto.core.common.generated.resources.settings_about
@@ -104,8 +94,6 @@ import unitto.core.common.generated.resources.settings_show_on_lock_screen
 import unitto.core.common.generated.resources.settings_show_on_lock_screen_support
 import unitto.core.common.generated.resources.settings_third_party_licenses
 import unitto.core.common.generated.resources.settings_title
-import unitto.core.common.generated.resources.settings_updated
-import unitto.core.common.generated.resources.settings_updated_support
 import unitto.core.common.generated.resources.settings_version_name
 import unitto.core.common.generated.resources.settings_key_animation
 import unitto.core.common.generated.resources.settings_key_animation_support
@@ -124,7 +112,6 @@ internal fun SettingsRoute(openDrawer: () -> Unit, navControllerAction: (route: 
         uiState = uiState,
         openDrawer = openDrawer,
         navControllerAction = navControllerAction,
-        updateLastReadChangelog = viewModel::updateLastReadChangelog,
         updateVibrations = viewModel::updateVibrations,
         updateKeyAnimation = viewModel::updateKeyAnimation,
         updateKeepScreenOn = viewModel::updateEnableKeepScreenOn,
@@ -138,7 +125,6 @@ private fun SettingsScreen(
   uiState: SettingsUIState.Ready,
   openDrawer: () -> Unit,
   navControllerAction: (Route) -> Unit,
-  updateLastReadChangelog: (String) -> Unit,
   updateVibrations: (Boolean) -> Unit,
   updateKeyAnimation: (Boolean) -> Unit,
   updateKeepScreenOn: (Boolean) -> Unit,
@@ -161,25 +147,6 @@ private fun SettingsScreen(
       verticalArrangement = ListItemExpressiveDefaults.ListArrangement,
     ) {
       val linkOpener = rememberLinkOpener()
-      AnimatedVisibility(
-        modifier = Modifier.fillMaxWidth(),
-        visible = uiState.showUpdateChangelog,
-        enter = expandVertically() + fadeIn(),
-        exit = shrinkVertically() + fadeOut(),
-      ) {
-        val title = stringResource(Res.string.settings_updated, stringResource(Res.string.app_name))
-        AnnoyingBox(
-          modifier = Modifier.padding(vertical = Sizes.small).fillMaxWidth(),
-          onClick = {
-            linkOpener.launch("https://github.com/Calculator-Pascaline/Pascaline/releases/latest")
-            updateLastReadChangelog(Config.VERSION_CODE)
-          },
-          imageVector = Symbols.NewReleases,
-          imageVectorContentDescription = title,
-          title = title,
-          support = stringResource(Res.string.settings_updated_support, Config.VERSION_NAME),
-        )
-      }
       GeneralSettings(navControllerAction)
       AppSettings(navControllerAction)
       DeviceSettings(uiState, navControllerAction, updateVibrations, updateKeyAnimation, updateKeepScreenOn, updateShowOnLockScreen)
@@ -331,7 +298,6 @@ private fun PreviewSettingsScreen() {
     mutableStateOf(
       SettingsUIState.Ready(
         enableVibrations = false,
-        showUpdateChangelog = true,
         enableKeepScreenOn = false,
         showOnLockScreen = false,
         enableKeyAnimation = true,
@@ -343,7 +309,6 @@ private fun PreviewSettingsScreen() {
     uiState = uiState,
     openDrawer = {},
     navControllerAction = {},
-    updateLastReadChangelog = { uiState = uiState.copy(showUpdateChangelog = false) },
     updateVibrations = { uiState = uiState.copy(enableVibrations = it) },
     updateKeyAnimation = { uiState = uiState.copy(enableKeyAnimation = it) },
     updateKeepScreenOn = { uiState = uiState.copy(enableKeepScreenOn = it) },

@@ -80,4 +80,7 @@ class StatisticsMathTest {
   @Test fun decimalBarWidth() = assertEquals(0.05, autoBarWidth(ones(0.1, 0.5)), 1e-12)
 
   @Test fun barsStartOnMultiples() = assertEquals(-4.0, autoBarStart(ones(-3, 9), 2.0), 1e-12)
+
+  @Test
+  fun valuesAreSplitBySpacesAndSemicolons() = assertEquals(listOf("1", "2.5", "3"), splitValues(" 1  2.5;3 "))
 }

@@ -77,6 +77,10 @@ internal class Element(
   /** Electron configuration with the noble gas core: `[Ar] 3d⁶ 4s²`. */
   val configuration: String
     get() = electronConfiguration(number)
+
+  /** Electrons of each shell, the innermost first: 2, 8, 14, 2 for iron. */
+  val shells: List<Int>
+    get() = electronShells(number)
 }
 
 /** Every element by atomic number, from hydrogen to oganesson. */
@@ -151,6 +155,22 @@ internal fun electronConfiguration(number: Int): String {
       .joinToString(" ") { (subshell, electrons) -> subshell.label() + electrons.superscript() }
   val prefix = core?.let { "[${ELEMENTS[it - 1].symbol}]" }
   return listOfNotNull(prefix, outer.ifEmpty { null }).joinToString(" ")
+}
+
+/** Electrons by shell, read from the configuration so that exceptions like Cr are right. */
+internal fun electronShells(number: Int): List<Int> {
+  val shells = mutableMapOf<Int, Int>()
+  electronConfiguration(number).split(' ').forEach { part ->
+    if (part.startsWith('[')) {
+      val core = ELEMENTS.first { it.symbol == part.trim('[', ']') }.number
+      fill(core).forEach { (subshell, electrons) -> shells[subshell.first] = (shells[subshell.first] ?: 0) + electrons }
+    } else {
+      val shell = part.first().digitToInt()
+      val electrons = part.drop(2).map { SUPERSCRIPTS.indexOf(it) }.joinToString("").toInt()
+      shells[shell] = (shells[shell] ?: 0) + electrons
+    }
+  }
+  return shells.toList().sortedBy { it.first }.map { it.second }
 }
 
 private fun fill(electrons: Int): Map<Pair<Int, Int>, Int> {

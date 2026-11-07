@@ -222,7 +222,16 @@ private fun TextFieldState.tap(
   val index = layout.indexAt(x, y)
   if (index != null) {
     focusRequester.requestFocus()
-    edit { selection = TextRange(index) }
+    val integral = layout.boundlessIntegralAt(text, x, y)
+    edit {
+      if (integral == null) {
+        selection = TextRange(index)
+      } else {
+        // A tap on ∫ opens its bounds, the lower one first
+        replace(integral + 1, integral + 1, INTEGRAL_BOUNDS)
+        selection = TextRange(integral + 2)
+      }
+    }
   }
   return false
 }
@@ -501,11 +510,12 @@ private fun DrawScope.drawExpression(layout: ExpressionLayout, color: Color) {
       )
       return@forEach
     }
-    drawRect(
+    // A soft key to fill in, not an outlined box
+    drawRoundRect(
       color = color.copy(alpha = color.alpha * PLACEHOLDER_ALPHA),
       topLeft = it.rect.topLeft,
       size = it.rect.size,
-      style = Stroke(it.strokeWidth),
+      cornerRadius = CornerRadius(minOf(it.rect.width, it.rect.height) * PLACEHOLDER_CORNER),
     )
   }
 }
@@ -547,6 +557,7 @@ private fun HiddenExpressionInput(
 private val CARET_WIDTH = 2.dp
 private val CARET_SCROLL_MARGIN = 4.dp
 private const val CARET_BLINK_MS = 500L
-private const val PLACEHOLDER_ALPHA = 0.4f
+private const val PLACEHOLDER_ALPHA = 0.16f
+private const val PLACEHOLDER_CORNER = 0.3f
 private const val ANGLE_BOX_ALPHA = 0.6f
 private const val ANGLE_BOX_CORNER = 0.35f

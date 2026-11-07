@@ -48,9 +48,9 @@ import kotlin.math.min
 import kotlin.math.sin
 
 /** Meters to pixels, with the same scale both ways so that the parabola has its true shape. */
-private class SceneScale(flight: Flight, size: Size, pad: Float, bottom: Float) {
-  private val worldWidth = max(flight.range, MIN_WORLD)
-  private val worldHeight = max(flight.apexHeight, MIN_WORLD)
+private class SceneScale(flights: List<Trajectory>, size: Size, pad: Float, bottom: Float) {
+  private val worldWidth = max(flights.maxOf { it.range }, MIN_WORLD)
+  private val worldHeight = max(flights.maxOf { it.apexHeight }, MIN_WORLD)
   private val scale = min((size.width - 2 * pad) / worldWidth, (size.height - 2 * pad - bottom) / worldHeight)
   private val left = (size.width - worldWidth * scale).toFloat() / 2
   val ground = size.height - bottom
@@ -77,7 +77,8 @@ private class SceneStyle(
 @Composable
 internal fun ProjectileScene(
   modifier: Modifier,
-  flight: Flight,
+  flight: Trajectory,
+  withoutAir: Trajectory?,
   progress: Float,
   format: (Double) -> String,
   onAimChange: (speed: Double, angle: Double) -> Unit,
@@ -89,6 +90,7 @@ internal fun ProjectileScene(
     SceneStyle(colors.primary, Color(BALL_COLOR), colors.tertiary, colors.outline, text, measurer)
   }
   val currentFlight by rememberUpdatedState(flight)
+  val currentFlights by rememberUpdatedState(listOfNotNull(flight, withoutAir))
   val currentOnAim by rememberUpdatedState(onAimChange)
   Canvas(
     modifier =
@@ -99,7 +101,7 @@ internal fun ProjectileScene(
         detectDragGestures(
           onDragStart = { start ->
             val launch = currentFlight.launch
-            val origin = SceneScale(currentFlight, size.toSizeF(), PADDING.toPx(), GROUND_SPACE.toPx()).at(0.0, launch.height)
+            val origin = SceneScale(currentFlights, size.toSizeF(), PADDING.toPx(), GROUND_SPACE.toPx()).at(0.0, launch.height)
             aim = aimOf(launch, ARROW_PER_SPEED.toPx())
             isAiming = (start - origin).getDistance() < AIM_TOUCH.toPx() || (start - origin - aim).getDistance() < AIM_TOUCH.toPx()
           },
@@ -114,10 +116,11 @@ internal fun ProjectileScene(
         )
       }
   ) {
-    val scale = SceneScale(flight, size, PADDING.toPx(), GROUND_SPACE.toPx())
+    val scale = SceneScale(listOfNotNull(flight, withoutAir), size, PADDING.toPx(), GROUND_SPACE.toPx())
     val time = flight.time * progress.coerceAtMost(1f)
     drawGround(flight, scale, style, format)
     drawApex(flight, scale, style, format)
+    if (withoutAir != null) drawGhost(withoutAir, scale, style)
     drawPaths(flight, time, scale, style)
     drawAim(flight, scale, style)
     drawBall(flight, time, scale, style)
@@ -141,7 +144,7 @@ private fun DrawScope.drawLabel(style: SceneStyle, text: String, center: Offset)
 }
 
 /** The ground, with a mark at every landing distance and how far it is. */
-private fun DrawScope.drawGround(flight: Flight, scale: SceneScale, style: SceneStyle, format: (Double) -> String) {
+private fun DrawScope.drawGround(flight: Trajectory, scale: SceneScale, style: SceneStyle, format: (Double) -> String) {
   drawLine(style.ground, Offset(0f, scale.ground), Offset(size.width, scale.ground), LINE_WIDTH.toPx())
   val start = scale.at(0.0, 0.0)
   val end = scale.at(flight.range, 0.0)
@@ -152,7 +155,7 @@ private fun DrawScope.drawGround(flight: Flight, scale: SceneScale, style: Scene
 }
 
 /** How high the top is, on a dotted line down to the ground. */
-private fun DrawScope.drawApex(flight: Flight, scale: SceneScale, style: SceneStyle, format: (Double) -> String) {
+private fun DrawScope.drawApex(flight: Trajectory, scale: SceneScale, style: SceneStyle, format: (Double) -> String) {
   val apex = scale.at(flight.x(flight.apexTime), flight.apexHeight)
   val foot = Offset(apex.x, scale.ground)
   val dots = PathEffect.dashPathEffect(floatArrayOf(DOT.toPx(), DOT.toPx() * 2))
@@ -160,8 +163,21 @@ private fun DrawScope.drawApex(flight: Flight, scale: SceneScale, style: SceneSt
   drawLabel(style, "${format(flight.apexHeight)} m", apex - Offset(0f, APEX_LABEL.toPx()))
 }
 
+/** The same throw without air, faint behind the real one. */
+private fun DrawScope.drawGhost(flight: Trajectory, scale: SceneScale, style: SceneStyle) {
+  val path = Path().apply {
+    moveTo(scale.at(0.0, flight.y(0.0)))
+    for (i in 1..PATH_STEPS) {
+      val t = flight.time * i / PATH_STEPS
+      lineTo(scale.at(flight.x(t), flight.y(t)))
+    }
+  }
+  val dots = DOT.toPx()
+  drawPath(path, style.ground, style = Stroke(LINE_WIDTH.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(dots, dots * 2))))
+}
+
 /** The way ahead is dashed, what was flown is solid. */
-private fun DrawScope.drawPaths(flight: Flight, time: Double, scale: SceneScale, style: SceneStyle) {
+private fun DrawScope.drawPaths(flight: Trajectory, time: Double, scale: SceneScale, style: SceneStyle) {
   fun path(from: Double, to: Double) = Path().apply {
     moveTo(scale.at(flight.x(from), flight.y(from)))
     for (i in 1..PATH_STEPS) {
@@ -183,7 +199,7 @@ private fun Path.moveTo(point: Offset) = moveTo(point.x, point.y)
 private fun Path.lineTo(point: Offset) = lineTo(point.x, point.y)
 
 /** The arrow to drag, its length follows the speed. */
-private fun DrawScope.drawAim(flight: Flight, scale: SceneScale, style: SceneStyle) {
+private fun DrawScope.drawAim(flight: Trajectory, scale: SceneScale, style: SceneStyle) {
   val start = scale.at(0.0, flight.launch.height)
   val tip = start + aimOf(flight.launch, ARROW_PER_SPEED.toPx())
   drawArrow(style.ball, start, tip)
@@ -203,10 +219,10 @@ private fun DrawScope.drawArrow(color: Color, start: Offset, end: Offset) {
 }
 
 /** The ball with its speed: along the ground it never changes, up and down gravity changes it. */
-private fun DrawScope.drawBall(flight: Flight, time: Double, scale: SceneScale, style: SceneStyle) {
+private fun DrawScope.drawBall(flight: Trajectory, time: Double, scale: SceneScale, style: SceneStyle) {
   val center = scale.at(flight.x(time), flight.y(time))
   val perSpeed = ARROW_PER_SPEED.toPx()
-  val across = Offset(flight.vx.toFloat() * perSpeed, 0f)
+  val across = Offset(flight.horizontalSpeed(time).toFloat() * perSpeed, 0f)
   val upwards = Offset(0f, -flight.verticalSpeed(time).toFloat() * perSpeed)
   drawArrow(style.split, center, center + across)
   drawArrow(style.split, center, center + upwards)
@@ -214,7 +230,7 @@ private fun DrawScope.drawBall(flight: Flight, time: Double, scale: SceneScale, 
 }
 
 /** A ring that grows and fades where the ball lands. */
-private fun DrawScope.drawLanding(flight: Flight, part: Float, scale: SceneScale, style: SceneStyle) {
+private fun DrawScope.drawLanding(flight: Trajectory, part: Float, scale: SceneScale, style: SceneStyle) {
   val radius = BALL_RADIUS.toPx() + LANDING_RADIUS.toPx() * part
   drawCircle(
     style.ball.copy(alpha = (1 - part).coerceIn(0f, 1f)),

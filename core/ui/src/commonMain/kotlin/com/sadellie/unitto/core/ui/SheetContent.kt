@@ -23,12 +23,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationDrawerItemColors
 import androidx.compose.material3.NavigationDrawerItemDefaults
@@ -39,11 +42,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sadellie.unitto.core.designsystem.ExpressivePreview
+import com.sadellie.unitto.core.designsystem.icons.symbols.Check
+import com.sadellie.unitto.core.designsystem.icons.symbols.Edit
+import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
 import com.sadellie.unitto.core.navigation.CalculatorStartRoute
 import com.sadellie.unitto.core.navigation.DrawerItem
 import com.sadellie.unitto.core.navigation.TopLevelRoute
@@ -53,7 +60,9 @@ import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 import unitto.core.common.generated.resources.Res
 import unitto.core.common.generated.resources.app_name
+import unitto.core.common.generated.resources.common_edit
 import unitto.core.common.generated.resources.common_hello
+import unitto.core.common.generated.resources.common_ok
 
 @Composable
 internal fun SheetContent(
@@ -61,7 +70,9 @@ internal fun SheetContent(
   additionalTabs: List<DrawerItem>,
   currentDestination: TopLevelRoute?,
   onItemClick: (DrawerItem) -> Unit,
+  onReorder: ((List<DrawerItem>) -> Unit)? = null,
 ) {
+  var isEditing by remember { mutableStateOf(false) }
   var showHello by remember { mutableStateOf(false) }
   val interactionSource = remember { MutableInteractionSource() }
   LaunchedEffect(showHello) {
@@ -71,23 +82,32 @@ internal fun SheetContent(
     }
   }
 
-  AnimatedContent(
-    targetState = showHello,
-    label = "Hello reveal",
-    modifier =
-      Modifier.clickable(
-        interactionSource = interactionSource,
-        indication = null,
-        onClick = { showHello = true },
-      ),
-  ) { hello ->
-    Text(
-      text =
-        if (hello) stringResource(Res.string.common_hello) else stringResource(Res.string.app_name),
-      modifier = Modifier.padding(horizontal = 28.dp, vertical = 24.dp),
-      style = MaterialTheme.typography.titleLarge,
-      color = MaterialTheme.colorScheme.primary,
-    )
+  Row(verticalAlignment = Alignment.CenterVertically) {
+    AnimatedContent(
+      targetState = showHello,
+      label = "Hello reveal",
+      modifier =
+        Modifier.weight(1f)
+          .clickable(
+            interactionSource = interactionSource,
+            indication = null,
+            onClick = { showHello = true },
+          ),
+    ) { hello ->
+      Text(
+        text =
+          if (hello) stringResource(Res.string.common_hello) else stringResource(Res.string.app_name),
+        modifier = Modifier.padding(horizontal = 28.dp, vertical = 24.dp),
+        style = MaterialTheme.typography.titleLarge,
+        color = MaterialTheme.colorScheme.primary,
+      )
+    }
+    if (onReorder != null) {
+      IconButton(modifier = Modifier.padding(end = 12.dp), onClick = { isEditing = !isEditing }) {
+        if (isEditing) Icon(Symbols.Check, stringResource(Res.string.common_ok))
+        else Icon(Symbols.Edit, stringResource(Res.string.common_edit))
+      }
+    }
   }
 
   val navigationDrawerItemColors =
@@ -95,16 +115,20 @@ internal fun SheetContent(
       unselectedIconColor = MaterialTheme.colorScheme.onSurface,
       unselectedTextColor = MaterialTheme.colorScheme.onSurface,
     )
-  mainTabs.forEach { drawerItem ->
-    val selected = drawerItem.topLevelRoute == currentDestination
-    DrawerItem(
-      modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
-      destination = drawerItem,
-      icon = if (selected) drawerItem.selectedIcon else drawerItem.defaultIcon,
-      selected = selected,
-      onClick = { onItemClick(drawerItem) },
-      colors = navigationDrawerItemColors,
-    )
+  if (isEditing && onReorder != null) {
+    EditableTabs(mainTabs, onReorder)
+  } else {
+    mainTabs.forEach { drawerItem ->
+      val selected = drawerItem.topLevelRoute == currentDestination
+      DrawerItem(
+        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+        destination = drawerItem,
+        icon = if (selected) drawerItem.selectedIcon else drawerItem.defaultIcon,
+        selected = selected,
+        onClick = { onItemClick(drawerItem) },
+        colors = navigationDrawerItemColors,
+      )
+    }
   }
 
   HorizontalDivider(Modifier.padding(horizontal = 12.dp, vertical = 8.dp))

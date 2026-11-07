@@ -36,6 +36,9 @@ actual val mainDrawerItems: List<DrawerItem> by lazy {
     BodyMassDrawerItem,
     PlaceDrawerItem,
     ProjectileDrawerItem,
+    PendulumDrawerItem,
+    WavesDrawerItem,
+    OrbitsDrawerItem,
     DateCalculatorDrawerItem,
     TimeZonesDrawerItem,
   )

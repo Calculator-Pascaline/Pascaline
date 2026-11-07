@@ -20,7 +20,7 @@ package com.sadellie.unitto.feature.settings.display
 
 import androidx.compose.ui.graphics.Color
 
-internal val brandColor = Color(0xFF186c31)
+internal val brandColor = Color(0xFF2F5DA8)
 
 internal val colorSchemes: List<Color> by lazy {
   listOf(

@@ -23,16 +23,25 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFontFamilyResolver
 import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.window.ComposeViewport
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.savedstate.serialization.SavedStateConfiguration
+import com.sadellie.unitto.core.common.BrowserLocale
+import com.sadellie.unitto.core.common.WebLanguage
 import com.sadellie.unitto.core.database.unittoDatabaseModule
 import com.sadellie.unitto.core.datastore.UserPreferencesRepository
 import com.sadellie.unitto.core.datastore.dataStoreModule
@@ -41,22 +50,28 @@ import com.sadellie.unitto.core.designsystem.theme.LocalNumberTypography
 import com.sadellie.unitto.core.designsystem.theme.numberTypographyUnitto
 import com.sadellie.unitto.core.navigation.BodyMassStartRoute
 import com.sadellie.unitto.core.navigation.CalculatorStartRoute
+import com.sadellie.unitto.core.navigation.ConverterStartRoute
 import com.sadellie.unitto.core.navigation.DateCalculatorStartRoute
 import com.sadellie.unitto.core.navigation.ElementsStartRoute
 import com.sadellie.unitto.core.navigation.FinanceStartRoute
 import com.sadellie.unitto.core.navigation.FunctionsStartRoute
-import com.sadellie.unitto.core.navigation.InferenceStartRoute
-import com.sadellie.unitto.core.navigation.PricesStartRoute
 import com.sadellie.unitto.core.navigation.HomeStartRoute
+import com.sadellie.unitto.core.navigation.InferenceStartRoute
+import com.sadellie.unitto.core.navigation.OrbitsStartRoute
+import com.sadellie.unitto.core.navigation.PendulumStartRoute
 import com.sadellie.unitto.core.navigation.PlaceStartRoute
-import com.sadellie.unitto.core.navigation.ProjectileStartRoute
+import com.sadellie.unitto.core.navigation.PricesStartRoute
 import com.sadellie.unitto.core.navigation.ProbabilityStartRoute
 import com.sadellie.unitto.core.navigation.ProgrammerStartRoute
+import com.sadellie.unitto.core.navigation.ProjectileStartRoute
 import com.sadellie.unitto.core.navigation.RegressionStartRoute
 import com.sadellie.unitto.core.navigation.SequencesStartRoute
 import com.sadellie.unitto.core.navigation.StatisticsStartRoute
 import com.sadellie.unitto.core.navigation.TimeZoneStartRoute
-import com.sadellie.unitto.core.navigation.ConverterStartRoute
+import com.sadellie.unitto.core.navigation.WavesStartRoute
+import com.sadellie.unitto.core.ui.BackHandler
+import com.sadellie.unitto.core.ui.datetime.LocalPlatformDateFormatSettings
+import com.sadellie.unitto.core.ui.datetime.PlatformDateFormatSettings
 import com.sadellie.unitto.feature.bodymass.bodyMassModule
 import com.sadellie.unitto.feature.calculator.calculatorModule
 import com.sadellie.unitto.feature.converter.converterModule
@@ -65,31 +80,19 @@ import com.sadellie.unitto.feature.converter.navigation.UnitToRoute
 import com.sadellie.unitto.feature.datecalculator.dateCalculatorModule
 import com.sadellie.unitto.feature.settings.settingsModule
 import com.sadellie.unitto.feature.timezone.timeZoneModule
-import io.github.sadellie.themmo.Themmo
-import androidx.compose.ui.text.intl.Locale
-import com.sadellie.unitto.core.ui.datetime.LocalPlatformDateFormatSettings
-import com.sadellie.unitto.core.ui.datetime.PlatformDateFormatSettings
-import kotlinx.browser.document
-import kotlinx.datetime.TimeZone
-import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.polymorphic
-import org.koin.compose.koinInject
-import com.sadellie.unitto.core.common.BrowserLocale
-import com.sadellie.unitto.core.common.WebLanguage
-import com.sadellie.unitto.core.ui.BackHandler
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalFontFamilyResolver
-import androidx.compose.ui.text.font.FontFamily
 import com.sadellie.unitto.shared.generated.resources.Res
 import com.sadellie.unitto.shared.generated.resources.noto_sans
 import com.sadellie.unitto.shared.generated.resources.noto_sans_devanagari
 import com.sadellie.unitto.shared.generated.resources.noto_sans_math
 import com.sadellie.unitto.shared.generated.resources.noto_sans_sc
+import io.github.sadellie.themmo.Themmo
+import kotlinx.browser.document
+import kotlinx.datetime.TimeZone
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.preloadFont
+import org.koin.compose.koinInject
 import org.koin.core.context.startKoin
 
 @OptIn(
@@ -158,7 +161,7 @@ private fun App() {
   val appPreferences = userPrefsRepository.appPrefs.collectAsState(null).value ?: return
   val themmoController = rememberUnittoThemmoController(appPreferences)
   Themmo(themmoController = themmoController) {
-    val backStack = rememberNavBackStack(navBackStackConfig, HomeStartRoute)
+    val backStack = rememberNavBackStack(navBackStackConfig, CalculatorStartRoute)
     // The browser's back button closes the open screen. Before the content, so a drawer or a
     // search inside it is closed first
     BackHandler(backStack.size > 1) { backStack.removeLastOrNull() }
@@ -189,6 +192,9 @@ private val navBackStackConfig = SavedStateConfiguration {
       this.subclass(HomeStartRoute::class, HomeStartRoute.serializer())
       this.subclass(PlaceStartRoute::class, PlaceStartRoute.serializer())
       this.subclass(ProjectileStartRoute::class, ProjectileStartRoute.serializer())
+      this.subclass(PendulumStartRoute::class, PendulumStartRoute.serializer())
+      this.subclass(WavesStartRoute::class, WavesStartRoute.serializer())
+      this.subclass(OrbitsStartRoute::class, OrbitsStartRoute.serializer())
       this.subclass(DateCalculatorStartRoute::class, DateCalculatorStartRoute.serializer())
       this.subclass(TimeZoneStartRoute::class, TimeZoneStartRoute.serializer())
       this.subclass(ConverterStartRoute::class, ConverterStartRoute.serializer())

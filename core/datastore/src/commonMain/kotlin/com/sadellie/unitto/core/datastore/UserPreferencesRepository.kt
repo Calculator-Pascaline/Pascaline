@@ -65,9 +65,6 @@ interface UserPreferencesRepository {
     val enableToolsExperiment: Boolean
       get() = false
 
-    val lastReadChangelog: String
-      get() = ""
-
     val enableVibrations: Boolean
       get() = true
 
@@ -154,8 +151,6 @@ interface UserPreferencesRepository {
   suspend fun addShownUnitGroup(unitGroup: UnitGroup)
 
   suspend fun removeShownUnitGroup(unitGroup: UnitGroup)
-
-  suspend fun updateLastReadChangelog(value: String)
 
   suspend fun updateVibrations(enabled: Boolean)
 

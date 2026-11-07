@@ -27,7 +27,6 @@ object PrefKeys {
   const val MONET_MODE_PREF_KEY = "MONET_MODE_PREF_KEY"
   const val ENABLE_TOOLS_EXPERIMENT_PREF_KEY = "ENABLE_TOOLS_EXPERIMENT_PREF_KEY"
   // val SYSTEM_FONT_PREF_KEY = "SYSTEM_FONT_PREF_KEY"
-  const val LAST_READ_CHANGELOG_PREF_KEY = "LAST_READ_CHANGELOG_PREF_KEY"
   const val ENABLE_VIBRATIONS_PREF_KEY = "ENABLE_VIBRATIONS_PREF_KEY"
   const val ENABLE_KEEP_SCREEN_ON_PREF_KEY = "ENABLE_KEEP_SCREEN_ON_PREF_KEY"
   /** App data key, "false" when the app must not show over the lock screen. On by default. */

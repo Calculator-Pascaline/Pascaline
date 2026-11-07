@@ -39,7 +39,6 @@ data class AppPreferences(
 )
 
 data class GeneralPreferences(
-  val lastReadChangelog: String,
   val enableVibrations: Boolean,
   val enableKeepScreenOn: Boolean,
 )

@@ -215,6 +215,7 @@ private fun GraphPane(
       window = window,
       onWindowChange = onWindowChange,
       formatValue = formatValue,
+      showsKeyPoints = true,
     )
     if (plots.isEmpty()) {
       Text(

@@ -77,6 +77,18 @@ class ExtractRouteFromDeepLinkTest {
     assertExtractedRoute(ProjectileStartRoute, "app://com.sadellie.unitto/projectile_route")
 
   @Test
+  fun test_pendulumStartRoute() =
+    assertExtractedRoute(PendulumStartRoute, "app://com.sadellie.unitto/pendulum_route")
+
+  @Test
+  fun test_wavesStartRoute() =
+    assertExtractedRoute(WavesStartRoute, "app://com.sadellie.unitto/waves_route")
+
+  @Test
+  fun test_orbitsStartRoute() =
+    assertExtractedRoute(OrbitsStartRoute, "app://com.sadellie.unitto/orbits_route")
+
+  @Test
   fun test_placeStartRoute() =
     assertExtractedRoute(PlaceStartRoute, "app://com.sadellie.unitto/place_route")
 

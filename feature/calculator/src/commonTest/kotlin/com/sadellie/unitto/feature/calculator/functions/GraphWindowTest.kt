@@ -19,11 +19,13 @@
 package com.sadellie.unitto.feature.calculator.functions
 
 import androidx.compose.ui.geometry.Offset
+import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.cbrt
 import kotlin.math.cos
 import kotlin.math.ln
 import kotlin.math.sin
+import kotlin.math.tan
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -78,5 +80,36 @@ class GraphWindowTest {
     val format = { value: Double -> value.toString() }
     assertEquals("f(1.0) = 1.0\nf'(1.0) = 2.0\ny = 2.0x − 1.0", traceLabel("f", 1.0, 1.0, 2.0, format))
     assertEquals("f(0.0) = 0.0", traceLabel("f", 0.0, 0.0, Double.NaN, format))
+  }
+
+  private fun assertRoots(expected: List<Double>, actual: List<Double>) {
+    assertEquals(expected.size, actual.size, "$actual")
+    expected.zip(actual).forEach { (a, b) -> assertEquals(a, b, 1e-6) }
+  }
+
+  @Test
+  fun rootsWhereTheSignChanges() {
+    assertRoots(listOf(-2.0, 2.0), rootsOf({ it * it - 4 }, -10.0, 10.1))
+    assertRoots(listOf(-PI, 0.0, PI), rootsOf(::sin, -4.0, 4.1))
+  }
+
+  @Test
+  fun rootThatOnlyTouchesZero() = assertRoots(listOf(1.0), rootsOf({ (it - 1) * (it - 1) }, -5.0, 5.3))
+
+  @Test
+  fun asymptotesAreNotRoots() {
+    assertRoots(emptyList(), rootsOf({ 1 / it }, -5.0, 5.3))
+    assertRoots(listOf(0.0), rootsOf(::tan, -1.5, 2.0))
+    assertRoots(emptyList(), rootsOf({ it * it + 1 }, -5.0, 5.3))
+  }
+
+  @Test
+  fun keyPointsHaveZerosAndIntersections() {
+    val points = keyPoints(listOf({ it * it - 1 }, { it + 1 }), -5.0, 5.3)
+    // Zeros of the first at ±1, of the second at −1, and they meet at −1 and 2
+    val meeting = points.first { it.x > 1.5 }
+    assertEquals(2.0, meeting.x, 1e-6)
+    assertEquals(3.0, meeting.y, 1e-6)
+    assertEquals(5, points.size)
   }
 }

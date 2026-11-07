@@ -139,6 +139,20 @@ internal fun CharSequence.indexOfEmptySlot(): Int =
       startsWith(Token.Layout.INDEFINITE_INTEGRAL, index)
   } ?: -1
 
+/**
+ * Index of the integral at [cursor] that has no bounds, null when there is none. Results and old
+ * calculations write `∫x dx` without the empty bounds of the keyboard.
+ */
+internal fun CharSequence.boundlessIntegralAt(cursor: Int): Int? =
+  listOf(cursor, cursor - 1).firstOrNull { index ->
+    getOrNull(index)?.toString() == Token.Calculus.INTEGRAL &&
+      getOrNull(index + 1)?.toString() != Token.Layout.SUBSCRIPT_START
+  }
+
+/** Empty bounds of an integral, they go right after its sign. */
+internal const val INTEGRAL_BOUNDS =
+  "${Token.Layout.SUBSCRIPT_START}${Token.Layout.END}${Token.Layout.SUPERSCRIPT_START}${Token.Layout.END}"
+
 private const val EMPTY_BRACKETS = Token.Operator.LEFT_BRACKET + Token.Operator.RIGHT_BRACKET
 
 /**

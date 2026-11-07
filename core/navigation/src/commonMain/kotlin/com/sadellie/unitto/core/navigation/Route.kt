@@ -68,6 +68,9 @@ interface Route : NavKey {
           DeepLinkPattern(BodyMassStartRoute.serializer(), deepLink(BodyMassStartRoute).toKmpUri()),
           DeepLinkPattern(PlaceStartRoute.serializer(), deepLink(PlaceStartRoute).toKmpUri()),
           DeepLinkPattern(ProjectileStartRoute.serializer(), deepLink(ProjectileStartRoute).toKmpUri()),
+          DeepLinkPattern(PendulumStartRoute.serializer(), deepLink(PendulumStartRoute).toKmpUri()),
+          DeepLinkPattern(WavesStartRoute.serializer(), deepLink(WavesStartRoute).toKmpUri()),
+          DeepLinkPattern(OrbitsStartRoute.serializer(), deepLink(OrbitsStartRoute).toKmpUri()),
           DeepLinkPattern(HomeStartRoute.serializer(), deepLink(HomeStartRoute).toKmpUri()),
         )
       /** STEP 2. Parse requested deeplink */
@@ -186,6 +189,21 @@ data object HomeStartRoute : TopLevelRoute {
 @Serializable
 data object ProjectileStartRoute : TopLevelRoute {
   override val routeId = "projectile_route"
+}
+
+@Serializable
+data object PendulumStartRoute : TopLevelRoute {
+  override val routeId = "pendulum_route"
+}
+
+@Serializable
+data object WavesStartRoute : TopLevelRoute {
+  override val routeId = "waves_route"
+}
+
+@Serializable
+data object OrbitsStartRoute : TopLevelRoute {
+  override val routeId = "orbits_route"
 }
 
 @Serializable

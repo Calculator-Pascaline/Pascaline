@@ -38,6 +38,9 @@ internal class StatisticsViewModel(userPrefsRepository: UserPreferencesRepositor
   val table = SavedTable(DATA_KEY, columns = 2, userPrefsRepository, viewModelScope)
 }
 
+/** Values typed or pasted together, split by spaces or semicolons. */
+internal fun splitValues(text: String): List<String> = text.split(' ', ';', '\n', '\t').filter { it.isNotBlank() }
+
 /** Rows with a number, frequency is 1 when it is empty. Rows with a wrong cell are left out. */
 internal fun List<List<String>>.weightedValues(): List<WeightedValue> = mapNotNull { cells ->
   val value = cells.getOrNull(0)?.toNumberOrNull() ?: return@mapNotNull null

@@ -103,7 +103,7 @@ internal data class GraphWindow(val xMin: Double, val xMax: Double, val yMin: Do
  * Graph of [functions] like the Functions app of NumWorks. Pinch along an axis to zoom it, or use
  * + and − buttons to zoom both, drag to move, double tap to go back to the automatic view. A tap
  * puts a point on the closest function with its value, its derivative and its tangent, and the point
- * can be dragged along the curve.
+ * can be dragged along the curve. With [showsKeyPoints], zeros and intersections are dots to tap.
  *
  * @param window Visible part, null for automatic: x from −10 to 10 and y fitted to the functions,
  *   or fitted to [points] when there are some.
@@ -116,6 +116,7 @@ internal fun FunctionGraph(
   onWindowChange: (GraphWindow?) -> Unit,
   formatValue: (Double) -> String,
   points: List<PlotPoint> = emptyList(),
+  showsKeyPoints: Boolean = false,
 ) {
   val measurer = rememberTextMeasurer()
   val axisColor = MaterialTheme.colorScheme.onSurface
@@ -132,6 +133,10 @@ internal fun FunctionGraph(
     val current = window ?: autoWindow
     val currentWindow by rememberUpdatedState(current)
     val currentFunctions by rememberUpdatedState(functions)
+    val keyPoints = remember(functions, current.xMin, current.xMax, showsKeyPoints) {
+      if (showsKeyPoints) visibleKeyPoints(functions, current) else emptyList()
+    }
+    val currentKeyPoints by rememberUpdatedState(keyPoints)
     val onChange by rememberUpdatedState(onWindowChange)
 
     Canvas(
@@ -141,9 +146,7 @@ internal fun FunctionGraph(
             detectPanAndAxisZoom(
               minSpan = MIN_PINCH_SPAN.toPx(),
               onDown = { offset ->
-                val point = trace?.let { (index, x) -> currentFunctions.getOrNull(index)?.let { it to x } }
-                isMovingPoint =
-                  point != null && (currentWindow.onScreen(point.first, point.second, size) - offset).getDistance() < POINT_TOUCH.toPx()
+                isMovingPoint = isOnTrace(trace, currentFunctions, currentWindow, offset, size, POINT_TOUCH.toPx())
               },
             ) { centroid, pan, zoomX, zoomY ->
               if (isMovingPoint) {
@@ -160,7 +163,7 @@ internal fun FunctionGraph(
                 onChange(null)
               },
               onTap = { offset ->
-                trace = closestFunction(currentFunctions, currentWindow, offset, size.width, size.height)
+                trace = traceAt(offset, currentKeyPoints, currentFunctions, currentWindow, size, KEY_POINT_TOUCH.toPx())
               },
             )
           }
@@ -171,6 +174,8 @@ internal fun FunctionGraph(
         val center = Offset(current.toScreenX(point.x, size.width), current.toScreenY(point.y, size.height))
         drawCircle(point.color, radius = POINT_RADIUS.toPx(), center = center)
       }
+
+      keyPoints.forEach { drawKeyPoint(it, current, surface, axisColor) }
 
       val (index, x) = trace ?: return@Canvas
       val function = functions.getOrNull(index) ?: return@Canvas
@@ -415,6 +420,48 @@ private fun DrawScope.drawFunction(plot: PlotFunction, window: GraphWindow) {
   drawPath(path, plot.color, style = Stroke(width = CURVE_WIDTH.toPx()))
 }
 
+/** Whether [touch] is on the dot of [trace]. */
+private fun isOnTrace(
+  trace: Pair<Int, Double>?,
+  functions: List<PlotFunction>,
+  window: GraphWindow,
+  touch: Offset,
+  size: IntSize,
+  reach: Float,
+): Boolean {
+  val (index, x) = trace ?: return false
+  val plot = functions.getOrNull(index) ?: return false
+  return (window.onScreen(plot, x, size) - touch).getDistance() < reach
+}
+
+/** A tap picks the dot it is on, otherwise the closest curve. */
+private fun traceAt(
+  tap: Offset,
+  keyPoints: List<KeyPoint>,
+  functions: List<PlotFunction>,
+  window: GraphWindow,
+  size: IntSize,
+  reach: Float,
+): Pair<Int, Double>? {
+  val dot = keyPoints.firstOrNull { (window.onScreen(it, size) - tap).getDistance() < reach }
+  return if (dot != null) dot.function to dot.x else closestFunction(functions, window, tap, size.width, size.height)
+}
+
+/** Zeros and intersections of the curves that are quick to calculate. */
+private fun visibleKeyPoints(functions: List<PlotFunction>, window: GraphWindow): List<KeyPoint> {
+  val fast = functions.indices.filter { functions[it].isFast }
+  return keyPoints(fast.map { functions[it].valueAt }, window.xMin, window.xMax).map { it.copy(function = fast[it.function]) }
+}
+
+private fun DrawScope.drawKeyPoint(point: KeyPoint, window: GraphWindow, fill: Color, line: Color) {
+  val center = Offset(window.toScreenX(point.x, size.width), window.toScreenY(point.y, size.height))
+  drawCircle(fill, radius = KEY_POINT_RADIUS.toPx(), center = center)
+  drawCircle(line, radius = KEY_POINT_RADIUS.toPx(), center = center, style = Stroke(KEY_POINT_STROKE.toPx()))
+}
+
+private fun GraphWindow.onScreen(point: KeyPoint, size: IntSize): Offset =
+  Offset(toScreenX(point.x, size.width.toFloat()), toScreenY(point.y, size.height.toFloat()))
+
 private fun GraphWindow.onScreen(plot: PlotFunction, x: Double, size: IntSize): Offset =
   Offset(toScreenX(x, size.width.toFloat()), toScreenY(plot.valueAt(x), size.height.toFloat()))
 
@@ -551,6 +598,9 @@ private val TRACE_RADIUS = 5.dp
 private const val MINOR_LINES = 5
 private const val MINOR_GRID_ALPHA = 0.45f
 private val POINT_TOUCH = 32.dp
+private val KEY_POINT_TOUCH = 24.dp
+private val KEY_POINT_RADIUS = 4.5.dp
+private val KEY_POINT_STROKE = 1.5.dp
 private val AXIS_WIDTH = 1.5.dp
 private val TANGENT_WIDTH = 1.5.dp
 private val TANGENT_DASH = 6.dp

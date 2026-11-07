@@ -40,8 +40,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Slider
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -60,6 +61,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.sadellie.unitto.core.datastore.UserPreferencesRepository
 import com.sadellie.unitto.core.ui.DrawerButton
+import com.sadellie.unitto.core.ui.FineSlider
 import com.sadellie.unitto.core.ui.ScaffoldWithTopBar
 import com.sadellie.unitto.feature.calculator.probability.rounded
 import com.sadellie.unitto.feature.calculator.probability.sliderValue
@@ -73,18 +75,34 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import unitto.core.common.generated.resources.Res
 import unitto.core.common.generated.resources.place_tab_moon
+import unitto.core.common.generated.resources.projectile_air
+import unitto.core.common.generated.resources.projectile_air_effect
+import unitto.core.common.generated.resources.projectile_air_hint
 import unitto.core.common.generated.resources.projectile_angle
+import unitto.core.common.generated.resources.projectile_baseball
+import unitto.core.common.generated.resources.projectile_basketball
+import unitto.core.common.generated.resources.projectile_best_angle
+import unitto.core.common.generated.resources.projectile_density
+import unitto.core.common.generated.resources.projectile_diameter
 import unitto.core.common.generated.resources.projectile_earth
+import unitto.core.common.generated.resources.projectile_explain_air
+import unitto.core.common.generated.resources.projectile_explain_air_text
 import unitto.core.common.generated.resources.projectile_explain_apex
 import unitto.core.common.generated.resources.projectile_explain_apex_text
+import unitto.core.common.generated.resources.projectile_explain_forces
+import unitto.core.common.generated.resources.projectile_explain_forces_text
 import unitto.core.common.generated.resources.projectile_explain_impact
 import unitto.core.common.generated.resources.projectile_explain_impact_text
 import unitto.core.common.generated.resources.projectile_explain_motion
 import unitto.core.common.generated.resources.projectile_explain_motion_text
 import unitto.core.common.generated.resources.projectile_explain_range
 import unitto.core.common.generated.resources.projectile_explain_range_text
+import unitto.core.common.generated.resources.projectile_explain_result
+import unitto.core.common.generated.resources.projectile_explain_result_text
 import unitto.core.common.generated.resources.projectile_explain_split
 import unitto.core.common.generated.resources.projectile_explain_split_text
+import unitto.core.common.generated.resources.projectile_explain_steps
+import unitto.core.common.generated.resources.projectile_explain_steps_text
 import unitto.core.common.generated.resources.projectile_explain_time
 import unitto.core.common.generated.resources.projectile_explain_time_text
 import unitto.core.common.generated.resources.projectile_explain_title
@@ -96,14 +114,23 @@ import unitto.core.common.generated.resources.projectile_invalid
 import unitto.core.common.generated.resources.projectile_jupiter
 import unitto.core.common.generated.resources.projectile_launch
 import unitto.core.common.generated.resources.projectile_mars
+import unitto.core.common.generated.resources.projectile_mass
 import unitto.core.common.generated.resources.projectile_max_height
+import unitto.core.common.generated.resources.projectile_ping_pong
 import unitto.core.common.generated.resources.projectile_range
+import unitto.core.common.generated.resources.projectile_shot_put
+import unitto.core.common.generated.resources.projectile_soccer
 import unitto.core.common.generated.resources.projectile_speed
+import unitto.core.common.generated.resources.projectile_tennis
+import unitto.core.common.generated.resources.projectile_terminal
 import unitto.core.common.generated.resources.projectile_time
 import unitto.core.common.generated.resources.projectile_title
+import unitto.core.common.generated.resources.projectile_use_angle
+import unitto.core.common.generated.resources.projectile_with_air
+import unitto.core.common.generated.resources.projectile_without_air
 
 /** One starting condition, typed or on its slider. */
-private class Condition(
+internal class Condition(
   val symbol: String,
   val unit: String,
   val label: StringResource,
@@ -114,14 +141,34 @@ private class Condition(
 private val SPEED = Condition("v₀", "m/s", Res.string.projectile_speed, 0.0..100.0, 0.5)
 private val ANGLE = Condition("θ", "°", Res.string.projectile_angle, -90.0..90.0, 1.0)
 private val HEIGHT = Condition("h₀", "m", Res.string.projectile_height, 0.0..100.0, 0.5)
-private val GRAVITY = Condition("g", "m/s²", Res.string.projectile_gravity, 0.5..30.0, 0.01)
+internal val GRAVITY = Condition("g", "m/s²", Res.string.projectile_gravity, 0.5..30.0, 0.01)
+
+private val DIAMETER = Condition("d", "cm", Res.string.projectile_diameter, 1.0..100.0, 0.1)
+private val MASS = Condition("m", "kg", Res.string.projectile_mass, 0.0..10.0, 0.001)
+private val DENSITY = Condition("ρ", "kg/m³", Res.string.projectile_density, 0.0..3.0, 0.001)
+
+/** Gravity of a world and how dense its air is at the ground. */
+internal class Planet(val name: StringResource, val gravity: String, val density: String)
 
 private val PLANETS =
   listOf(
-    Res.string.projectile_earth to "9.81",
-    Res.string.place_tab_moon to "1.62",
-    Res.string.projectile_mars to "3.71",
-    Res.string.projectile_jupiter to "24.79",
+    Planet(Res.string.projectile_earth, "9.81", "1.225"),
+    Planet(Res.string.place_tab_moon, "1.62", "0"),
+    Planet(Res.string.projectile_mars, "3.71", "0.02"),
+    Planet(Res.string.projectile_jupiter, "24.79", "0.16"),
+  )
+
+/** A ball you could throw, its size in centimeters and its weight in kilograms. */
+private class Ball(val name: StringResource, val diameter: String, val mass: String)
+
+private val BALLS =
+  listOf(
+    Ball(Res.string.projectile_ping_pong, "4", "0.0027"),
+    Ball(Res.string.projectile_tennis, "6.7", "0.058"),
+    Ball(Res.string.projectile_baseball, "7.4", "0.145"),
+    Ball(Res.string.projectile_soccer, "22", "0.43"),
+    Ball(Res.string.projectile_basketball, "24", "0.62"),
+    Ball(Res.string.projectile_shot_put, "12", "7.26"),
   )
 
 /** A throw without air: the conditions, the flight it gives and how that is worked out. */
@@ -135,11 +182,15 @@ internal fun ProjectileRoute(openDrawer: () -> Unit) {
   var angle by rememberSaveable { mutableStateOf("50") }
   var height by rememberSaveable { mutableStateOf("5") }
   var gravity by rememberSaveable { mutableStateOf("9.81") }
+  var hasAir by rememberSaveable { mutableStateOf(false) }
+  var diameter by rememberSaveable { mutableStateOf("6.7") }
+  var mass by rememberSaveable { mutableStateOf("0.058") }
+  var density by rememberSaveable { mutableStateOf("1.225") }
   fun number(value: String) = value.toNumberOrNull() ?: Double.NaN
-  val flight =
-    remember(speed, angle, height, gravity) {
-      Launch(number(speed), number(angle), number(height), number(gravity)).flight()
-    }
+  val launch = Launch(number(speed), number(angle), number(height), number(gravity))
+  val air = Air(number(mass), number(diameter) / CENTIMETERS, number(density)).takeIf { hasAir }
+  val flight = remember(launch, air) { launch.trajectory(air) }
+  val withoutAir = remember(launch, air) { launch.flight().takeIf { air != null && air.density > 0 } }
   val format = { value: Double -> value.rounded(DECIMALS).replace(".", symbols) }
 
   ScaffoldWithTopBar(
@@ -153,20 +204,44 @@ internal fun ProjectileRoute(openDrawer: () -> Unit) {
         ConditionRow(ANGLE, angle, symbols) { angle = it }
         ConditionRow(HEIGHT, height, symbols) { height = it }
         ConditionRow(GRAVITY, gravity, symbols) { gravity = it }
-        PlanetChips(gravity) { gravity = it.replace(".", symbols) }
+        PlanetChips(gravity) { planet ->
+          gravity = planet.gravity.replace(".", symbols)
+          density = planet.density.replace(".", symbols)
+        }
+      }
+      Card(stringResource(Res.string.projectile_air)) {
+        AirSwitch(hasAir) { hasAir = it }
+        if (hasAir) {
+          BallChips(diameter, mass) { ball ->
+            diameter = ball.diameter.replace(".", symbols)
+            mass = ball.mass.replace(".", symbols)
+          }
+          ConditionRow(DIAMETER, diameter, symbols) { diameter = it }
+          ConditionRow(MASS, mass, symbols) { mass = it }
+          ConditionRow(DENSITY, density, symbols) { density = it }
+        }
       }
     }
     val flightView: @Composable () -> Unit = {
       if (flight == null) {
         Text(stringResource(Res.string.projectile_invalid), color = MaterialTheme.colorScheme.error)
       } else {
-        FlightCard(flight, format) { newSpeed, newAngle ->
+        FlightCard(flight, withoutAir, format) { newSpeed, newAngle ->
           speed = (round(newSpeed.coerceIn(SPEED.range) * 2) / 2).rounded(1).replace(".", symbols)
           angle = round(newAngle.coerceIn(ANGLE.range)).rounded(0)
         }
       }
     }
-    val explanation: @Composable () -> Unit = { flight?.let { Explanation(it, format) } }
+    val explanation: @Composable () -> Unit = {
+      when {
+        flight == null -> Unit
+        air != null && withoutAir != null -> {
+          AirResults(flight, withoutAir, air, format) { angle = it.rounded(0) }
+          AirExplanation(flight, air, format)
+        }
+        else -> Explanation(flight, format)
+      }
+    }
     BoxWithConstraints(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
       val spacing = Arrangement.spacedBy(12.dp)
       if (maxWidth >= WIDE_LAYOUT_WIDTH) {
@@ -194,7 +269,7 @@ internal fun ProjectileRoute(openDrawer: () -> Unit) {
 }
 
 @Composable
-private fun Card(title: String, content: @Composable () -> Unit) {
+internal fun Card(title: String, content: @Composable () -> Unit) {
   Column(
     modifier =
       Modifier.fillMaxWidth().clip(CARD_SHAPE).background(MaterialTheme.colorScheme.surfaceContainer).padding(16.dp),
@@ -207,7 +282,12 @@ private fun Card(title: String, content: @Composable () -> Unit) {
 
 /** The animation, the time slider and the answers. It plays when opened and on Launch. */
 @Composable
-private fun FlightCard(flight: Flight, format: (Double) -> String, onAimChange: (Double, Double) -> Unit) {
+private fun FlightCard(
+  flight: Trajectory,
+  withoutAir: Trajectory?,
+  format: (Double) -> String,
+  onAimChange: (Double, Double) -> Unit,
+) {
   val progress = remember { Animatable(0f) }
   val scope = rememberCoroutineScope()
   val duration = (flight.time * MILLIS_PER_SECOND).toInt().coerceIn(MIN_ANIMATION, MAX_ANIMATION)
@@ -220,14 +300,14 @@ private fun FlightCard(flight: Flight, format: (Double) -> String, onAimChange: 
   }
   LaunchedEffect(Unit) { play() }
   // New conditions show their whole flight at once
-  LaunchedEffect(flight.launch) { if (progress.value > 0f) progress.snapTo(1f + LANDING_PART) }
+  LaunchedEffect(flight) { if (progress.value > 0f) progress.snapTo(1f + LANDING_PART) }
 
   Column(
     modifier =
       Modifier.fillMaxWidth().clip(CARD_SHAPE).background(MaterialTheme.colorScheme.surfaceContainer).padding(12.dp),
     verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
-    ProjectileScene(Modifier.fillMaxWidth().height(SCENE_HEIGHT), flight, progress.value, format, onAimChange)
+    ProjectileScene(Modifier.fillMaxWidth().height(SCENE_HEIGHT), flight, withoutAir, progress.value, format, onAimChange)
     Text(
       stringResource(Res.string.projectile_hint),
       style = MaterialTheme.typography.bodySmall,
@@ -239,7 +319,7 @@ private fun FlightCard(flight: Flight, format: (Double) -> String, onAimChange: 
       style = MaterialTheme.typography.labelMedium,
     )
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-      Slider(
+      FineSlider(
         modifier = Modifier.weight(1f),
         value = progress.value.coerceAtMost(1f),
         onValueChange = { scope.launch { progress.snapTo(it) } },
@@ -255,7 +335,7 @@ private fun FlightCard(flight: Flight, format: (Double) -> String, onAimChange: 
 }
 
 @Composable
-private fun Answer(modifier: Modifier, label: StringResource, value: String) {
+internal fun Answer(modifier: Modifier, label: StringResource, value: String) {
   val color = MaterialTheme.colorScheme.onPrimaryContainer
   Column(modifier.clip(TILE_SHAPE).background(MaterialTheme.colorScheme.primaryContainer).padding(10.dp)) {
     Text(stringResource(label), style = MaterialTheme.typography.labelSmall, color = color, maxLines = 1)
@@ -265,7 +345,7 @@ private fun Answer(modifier: Modifier, label: StringResource, value: String) {
 
 /** Name, typing box and slider. A typed number out of the usual range stays on the slider. */
 @Composable
-private fun ConditionRow(condition: Condition, value: String, fractional: String, onValueChange: (String) -> Unit) {
+internal fun ConditionRow(condition: Condition, value: String, fractional: String, onValueChange: (String) -> Unit) {
   val number = value.toNumberOrNull()
   val start = condition.range.start
   val end = max(condition.range.endInclusive, number ?: 0.0)
@@ -289,25 +369,118 @@ private fun ConditionRow(condition: Condition, value: String, fractional: String
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
       )
     }
-    Slider(
+    FineSlider(
       value = (number ?: start).coerceIn(start, end).toFloat(),
       onValueChange = { onValueChange(sliderValue(it.toDouble(), condition.step, fractional)) },
       valueRange = start.toFloat()..end.toFloat(),
+      origin = 0.0.coerceIn(start, end).toFloat(),
     )
   }
 }
 
 @Composable
-private fun PlanetChips(gravity: String, onChoose: (String) -> Unit) {
+private fun BallChips(diameter: String, mass: String, onChoose: (Ball) -> Unit) {
   Row(
     modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
     horizontalArrangement = Arrangement.spacedBy(8.dp),
   ) {
-    PLANETS.forEach { (name, value) ->
+    BALLS.forEach { ball ->
       FilterChip(
-        selected = gravity.toNumberOrNull() == value.toDouble(),
-        onClick = { onChoose(value) },
-        label = { Text(stringResource(name)) },
+        selected = diameter.toNumberOrNull() == ball.diameter.toDouble() && mass.toNumberOrNull() == ball.mass.toDouble(),
+        onClick = { onChoose(ball) },
+        label = { Text(stringResource(ball.name)) },
+      )
+    }
+  }
+}
+
+@Composable
+private fun AirSwitch(hasAir: Boolean, onChange: (Boolean) -> Unit) {
+  Row(verticalAlignment = Alignment.CenterVertically) {
+    Text(
+      stringResource(Res.string.projectile_air_hint),
+      modifier = Modifier.weight(1f),
+      style = MaterialTheme.typography.bodyMedium,
+      color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+    Switch(checked = hasAir, onCheckedChange = onChange)
+  }
+}
+
+/** What the air changes: how far it goes, the fastest fall, and the angle that goes furthest. */
+@Composable
+private fun AirResults(
+  flight: Trajectory,
+  withoutAir: Trajectory,
+  air: Air,
+  format: (Double) -> String,
+  onUseAngle: (Double) -> Unit,
+) {
+  val launch = flight.launch
+  val best = remember(launch, air) { launch.bestAngle(air) }
+  val lost = (1 - flight.range / withoutAir.range) * PERCENT
+  Card(stringResource(Res.string.projectile_air_effect)) {
+    AirLine(Res.string.projectile_without_air, "${format(withoutAir.range)} m")
+    AirLine(Res.string.projectile_with_air, "${format(flight.range)} m (−${format(lost)} %)")
+    AirLine(Res.string.projectile_terminal, "${format(air.terminalSpeed(launch.gravity))} m/s")
+    AirLine(Res.string.projectile_best_angle, "${format(best.first)}° → ${format(best.second)} m")
+    TextButton(onClick = { onUseAngle(best.first) }) { Text(stringResource(Res.string.projectile_use_angle)) }
+  }
+}
+
+@Composable
+private fun AirLine(label: StringResource, value: String) {
+  Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+    Text(stringResource(label), style = MaterialTheme.typography.bodyMedium)
+    Text(value, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+  }
+}
+
+/** Air has no neat formula, so these are the forces and how the steps are taken. */
+@Composable
+private fun AirExplanation(flight: Trajectory, air: Air, format: (Double) -> String) {
+  val launch = flight.launch
+  Card(stringResource(Res.string.projectile_explain_title)) {
+    Step(
+      Res.string.projectile_explain_air,
+      Res.string.projectile_explain_air_text,
+      "A = π · d² / 4 = ${formatSmall(air.area)} m²",
+      "k = ½ · ρ · Cd · A / m = ½ · ${formatSmall(air.density)} · $SPHERE_DRAG · ${formatSmall(air.area)} / ${formatSmall(air.mass)} = ${formatSmall(air.drag)} /m",
+    )
+    Step(
+      Res.string.projectile_explain_forces,
+      Res.string.projectile_explain_forces_text,
+      "ax = −k · v · vx",
+      "ay = −g − k · v · vy = −${format(launch.gravity)} − ${formatSmall(air.drag)} · v · vy",
+    )
+    Step(
+      Res.string.projectile_explain_steps,
+      Res.string.projectile_explain_steps_text,
+      "Δt = $TIME_STEP s · ${(flight.time / TIME_STEP).toInt()} ×",
+      "v(t + Δt) ≈ v(t) + a · Δt",
+    )
+    Step(
+      Res.string.projectile_explain_result,
+      Res.string.projectile_explain_result_text,
+      "t = ${format(flight.time)} s · x = ${format(flight.range)} m · y = ${format(flight.apexHeight)} m",
+      "v = ${format(flight.impactSpeed)} m/s · θ = ${format(flight.impactAngle)}°",
+    )
+  }
+}
+
+private fun formatSmall(value: Double) = value.rounded(SMALL_DECIMALS)
+
+@Composable
+internal fun PlanetChips(gravity: String, onChoose: (Planet) -> Unit) {
+  Row(
+    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+    horizontalArrangement = Arrangement.spacedBy(8.dp),
+  ) {
+    PLANETS.forEach { planet ->
+      FilterChip(
+        selected = gravity.toNumberOrNull() == planet.gravity.toDouble(),
+        onClick = { onChoose(planet) },
+        label = { Text(stringResource(planet.name)) },
       )
     }
   }
@@ -315,12 +488,12 @@ private fun PlanetChips(gravity: String, onChoose: (String) -> Unit) {
 
 /** Every step of the calculation with the numbers of this flight. */
 @Composable
-private fun Explanation(flight: Flight, format: (Double) -> String) {
+private fun Explanation(flight: Trajectory, format: (Double) -> String) {
   val launch = flight.launch
+  val vx = format(flight.horizontalSpeed(0.0))
+  val vy = format(flight.verticalSpeed(0.0))
   val g = format(launch.gravity)
   val h = format(launch.height)
-  val vx = format(flight.vx)
-  val vy = format(flight.vy)
   val v = format(launch.speed)
   val angle = format(launch.angle)
   Card(stringResource(Res.string.projectile_explain_title)) {
@@ -363,7 +536,7 @@ private fun Explanation(flight: Flight, format: (Double) -> String) {
 }
 
 @Composable
-private fun Step(title: StringResource, text: StringResource, vararg formulas: String) {
+internal fun Step(title: StringResource, text: StringResource, vararg formulas: String) {
   Column(modifier = Modifier.padding(top = 8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
     Text(stringResource(title), style = MaterialTheme.typography.titleSmall)
     Text(
@@ -383,6 +556,9 @@ private fun Step(title: StringResource, text: StringResource, vararg formulas: S
 }
 
 private const val DECIMALS = 2
+private const val SMALL_DECIMALS = 5
+private const val CENTIMETERS = 100
+private const val PERCENT = 100
 private const val MILLIS_PER_SECOND = 1000
 private const val MIN_ANIMATION = 1500
 private const val MAX_ANIMATION = 6000

@@ -111,4 +111,38 @@ class FinanceMathTest {
   // Paying more than borrowed with no time can't happen
   @Test
   fun noRate() = assertNull(compoundInterest(mapOf(N to 12.0, PAYMENT to 100.0, PRESENT_VALUE to 1000.0, FUTURE_VALUE to 0.0), RATE, monthly))
+
+  @Test
+  fun loanAddsUpToTheAmount() {
+    val result = loan(200_000.0, 5.0, 20)!!
+    assertEquals(1319.91, result.payment, 0.01)
+    assertEquals(200_000.0, result.years.sumOf { it.base }, 0.01)
+    assertEquals(result.payment * 240 - 200_000, result.totalInterest, 0.01)
+    // Interest shrinks while the balance does
+    assertEquals(true, result.years.first().interest > result.years.last().interest)
+  }
+
+  @Test
+  fun loanWithoutInterest() {
+    val result = loan(1200.0, 0.0, 1)!!
+    assertEquals(100.0, result.payment, 1e-9)
+    assertEquals(0.0, result.totalInterest, 1e-9)
+  }
+
+  @Test
+  fun savingsMatchFutureValue() {
+    val years = savings(1000.0, 200.0, 4.0, 20)!!
+    val known = mapOf(N to 240.0, RATE to 4.0, PRESENT_VALUE to -1000.0, PAYMENT to -200.0)
+    val expected = compoundInterest(known, FUTURE_VALUE, monthly)!!
+    assertEquals(expected, years.last().base + years.last().interest, 0.01)
+    assertEquals(49_000.0, years.last().base, 1e-9)
+  }
+
+  @Test
+  fun nothingToWorkOut() {
+    assertNull(loan(0.0, 5.0, 20))
+    assertNull(loan(1000.0, Double.NaN, 20))
+    assertNull(loan(1000.0, 5.0, 0))
+    assertNull(savings(1000.0, 100.0, 4.0, 0))
+  }
 }

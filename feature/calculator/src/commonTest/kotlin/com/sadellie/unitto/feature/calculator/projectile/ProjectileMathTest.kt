@@ -75,4 +75,60 @@ class ProjectileMathTest {
     assertNull(Launch(10.0, 100.0, 0.0, 9.81).flight())
     assertNull(Launch(10.0, 45.0, -1.0, 9.81).flight())
   }
+
+  private val tennis = Air(mass = 0.058, diameter = 0.067, density = 1.225)
+
+  @Test
+  fun airShortensTheFlight() {
+    val launch = Launch(30.0, 45.0, 0.0, 9.81)
+    val inAir = assertNotNull(launch.trajectory(tennis))
+    val noAir = assertNotNull(launch.flight())
+    assertTrue(inAir.range < noAir.range)
+    assertTrue(inAir.apexHeight < noAir.apexHeight)
+    assertTrue(inAir.impactSpeed < 30.0)
+  }
+
+  @Test
+  fun thinAirIsCloseToNoAir() {
+    val launch = Launch(10.0, 45.0, 0.0, 9.81)
+    val thin = assertNotNull(launch.trajectory(tennis.copy(density = 1e-6)))
+    assertEquals(assertNotNull(launch.flight()).range, thin.range, 0.01)
+    assertEquals(assertNotNull(launch.flight()).time, thin.time, 0.01)
+  }
+
+  @Test
+  fun noDensityIsThePlainFormula() {
+    val flight = Launch(10.0, 45.0, 0.0, 9.81).trajectory(tennis.copy(density = 0.0))
+    assertTrue(flight is Flight)
+  }
+
+  @Test
+  fun fallReachesTerminalSpeed() {
+    val fall = assertNotNull(Launch(0.0, 0.0, 2000.0, 9.81).trajectory(tennis))
+    assertEquals(tennis.terminalSpeed(9.81), fall.impactSpeed, 0.1)
+    assertEquals(90.0, fall.impactAngle, 0.5)
+  }
+
+  @Test
+  fun airLowersTheBestAngle() {
+    val (angle, range) = Launch(40.0, 45.0, 0.0, 9.81).bestAngle(tennis)
+    assertTrue(angle < 45.0, "angle $angle")
+    assertTrue(angle > 25.0, "angle $angle")
+    assertTrue(range > assertNotNull(Launch(40.0, 45.0, 0.0, 9.81).trajectory(tennis)).range - 0.01)
+  }
+
+  @Test
+  fun positionsFollowTheSteps() {
+    val flight = assertNotNull(Launch(20.0, 30.0, 10.0, 9.81).trajectory(tennis))
+    assertEquals(0.0, flight.x(0.0), 1e-9)
+    assertEquals(10.0, flight.y(0.0), 1e-9)
+    assertEquals(0.0, flight.y(flight.time), 0.01)
+    assertEquals(flight.range, flight.x(flight.time), 1e-9)
+  }
+
+  @Test
+  fun invalidAir() {
+    assertNull(Launch(10.0, 45.0, 0.0, 9.81).trajectory(tennis.copy(mass = 0.0)))
+    assertNull(Launch(10.0, 45.0, 0.0, 9.81).trajectory(tennis.copy(diameter = -1.0)))
+  }
 }

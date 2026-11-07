@@ -23,9 +23,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.sadellie.unitto.core.designsystem.LocalWindowSize
 import com.sadellie.unitto.core.designsystem.icons.symbols.Home
+import com.sadellie.unitto.core.designsystem.icons.symbols.Menu
 import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
 import org.jetbrains.compose.resources.stringResource
 import unitto.core.common.generated.resources.Res
@@ -41,6 +44,9 @@ fun DrawerButton(
   onClick: () -> Unit,
   colors: IconButtonColors = IconButtonDefaults.iconButtonColors(),
 ) {
+  val isWeb = LocalPlatform.current == Platform.Wasm
+  // The menu is always there on wide windows of the web version
+  if (isWeb && LocalWindowSize.current.widthSizeClass == WindowWidthSizeClass.Expanded) return
   IconButton(
     onClick = onClick,
     shapes = IconButtonDefaults.shapes(),
@@ -51,7 +57,7 @@ fun DrawerButton(
       ),
   ) {
     Icon(
-      imageVector = Symbols.Home,
+      imageVector = if (isWeb) Symbols.Menu else Symbols.Home,
       contentDescription = stringResource(Res.string.common_open_menu_description),
       modifier = Modifier.size(IconButtonDefaults.smallIconSize),
     )

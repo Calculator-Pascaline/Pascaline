@@ -21,7 +21,6 @@ package com.sadellie.unitto.feature.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sadellie.unitto.core.common.Config
 import com.sadellie.unitto.core.common.stateIn
 import com.sadellie.unitto.core.datastore.PrefKeys
 import com.sadellie.unitto.core.datastore.UserPreferencesRepository
@@ -41,14 +40,9 @@ internal class SettingsViewModel(private val userPrefsRepository: UserPreference
           enableKeepScreenOn = prefs.enableKeepScreenOn,
           showOnLockScreen = showOnLockScreen != "false",
           enableKeyAnimation = keyAnimation != "false",
-          showUpdateChangelog = prefs.lastReadChangelog != Config.VERSION_CODE,
         )
       }
       .stateIn(viewModelScope, SettingsUIState.Loading)
-
-  /** @see UserPreferencesRepository.updateLastReadChangelog */
-  fun updateLastReadChangelog(value: String) =
-    viewModelScope.launch { userPrefsRepository.updateLastReadChangelog(value) }
 
   /** @see UserPreferencesRepository.updateVibrations */
   fun updateVibrations(enabled: Boolean) =

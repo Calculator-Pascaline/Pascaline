@@ -18,6 +18,12 @@
 
 package com.sadellie.unitto.feature.calculator.elements
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -68,7 +74,6 @@ import unitto.core.common.generated.resources.elements_alkaline_earth_metal
 import unitto.core.common.generated.resources.elements_atomic_number
 import unitto.core.common.generated.resources.elements_configuration
 import unitto.core.common.generated.resources.elements_electronegativity
-import unitto.core.common.generated.resources.elements_family
 import unitto.core.common.generated.resources.elements_group
 import unitto.core.common.generated.resources.elements_halogen
 import unitto.core.common.generated.resources.elements_lanthanide
@@ -78,6 +83,7 @@ import unitto.core.common.generated.resources.elements_noble_gas
 import unitto.core.common.generated.resources.elements_nonmetal
 import unitto.core.common.generated.resources.elements_period
 import unitto.core.common.generated.resources.elements_post_transition_metal
+import unitto.core.common.generated.resources.elements_shells
 import unitto.core.common.generated.resources.elements_title
 import unitto.core.common.generated.resources.elements_transition_metal
 import unitto.core.common.generated.resources.elements_unknown
@@ -94,6 +100,7 @@ internal fun ElementsRoute(openDrawer: () -> Unit) {
     colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
   ) { paddingValues ->
     Column(modifier = Modifier.padding(paddingValues).fillMaxSize().verticalScroll(rememberScrollState())) {
+      ElementCard(element, Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp))
       PeriodicTable(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 8.dp),
         selected = selected,
@@ -102,6 +109,43 @@ internal fun ElementsRoute(openDrawer: () -> Unit) {
       ElementDetails(element)
       HorizontalDivider()
       FamilyLegend()
+    }
+  }
+}
+
+/** The element in big, in the color of its family, with its atom going around. */
+@Composable
+private fun ElementCard(element: Element, modifier: Modifier) {
+  val color by animateColorAsState(element.family.color, label = "Element color")
+  Row(
+    modifier = modifier.clip(TILE_SHAPE).background(color).padding(12.dp),
+    verticalAlignment = Alignment.CenterVertically,
+    horizontalArrangement = Arrangement.spacedBy(16.dp),
+  ) {
+    AtomView(
+      modifier = Modifier.size(ATOM_SIZE),
+      shells = element.shells,
+      nucleus = CELL_TEXT,
+      line = CELL_TEXT.copy(alpha = ATOM_LINE_ALPHA),
+      electron = CELL_TEXT,
+    )
+    AnimatedContent(
+      targetState = element,
+      modifier = Modifier.weight(1f),
+      transitionSpec = { (fadeIn() + slideInVertically { it / NAME_RISE }) togetherWith fadeOut() },
+      label = "Element name",
+    ) { shown ->
+      Column {
+        Text(shown.number.toString(), color = CELL_TEXT, style = MaterialTheme.typography.titleMedium)
+        Text(
+          shown.symbol,
+          color = CELL_TEXT,
+          style = MaterialTheme.typography.displayMedium,
+          fontWeight = FontWeight.Bold,
+        )
+        Text(shown.name, color = CELL_TEXT, style = MaterialTheme.typography.titleLarge, maxLines = 1)
+        Text(stringResource(shown.family.title), color = CELL_TEXT, style = MaterialTheme.typography.bodyMedium, maxLines = 2)
+      }
     }
   }
 }
@@ -143,39 +187,13 @@ private fun PeriodicTable(modifier: Modifier, selected: Int, onClick: (Int) -> U
 
 @Composable
 private fun ElementDetails(element: Element) {
-  Row(
-    modifier = Modifier.fillMaxWidth().padding(16.dp),
-    horizontalArrangement = Arrangement.spacedBy(16.dp),
-    verticalAlignment = Alignment.CenterVertically,
-  ) {
-    Box(
-      modifier = Modifier.size(TILE_SIZE).clip(TILE_SHAPE).background(element.family.color).padding(8.dp),
-    ) {
-      Text(element.number.toString(), modifier = Modifier.align(Alignment.TopStart), color = CELL_TEXT, style = MaterialTheme.typography.labelLarge)
-      Text(
-        element.symbol,
-        modifier = Modifier.align(Alignment.Center),
-        color = CELL_TEXT,
-        style = MaterialTheme.typography.headlineMedium,
-        fontWeight = FontWeight.Bold,
-      )
-    }
-    Column {
-      Text(element.name, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Medium)
-      Text(
-        stringResource(element.family.title),
-        style = MaterialTheme.typography.bodyLarge,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-      )
-    }
-  }
   val mass = KBigDecimal.valueOf(element.mass).toFormattedString(MASS_DECIMALS, OutputFormat.PLAIN)
   StatLine(stringResource(Res.string.elements_atomic_number), element.number.toString())
   StatLine(stringResource(Res.string.elements_mass), if (element.isMassNumber) "[$mass] g/mol" else "$mass g/mol")
-  StatLine(stringResource(Res.string.elements_family), stringResource(element.family.title))
   StatLine(stringResource(Res.string.elements_group), element.group?.toString() ?: "—")
   StatLine(stringResource(Res.string.elements_period), element.period.toString())
   StatLine(stringResource(Res.string.elements_configuration), element.configuration)
+  StatLine(stringResource(Res.string.elements_shells), element.shells.joinToString(" · "))
   StatLine(stringResource(Res.string.elements_electronegativity), element.electronegativity?.toString() ?: "—")
 }
 
@@ -239,6 +257,8 @@ private val CELL_TEXT = Color(0xFF1B1B1F)
 private val CELL_GAP = 1.dp
 private val CELL_SHAPE = RoundedCornerShape(3.dp)
 private val SELECTED_BORDER = 2.dp
-private val TILE_SIZE = 72.dp
-private val TILE_SHAPE = RoundedCornerShape(12.dp)
+private val ATOM_SIZE = 148.dp
+private val TILE_SHAPE = RoundedCornerShape(24.dp)
+private const val ATOM_LINE_ALPHA = 0.35f
+private const val NAME_RISE = 4
 private val LEGEND_DOT = 14.dp

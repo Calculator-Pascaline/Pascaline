@@ -19,6 +19,8 @@
 
 package com.sadellie.unitto
 
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.material3.DrawerState
@@ -45,21 +47,25 @@ import com.sadellie.unitto.core.designsystem.unittoFadeIn
 import com.sadellie.unitto.core.designsystem.unittoFadeOut
 import com.sadellie.unitto.core.navigation.DRAWER_LAYOUT_KEY
 import com.sadellie.unitto.core.navigation.DrawerItem
+import com.sadellie.unitto.core.navigation.DrawerLayout
 import com.sadellie.unitto.core.navigation.HomeDrawerItem
 import com.sadellie.unitto.core.navigation.HomeStartRoute
-import com.sadellie.unitto.core.navigation.NamedTool
-import com.sadellie.unitto.core.navigation.TOOL_ORDER_KEY
-import com.sadellie.unitto.core.navigation.alphabetical
-import com.sadellie.unitto.core.navigation.ordered
-import com.sadellie.unitto.core.navigation.DrawerLayout
 import com.sadellie.unitto.core.navigation.LocalNavigator
+import com.sadellie.unitto.core.navigation.NamedTool
 import com.sadellie.unitto.core.navigation.Navigator
+import com.sadellie.unitto.core.navigation.ORDER_SEPARATOR
+import com.sadellie.unitto.core.navigation.TOOL_ORDER_KEY
 import com.sadellie.unitto.core.navigation.TopLevelRoute
 import com.sadellie.unitto.core.navigation.additionalDrawerItems
+import com.sadellie.unitto.core.navigation.alphabetical
+import com.sadellie.unitto.core.navigation.mainDrawerItems
+import com.sadellie.unitto.core.navigation.ordered
 import com.sadellie.unitto.core.ui.BackHandler
 import com.sadellie.unitto.core.ui.LocalKeyAnimation
 import com.sadellie.unitto.core.ui.LocalPhoneKeypad
+import com.sadellie.unitto.core.ui.LocalPlatform
 import com.sadellie.unitto.core.ui.NavigationDrawer
+import com.sadellie.unitto.core.ui.Platform
 import com.sadellie.unitto.feature.settings.navigation.LocalThemmoController
 import com.sadellie.unitto.feature.settings.navigation.navigateToUnitGroups
 import io.github.sadellie.themmo.ThemmoController
@@ -88,14 +94,19 @@ fun MainAppContent(
   val savedOrder by
     remember(userPrefsRepository) { userPrefsRepository.appData(TOOL_ORDER_KEY) }
       .collectAsState(initial = "")
-  // The order of the home grid
+  // The web version has no home grid, all of its tools are in the menu
+  val hasHome = LocalPlatform.current != Platform.Wasm
   val drawerItems =
-    DrawerLayout.parse(savedLayout)
-      .shown
-      .map { NamedTool(it, stringResource(it.name)) }
-      .alphabetical()
-      .ordered(savedOrder)
-      .map { it.item }
+    if (hasHome) {
+      DrawerLayout.parse(savedLayout)
+        .shown
+        .map { NamedTool(it, stringResource(it.name)) }
+        .alphabetical()
+        .ordered(savedOrder)
+        .map { it.item }
+    } else {
+      mainDrawerItems.map { NamedTool(it, "") }.ordered(savedOrder).map { it.item }
+    }
   val phoneKeypad by
     remember(userPrefsRepository) { userPrefsRepository.appData(PrefKeys.PHONE_KEYPAD_PREF_KEY) }
       .collectAsState(initial = "")
@@ -115,7 +126,7 @@ fun MainAppContent(
       state = drawerState,
       // Phones go through the grid of tools, the menu is at the side of wide screens
       edgeGesture = false,
-      mainTabs = listOf(HomeDrawerItem) + drawerItems,
+      mainTabs = if (hasHome) listOf(HomeDrawerItem) + drawerItems else drawerItems,
       additionalTabs = additionalDrawerItems,
       currentDestination = currentTopLevelRoute,
       onItemClick = { destination ->
@@ -123,11 +134,21 @@ fun MainAppContent(
         navigateToTab(destination, backStack)
         onDrawerItemClick(destination)
       },
+      onReorder =
+        if (hasHome) {
+          null
+        } else {
+          { tabs ->
+            val order = tabs.joinToString(ORDER_SEPARATOR) { it.topLevelRoute.routeId }
+            drawerScope.launch { userPrefsRepository.updateAppData(TOOL_ORDER_KEY, order) }
+          }
+        },
     ) {
       UnittoNavigation(
         backStack = backStack,
         themmoController = themmoController,
         drawerState = drawerState,
+        hasHome = hasHome,
         onOpenTool = { tool ->
           navigateToTab(tool, backStack)
           onDrawerItemClick(tool)
@@ -143,16 +164,21 @@ private fun UnittoNavigation(
   backStack: NavBackStack<NavKey>,
   themmoController: ThemmoController,
   drawerState: DrawerState,
+  hasHome: Boolean,
   onOpenTool: (DrawerItem) -> Unit,
 ) {
   val drawerScope = rememberCoroutineScope()
   val navigator =
-    remember(backStack, drawerState) {
+    remember(backStack, drawerState, hasHome) {
       Navigator(
         backStack = backStack,
         openDrawerAction = {
-          backStack.add(HomeStartRoute)
-          while (backStack.size > 1) backStack.removeAt(0)
+          if (hasHome) {
+            backStack.add(HomeStartRoute)
+            while (backStack.size > 1) backStack.removeAt(0)
+          } else {
+            drawerScope.launch { drawerState.open() }
+          }
         },
         navigateToUnitGroupsAction = backStack::navigateToUnitGroups,
         openToolAction = onOpenTool,
@@ -165,9 +191,10 @@ private fun UnittoNavigation(
     NavDisplay(
       modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainer),
       backStack = backStack,
-      popTransitionSpec = { unittoFadeIn() togetherWith unittoFadeOut() },
-      transitionSpec = { unittoFadeIn() togetherWith unittoFadeOut() },
-      predictivePopTransitionSpec = { unittoFadeIn() togetherWith unittoFadeOut() },
+      // A tool grows out of the grid, and shrinks back into it
+      popTransitionSpec = { unittoFadeIn() togetherWith (unittoFadeOut() + scaleOut(targetScale = SCREEN_SCALE)) },
+      transitionSpec = { (unittoFadeIn() + scaleIn(initialScale = SCREEN_SCALE)) togetherWith unittoFadeOut() },
+      predictivePopTransitionSpec = { unittoFadeIn() togetherWith (unittoFadeOut() + scaleOut(targetScale = SCREEN_SCALE)) },
       entryDecorators =
         listOf(
           rememberSaveableStateHolderNavEntryDecorator(),
@@ -202,3 +229,5 @@ private class DrawerCloseGestureNavEntryDecorator<T : Any>(
       BackHandler(drawerState.isOpen) { coroutineScope.launch { drawerState.close() } }
     }
   )
+
+private const val SCREEN_SCALE = 0.92f

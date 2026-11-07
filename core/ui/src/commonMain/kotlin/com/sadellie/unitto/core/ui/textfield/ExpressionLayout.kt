@@ -70,12 +70,20 @@ internal data class ExpressionLayout(
         abs(caret.x - x) + dy * VERTICAL_TAP_WEIGHT
       }
       ?.index
+
+  /** Index of the integral without bounds in [text] whose ∫ sign is under [x], [y]. */
+  fun boundlessIntegralAt(text: CharSequence, x: Float, y: Float): Int? {
+    val integral = indexAt(x, y)?.let(text::boundlessIntegralAt) ?: return null
+    val left = caretFor(integral)?.x ?: return null
+    val right = caretFor(integral + 1)?.x ?: return null
+    return integral.takeIf { x in left..right }
+  }
 }
 
 internal class PlacedText(val layout: TextLayoutResult, val x: Float, val baseline: Float)
 
 /**
- * Outlined box: empty slot, or angle box of a trigonometric function when [angleBoxIndex] is the
+ * Soft key: empty slot, or angle box of a trigonometric function when [angleBoxIndex] is the
  * index of its unit in raw text.
  */
 internal class PlacedPlaceholder(val rect: Rect, val strokeWidth: Float, val angleBoxIndex: Int? = null)

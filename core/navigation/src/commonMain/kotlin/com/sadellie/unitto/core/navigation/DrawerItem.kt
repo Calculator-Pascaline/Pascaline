@@ -30,12 +30,14 @@ import com.sadellie.unitto.core.designsystem.icons.symbols.CalculateFill
 import com.sadellie.unitto.core.designsystem.icons.symbols.Code
 import com.sadellie.unitto.core.designsystem.icons.symbols.Event
 import com.sadellie.unitto.core.designsystem.icons.symbols.EventFill
-import com.sadellie.unitto.core.designsystem.icons.symbols.LineAxis
-import com.sadellie.unitto.core.designsystem.icons.symbols.Percent
 import com.sadellie.unitto.core.designsystem.icons.symbols.Home
+import com.sadellie.unitto.core.designsystem.icons.symbols.LineAxis
+import com.sadellie.unitto.core.designsystem.icons.symbols.Orbits
+import com.sadellie.unitto.core.designsystem.icons.symbols.Pendulum
+import com.sadellie.unitto.core.designsystem.icons.symbols.Percent
 import com.sadellie.unitto.core.designsystem.icons.symbols.Place
-import com.sadellie.unitto.core.designsystem.icons.symbols.Projectile
 import com.sadellie.unitto.core.designsystem.icons.symbols.PriceTag
+import com.sadellie.unitto.core.designsystem.icons.symbols.Projectile
 import com.sadellie.unitto.core.designsystem.icons.symbols.ScatterPlot
 import com.sadellie.unitto.core.designsystem.icons.symbols.Schedule
 import com.sadellie.unitto.core.designsystem.icons.symbols.ScheduleFill
@@ -44,6 +46,7 @@ import com.sadellie.unitto.core.designsystem.icons.symbols.Settings
 import com.sadellie.unitto.core.designsystem.icons.symbols.SettingsFill
 import com.sadellie.unitto.core.designsystem.icons.symbols.SwapHoriz
 import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
+import com.sadellie.unitto.core.designsystem.icons.symbols.Waves
 import org.jetbrains.compose.resources.StringResource
 import unitto.core.common.generated.resources.Res
 import unitto.core.common.generated.resources.body_mass_title
@@ -53,18 +56,21 @@ import unitto.core.common.generated.resources.date_calculator_title
 import unitto.core.common.generated.resources.elements_title
 import unitto.core.common.generated.resources.finance_title
 import unitto.core.common.generated.resources.functions_title
-import unitto.core.common.generated.resources.inference_title
 import unitto.core.common.generated.resources.home_title
+import unitto.core.common.generated.resources.inference_title
+import unitto.core.common.generated.resources.orbits_title
+import unitto.core.common.generated.resources.pendulum_title
 import unitto.core.common.generated.resources.place_title
-import unitto.core.common.generated.resources.projectile_title
 import unitto.core.common.generated.resources.prices_title
 import unitto.core.common.generated.resources.probability_title
 import unitto.core.common.generated.resources.programmer_title
+import unitto.core.common.generated.resources.projectile_title
 import unitto.core.common.generated.resources.regression_title
 import unitto.core.common.generated.resources.sequences_title
 import unitto.core.common.generated.resources.settings_title
 import unitto.core.common.generated.resources.statistics_title
 import unitto.core.common.generated.resources.time_zone_title
+import unitto.core.common.generated.resources.waves_title
 
 sealed interface DrawerItem {
   val topLevelRoute: TopLevelRoute
@@ -191,6 +197,27 @@ data object ProjectileDrawerItem : DrawerItem {
   override val name = Res.string.projectile_title
   override val selectedIcon = Symbols.Projectile
   override val defaultIcon = Symbols.Projectile
+}
+
+data object PendulumDrawerItem : DrawerItem {
+  override val topLevelRoute = PendulumStartRoute
+  override val name = Res.string.pendulum_title
+  override val selectedIcon = Symbols.Pendulum
+  override val defaultIcon = Symbols.Pendulum
+}
+
+data object WavesDrawerItem : DrawerItem {
+  override val topLevelRoute = WavesStartRoute
+  override val name = Res.string.waves_title
+  override val selectedIcon = Symbols.Waves
+  override val defaultIcon = Symbols.Waves
+}
+
+data object OrbitsDrawerItem : DrawerItem {
+  override val topLevelRoute = OrbitsStartRoute
+  override val name = Res.string.orbits_title
+  override val selectedIcon = Symbols.Orbits
+  override val defaultIcon = Symbols.Orbits
 }
 
 data object PlaceDrawerItem : DrawerItem {

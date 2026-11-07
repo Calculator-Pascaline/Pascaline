@@ -87,4 +87,18 @@ class ElementsTest {
     )
 
   @Test fun fluorineMostElectronegative() = assertEquals("F", ELEMENTS.maxBy { it.electronegativity ?: 0.0 }.symbol)
+
+  @Test
+  fun shellsFromTheConfiguration() {
+    assertEquals(listOf(1), electronShells(1))
+    assertEquals(listOf(2, 4), electronShells(6))
+    assertEquals(listOf(2, 8, 14, 2), electronShells(26))
+    // Exceptions: Cr, Au
+    assertEquals(listOf(2, 8, 13, 1), electronShells(24))
+    assertEquals(listOf(2, 8, 18, 32, 18, 1), electronShells(79))
+    assertEquals(listOf(2, 8, 18, 32, 32, 18, 8), electronShells(118))
+  }
+
+  @Test
+  fun everyElementHasAllItsElectrons() = ELEMENTS.forEach { assertEquals(it.number, it.shells.sum(), it.symbol) }
 }

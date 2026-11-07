@@ -30,14 +30,36 @@ import com.sadellie.unitto.feature.calculator.datatable.NumberFormat
 import com.sadellie.unitto.feature.calculator.probability.toNumberOrNull
 import kotlinx.coroutines.flow.map
 
-/** Simple or compound interest, the value to find and the others. Kept while the app is open. */
+/** What is worked out, from the everyday ones to the solvers. */
+internal enum class FinanceMode {
+  LOAN,
+  SAVINGS,
+  SIMPLE,
+  COMPOUND,
+}
+
+/** What was typed in each mode. Kept while the app is open. */
 internal class FinanceViewModel(userPrefsRepository: UserPreferencesRepository) : ViewModel() {
   val numberFormat =
     userPrefsRepository.calculatorPrefs
       .map { NumberFormat(it.formatterSymbols, it.precision, it.outputFormat) }
       .stateIn(viewModelScope, null)
 
-  var isCompound by mutableStateOf(false)
+  var mode by mutableStateOf(FinanceMode.LOAN)
+
+  var loanAmount by mutableStateOf("200000")
+
+  var loanRate by mutableStateOf("5")
+
+  var loanYears by mutableStateOf("20")
+
+  var savedStart by mutableStateOf("1000")
+
+  var savedDeposit by mutableStateOf("200")
+
+  var savedRate by mutableStateOf("4")
+
+  var savedYears by mutableStateOf("20")
 
   var simpleUnknown by mutableStateOf(SimpleValue.INTEREST)
 

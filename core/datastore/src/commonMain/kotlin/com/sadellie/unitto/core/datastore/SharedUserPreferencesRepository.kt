@@ -91,7 +91,6 @@ abstract class SharedUserPreferencesRepository : UserPreferencesRepository {
     get() =
       values.map { preferences ->
         GeneralPreferences(
-          lastReadChangelog = preferences.lastReadChangelog(),
           enableVibrations = preferences.enableVibrations(),
           enableKeepScreenOn = preferences.enableKeepScreenOn(),
         )
@@ -204,9 +203,6 @@ abstract class SharedUserPreferencesRepository : UserPreferencesRepository {
     set(PrefKeys.SHOWN_UNIT_GROUPS_PREF_KEY, shownUnitGroups().minus(unitGroup).packToString())
   }
 
-  override suspend fun updateLastReadChangelog(value: String) =
-    edit { set(PrefKeys.LAST_READ_CHANGELOG_PREF_KEY, value) }
-
   override suspend fun updateVibrations(enabled: Boolean) =
     edit { set(PrefKeys.ENABLE_VIBRATIONS_PREF_KEY, enabled) }
 
@@ -274,9 +270,6 @@ abstract class SharedUserPreferencesRepository : UserPreferencesRepository {
 
   private fun PreferenceValues.monetMode() =
     string(PrefKeys.MONET_MODE_PREF_KEY)?.letTryOrNull { MonetMode.valueOf(it) } ?: Defaults.monetMode
-
-  private fun PreferenceValues.lastReadChangelog() =
-    string(PrefKeys.LAST_READ_CHANGELOG_PREF_KEY) ?: Defaults.lastReadChangelog
 
   private fun PreferenceValues.radianMode() = boolean(PrefKeys.RADIAN_MODE_PREF_KEY) ?: Defaults.radianMode
 

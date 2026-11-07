@@ -70,6 +70,7 @@ fun NavigationDrawer(
   additionalTabs: List<DrawerItem>,
   currentDestination: TopLevelRoute?,
   onItemClick: (DrawerItem) -> Unit,
+  onReorder: ((List<DrawerItem>) -> Unit)? = null,
   content: @Composable () -> Unit,
 ) {
   if (LocalWindowSize.current.widthSizeClass == WindowWidthSizeClass.Expanded) {
@@ -87,6 +88,7 @@ fun NavigationDrawer(
             additionalTabs = additionalTabs,
             currentDestination = currentDestination,
             onItemClick = onItemClick,
+            onReorder = onReorder,
           )
         }
       },
@@ -106,6 +108,7 @@ fun NavigationDrawer(
             additionalTabs = additionalTabs,
             currentDestination = currentDestination,
             onItemClick = onItemClick,
+            onReorder = onReorder,
           )
         }
       },
