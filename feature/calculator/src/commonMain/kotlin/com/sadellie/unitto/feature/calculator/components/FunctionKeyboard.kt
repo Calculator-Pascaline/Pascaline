@@ -132,10 +132,12 @@ import com.sadellie.unitto.core.designsystem.icons.symbols.Energy
 import com.sadellie.unitto.core.designsystem.icons.symbols.FitnessCenter
 import com.sadellie.unitto.core.designsystem.icons.symbols.Language
 import com.sadellie.unitto.core.designsystem.icons.symbols.LineAxis
+import com.sadellie.unitto.core.designsystem.icons.symbols.Orbits
 import com.sadellie.unitto.core.designsystem.icons.symbols.Power
 import com.sadellie.unitto.core.designsystem.icons.symbols.PowerFill
 import com.sadellie.unitto.core.designsystem.icons.symbols.Schedule
 import com.sadellie.unitto.core.designsystem.icons.symbols.ScheduleFill
+import com.sadellie.unitto.core.designsystem.icons.symbols.Speed
 import com.sadellie.unitto.core.designsystem.icons.symbols.SplitscreenBottom
 import com.sadellie.unitto.core.designsystem.icons.symbols.Straighten
 import com.sadellie.unitto.core.designsystem.icons.symbols.StraightenFill
@@ -832,6 +834,8 @@ private val CATEGORY_ICONS: Map<String, ImageVector> by lazy {
     "Angle" to Symbols.DiagonalLine,
     // Inches, ounces, gallons: the units of other countries
     "Imperial" to Symbols.Language,
+    // au, light-years and parsecs: distances in space
+    "Astronomy" to Symbols.Orbits,
     "Time and frequency" to Symbols.Schedule,
     "Time" to Symbols.Schedule,
     "Frequency" to Symbols.Airwave,
@@ -856,6 +860,7 @@ private val CATEGORY_ICONS: Map<String, ImageVector> by lazy {
     "Electronvolt" to Symbols.Atom,
     "Watt-hour" to Symbols.Power,
     "Power" to Symbols.Power,
+    "Horsepower" to Symbols.Speed,
     "Temperature" to Symbols.DeviceThermostat,
     "Amount of substance" to Symbols.Atom,
     "Constants" to Symbols._123,

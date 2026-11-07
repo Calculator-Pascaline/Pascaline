@@ -129,6 +129,7 @@ import com.sadellie.unitto.core.navigation.StatisticsDrawerItem
 import com.sadellie.unitto.core.navigation.VectorFieldsDrawerItem
 import com.sadellie.unitto.core.navigation.inDefaultOrder
 import com.sadellie.unitto.core.ui.ScaffoldWithTopBar
+import com.sadellie.unitto.core.ui.keyHaptics
 import com.sadellie.unitto.core.ui.rememberKeyPress
 import com.sadellie.unitto.core.ui.squashable
 import com.sadellie.unitto.core.ui.trackKeyPress
@@ -271,8 +272,6 @@ internal fun HomeRoute() {
   val names = sectionNames(sections)
   val grid = rememberLazyGridState()
   val reorder = remember(grid, scope) { HomeReorder(grid, scope) }
-  // Names load after the first frame: the grid would follow its old first key down the list
-  LaunchedEffect(tools.firstOrNull()?.id) { grid.scrollToItem(0) }
   fun save(key: String, value: String) {
     scope.launch { preferences.updateAppData(key, value) }
   }
@@ -628,6 +627,8 @@ private fun LazyGridItemScope.ToolTile(
         Modifier.fillMaxSize()
           .alpha(if (isHidden) HIDDEN_ALPHA else 1f)
           .trackKeyPress(keyPress)
+          // Only real taps vibrate, not a touch that starts a scroll
+          .keyHaptics(keyPress)
           .squashable(
             // In the edit mode a tap moves the tool to another section
             onClick = { if (actions.isEditing) actions.onMove(tool) else actions.onOpen(tool) },
@@ -636,6 +637,7 @@ private fun LazyGridItemScope.ToolTile(
             cornerRadiusRange = KEY_CORNER..KEY_PRESSED_CORNER,
             animationSpec = MaterialTheme.motionScheme.fastSpatialSpec(),
             isPressed = keyPress.isPressed,
+            withHaptics = false,
           )
           .background(colors.first)
           .padding(horizontal = 14.dp, vertical = 12.dp),

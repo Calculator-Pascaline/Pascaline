@@ -1924,4 +1924,6 @@
     <string name="home_move_up">Nach oben</string>
     <string name="home_move_down">Nach unten</string>
     <string name="home_edit_sections_hint">Ziehe ein Werkzeug, um es zu verschieben, tippe darauf, um es in einen anderen Abschnitt zu legen.</string>
+    <string name="projectile_bullet">Pistolenkugel</string>
+    <string name="units_menu_astronomy">Astronomie</string>
 </resources>

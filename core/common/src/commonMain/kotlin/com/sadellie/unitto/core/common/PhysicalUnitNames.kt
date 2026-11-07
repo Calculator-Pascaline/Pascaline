@@ -150,6 +150,7 @@ import unitto.core.common.generated.resources.unit_week
 import unitto.core.common.generated.resources.unit_yard
 import unitto.core.common.generated.resources.units_menu_amount_of_substance
 import unitto.core.common.generated.resources.units_menu_area_and_volume
+import unitto.core.common.generated.resources.units_menu_astronomy
 import unitto.core.common.generated.resources.units_menu_constants
 import unitto.core.common.generated.resources.units_menu_current
 import unitto.core.common.generated.resources.units_menu_electricity
@@ -288,6 +289,7 @@ val physicalUnitNames: Map<String, StringResource> =
     "Length and angle" to Res.string.units_menu_length_and_angle,
     "Length" to Res.string.unit_group_length,
     "Imperial" to Res.string.units_menu_imperial,
+    "Astronomy" to Res.string.units_menu_astronomy,
     "Angle" to Res.string.unit_group_angle,
     "Time and frequency" to Res.string.units_menu_time_and_frequency,
     "Time" to Res.string.unit_group_time,

@@ -1924,4 +1924,6 @@
     <string name="home_move_up">Feljebb</string>
     <string name="home_move_down">Lejjebb</string>
     <string name="home_edit_sections_hint">Húzz egy eszközt a helye módosításához, koppints rá, hogy másik szakaszba tedd.</string>
+    <string name="projectile_bullet">Lövedék</string>
+    <string name="units_menu_astronomy">Csillagászat</string>
 </resources>

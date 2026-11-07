@@ -55,6 +55,8 @@ import kotlinx.coroutines.withTimeoutOrNull
 /**
  * @param isPressed Pressed state from [trackKeyPress], it comes without the delay of clicks in
  *   scrollable containers. Pressed state of [interactionSource] when null.
+ * @param withHaptics False for keys in lists, which vibrate with [keyHaptics] instead: a touch that
+ *   becomes a scroll is not a press.
  */
 fun Modifier.squashable(
   onClick: () -> Unit = {},
@@ -65,6 +67,7 @@ fun Modifier.squashable(
   role: Role = Role.Button,
   animationSpec: AnimationSpec<Int> = tween(),
   isPressed: Boolean? = null,
+  withHaptics: Boolean = true,
 ) = composed {
   val isClickPressed by interactionSource.collectIsPressedAsState()
   val isKeyPressed = isPressed ?: isClickPressed
@@ -76,7 +79,7 @@ fun Modifier.squashable(
     )
 
   this.clip(RoundedCornerShape(cornerRadius))
-    .haptics(isKeyPressed)
+    .then(if (withHaptics) Modifier.haptics(isKeyPressed) else Modifier)
     .combinedClickable(
       onClick = onClick,
       onLongClick = onLongClick,

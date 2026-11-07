@@ -2211,4 +2211,6 @@
     <string name="home_move_up">Move up</string>
     <string name="home_move_down">Move down</string>
     <string name="home_edit_sections_hint">Drag a tool to change its place, tap it to put it in another section.</string>
+    <string name="projectile_bullet">Bullet</string>
+    <string name="units_menu_astronomy">Astronomy</string>
 </resources>

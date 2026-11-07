@@ -282,7 +282,7 @@ object PhysicalUnits {
         category(
           "Length",
           leaves(picometer, nanometer, micrometer, millimeter, centimeter, meter, kilometer) +
-            leaves(astronomicalUnit, lightYear, parsec) +
+            category("Astronomy", leaves(astronomicalUnit, lightYear, parsec)) +
             category("Imperial", leaves(inch, foot, yard, mile)),
         ),
         category("Angle", leaves(degree, radian, gradian)),
@@ -330,7 +330,10 @@ object PhysicalUnits {
           category("Electronvolt", leaves(millielectronvolt, electronvolt, kiloelectronvolt, megaelectronvolt)),
           category("Watt-hour", leaves(milliwattHour, wattHour, kilowattHour, megawattHour, gigawattHour)),
         ),
-        category("Power", leaves(microwatt, milliwatt, watt, kilowatt, megawatt, gigawatt, horsepower)),
+        category(
+          "Power",
+          leaves(microwatt, milliwatt, watt, kilowatt, megawatt, gigawatt) + category("Horsepower", leaves(horsepower)),
+        ),
       ),
       category("Temperature", leaves(kelvin, celsius, fahrenheit)),
       category("Other units", leaves(candela) + category("Amount of substance", leaves(micromole, millimole, mole))),

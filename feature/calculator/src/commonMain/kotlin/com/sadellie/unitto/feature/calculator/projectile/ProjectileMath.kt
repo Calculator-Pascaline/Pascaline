@@ -67,8 +67,9 @@ internal interface Trajectory {
  * The air a ball flies through, in kilograms and meters.
  *
  * @property density Of the air, 1.225 kg/m³ at sea level.
+ * @property dragCoefficient Cd of its shape: 0.47 for a ball, about 0.3 for a bullet.
  */
-internal data class Air(val mass: Double, val diameter: Double, val density: Double) {
+internal data class Air(val mass: Double, val diameter: Double, val density: Double, val dragCoefficient: Double = SPHERE_DRAG) {
   val isValid: Boolean
     get() = mass > 0 && diameter > 0 && density >= 0
 
@@ -78,7 +79,7 @@ internal data class Air(val mass: Double, val diameter: Double, val density: Dou
 
   /** Deceleration divided by speed squared: ½ ρ Cd A / m. */
   val drag: Double
-    get() = density * SPHERE_DRAG * area / (2 * mass)
+    get() = density * dragCoefficient * area / (2 * mass)
 
   /** Speed where air stops the fall from getting faster: √(g / k). */
   fun terminalSpeed(gravity: Double) = sqrt(gravity / drag)
@@ -208,6 +209,9 @@ internal class Flight(override val launch: Launch, val vx: Double, val vy: Doubl
 
 /** Drag coefficient of a smooth sphere in the air, around 0.47 at the speeds of a throw. */
 internal const val SPHERE_DRAG = 0.47
+
+/** Drag coefficient of a pistol bullet below the speed of sound. */
+internal const val BULLET_DRAG = 0.3
 
 /** Seconds between two steps of the simulation. */
 internal const val TIME_STEP = 0.005

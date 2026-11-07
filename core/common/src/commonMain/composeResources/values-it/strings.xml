@@ -1924,4 +1924,6 @@
     <string name="home_move_up">Sposta su</string>
     <string name="home_move_down">Sposta giù</string>
     <string name="home_edit_sections_hint">Trascina uno strumento per cambiarne il posto, toccalo per metterlo in un’altra sezione.</string>
+    <string name="projectile_bullet">Proiettile</string>
+    <string name="units_menu_astronomy">Astronomia</string>
 </resources>

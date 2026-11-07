@@ -1924,4 +1924,6 @@
     <string name="home_move_up">上移</string>
     <string name="home_move_down">下移</string>
     <string name="home_edit_sections_hint">拖动工具可调整位置，点按可将其放入其他分区。</string>
+    <string name="projectile_bullet">子弹</string>
+    <string name="units_menu_astronomy">天文</string>
 </resources>

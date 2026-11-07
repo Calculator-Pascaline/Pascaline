@@ -1924,4 +1924,6 @@
     <string name="home_move_up">Mover para cima</string>
     <string name="home_move_down">Mover para baixo</string>
     <string name="home_edit_sections_hint">Arraste uma ferramenta para mudar o lugar dela, toque nela para colocá-la em outra seção.</string>
+    <string name="projectile_bullet">Bala</string>
+    <string name="units_menu_astronomy">Astronomia</string>
 </resources>

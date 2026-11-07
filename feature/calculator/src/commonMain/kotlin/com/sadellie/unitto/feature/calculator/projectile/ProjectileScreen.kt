@@ -118,6 +118,7 @@ import unitto.core.common.generated.resources.projectile_mass
 import unitto.core.common.generated.resources.projectile_max_height
 import unitto.core.common.generated.resources.projectile_ping_pong
 import unitto.core.common.generated.resources.projectile_range
+import unitto.core.common.generated.resources.projectile_bullet
 import unitto.core.common.generated.resources.projectile_shot_put
 import unitto.core.common.generated.resources.projectile_soccer
 import unitto.core.common.generated.resources.projectile_speed
@@ -159,7 +160,14 @@ private val PLANETS =
   )
 
 /** A ball you could throw, its size in centimeters and its weight in kilograms. */
-private class Ball(val name: StringResource, val diameter: String, val mass: String)
+/** A thing to throw, with the drag of its shape, and its own speed when it has one, like a bullet. */
+private class Ball(
+  val name: StringResource,
+  val diameter: String,
+  val mass: String,
+  val drag: Double = SPHERE_DRAG,
+  val speed: String? = null,
+)
 
 private val BALLS =
   listOf(
@@ -169,6 +177,7 @@ private val BALLS =
     Ball(Res.string.projectile_soccer, "22", "0.43"),
     Ball(Res.string.projectile_basketball, "24", "0.62"),
     Ball(Res.string.projectile_shot_put, "12", "7.26"),
+    Ball(Res.string.projectile_bullet, "0.9", "0.008", BULLET_DRAG, speed = "360"),
   )
 
 /** A throw without air: the conditions, the flight it gives and how that is worked out. */
@@ -188,7 +197,9 @@ internal fun ProjectileRoute(openDrawer: () -> Unit) {
   var density by rememberSaveable { mutableStateOf("1.225") }
   fun number(value: String) = value.toNumberOrNull() ?: Double.NaN
   val launch = Launch(number(speed), number(angle), number(height), number(gravity))
-  val air = Air(number(mass), number(diameter) / CENTIMETERS, number(density)).takeIf { hasAir }
+  // A shape only comes with a preset: anything else is a ball
+  val shape = BALLS.firstOrNull { it.diameter.toDouble() == diameter.toNumberOrNull() && it.mass.toDouble() == mass.toNumberOrNull() }
+  val air = Air(number(mass), number(diameter) / CENTIMETERS, number(density), shape?.drag ?: SPHERE_DRAG).takeIf { hasAir }
   val flight = remember(launch, air) { launch.trajectory(air) }
   val withoutAir = remember(launch, air) { launch.flight().takeIf { air != null && air.density > 0 } }
   val format = { value: Double -> value.rounded(DECIMALS).replace(".", symbols) }
@@ -215,6 +226,7 @@ internal fun ProjectileRoute(openDrawer: () -> Unit) {
           BallChips(diameter, mass) { ball ->
             diameter = ball.diameter.replace(".", symbols)
             mass = ball.mass.replace(".", symbols)
+            ball.speed?.let { speed = it }
           }
           ConditionRow(DIAMETER, diameter, symbols) { diameter = it }
           ConditionRow(MASS, mass, symbols) { mass = it }
@@ -448,7 +460,7 @@ private fun AirExplanation(flight: Trajectory, air: Air, format: (Double) -> Str
       Res.string.projectile_explain_air,
       Res.string.projectile_explain_air_text,
       "A = π · d² / 4 = ${formatSmall(air.area)} m²",
-      "k = ½ · ρ · Cd · A / m = ½ · ${formatSmall(air.density)} · $SPHERE_DRAG · ${formatSmall(air.area)} / ${formatSmall(air.mass)} = ${formatSmall(air.drag)} /m",
+      "k = ½ · ρ · Cd · A / m = ½ · ${formatSmall(air.density)} · ${air.dragCoefficient} · ${formatSmall(air.area)} / ${formatSmall(air.mass)} = ${formatSmall(air.drag)} /m",
     )
     Step(
       Res.string.projectile_explain_forces,
