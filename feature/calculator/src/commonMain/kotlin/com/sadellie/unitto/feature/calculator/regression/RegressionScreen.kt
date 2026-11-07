@@ -19,7 +19,7 @@
 package com.sadellie.unitto.feature.calculator.regression
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,16 +27,15 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material3.FilterChip
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
-import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -49,50 +48,62 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.sadellie.unitto.core.common.collectAsStateWithLifecycleKMP
-import com.sadellie.unitto.core.designsystem.icons.symbols.CenterFocusWeak
-import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
 import com.sadellie.unitto.core.ui.DrawerButton
 import com.sadellie.unitto.core.ui.EmptyScreen
 import com.sadellie.unitto.core.ui.ScaffoldWithTopBar
 import com.sadellie.unitto.feature.calculator.datatable.DataTable
 import com.sadellie.unitto.feature.calculator.datatable.NumberFormat
-import com.sadellie.unitto.feature.calculator.functions.FunctionGraph
-import com.sadellie.unitto.feature.calculator.functions.GraphWindow
-import com.sadellie.unitto.feature.calculator.functions.PlotFunction
-import com.sadellie.unitto.feature.calculator.functions.PlotPoint
+import com.sadellie.unitto.feature.calculator.physics.LiveCard
+import com.sadellie.unitto.feature.calculator.physics.PhysicsColumns
+import com.sadellie.unitto.feature.calculator.physics.number
+import com.sadellie.unitto.feature.calculator.probability.rounded
+import com.sadellie.unitto.feature.calculator.projectile.Answer
+import com.sadellie.unitto.feature.calculator.projectile.Card
+import com.sadellie.unitto.feature.calculator.projectile.Condition
+import com.sadellie.unitto.feature.calculator.projectile.ConditionRow
 import com.sadellie.unitto.feature.calculator.statistics.StatLine
+import kotlin.math.ceil
+import kotlin.math.floor
+import kotlin.math.log10
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import unitto.core.common.generated.resources.Res
-import unitto.core.common.generated.resources.functions_reset_view
+import unitto.core.common.generated.resources.regression_best
+import unitto.core.common.generated.resources.regression_best_note
+import unitto.core.common.generated.resources.regression_best_title
 import unitto.core.common.generated.resources.regression_correlation
 import unitto.core.common.generated.resources.regression_count
 import unitto.core.common.generated.resources.regression_covariance
 import unitto.core.common.generated.resources.regression_cubic
 import unitto.core.common.generated.resources.regression_curve
 import unitto.core.common.generated.resources.regression_data
-import unitto.core.common.generated.resources.regression_determination
 import unitto.core.common.generated.resources.regression_deviation_x
 import unitto.core.common.generated.resources.regression_deviation_y
-import unitto.core.common.generated.resources.regression_empty
+import unitto.core.common.generated.resources.regression_example
+import unitto.core.common.generated.resources.regression_explained
 import unitto.core.common.generated.resources.regression_exponential
-import unitto.core.common.generated.resources.regression_graph
+import unitto.core.common.generated.resources.regression_hint
 import unitto.core.common.generated.resources.regression_linear
 import unitto.core.common.generated.resources.regression_logarithmic
 import unitto.core.common.generated.resources.regression_mean_x
 import unitto.core.common.generated.resources.regression_mean_y
 import unitto.core.common.generated.resources.regression_not_possible
 import unitto.core.common.generated.resources.regression_power
+import unitto.core.common.generated.resources.regression_predict
+import unitto.core.common.generated.resources.regression_predict_at
 import unitto.core.common.generated.resources.regression_proportional
 import unitto.core.common.generated.resources.regression_quadratic
 import unitto.core.common.generated.resources.regression_quartic
 import unitto.core.common.generated.resources.regression_stats
 import unitto.core.common.generated.resources.regression_title
+import unitto.core.common.generated.resources.regression_typical_gap
 
 @Composable
 internal fun RegressionRoute(openDrawer: () -> Unit) {
@@ -106,7 +117,7 @@ internal fun RegressionRoute(openDrawer: () -> Unit) {
   RegressionScreen(openDrawer, viewModel, rows, format)
 }
 
-/** Like the Regression app of NumWorks: points, their graph with a curve, the curve and statistics. */
+/** Points that can be moved with a finger, the curve through them and how it compares to the others. */
 @Composable
 private fun RegressionScreen(
   openDrawer: () -> Unit,
@@ -114,10 +125,8 @@ private fun RegressionScreen(
   rows: List<List<String>>,
   format: NumberFormat,
 ) {
-  var tab by rememberSaveable { mutableIntStateOf(0) }
+  var tab by rememberSaveable { mutableIntStateOf(CURVE_TAB) }
   val points = remember(rows) { rows.dataPoints() }
-  val model = viewModel.model
-  val result = remember(points, model) { regression(points, model) }
 
   ScaffoldWithTopBar(
     title = { Text(stringResource(Res.string.regression_title)) },
@@ -131,8 +140,8 @@ private fun RegressionScreen(
         }
       }
       val content = Modifier.weight(1f).fillMaxWidth()
-      when {
-        tab == DATA_TAB ->
+      when (tab) {
+        DATA_TAB ->
           DataTable(
             modifier = content,
             headers = listOf("x", "y"),
@@ -141,114 +150,182 @@ private fun RegressionScreen(
             onDeleteRow = viewModel.table::deleteRow,
             onClear = viewModel.table::clear,
           )
-        points.size < MIN_POINTS -> Message(content, stringResource(Res.string.regression_empty))
-        tab == GRAPH_TAB -> GraphTab(content, points, model, result, viewModel::selectModel, format)
-        tab == CURVE_TAB -> CurveTab(content, model, result, viewModel::selectModel, format)
+        CURVE_TAB -> CurveTab(content, viewModel, rows, points, format)
         else -> StatsTab(content, points, format)
       }
     }
   }
 }
 
-@Composable
-private fun Message(modifier: Modifier, text: String) {
-  Box(modifier = modifier.padding(24.dp), contentAlignment = Alignment.Center) {
-    Text(
-      text = text,
-      style = MaterialTheme.typography.bodyLarge,
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
-      textAlign = TextAlign.Center,
-    )
-  }
+/** Decimals that are enough for a point on a chart this wide. */
+private fun Double.chartValue(span: Double) = rounded((CHART_DECIMALS - floor(log10(span))).toInt().coerceIn(0, MAX_DECIMALS))
+
+/** Where the first forecast is: a little after the last point. */
+private fun firstForecast(points: List<DataPoint>): String {
+  val low = points.minOfOrNull { it.x } ?: 0.0
+  val high = points.maxOfOrNull { it.x } ?: 0.0
+  return ceil(high + (high - low) * FORECAST_SHARE).rounded(0)
 }
 
-/** Points and the curve, with the kinds of curve on top. */
-@Composable
-private fun GraphTab(
-  modifier: Modifier,
-  points: List<DataPoint>,
-  model: RegressionModel,
-  result: RegressionResult?,
-  onModelClick: (RegressionModel) -> Unit,
-  format: NumberFormat,
-) {
-  var window by remember { mutableStateOf<GraphWindow?>(null) }
-  val pointColor = MaterialTheme.colorScheme.primary
-  val curveColor = MaterialTheme.colorScheme.tertiary
-  val plotPoints = remember(points, pointColor) { points.map { PlotPoint(it.x, it.y, pointColor) } }
-  val curves = listOfNotNull(result?.let { PlotFunction("y", curveColor, it::valueAt) })
+private fun RegressionResult.pointAt(x: Double) = valueAt(x).takeIf { it.isFinite() }?.let { DataPoint(x, it) }
 
-  Column(modifier = modifier) {
-    ModelChips(model, onModelClick)
-    Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-      FunctionGraph(
-        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface),
-        functions = curves,
-        window = window,
-        onWindowChange = { window = it },
-        formatValue = { format.format(it) },
-        points = plotPoints,
-      )
-      if (window != null) {
-        SmallFloatingActionButton(
-          modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
-          onClick = { window = null },
-        ) {
-          Icon(Symbols.CenterFocusWeak, stringResource(Res.string.functions_reset_view))
-        }
+private fun RegressionViewModel.actions(rows: List<List<String>>, window: FitWindow, moved: (Pair<Int, DataPoint>?) -> Unit, last: () -> Pair<Int, DataPoint>?) =
+  ChartActions(
+    onMove = { index, point -> moved(index to point) },
+    onDrop = {
+      last()?.let { (index, point) ->
+        setPoint(rows.pointRows()[index], point.x.chartValue(window.width), point.y.chartValue(window.height))
       }
-    }
-    Text(
-      modifier = Modifier.fillMaxWidth().padding(16.dp),
-      text = if (result == null) stringResource(Res.string.regression_not_possible) else equation(result, format),
-      style = MaterialTheme.typography.titleMedium,
-      color = if (result == null) MaterialTheme.colorScheme.error else curveColor,
-      textAlign = TextAlign.Center,
-    )
-  }
-}
+      moved(null)
+    },
+    onAdd = { addPoint(it.x.chartValue(window.width), it.y.chartValue(window.height)) },
+    onRemove = { table.deleteRow(rows.pointRows()[it]) },
+  )
 
-/** Formula, coefficients, r and r² of the chosen kind of curve. */
 @Composable
 private fun CurveTab(
   modifier: Modifier,
-  model: RegressionModel,
-  result: RegressionResult?,
-  onModelClick: (RegressionModel) -> Unit,
+  viewModel: RegressionViewModel,
+  rows: List<List<String>>,
+  points: List<DataPoint>,
   format: NumberFormat,
 ) {
-  Column(modifier = modifier) {
-    ModelChips(model, onModelClick)
-    Text(
-      modifier = Modifier.fillMaxWidth().padding(16.dp),
-      text = model.formula,
-      style = MaterialTheme.typography.headlineSmall,
-      fontWeight = FontWeight.Medium,
-      textAlign = TextAlign.Center,
-    )
-    HorizontalDivider()
-    if (result == null) {
-      Message(Modifier.fillMaxWidth(), stringResource(Res.string.regression_not_possible))
-      return@Column
-    }
-    val lines =
-      model.coefficients.zip(result.coefficients).map { (name, value) -> name to format.format(value) } +
-        listOfNotNull(
-          result.correlation?.let { stringResource(Res.string.regression_correlation) to format.format(it) },
-          result.determination?.let { stringResource(Res.string.regression_determination) to format.format(it) },
-        )
-    LazyColumn(contentPadding = PaddingValues(vertical = 8.dp)) {
-      items(lines) { (label, value) ->
-        StatLine(label, value)
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+  // A moved point is saved when it is dropped, and the chart stays still until then
+  var moved by remember { mutableStateOf<Pair<Int, DataPoint>?>(null) }
+  var forecast by rememberSaveable { mutableStateOf<String?>(null) }
+  val model = viewModel.model
+  val shown = moved?.let { (index, point) -> points.mapIndexed { i, old -> if (i == index) point else old } } ?: points
+  val fits = remember(shown) { rankedFits(shown) }
+  val result = fits.firstOrNull { it.result.model == model }?.result
+  val forecastText = forecast ?: firstForecast(points)
+  val forecastAt = forecastText.number()
+  val prediction = result?.pointAt(forecastAt)
+  val saved = remember(points, model) { regression(points, model) }
+  val window = remember(points, saved, forecastAt) { fitWindow(points + listOfNotNull(saved?.pointAt(forecastAt))) }
+  val actions = viewModel.actions(rows, window, { moved = it }, { moved })
+
+  PhysicsColumns(
+    modifier = modifier,
+    live = {
+      LiveCard {
+        FitChart(shown, result, window, prediction, actions) { format.format(it) }
+        Hint(stringResource(Res.string.regression_hint))
+        when {
+          points.size < MIN_POINTS ->
+            FilledTonalButton(onClick = viewModel::loadExample) { Text(stringResource(Res.string.regression_example)) }
+          result == null -> Text(stringResource(Res.string.regression_not_possible), color = MaterialTheme.colorScheme.error)
+          else -> FitSummary(shown, result, format)
+        }
       }
+    },
+    settings = {
+      if (prediction != null) ForecastCard(forecastText, prediction, points, format) { forecast = it }
+    },
+    explanation = {
+      if (fits.isNotEmpty()) FitRanking(fits, model, format, viewModel::selectModel)
+    },
+  )
+}
+
+@Composable
+private fun Hint(text: String) {
+  Text(text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+}
+
+/** The curve as numbers, then what it means. */
+@Composable
+private fun FitSummary(points: List<DataPoint>, result: RegressionResult, format: NumberFormat) {
+  Text(
+    modifier = Modifier.fillMaxWidth(),
+    text = equation(result, format),
+    style = MaterialTheme.typography.titleLarge,
+    fontWeight = FontWeight.Medium,
+    color = MaterialTheme.colorScheme.tertiary,
+    textAlign = TextAlign.Center,
+  )
+  val determination = result.determination
+  if (determination != null) {
+    val share = (determination.coerceIn(0.0, 1.0) * PERCENT).rounded(1)
+    Text(stringResource(Res.string.regression_explained, "$share%"), style = MaterialTheme.typography.bodyMedium)
+  }
+  Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    if (determination != null) Answer(Modifier.weight(1f), "r²", format.format(determination))
+    result.correlation?.let { Answer(Modifier.weight(1f), "r", format.format(it)) }
+    Answer(Modifier.weight(1f), Res.string.regression_typical_gap, format.format(typicalGap(points, result)))
+  }
+}
+
+/** What the curve says for an x that was not measured. */
+@Composable
+private fun ForecastCard(value: String, prediction: DataPoint, points: List<DataPoint>, format: NumberFormat, onChange: (String) -> Unit) {
+  val low = points.minOf { it.x }
+  val high = points.maxOf { it.x }
+  val span = (high - low).takeIf { it > 0 } ?: 1.0
+  val condition = Condition("x", "", Res.string.regression_predict_at, (low - span).coerceAtMost(0.0)..(high + span), span / SLIDER_STEPS)
+  Card(stringResource(Res.string.regression_predict)) {
+    ConditionRow(condition, value, ".", onChange)
+    Answer(Modifier.fillMaxWidth(), "y", format.format(prediction.y))
+  }
+}
+
+/** All the curves that fit, the best first. Tapping one shows it on the chart. */
+@Composable
+private fun FitRanking(
+  fits: List<RankedFit>,
+  selected: RegressionModel,
+  format: NumberFormat,
+  onSelect: (RegressionModel) -> Unit,
+) {
+  val hasWinner = fits.first().score != null
+  Card(stringResource(Res.string.regression_best_title)) {
+    Hint(stringResource(Res.string.regression_best_note))
+    fits.forEachIndexed { index, fit ->
+      FitRow(fit.result, fit.result.model == selected, hasWinner && index == 0, format) { onSelect(fit.result.model) }
+    }
+  }
+}
+
+@Composable
+private fun FitRow(result: RegressionResult, isSelected: Boolean, isBest: Boolean, format: NumberFormat, onClick: () -> Unit) {
+  val scheme = MaterialTheme.colorScheme
+  val determination = result.determination
+  Column(
+    modifier =
+      Modifier.fillMaxWidth()
+        .clip(ROW_SHAPE)
+        .background(if (isSelected) scheme.secondaryContainer else Color.Transparent)
+        .clickable(onClick = onClick)
+        .padding(10.dp),
+    verticalArrangement = Arrangement.spacedBy(4.dp),
+  ) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+      Text(stringResource(result.model.title), style = MaterialTheme.typography.titleSmall)
+      if (isBest) {
+        Text(
+          stringResource(Res.string.regression_best),
+          modifier = Modifier.clip(ROW_SHAPE).background(scheme.tertiary).padding(horizontal = 8.dp, vertical = 2.dp),
+          style = MaterialTheme.typography.labelSmall,
+          color = scheme.onTertiary,
+        )
+      }
+      Box(Modifier.weight(1f))
+      if (determination != null) Text("r² ${format.format(determination)}", style = MaterialTheme.typography.labelMedium)
+    }
+    Text(result.model.formula, style = MaterialTheme.typography.bodySmall, color = scheme.onSurfaceVariant)
+    Box(Modifier.fillMaxWidth().height(BAR_HEIGHT).clip(ROW_SHAPE).background(scheme.surfaceContainerHighest)) {
+      val share = (determination ?: 0.0).coerceIn(0.0, 1.0).toFloat()
+      if (share > 0f) Box(Modifier.fillMaxWidth(share).height(BAR_HEIGHT).clip(ROW_SHAPE).background(scheme.primary))
     }
   }
 }
 
 @Composable
 private fun StatsTab(modifier: Modifier, points: List<DataPoint>, format: NumberFormat) {
-  val statistics = remember(points) { pointStatistics(points) } ?: return
+  val statistics = remember(points) { pointStatistics(points) }
+  if (statistics == null) {
+    Box(modifier = modifier.padding(24.dp), contentAlignment = Alignment.Center) { Hint(stringResource(Res.string.regression_hint)) }
+    return
+  }
   val lines =
     listOf(
       Res.string.regression_count to statistics.count.toDouble(),
@@ -263,22 +340,6 @@ private fun StatsTab(modifier: Modifier, points: List<DataPoint>, format: Number
     items(lines) { (label, value) ->
       StatLine(stringResource(label), format.format(value))
       HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-    }
-  }
-}
-
-@Composable
-private fun ModelChips(model: RegressionModel, onModelClick: (RegressionModel) -> Unit) {
-  Row(
-    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 12.dp, vertical = 8.dp),
-    horizontalArrangement = Arrangement.spacedBy(8.dp),
-  ) {
-    RegressionModel.entries.forEach { entry ->
-      FilterChip(
-        selected = entry == model,
-        onClick = { onModelClick(entry) },
-        label = { Text(stringResource(entry.title)) },
-      )
     }
   }
 }
@@ -312,9 +373,14 @@ private val RegressionModel.title: StringResource
       RegressionModel.POWER -> Res.string.regression_power
     }
 
-private val TABS =
-  listOf(Res.string.regression_data, Res.string.regression_graph, Res.string.regression_curve, Res.string.regression_stats)
+private val TABS = listOf(Res.string.regression_data, Res.string.regression_curve, Res.string.regression_stats)
 private const val DATA_TAB = 0
-private const val GRAPH_TAB = 1
-private const val CURVE_TAB = 2
+private const val CURVE_TAB = 1
 private const val MIN_POINTS = 2
+private const val CHART_DECIMALS = 2.5
+private const val MAX_DECIMALS = 6
+private const val FORECAST_SHARE = 0.25
+private const val PERCENT = 100
+private const val SLIDER_STEPS = 100
+private val ROW_SHAPE = RoundedCornerShape(12.dp)
+private val BAR_HEIGHT = 6.dp

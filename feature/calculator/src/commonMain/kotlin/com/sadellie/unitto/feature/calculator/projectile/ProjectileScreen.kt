@@ -335,10 +335,13 @@ private fun FlightCard(
 }
 
 @Composable
-internal fun Answer(modifier: Modifier, label: StringResource, value: String) {
+internal fun Answer(modifier: Modifier, label: StringResource, value: String) = Answer(modifier, stringResource(label), value)
+
+@Composable
+internal fun Answer(modifier: Modifier, label: String, value: String) {
   val color = MaterialTheme.colorScheme.onPrimaryContainer
   Column(modifier.clip(TILE_SHAPE).background(MaterialTheme.colorScheme.primaryContainer).padding(10.dp)) {
-    Text(stringResource(label), style = MaterialTheme.typography.labelSmall, color = color, maxLines = 1)
+    Text(label, style = MaterialTheme.typography.labelSmall, color = color, maxLines = 1)
     Text(value, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = color, maxLines = 1)
   }
 }

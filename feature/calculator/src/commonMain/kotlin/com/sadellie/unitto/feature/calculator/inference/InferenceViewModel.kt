@@ -104,6 +104,37 @@ internal enum class InferenceKind(
 }
 
 /** Test or interval, its values and its result. Values are kept while the app is open. */
+/** What the user wants to know. Averages come with or without a known σ. */
+internal enum class InferenceQuestion(val kind: InferenceKind, val knownSigma: InferenceKind? = null) {
+  PERCENTAGE(InferenceKind.ONE_PROPORTION),
+  TWO_PERCENTAGES(InferenceKind.TWO_PROPORTIONS),
+  AVERAGE(InferenceKind.ONE_MEAN_T, InferenceKind.ONE_MEAN_Z),
+  TWO_AVERAGES(InferenceKind.TWO_MEANS_T, InferenceKind.TWO_MEANS_Z),
+  COUNTS(InferenceKind.GOODNESS_OF_FIT),
+}
+
+/** An example on every field, the screen shows what it does before anything is typed. */
+private val EXAMPLE_VALUES =
+  mapOf(
+    InferenceField.P0 to "0.5",
+    InferenceField.MU0 to "100",
+    InferenceField.SUCCESSES to "62",
+    InferenceField.N to "100",
+    InferenceField.MEAN to "104",
+    InferenceField.DEVIATION to "15",
+    InferenceField.SIGMA to "15",
+    InferenceField.SUCCESSES_1 to "62",
+    InferenceField.N_1 to "100",
+    InferenceField.SUCCESSES_2 to "48",
+    InferenceField.N_2 to "100",
+    InferenceField.MEAN_1 to "104",
+    InferenceField.DEVIATION_1 to "15",
+    InferenceField.SIGMA_1 to "15",
+    InferenceField.MEAN_2 to "98",
+    InferenceField.DEVIATION_2 to "14",
+    InferenceField.SIGMA_2 to "14",
+  )
+
 internal class InferenceViewModel(userPrefsRepository: UserPreferencesRepository) : ViewModel() {
   val numberFormat =
     userPrefsRepository.calculatorPrefs
@@ -123,7 +154,21 @@ internal class InferenceViewModel(userPrefsRepository: UserPreferencesRepository
   var confidence by mutableStateOf("0.95")
 
   /** Values of every field, shared by tests and intervals: x̄ typed for one is there for the other. */
-  val values = mutableStateMapOf<InferenceField, String>()
+  val values = mutableStateMapOf<InferenceField, String>().apply { putAll(EXAMPLE_VALUES) }
+
+  val question: InferenceQuestion
+    get() = InferenceQuestion.entries.first { it.kind == kind || it.knownSigma == kind }
+
+  val knowsSigma: Boolean
+    get() = question.knownSigma == kind
+
+  fun ask(question: InferenceQuestion) {
+    kind = if (knowsSigma) question.knownSigma ?: question.kind else question.kind
+  }
+
+  fun selectKnowsSigma(knows: Boolean) {
+    kind = if (knows) question.knownSigma ?: question.kind else question.kind
+  }
 
   /** Observed and expected counts of the goodness of fit test. */
   val goodnessOfFit = SavedTable(GOODNESS_OF_FIT_KEY, columns = 2, userPrefsRepository, viewModelScope)
@@ -156,6 +201,21 @@ internal class InferenceViewModel(userPrefsRepository: UserPreferencesRepository
       InferenceKind.ONE_MEAN_Z -> oneMeanZTest(v.next(), v.next(), v.next(), v.next(), alternative)
       InferenceKind.TWO_MEANS_T -> twoMeansTTest(v.next(), v.next(), v.next(), v.next(), v.next(), v.next(), alternative)
       InferenceKind.TWO_MEANS_Z -> twoMeansZTest(v.next(), v.next(), v.next(), v.next(), v.next(), v.next(), alternative)
+      InferenceKind.GOODNESS_OF_FIT -> null
+    }
+  }
+
+  /** The two curves of the test, null until every value is typed and valid. */
+  fun bells(): Pair<Bell, Bell>? {
+    test() ?: return null
+    val v = numbers(kind.testFields)?.iterator() ?: return null
+    return when (kind) {
+      InferenceKind.ONE_PROPORTION -> oneProportionBells(v.next(), v.next(), v.next())
+      InferenceKind.TWO_PROPORTIONS -> twoProportionsBells(v.next(), v.next(), v.next(), v.next())
+      InferenceKind.ONE_MEAN_T,
+      InferenceKind.ONE_MEAN_Z -> oneMeanBells(v.next(), v.next(), v.next(), v.next())
+      InferenceKind.TWO_MEANS_T,
+      InferenceKind.TWO_MEANS_Z -> twoMeansBells(v.next(), v.next(), v.next(), v.next(), v.next(), v.next())
       InferenceKind.GOODNESS_OF_FIT -> null
     }
   }

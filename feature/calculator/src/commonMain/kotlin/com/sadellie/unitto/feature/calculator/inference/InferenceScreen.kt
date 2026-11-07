@@ -18,29 +18,33 @@
 
 package com.sadellie.unitto.feature.calculator.inference
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,17 +52,32 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.sadellie.unitto.core.common.collectAsStateWithLifecycleKMP
-import com.sadellie.unitto.core.ui.DrawerButton
+import com.sadellie.unitto.core.designsystem.icons.symbols.KeyboardArrowDown
+import com.sadellie.unitto.core.designsystem.icons.symbols.KeyboardArrowUp
+import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
 import com.sadellie.unitto.core.ui.EmptyScreen
-import com.sadellie.unitto.core.ui.ScaffoldWithTopBar
 import com.sadellie.unitto.feature.calculator.datatable.DataTable
 import com.sadellie.unitto.feature.calculator.datatable.NumberFormat
+import com.sadellie.unitto.feature.calculator.datatable.column
+import com.sadellie.unitto.feature.calculator.physics.LiveCard
+import com.sadellie.unitto.feature.calculator.physics.PhysicsScreen
+import com.sadellie.unitto.feature.calculator.physics.rememberFractional
 import com.sadellie.unitto.feature.calculator.probability.toNumberOrNull
+import com.sadellie.unitto.feature.calculator.projectile.Answer
+import com.sadellie.unitto.feature.calculator.projectile.Card
+import com.sadellie.unitto.feature.calculator.projectile.Condition
+import com.sadellie.unitto.feature.calculator.projectile.ConditionRow
 import com.sadellie.unitto.feature.calculator.statistics.StatLine
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import unitto.core.common.generated.resources.Res
+import unitto.core.common.generated.resources.inference_ask_average
+import unitto.core.common.generated.resources.inference_ask_counts
+import unitto.core.common.generated.resources.inference_ask_percentage
+import unitto.core.common.generated.resources.inference_ask_two_averages
+import unitto.core.common.generated.resources.inference_ask_two_percentages
+import unitto.core.common.generated.resources.inference_chance
 import unitto.core.common.generated.resources.inference_confidence
 import unitto.core.common.generated.resources.inference_critical
 import unitto.core.common.generated.resources.inference_degrees
@@ -66,10 +85,20 @@ import unitto.core.common.generated.resources.inference_deviation
 import unitto.core.common.generated.resources.inference_estimate
 import unitto.core.common.generated.resources.inference_expected
 import unitto.core.common.generated.resources.inference_goodness_of_fit
-import unitto.core.common.generated.resources.inference_hypothesis
+import unitto.core.common.generated.resources.inference_group_1
+import unitto.core.common.generated.resources.inference_group_2
+import unitto.core.common.generated.resources.inference_hint_overlap
+import unitto.core.common.generated.resources.inference_hint_tails
+import unitto.core.common.generated.resources.inference_how_average
+import unitto.core.common.generated.resources.inference_how_percentage
+import unitto.core.common.generated.resources.inference_how_two_averages
+import unitto.core.common.generated.resources.inference_how_two_percentages
+import unitto.core.common.generated.resources.inference_if_null
 import unitto.core.common.generated.resources.inference_incomplete
 import unitto.core.common.generated.resources.inference_interval
+import unitto.core.common.generated.resources.inference_interval_sentence
 import unitto.core.common.generated.resources.inference_keep
+import unitto.core.common.generated.resources.inference_known_sigma
 import unitto.core.common.generated.resources.inference_margin
 import unitto.core.common.generated.resources.inference_mean
 import unitto.core.common.generated.resources.inference_null_value
@@ -78,7 +107,6 @@ import unitto.core.common.generated.resources.inference_one_mean_t
 import unitto.core.common.generated.resources.inference_one_mean_z
 import unitto.core.common.generated.resources.inference_one_proportion
 import unitto.core.common.generated.resources.inference_p_value
-import unitto.core.common.generated.resources.inference_range
 import unitto.core.common.generated.resources.inference_reject
 import unitto.core.common.generated.resources.inference_sigma
 import unitto.core.common.generated.resources.inference_significance
@@ -91,6 +119,13 @@ import unitto.core.common.generated.resources.inference_title
 import unitto.core.common.generated.resources.inference_two_means_t
 import unitto.core.common.generated.resources.inference_two_means_z
 import unitto.core.common.generated.resources.inference_two_proportions
+import unitto.core.common.generated.resources.inference_verdict_real
+import unitto.core.common.generated.resources.inference_verdict_unclear
+import unitto.core.common.generated.resources.inference_your_data
+import unitto.core.common.generated.resources.inference_your_sample
+
+private val SIGNIFICANCE = Condition("α", "", Res.string.inference_significance, 0.0..0.2, 0.01)
+private val CONFIDENCE = Condition("C", "", Res.string.inference_confidence, 0.5..0.99, 0.01)
 
 @Composable
 internal fun InferenceRoute(openDrawer: () -> Unit) {
@@ -104,154 +139,250 @@ internal fun InferenceRoute(openDrawer: () -> Unit) {
 }
 
 /** Like the Inference app of NumWorks: significance tests and confidence intervals. */
-@OptIn(ExperimentalLayoutApi::class)
+/** A question in plain words, the two curves that answer it and a verdict anyone can read. */
 @Composable
 private fun InferenceScreen(openDrawer: () -> Unit, viewModel: InferenceViewModel, format: NumberFormat) {
-  val kind = viewModel.kind
-  ScaffoldWithTopBar(
-    title = { Text(stringResource(Res.string.inference_title)) },
-    navigationIcon = { DrawerButton(onClick = openDrawer) },
-    colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
-  ) { paddingValues ->
-    Column(
-      modifier = Modifier.padding(paddingValues).fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
-      verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-      SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-        listOf(true to Res.string.inference_test, false to Res.string.inference_interval).forEachIndexed { index, (isTest, title) ->
-          SegmentedButton(
-            selected = viewModel.isTest == isTest,
-            onClick = { viewModel.selectTest(isTest) },
-            shape = SegmentedButtonDefaults.itemShape(index, 2),
-            label = { Text(stringResource(title)) },
-          )
-        }
-      }
-      FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        InferenceKind.entries
-          .filter { viewModel.isTest || it.intervalFields != null }
-          .forEach { entry ->
-            FilterChip(selected = entry == kind, onClick = { viewModel.select(entry) }, label = { Text(stringResource(entry.title)) })
-          }
-      }
-      if (viewModel.isTest && kind != InferenceKind.GOODNESS_OF_FIT) {
-        // H₀: p = p₀ and Hₐ: p ≠ p₀, < or >
-        FlowRow(itemVerticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-          Text(stringResource(Res.string.inference_hypothesis, kind.hypothesis), style = MaterialTheme.typography.titleMedium)
-          Alternative.entries.forEach { alternative ->
-            FilterChip(
-              selected = viewModel.alternative == alternative,
-              onClick = { viewModel.alternative = alternative },
-              label = { Text("Hₐ: ${kind.hypothesis.replace("=", alternative.symbol)}") },
-            )
-          }
-        }
-      }
-      if (viewModel.isTest && kind == InferenceKind.GOODNESS_OF_FIT) {
-        val rows = viewModel.goodnessOfFit.rows
-        if (rows != null) {
-          DataTable(
-            modifier = Modifier.fillMaxWidth().heightIn(max = TABLE_HEIGHT),
-            headers = listOf(stringResource(Res.string.inference_observed), stringResource(Res.string.inference_expected)),
-            rows = rows,
-            onCellChange = viewModel.goodnessOfFit::setCell,
-            onDeleteRow = viewModel.goodnessOfFit::deleteRow,
-            onClear = viewModel.goodnessOfFit::clear,
-          )
-        }
-      } else {
-        val fields = (if (viewModel.isTest) kind.testFields else kind.intervalFields).orEmpty()
-        // Two samples side by side
-        fields.chunked(if (fields.size == TWO_SAMPLE_FIELDS) TWO_SAMPLE_ROW else ONE_SAMPLE_ROW).forEach { row ->
-          Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            row.forEach { field ->
-              NumberField(
-                modifier = Modifier.weight(1f),
-                value = viewModel.values[field].orEmpty(),
-                onValueChange = { viewModel.values[field] = it },
-                label = field.symbol,
-                description = stringResource(field.description),
-              )
-            }
-          }
-        }
-      }
-      if (viewModel.isTest) {
-        NumberField(
-          modifier = Modifier.fillMaxWidth(),
-          value = viewModel.significance,
-          onValueChange = { viewModel.significance = it },
-          label = "α",
-          description = stringResource(Res.string.inference_significance),
-        )
-        TestResultCard(viewModel.test(), kind, viewModel.significance.toNumberOrNull(), format)
-      } else {
-        NumberField(
-          modifier = Modifier.fillMaxWidth(),
-          value = viewModel.confidence,
-          onValueChange = { viewModel.confidence = it },
-          label = "C",
-          description = stringResource(Res.string.inference_confidence),
-        )
-        IntervalResultCard(viewModel.interval(), kind, format)
-      }
-    }
-  }
+  val fractional = rememberFractional()
+  PhysicsScreen(
+    title = Res.string.inference_title,
+    openDrawer = openDrawer,
+    live = {
+      ModeSwitch(viewModel)
+      QuestionCard(viewModel)
+      if (viewModel.isTest) TestCard(viewModel, format) else IntervalCard(viewModel, format)
+    },
+    settings = {},
+    explanation = { DataCard(viewModel, fractional) },
+  )
 }
 
 @Composable
-private fun TestResultCard(result: TestResult?, kind: InferenceKind, alpha: Double?, format: NumberFormat) {
-  ResultCard {
-    if (result == null) {
-      Incomplete()
-      return@ResultCard
-    }
-    StatLine(stringResource(Res.string.inference_statistic, kind.statisticSymbol), format.format(result.statistic))
-    result.degreesOfFreedom?.let { StatLine(stringResource(Res.string.inference_degrees), format.format(it)) }
-    StatLine(stringResource(Res.string.inference_p_value), format.format(result.pValue))
-    if (alpha != null && alpha > 0 && alpha < 1) {
-      val rejects = result.rejects(alpha)
-      Text(
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-        text = stringResource(if (rejects) Res.string.inference_reject else Res.string.inference_keep, format.format(alpha)),
-        style = MaterialTheme.typography.titleMedium,
-        fontWeight = FontWeight.Bold,
-        color = if (rejects) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary,
+private fun ModeSwitch(viewModel: InferenceViewModel) {
+  SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+    listOf(true to Res.string.inference_test, false to Res.string.inference_interval).forEachIndexed { index, (isTest, title) ->
+      SegmentedButton(
+        selected = viewModel.isTest == isTest,
+        onClick = { viewModel.selectTest(isTest) },
+        shape = SegmentedButtonDefaults.itemShape(index, 2),
+        label = { Text(stringResource(title)) },
       )
     }
   }
 }
 
+/** The question asked. Tap it to see the others, the technical name stays under it. */
 @Composable
-private fun IntervalResultCard(result: IntervalResult?, kind: InferenceKind, format: NumberFormat) {
-  ResultCard {
-    if (result == null) {
-      Incomplete()
-      return@ResultCard
+private fun QuestionCard(viewModel: InferenceViewModel) {
+  var isOpen by rememberSaveable { mutableStateOf(false) }
+  val selected = viewModel.question
+  Column(modifier = Modifier.fillMaxWidth().clip(CARD_SHAPE).background(MaterialTheme.colorScheme.surfaceContainer)) {
+    Row(
+      modifier = Modifier.fillMaxWidth().clickable { isOpen = !isOpen }.padding(16.dp),
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+      Column(Modifier.weight(1f)) {
+        Text(stringResource(selected.ask(viewModel.isTest)), style = MaterialTheme.typography.titleMedium)
+        Text(
+          stringResource(viewModel.kind.title),
+          style = MaterialTheme.typography.labelMedium,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+      }
+      Icon(if (isOpen) Symbols.KeyboardArrowUp else Symbols.KeyboardArrowDown, contentDescription = null)
     }
-    Text(
-      modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-      text = "[${format.format(result.low)} ; ${format.format(result.high)}]",
-      style = MaterialTheme.typography.headlineSmall,
-      fontWeight = FontWeight.Bold,
-      color = MaterialTheme.colorScheme.primary,
-    )
-    StatLine(stringResource(Res.string.inference_estimate), format.format(result.estimate))
-    StatLine(stringResource(Res.string.inference_critical, kind.statisticSymbol), format.format(result.criticalValue))
-    StatLine(stringResource(Res.string.inference_standard_error), format.format(result.standardError))
-    StatLine(stringResource(Res.string.inference_margin), format.format(result.marginOfError))
-    result.degreesOfFreedom?.let { StatLine(stringResource(Res.string.inference_degrees), format.format(it)) }
-    StatLine(stringResource(Res.string.inference_range), "${format.format(result.low)} ; ${format.format(result.high)}")
+    AnimatedVisibility(isOpen) {
+      Column {
+        InferenceQuestion.entries
+          .filter { it != selected && (viewModel.isTest || it != InferenceQuestion.COUNTS) }
+          .forEach { question ->
+            Text(
+              text = stringResource(question.ask(viewModel.isTest)),
+              modifier =
+                Modifier.fillMaxWidth()
+                  .clickable {
+                    viewModel.ask(question)
+                    isOpen = false
+                  }
+                  .padding(horizontal = 16.dp, vertical = 12.dp),
+              style = MaterialTheme.typography.bodyLarge,
+            )
+          }
+      }
+    }
+    if (selected.knownSigma != null) {
+      Row(modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+        Text(stringResource(Res.string.inference_known_sigma), modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
+        Switch(checked = viewModel.knowsSigma, onCheckedChange = viewModel::selectKnowsSigma)
+      }
+    }
+  }
+}
+
+private fun InferenceQuestion.ask(isTest: Boolean): StringResource =
+  when (this) {
+    InferenceQuestion.PERCENTAGE -> if (isTest) Res.string.inference_ask_percentage else Res.string.inference_how_percentage
+    InferenceQuestion.TWO_PERCENTAGES -> if (isTest) Res.string.inference_ask_two_percentages else Res.string.inference_how_two_percentages
+    InferenceQuestion.AVERAGE -> if (isTest) Res.string.inference_ask_average else Res.string.inference_how_average
+    InferenceQuestion.TWO_AVERAGES -> if (isTest) Res.string.inference_ask_two_averages else Res.string.inference_how_two_averages
+    InferenceQuestion.COUNTS -> Res.string.inference_ask_counts
+  }
+
+private val InferenceKind.isTwoGroups: Boolean
+  get() = fieldsPerRow(testFields) == TWO_SAMPLE_ROW || this == InferenceKind.TWO_PROPORTIONS
+
+private fun fieldsPerRow(fields: List<InferenceField>) = if (fields.size == TWO_SAMPLE_FIELDS) TWO_SAMPLE_ROW else ONE_SAMPLE_ROW
+
+/** The curves, the verdict and the numbers behind it. */
+@Composable
+private fun TestCard(viewModel: InferenceViewModel, format: NumberFormat) {
+  val kind = viewModel.kind
+  val result = viewModel.test()
+  if (result == null) {
+    Incomplete()
+    return
+  }
+  LiveCard {
+    if (kind == InferenceKind.GOODNESS_OF_FIT) {
+      val rows = viewModel.goodnessOfFit.rows.orEmpty()
+      CountBars(rows.column(0).filterNotNull(), rows.column(1).filterNotNull())
+      ChartLegend(stringResource(Res.string.inference_observed), stringResource(Res.string.inference_expected))
+    } else {
+      TwoCurves(viewModel, kind)
+    }
+    val alpha = viewModel.significance.toNumberOrNull()
+    if (alpha != null && alpha > 0 && alpha < 1) Verdict(result, alpha, format)
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+      Answer(Modifier.weight(1f), kind.statisticSymbol, format.format(result.statistic))
+      Answer(Modifier.weight(1f), Res.string.inference_p_value, format.format(result.pValue))
+      result.degreesOfFreedom?.let { Answer(Modifier.weight(1f), "df", format.format(it)) }
+    }
   }
 }
 
 @Composable
-private fun ResultCard(content: @Composable () -> Unit) {
+private fun TwoCurves(viewModel: InferenceViewModel, kind: InferenceKind) {
+  val (first, second) = viewModel.bells() ?: return
+  val isTwoGroups = kind.isTwoGroups
+  BellChart(first, second, if (isTwoGroups) BellShade.Overlap else BellShade.Tails(second.center, viewModel.alternative))
+  ChartLegend(
+    stringResource(if (isTwoGroups) Res.string.inference_group_1 else Res.string.inference_if_null),
+    stringResource(if (isTwoGroups) Res.string.inference_group_2 else Res.string.inference_your_sample),
+  )
+  Text(
+    stringResource(if (isTwoGroups) Res.string.inference_hint_overlap else Res.string.inference_hint_tails),
+    style = MaterialTheme.typography.bodySmall,
+    color = MaterialTheme.colorScheme.onSurfaceVariant,
+  )
+}
+
+/** In plain words first, then the words of statistics. */
+@Composable
+private fun Verdict(result: TestResult, alpha: Double, format: NumberFormat) {
+  val rejects = result.rejects(alpha)
+  val colors = MaterialTheme.colorScheme
+  val text = if (rejects) colors.onTertiaryContainer else colors.onSurface
   Column(
     modifier =
-      Modifier.fillMaxWidth().clip(CARD_SHAPE).background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(vertical = 8.dp)
+      Modifier.fillMaxWidth().clip(VERDICT_SHAPE).background(if (rejects) colors.tertiaryContainer else colors.surfaceContainerHighest).padding(12.dp),
+    verticalArrangement = Arrangement.spacedBy(2.dp),
   ) {
-    content()
+    Text(
+      stringResource(if (rejects) Res.string.inference_verdict_real else Res.string.inference_verdict_unclear),
+      style = MaterialTheme.typography.titleLarge,
+      fontWeight = FontWeight.Bold,
+      color = text,
+    )
+    Text(stringResource(Res.string.inference_chance, format.format(result.pValue * PERCENT)), style = MaterialTheme.typography.bodyMedium, color = text)
+    Text(
+      stringResource(if (rejects) Res.string.inference_reject else Res.string.inference_keep, format.format(alpha)),
+      style = MaterialTheme.typography.bodySmall,
+      color = text,
+    )
+  }
+}
+
+@Composable
+private fun IntervalCard(viewModel: InferenceViewModel, format: NumberFormat) {
+  val result = viewModel.interval()
+  if (result == null) {
+    Incomplete()
+    return
+  }
+  val low = format.format(result.low)
+  val high = format.format(result.high)
+  LiveCard {
+    BellChart(Bell(result.estimate, result.standardError), null, BellShade.Middle(result.low, result.high))
+    Text(
+      "[$low ; $high]",
+      style = MaterialTheme.typography.headlineMedium,
+      fontWeight = FontWeight.Bold,
+      color = MaterialTheme.colorScheme.primary,
+    )
+    val level = viewModel.confidence.toNumberOrNull() ?: 0.0
+    Text(stringResource(Res.string.inference_interval_sentence, format.format(level * PERCENT), low, high), style = MaterialTheme.typography.bodyMedium)
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+      Answer(Modifier.weight(1f), Res.string.inference_estimate, format.format(result.estimate))
+      Answer(Modifier.weight(1f), Res.string.inference_margin, "± ${format.format(result.marginOfError)}")
+    }
+    Column {
+      StatLine(stringResource(Res.string.inference_critical, viewModel.kind.statisticSymbol), format.format(result.criticalValue))
+      StatLine(stringResource(Res.string.inference_standard_error), format.format(result.standardError))
+      result.degreesOfFreedom?.let { StatLine(stringResource(Res.string.inference_degrees), format.format(it)) }
+    }
+  }
+}
+
+/** What was measured and how sure the answer has to be. */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun DataCard(viewModel: InferenceViewModel, fractional: String) {
+  val kind = viewModel.kind
+  Card(stringResource(Res.string.inference_your_data)) {
+    if (viewModel.isTest && kind != InferenceKind.GOODNESS_OF_FIT) {
+      FlowRow(itemVerticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Alternative.entries.forEach { alternative ->
+          FilterChip(
+            selected = viewModel.alternative == alternative,
+            onClick = { viewModel.alternative = alternative },
+            label = { Text("Hₐ: ${kind.hypothesis.replace("=", alternative.symbol)}") },
+          )
+        }
+      }
+    }
+    if (viewModel.isTest && kind == InferenceKind.GOODNESS_OF_FIT) {
+      viewModel.goodnessOfFit.rows?.let { rows ->
+        DataTable(
+          modifier = Modifier.fillMaxWidth().heightIn(max = TABLE_HEIGHT),
+          headers = listOf(stringResource(Res.string.inference_observed), stringResource(Res.string.inference_expected)),
+          rows = rows,
+          onCellChange = viewModel.goodnessOfFit::setCell,
+          onDeleteRow = viewModel.goodnessOfFit::deleteRow,
+          onClear = viewModel.goodnessOfFit::clear,
+        )
+      }
+    } else {
+      val fields = (if (viewModel.isTest) kind.testFields else kind.intervalFields).orEmpty()
+      // Two samples side by side
+      fields.chunked(fieldsPerRow(fields)).forEach { row ->
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+          row.forEach { field ->
+            NumberField(
+              modifier = Modifier.weight(1f),
+              value = viewModel.values[field].orEmpty(),
+              onValueChange = { viewModel.values[field] = it },
+              label = field.symbol,
+              description = stringResource(field.description),
+            )
+          }
+        }
+      }
+    }
+    if (viewModel.isTest) {
+      ConditionRow(SIGNIFICANCE, viewModel.significance, fractional) { viewModel.significance = it }
+    } else {
+      ConditionRow(CONFIDENCE, viewModel.confidence, fractional) { viewModel.confidence = it }
+    }
   }
 }
 
@@ -285,7 +416,6 @@ private fun NumberField(
   )
 }
 
-/** z, t or χ². */
 private val InferenceKind.statisticSymbol: String
   get() =
     when (this) {
@@ -329,6 +459,8 @@ private val InferenceField.description: StringResource
       InferenceField.SIGMA_2 -> Res.string.inference_sigma
     }
 
+private const val PERCENT = 100
+private val VERDICT_SHAPE = RoundedCornerShape(16.dp)
 private val CARD_SHAPE = RoundedCornerShape(20.dp)
 private val TABLE_HEIGHT = 360.dp
 

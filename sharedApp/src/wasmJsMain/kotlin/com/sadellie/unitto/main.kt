@@ -50,13 +50,16 @@ import com.sadellie.unitto.core.designsystem.theme.LocalNumberTypography
 import com.sadellie.unitto.core.designsystem.theme.numberTypographyUnitto
 import com.sadellie.unitto.core.navigation.BodyMassStartRoute
 import com.sadellie.unitto.core.navigation.CalculatorStartRoute
+import com.sadellie.unitto.core.navigation.ChargingStartRoute
 import com.sadellie.unitto.core.navigation.ConverterStartRoute
 import com.sadellie.unitto.core.navigation.DateCalculatorStartRoute
 import com.sadellie.unitto.core.navigation.ElementsStartRoute
+import com.sadellie.unitto.core.navigation.FiltersStartRoute
 import com.sadellie.unitto.core.navigation.FinanceStartRoute
 import com.sadellie.unitto.core.navigation.FunctionsStartRoute
 import com.sadellie.unitto.core.navigation.HomeStartRoute
 import com.sadellie.unitto.core.navigation.InferenceStartRoute
+import com.sadellie.unitto.core.navigation.LogicStartRoute
 import com.sadellie.unitto.core.navigation.OrbitsStartRoute
 import com.sadellie.unitto.core.navigation.PendulumStartRoute
 import com.sadellie.unitto.core.navigation.PlaceStartRoute
@@ -65,6 +68,7 @@ import com.sadellie.unitto.core.navigation.ProbabilityStartRoute
 import com.sadellie.unitto.core.navigation.ProgrammerStartRoute
 import com.sadellie.unitto.core.navigation.ProjectileStartRoute
 import com.sadellie.unitto.core.navigation.RegressionStartRoute
+import com.sadellie.unitto.core.navigation.ResistorsStartRoute
 import com.sadellie.unitto.core.navigation.SequencesStartRoute
 import com.sadellie.unitto.core.navigation.StatisticsStartRoute
 import com.sadellie.unitto.core.navigation.TimeZoneStartRoute
@@ -195,6 +199,10 @@ private val navBackStackConfig = SavedStateConfiguration {
       this.subclass(PendulumStartRoute::class, PendulumStartRoute.serializer())
       this.subclass(WavesStartRoute::class, WavesStartRoute.serializer())
       this.subclass(OrbitsStartRoute::class, OrbitsStartRoute.serializer())
+      this.subclass(FiltersStartRoute::class, FiltersStartRoute.serializer())
+      this.subclass(ResistorsStartRoute::class, ResistorsStartRoute.serializer())
+      this.subclass(ChargingStartRoute::class, ChargingStartRoute.serializer())
+      this.subclass(LogicStartRoute::class, LogicStartRoute.serializer())
       this.subclass(DateCalculatorStartRoute::class, DateCalculatorStartRoute.serializer())
       this.subclass(TimeZoneStartRoute::class, TimeZoneStartRoute.serializer())
       this.subclass(ConverterStartRoute::class, ConverterStartRoute.serializer())

@@ -20,12 +20,15 @@
 package com.sadellie.unitto.feature.calculator.navigation
 
 import com.sadellie.unitto.core.navigation.CalculatorStartRoute
+import com.sadellie.unitto.core.navigation.ChargingStartRoute
 import com.sadellie.unitto.core.navigation.ElementsStartRoute
+import com.sadellie.unitto.core.navigation.FiltersStartRoute
 import com.sadellie.unitto.core.navigation.FinanceStartRoute
 import com.sadellie.unitto.core.navigation.FunctionsStartRoute
 import com.sadellie.unitto.core.navigation.HomeStartRoute
 import com.sadellie.unitto.core.navigation.InferenceStartRoute
 import com.sadellie.unitto.core.navigation.LocalNavigator
+import com.sadellie.unitto.core.navigation.LogicStartRoute
 import com.sadellie.unitto.core.navigation.OrbitsStartRoute
 import com.sadellie.unitto.core.navigation.PendulumStartRoute
 import com.sadellie.unitto.core.navigation.PlaceStartRoute
@@ -34,10 +37,15 @@ import com.sadellie.unitto.core.navigation.ProbabilityStartRoute
 import com.sadellie.unitto.core.navigation.ProgrammerStartRoute
 import com.sadellie.unitto.core.navigation.ProjectileStartRoute
 import com.sadellie.unitto.core.navigation.RegressionStartRoute
+import com.sadellie.unitto.core.navigation.ResistorsStartRoute
 import com.sadellie.unitto.core.navigation.SequencesStartRoute
 import com.sadellie.unitto.core.navigation.StatisticsStartRoute
 import com.sadellie.unitto.core.navigation.WavesStartRoute
 import com.sadellie.unitto.feature.calculator.CalculatorRoute
+import com.sadellie.unitto.feature.calculator.electrical.ChargingRoute
+import com.sadellie.unitto.feature.calculator.electrical.FiltersRoute
+import com.sadellie.unitto.feature.calculator.electrical.LogicRoute
+import com.sadellie.unitto.feature.calculator.electrical.ResistorsRoute
 import com.sadellie.unitto.feature.calculator.elements.ElementsRoute
 import com.sadellie.unitto.feature.calculator.finance.FinanceRoute
 import com.sadellie.unitto.feature.calculator.functions.FunctionsRoute
@@ -120,6 +128,22 @@ fun Module.calculatorNavigation() {
   navigation<OrbitsStartRoute> {
     val navigator = LocalNavigator.current
     OrbitsRoute(openDrawer = navigator::openDrawer)
+  }
+  navigation<FiltersStartRoute> {
+    val navigator = LocalNavigator.current
+    FiltersRoute(openDrawer = navigator::openDrawer)
+  }
+  navigation<ResistorsStartRoute> {
+    val navigator = LocalNavigator.current
+    ResistorsRoute(openDrawer = navigator::openDrawer)
+  }
+  navigation<ChargingStartRoute> {
+    val navigator = LocalNavigator.current
+    ChargingRoute(openDrawer = navigator::openDrawer)
+  }
+  navigation<LogicStartRoute> {
+    val navigator = LocalNavigator.current
+    LogicRoute(openDrawer = navigator::openDrawer)
   }
   navigation<PlaceStartRoute> {
     val navigator = LocalNavigator.current

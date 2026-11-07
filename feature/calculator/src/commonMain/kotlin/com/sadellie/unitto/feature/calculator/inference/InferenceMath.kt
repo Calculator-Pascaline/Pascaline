@@ -22,6 +22,9 @@ import com.sadellie.unitto.feature.calculator.probability.ChiSquared
 import com.sadellie.unitto.feature.calculator.probability.Distribution
 import com.sadellie.unitto.feature.calculator.probability.Normal
 import com.sadellie.unitto.feature.calculator.probability.Student
+import kotlin.math.PI
+import kotlin.math.exp
+import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -38,6 +41,40 @@ internal enum class Alternative(val symbol: String) {
  *
  * @property degreesOfFreedom null for z tests.
  */
+/** How a result is spread around [center] if the sample were taken again and again. */
+internal data class Bell(val center: Double, val spread: Double) {
+  /** Height of the normal curve at [x]. */
+  fun density(x: Double): Double {
+    val distance = (x - center) / spread
+    return exp(-distance * distance / 2) / (spread * sqrt(2 * PI))
+  }
+}
+
+/** Spread of a proportion [p] of [n], the one of [fallback] when it is exactly 0 or 1. */
+private fun proportionSpread(p: Double, n: Double, fallback: Double) = sqrt(p * (1 - p) / n).takeIf { it > 0 } ?: fallback
+
+/** What H₀ expects and what the sample shows. */
+internal fun oneProportionBells(p0: Double, successes: Double, n: Double): Pair<Bell, Bell> {
+  val spread = sqrt(p0 * (1 - p0) / n)
+  val p = successes / n
+  return Bell(p0, spread) to Bell(p, proportionSpread(p, n, spread))
+}
+
+internal fun twoProportionsBells(successes1: Double, n1: Double, successes2: Double, n2: Double): Pair<Bell, Bell> {
+  val p1 = successes1 / n1
+  val p2 = successes2 / n2
+  val fallback = sqrt(1 / max(n1, n2)) / 2
+  return Bell(p1, proportionSpread(p1, n1, fallback)) to Bell(p2, proportionSpread(p2, n2, fallback))
+}
+
+internal fun oneMeanBells(mu0: Double, mean: Double, deviation: Double, n: Double): Pair<Bell, Bell> {
+  val spread = deviation / sqrt(n)
+  return Bell(mu0, spread) to Bell(mean, spread)
+}
+
+internal fun twoMeansBells(mean1: Double, deviation1: Double, n1: Double, mean2: Double, deviation2: Double, n2: Double) =
+  Bell(mean1, deviation1 / sqrt(n1)) to Bell(mean2, deviation2 / sqrt(n2))
+
 internal class TestResult(
   val statistic: Double,
   val pValue: Double,

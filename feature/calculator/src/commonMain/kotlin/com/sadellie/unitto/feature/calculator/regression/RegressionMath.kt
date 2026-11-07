@@ -20,7 +20,10 @@ package com.sadellie.unitto.feature.calculator.regression
 
 import kotlin.math.abs
 import kotlin.math.exp
+import kotlin.math.floor
 import kotlin.math.ln
+import kotlin.math.log10
+import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -181,6 +184,72 @@ private fun determination(points: List<DataPoint>, curve: (Double) -> Double): D
   return 1 - residual / total
 }
 
+/**
+ * A fitted curve and how well it did against the others.
+ *
+ * @property score r² that loses a little for every coefficient, because more of them always get
+ *   closer to the points. Null without points to spare: the curve then goes through all of them,
+ *   which says nothing.
+ */
+internal class RankedFit(val result: RegressionResult, val score: Double?)
+
+/** Every kind of curve that fits [points], the best first. */
+internal fun rankedFits(points: List<DataPoint>): List<RankedFit> {
+  if (points.size < 2) return emptyList()
+  return RegressionModel.entries
+    .mapNotNull { regression(points, it) }
+    .map { RankedFit(it, adjusted(it, points.size)) }
+    .sortedByDescending { it.score ?: Double.NEGATIVE_INFINITY }
+}
+
+private fun adjusted(result: RegressionResult, count: Int): Double? {
+  val free = count - result.coefficients.size
+  val determination = result.determination
+  return if (free <= 0 || determination == null) null else 1 - (1 - determination) * (count - 1) / free
+}
+
+/** Usual distance between the points and the curve, in units of y. */
+internal fun typicalGap(points: List<DataPoint>, result: RegressionResult): Double =
+  sqrt(points.sumOf { (it.y - result.valueAt(it.x)).pow(2) } / points.size)
+
+/** What fingers can do to the points on the chart. */
+internal class ChartActions(
+  val onMove: (Int, DataPoint) -> Unit,
+  val onDrop: () -> Unit,
+  val onAdd: (DataPoint) -> Unit,
+  val onRemove: (Int) -> Unit,
+)
+
+/** What a chart shows: around [points], or from 0 to 10 without them. */
+internal data class FitWindow(val left: Double, val right: Double, val bottom: Double, val top: Double) {
+  val width = right - left
+  val height = top - bottom
+
+  /** Between two lines of the grid: 1, 2 or 5 and zeros. */
+  fun step(span: Double): Double {
+    val power = 10.0.pow(floor(log10(span / GRID_LINES)))
+    return listOf(1.0, 2.0, FIVE, TEN).map { it * power }.first { it * GRID_LINES >= span }
+  }
+
+  fun lines(from: Double, to: Double): List<Double> {
+    val step = step(to - from)
+    val first = floor(from / step).toInt() + 1
+    return generateSequence(first) { it + 1 }.map { it * step }.takeWhile { it < to }.toList()
+  }
+}
+
+internal fun fitWindow(points: List<DataPoint>): FitWindow {
+  if (points.isEmpty()) return FitWindow(0.0, EMPTY_SPAN, 0.0, EMPTY_SPAN)
+  val (left, right) = around(points.minOf { it.x }, points.maxOf { it.x })
+  val (bottom, top) = around(points.minOf { it.y }, points.maxOf { it.y })
+  return FitWindow(left, right, bottom, top)
+}
+
+private fun around(low: Double, high: Double): Pair<Double, Double> {
+  val margin = max(high - low, max(abs(high), 1.0) * MIN_SPAN) * MARGIN
+  return low - margin to high + margin
+}
+
 /** Means, standard deviations (σ) and covariance of the points, like the NumWorks Stats page. */
 internal class PointStatistics(
   val count: Int,
@@ -211,3 +280,9 @@ internal fun pointStatistics(points: List<DataPoint>): PointStatistics? {
 }
 
 private const val SINGULAR = 1e-12
+private const val GRID_LINES = 5
+private const val FIVE = 5.0
+private const val TEN = 10.0
+private const val EMPTY_SPAN = 10.0
+private const val MARGIN = 0.15
+private const val MIN_SPAN = 0.5

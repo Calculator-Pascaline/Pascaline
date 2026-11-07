@@ -39,6 +39,10 @@ actual val mainDrawerItems: List<DrawerItem> by lazy {
     PendulumDrawerItem,
     WavesDrawerItem,
     OrbitsDrawerItem,
+    FiltersDrawerItem,
+    ResistorsDrawerItem,
+    ChargingDrawerItem,
+    LogicDrawerItem,
     DateCalculatorDrawerItem,
     TimeZonesDrawerItem,
   )

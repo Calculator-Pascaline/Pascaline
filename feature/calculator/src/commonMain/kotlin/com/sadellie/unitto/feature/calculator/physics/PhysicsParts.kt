@@ -108,27 +108,38 @@ internal fun PhysicsScreen(
     navigationIcon = { DrawerButton(onClick = openDrawer) },
     colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
   ) { paddingValues ->
-    BoxWithConstraints(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
-      val spacing = Arrangement.spacedBy(12.dp)
-      if (maxWidth >= WIDE_LAYOUT_WIDTH) {
-        Row(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp), horizontalArrangement = spacing) {
-          Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = spacing) {
-            live()
-            settings()
-          }
-          Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = spacing) {
-            explanation()
-          }
-        }
-      } else {
-        Column(
-          modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
-          verticalArrangement = spacing,
-        ) {
+    PhysicsColumns(Modifier.padding(paddingValues).fillMaxSize(), live, settings, explanation)
+  }
+}
+
+/** One column that scrolls, or two side by side on wide screens. */
+@Composable
+internal fun PhysicsColumns(
+  modifier: Modifier,
+  live: @Composable () -> Unit,
+  settings: @Composable () -> Unit,
+  explanation: @Composable () -> Unit,
+) {
+  BoxWithConstraints(modifier = modifier) {
+    val spacing = Arrangement.spacedBy(12.dp)
+    if (maxWidth >= WIDE_LAYOUT_WIDTH) {
+      Row(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp), horizontalArrangement = spacing) {
+        Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = spacing) {
           live()
           settings()
+        }
+        Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = spacing) {
           explanation()
         }
+      }
+    } else {
+      Column(
+        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
+        verticalArrangement = spacing,
+      ) {
+        live()
+        settings()
+        explanation()
       }
     }
   }

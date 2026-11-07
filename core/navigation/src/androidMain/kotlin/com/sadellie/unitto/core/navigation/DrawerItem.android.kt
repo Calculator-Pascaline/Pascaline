@@ -63,6 +63,10 @@ actual val mainDrawerItems: List<DrawerItem> by lazy {
       PendulumDrawerItem,
       WavesDrawerItem,
       OrbitsDrawerItem,
+      FiltersDrawerItem,
+      ResistorsDrawerItem,
+      ChargingDrawerItem,
+      LogicDrawerItem,
     )
 
   if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
@@ -149,6 +153,10 @@ private fun generateShortcut(drawerItem: DrawerItem): Shortcut? {
     PendulumDrawerItem,
     WavesDrawerItem,
     OrbitsDrawerItem,
+    FiltersDrawerItem,
+    ResistorsDrawerItem,
+    ChargingDrawerItem,
+    LogicDrawerItem,
     HomeDrawerItem,
     SettingsDrawerItem -> null
   }

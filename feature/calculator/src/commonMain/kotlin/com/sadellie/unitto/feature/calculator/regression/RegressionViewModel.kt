@@ -56,6 +56,16 @@ internal class RegressionViewModel(private val userPrefsRepository: UserPreferen
     this.model = model
     viewModelScope.launch { userPrefsRepository.updateAppData(MODEL_KEY, model.name) }
   }
+
+  /** Puts a point in [row], which can be the empty row after the last one. */
+  fun setPoint(row: Int, x: String, y: String) {
+    table.setCell(row, 0, x)
+    table.setCell(row, 1, y)
+  }
+
+  fun addPoint(x: String, y: String) = setPoint(table.rows.orEmpty().size, x, y)
+
+  fun loadExample() = EXAMPLE.forEachIndexed { row, (x, y) -> setPoint(row, x, y) }
 }
 
 /** Rows where both x and y are numbers. */
@@ -65,5 +75,10 @@ internal fun List<List<String>>.dataPoints(): List<DataPoint> = mapNotNull { cel
   DataPoint(x, y)
 }
 
+/** Index in the rows of every point of [dataPoints]. */
+internal fun List<List<String>>.pointRows(): List<Int> = indices.filter { listOf(this[it]).dataPoints().isNotEmpty() }
+
+private val EXAMPLE =
+  listOf("1" to "2.3", "2" to "3.8", "3" to "6.4", "4" to "7.7", "5" to "10.4", "6" to "11.6", "7" to "14.5", "8" to "15.8")
 private const val DATA_KEY = "REGRESSION_DATA"
 private const val MODEL_KEY = "REGRESSION_MODEL"

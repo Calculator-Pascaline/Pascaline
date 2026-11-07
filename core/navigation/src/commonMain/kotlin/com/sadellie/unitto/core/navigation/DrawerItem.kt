@@ -27,17 +27,21 @@ import com.sadellie.unitto.core.designsystem.icons.symbols.BellCurve
 import com.sadellie.unitto.core.designsystem.icons.symbols.BoxPlot
 import com.sadellie.unitto.core.designsystem.icons.symbols.Calculate
 import com.sadellie.unitto.core.designsystem.icons.symbols.CalculateFill
+import com.sadellie.unitto.core.designsystem.icons.symbols.Charging
 import com.sadellie.unitto.core.designsystem.icons.symbols.Code
 import com.sadellie.unitto.core.designsystem.icons.symbols.Event
 import com.sadellie.unitto.core.designsystem.icons.symbols.EventFill
+import com.sadellie.unitto.core.designsystem.icons.symbols.Filters
 import com.sadellie.unitto.core.designsystem.icons.symbols.Home
 import com.sadellie.unitto.core.designsystem.icons.symbols.LineAxis
+import com.sadellie.unitto.core.designsystem.icons.symbols.Logic
 import com.sadellie.unitto.core.designsystem.icons.symbols.Orbits
 import com.sadellie.unitto.core.designsystem.icons.symbols.Pendulum
 import com.sadellie.unitto.core.designsystem.icons.symbols.Percent
 import com.sadellie.unitto.core.designsystem.icons.symbols.Place
 import com.sadellie.unitto.core.designsystem.icons.symbols.PriceTag
 import com.sadellie.unitto.core.designsystem.icons.symbols.Projectile
+import com.sadellie.unitto.core.designsystem.icons.symbols.Resistors
 import com.sadellie.unitto.core.designsystem.icons.symbols.ScatterPlot
 import com.sadellie.unitto.core.designsystem.icons.symbols.Schedule
 import com.sadellie.unitto.core.designsystem.icons.symbols.ScheduleFill
@@ -51,13 +55,16 @@ import org.jetbrains.compose.resources.StringResource
 import unitto.core.common.generated.resources.Res
 import unitto.core.common.generated.resources.body_mass_title
 import unitto.core.common.generated.resources.calculator_title
+import unitto.core.common.generated.resources.charging_title
 import unitto.core.common.generated.resources.converter_title
 import unitto.core.common.generated.resources.date_calculator_title
 import unitto.core.common.generated.resources.elements_title
+import unitto.core.common.generated.resources.filters_title
 import unitto.core.common.generated.resources.finance_title
 import unitto.core.common.generated.resources.functions_title
 import unitto.core.common.generated.resources.home_title
 import unitto.core.common.generated.resources.inference_title
+import unitto.core.common.generated.resources.logic_title
 import unitto.core.common.generated.resources.orbits_title
 import unitto.core.common.generated.resources.pendulum_title
 import unitto.core.common.generated.resources.place_title
@@ -66,6 +73,7 @@ import unitto.core.common.generated.resources.probability_title
 import unitto.core.common.generated.resources.programmer_title
 import unitto.core.common.generated.resources.projectile_title
 import unitto.core.common.generated.resources.regression_title
+import unitto.core.common.generated.resources.resistors_title
 import unitto.core.common.generated.resources.sequences_title
 import unitto.core.common.generated.resources.settings_title
 import unitto.core.common.generated.resources.statistics_title
@@ -218,6 +226,34 @@ data object OrbitsDrawerItem : DrawerItem {
   override val name = Res.string.orbits_title
   override val selectedIcon = Symbols.Orbits
   override val defaultIcon = Symbols.Orbits
+}
+
+data object FiltersDrawerItem : DrawerItem {
+  override val topLevelRoute = FiltersStartRoute
+  override val name = Res.string.filters_title
+  override val selectedIcon = Symbols.Filters
+  override val defaultIcon = Symbols.Filters
+}
+
+data object ResistorsDrawerItem : DrawerItem {
+  override val topLevelRoute = ResistorsStartRoute
+  override val name = Res.string.resistors_title
+  override val selectedIcon = Symbols.Resistors
+  override val defaultIcon = Symbols.Resistors
+}
+
+data object ChargingDrawerItem : DrawerItem {
+  override val topLevelRoute = ChargingStartRoute
+  override val name = Res.string.charging_title
+  override val selectedIcon = Symbols.Charging
+  override val defaultIcon = Symbols.Charging
+}
+
+data object LogicDrawerItem : DrawerItem {
+  override val topLevelRoute = LogicStartRoute
+  override val name = Res.string.logic_title
+  override val selectedIcon = Symbols.Logic
+  override val defaultIcon = Symbols.Logic
 }
 
 data object PlaceDrawerItem : DrawerItem {

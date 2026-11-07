@@ -71,6 +71,10 @@ interface Route : NavKey {
           DeepLinkPattern(PendulumStartRoute.serializer(), deepLink(PendulumStartRoute).toKmpUri()),
           DeepLinkPattern(WavesStartRoute.serializer(), deepLink(WavesStartRoute).toKmpUri()),
           DeepLinkPattern(OrbitsStartRoute.serializer(), deepLink(OrbitsStartRoute).toKmpUri()),
+          DeepLinkPattern(FiltersStartRoute.serializer(), deepLink(FiltersStartRoute).toKmpUri()),
+          DeepLinkPattern(ResistorsStartRoute.serializer(), deepLink(ResistorsStartRoute).toKmpUri()),
+          DeepLinkPattern(ChargingStartRoute.serializer(), deepLink(ChargingStartRoute).toKmpUri()),
+          DeepLinkPattern(LogicStartRoute.serializer(), deepLink(LogicStartRoute).toKmpUri()),
           DeepLinkPattern(HomeStartRoute.serializer(), deepLink(HomeStartRoute).toKmpUri()),
         )
       /** STEP 2. Parse requested deeplink */
@@ -204,6 +208,26 @@ data object WavesStartRoute : TopLevelRoute {
 @Serializable
 data object OrbitsStartRoute : TopLevelRoute {
   override val routeId = "orbits_route"
+}
+
+@Serializable
+data object FiltersStartRoute : TopLevelRoute {
+  override val routeId = "filters_route"
+}
+
+@Serializable
+data object ResistorsStartRoute : TopLevelRoute {
+  override val routeId = "resistors_route"
+}
+
+@Serializable
+data object ChargingStartRoute : TopLevelRoute {
+  override val routeId = "charging_route"
+}
+
+@Serializable
+data object LogicStartRoute : TopLevelRoute {
+  override val routeId = "logic_route"
 }
 
 @Serializable
