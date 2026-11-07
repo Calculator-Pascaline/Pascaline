@@ -103,6 +103,7 @@ import com.sadellie.unitto.core.navigation.FiltersDrawerItem
 import com.sadellie.unitto.core.navigation.FinanceDrawerItem
 import com.sadellie.unitto.core.navigation.FunctionsDrawerItem
 import com.sadellie.unitto.core.navigation.InferenceDrawerItem
+import com.sadellie.unitto.core.navigation.IntegralsDrawerItem
 import com.sadellie.unitto.core.navigation.LocalNavigator
 import com.sadellie.unitto.core.navigation.LogicDrawerItem
 import com.sadellie.unitto.core.navigation.NamedTool
@@ -120,6 +121,7 @@ import com.sadellie.unitto.core.navigation.SettingsDrawerItem
 import com.sadellie.unitto.core.navigation.StatisticsDrawerItem
 import com.sadellie.unitto.core.navigation.TOOL_ORDER_KEY
 import com.sadellie.unitto.core.navigation.TimeZonesDrawerItem
+import com.sadellie.unitto.core.navigation.VectorFieldsDrawerItem
 import com.sadellie.unitto.core.navigation.inDefaultOrder
 import com.sadellie.unitto.core.navigation.ordered
 import com.sadellie.unitto.core.ui.ScaffoldWithTopBar
@@ -428,6 +430,8 @@ private val INDIGO = TilePalette(Color(0xFFDCE3FB), Color(0xFF2B3F8F), Color(0xF
 private val TILE_PALETTES =
   mapOf(
     FunctionsDrawerItem to PURPLE,
+    VectorFieldsDrawerItem to PURPLE,
+    IntegralsDrawerItem to PURPLE,
     SequencesDrawerItem to PURPLE,
     ProgrammerDrawerItem to PURPLE,
     ConverterDrawerItem to PURPLE,

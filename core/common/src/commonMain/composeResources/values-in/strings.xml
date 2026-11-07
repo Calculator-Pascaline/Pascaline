@@ -1878,4 +1878,45 @@
     <string name="charging_current_then">Arus saat itu</string>
     <string name="charging_explain_inductor_text">Induktor yang lebih besar lebih lambat dan resistor yang lebih besar lebih cepat. Arus tidak bisa melompat, jadi naik atau turun mengikuti kurva ini.</string>
     <string name="filters_order">Orde</string>
+    <string name="integrals_title">Integral lipat</string>
+    <string name="integrals_double">Ganda</string>
+    <string name="integrals_triple">Lipat tiga</string>
+    <string name="integrals_hint">Geser untuk memutar. Warna menunjukkan besar f.</string>
+    <string name="integrals_value">Nilai</string>
+    <string name="integrals_area">Luas daerah</string>
+    <string name="integrals_volume">Volume benda</string>
+    <string name="integrals_average">Rata-rata f</string>
+    <string name="integrals_function">Fungsi dan batas</string>
+    <string name="integrals_ramp">Lereng</string>
+    <string name="integrals_hill">Bukit</string>
+    <string name="integrals_ball">Bola</string>
+    <string name="integrals_cone">Kerucut</string>
+    <string name="integrals_invalid">Periksa fungsi dan batasnya: gunakan x, y, dan z, angka, + − × ÷ ^, tanda kurung, dan fungsi seperti sin atau √.</string>
+    <string name="integrals_explain_order">Satu arah sekali waktu</string>
+    <string name="integrals_explain_order_text">Integral dalam dihitung untuk setiap titik arah berikutnya, lalu hasilnya dijumlahkan, sampai ke x.</string>
+    <string name="integrals_explain_meaning">Artinya</string>
+    <string name="integrals_explain_meaning_double_text">Jika f di atas daerah, nilainya adalah volume di bawah permukaan. Dengan f = 1, itu luas daerahnya.</string>
+    <string name="integrals_explain_meaning_triple_text">Dengan f = 1, nilainya adalah volume benda. Jika f adalah massa jenis, itu massanya.</string>
+    <string name="vectors_title">Medan vektor</string>
+    <string name="vectors_vector">Medan vektor</string>
+    <string name="vectors_scalar">Medan skalar</string>
+    <string name="vectors_hint">Geser untuk memindahkan titik. Panah menunjukkan medan, warna menunjukkan nilai yang dipilih: oranye di atas 0, biru di bawahnya.</string>
+    <string name="vectors_at">Di %1$s</string>
+    <string name="vectors_range">Setengah lebar tampilan</string>
+    <string name="vectors_formulas">Rumus</string>
+    <string name="vectors_swirl">Pusaran</string>
+    <string name="vectors_source">Sumber</string>
+    <string name="vectors_flow">Aliran</string>
+    <string name="vectors_hill">Bukit</string>
+    <string name="vectors_saddle">Pelana</string>
+    <string name="vectors_waves">Gelombang</string>
+    <string name="vectors_invalid">Periksa rumusnya: gunakan x dan y, angka, + − × ÷ ^, tanda kurung, dan fungsi seperti sin atau √.</string>
+    <string name="vectors_explain_div">Divergensi</string>
+    <string name="vectors_explain_div_text">Seberapa besar medan menyebar dari titik: di atas 0 seperti sumber, di bawah 0 seperti lubang.</string>
+    <string name="vectors_explain_rot">Rotasi</string>
+    <string name="vectors_explain_rot_text">Seberapa besar medan berputar di sekitar titik: di atas 0 berlawanan arah jarum jam, di bawah 0 searah.</string>
+    <string name="vectors_explain_grad">Gradien</string>
+    <string name="vectors_explain_grad_text">Menunjuk ke arah f naik paling cepat. Panjangnya menunjukkan seberapa cepat. Nilainya 0 di puncak, lembah, atau pelana.</string>
+    <string name="vectors_explain_laplacian">Laplasian</string>
+    <string name="vectors_explain_laplacian_text">Membandingkan f di titik dengan f di sekitarnya: di bawah 0 dekat puncak, di atas 0 dekat lembah.</string>
 </resources>

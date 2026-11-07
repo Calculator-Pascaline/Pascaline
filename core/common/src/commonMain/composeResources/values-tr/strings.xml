@@ -1878,4 +1878,45 @@
     <string name="charging_current_then">O andaki akım</string>
     <string name="charging_explain_inductor_text">Büyük bobin daha yavaş, büyük direnç daha hızlıdır. Akım sıçrayamaz, bu yüzden bu eğri boyunca artar veya azalır.</string>
     <string name="filters_order">Derece</string>
+    <string name="integrals_title">Katlı integraller</string>
+    <string name="integrals_double">İki katlı</string>
+    <string name="integrals_triple">Üç katlı</string>
+    <string name="integrals_hint">Döndürmek için sürükle. Renk f’nin büyüklüğünü gösterir.</string>
+    <string name="integrals_value">Değer</string>
+    <string name="integrals_area">Bölgenin alanı</string>
+    <string name="integrals_volume">Cismin hacmi</string>
+    <string name="integrals_average">f’nin ortalaması</string>
+    <string name="integrals_function">Fonksiyon ve sınırlar</string>
+    <string name="integrals_ramp">Rampa</string>
+    <string name="integrals_hill">Tepe</string>
+    <string name="integrals_ball">Küre</string>
+    <string name="integrals_cone">Koni</string>
+    <string name="integrals_invalid">Fonksiyonu ve sınırları kontrol et: x, y ve z, sayılar, + − × ÷ ^, parantezler ve sin ya da √ gibi fonksiyonlar kullan.</string>
+    <string name="integrals_explain_order">Her seferde bir yön</string>
+    <string name="integrals_explain_order_text">İç integral sonraki yönün her noktası için hesaplanır, sonra bu sonuçlar x’e kadar toplanır.</string>
+    <string name="integrals_explain_meaning">Ne anlama gelir</string>
+    <string name="integrals_explain_meaning_double_text">f bölgenin üstündeyse değer, yüzeyin altındaki hacimdir. f = 1 ise bölgenin alanıdır.</string>
+    <string name="integrals_explain_meaning_triple_text">f = 1 ise değer cismin hacmidir. f bir yoğunluksa, kütlesidir.</string>
+    <string name="vectors_title">Vektör alanları</string>
+    <string name="vectors_vector">Vektör alanı</string>
+    <string name="vectors_scalar">Skaler alan</string>
+    <string name="vectors_hint">Noktayı taşımak için sürükle. Oklar alanı, renkler seçilen değeri gösterir: 0’ın üstü turuncu, altı mavi.</string>
+    <string name="vectors_at">%1$s noktasında</string>
+    <string name="vectors_range">Görünümün yarı genişliği</string>
+    <string name="vectors_formulas">Formüller</string>
+    <string name="vectors_swirl">Girdap</string>
+    <string name="vectors_source">Kaynak</string>
+    <string name="vectors_flow">Akış</string>
+    <string name="vectors_hill">Tepe</string>
+    <string name="vectors_saddle">Eyer</string>
+    <string name="vectors_waves">Dalgalar</string>
+    <string name="vectors_invalid">Formülleri kontrol et: x ve y, sayılar, + − × ÷ ^, parantezler ve sin ya da √ gibi fonksiyonlar kullan.</string>
+    <string name="vectors_explain_div">Diverjans</string>
+    <string name="vectors_explain_div_text">Alanın noktadan ne kadar dağıldığı: 0’ın üstünde kaynak gibi, altında kuyu gibi.</string>
+    <string name="vectors_explain_rot">Rotasyonel</string>
+    <string name="vectors_explain_rot_text">Alanın nokta etrafında ne kadar döndüğü: 0’ın üstünde saat yönünün tersine, altında saat yönünde.</string>
+    <string name="vectors_explain_grad">Gradyan</string>
+    <string name="vectors_explain_grad_text">f’nin en hızlı arttığı yönü gösterir. Uzunluğu ne kadar hızlı olduğunu söyler. Tepede, çukurda veya eyerde 0’dır.</string>
+    <string name="vectors_explain_laplacian">Laplasyen</string>
+    <string name="vectors_explain_laplacian_text">Noktadaki f’yi çevresindeki f ile karşılaştırır: tepeye yakın 0’ın altında, çukura yakın üstünde.</string>
 </resources>

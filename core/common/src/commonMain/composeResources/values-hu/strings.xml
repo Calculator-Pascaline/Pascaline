@@ -1878,4 +1878,45 @@
     <string name="charging_current_then">Akkori áram</string>
     <string name="charging_explain_inductor_text">A nagyobb tekercs lassabb, a nagyobb ellenállás gyorsabb. Az áram nem tud ugrani, ezért e görbe mentén nő vagy csökken.</string>
     <string name="filters_order">Rend</string>
+    <string name="integrals_title">Többszörös integrálok</string>
+    <string name="integrals_double">Kettős</string>
+    <string name="integrals_triple">Hármas</string>
+    <string name="integrals_hint">Húzd a forgatáshoz. A szín mutatja, mekkora f.</string>
+    <string name="integrals_value">Érték</string>
+    <string name="integrals_area">A tartomány területe</string>
+    <string name="integrals_volume">A test térfogata</string>
+    <string name="integrals_average">f átlaga</string>
+    <string name="integrals_function">Függvény és határok</string>
+    <string name="integrals_ramp">Rámpa</string>
+    <string name="integrals_hill">Domb</string>
+    <string name="integrals_ball">Gömb</string>
+    <string name="integrals_cone">Kúp</string>
+    <string name="integrals_invalid">Ellenőrizd a függvényt és a határokat: használj x-et, y-t és z-t, számokat, + − × ÷ ^ jeleket, zárójeleket és olyan függvényeket, mint a sin vagy a √.</string>
+    <string name="integrals_explain_order">Egyszerre egy irány</string>
+    <string name="integrals_explain_order_text">A belső integrál a következő irány minden pontjára kiszámolódik, aztán ezek összeadódnak, egészen x-ig.</string>
+    <string name="integrals_explain_meaning">Mit jelent</string>
+    <string name="integrals_explain_meaning_double_text">Ha f a tartomány fölött van, az érték a felület alatti térfogat. f = 1 esetén a tartomány területe.</string>
+    <string name="integrals_explain_meaning_triple_text">f = 1 esetén az érték a test térfogata. Ha f sűrűség, akkor a tömege.</string>
+    <string name="vectors_title">Vektormezők</string>
+    <string name="vectors_vector">Vektormező</string>
+    <string name="vectors_scalar">Skalármező</string>
+    <string name="vectors_hint">Húzd a pont mozgatásához. A nyilak a mezőt, a színek a választott értéket mutatják: 0 fölött narancs, alatta kék.</string>
+    <string name="vectors_at">Itt: %1$s</string>
+    <string name="vectors_range">A nézet fél szélessége</string>
+    <string name="vectors_formulas">Képletek</string>
+    <string name="vectors_swirl">Örvény</string>
+    <string name="vectors_source">Forrás</string>
+    <string name="vectors_flow">Áramlás</string>
+    <string name="vectors_hill">Domb</string>
+    <string name="vectors_saddle">Nyereg</string>
+    <string name="vectors_waves">Hullámok</string>
+    <string name="vectors_invalid">Ellenőrizd a képleteket: használj x-et és y-t, számokat, + − × ÷ ^ jeleket, zárójeleket és olyan függvényeket, mint a sin vagy a √.</string>
+    <string name="vectors_explain_div">Divergencia</string>
+    <string name="vectors_explain_div_text">Mennyire tart szét a mező a pontból: 0 fölött forrásként, 0 alatt nyelőként.</string>
+    <string name="vectors_explain_rot">Rotáció</string>
+    <string name="vectors_explain_rot_text">Mennyire forog a mező a pont körül: 0 fölött az óramutatóval ellentétesen, 0 alatt azzal egyezően.</string>
+    <string name="vectors_explain_grad">Gradiens</string>
+    <string name="vectors_explain_grad_text">Arra mutat, amerre f a leggyorsabban nő. A hossza azt mutatja, milyen gyorsan. Csúcson, mélyponton vagy nyeregben 0.</string>
+    <string name="vectors_explain_laplacian">Laplace</string>
+    <string name="vectors_explain_laplacian_text">Összeveti f-et a pontban a környezetével: csúcs közelében 0 alatt, mélypont közelében 0 fölött.</string>
 </resources>

@@ -1878,4 +1878,45 @@
     <string name="charging_current_then">उस समय धारा</string>
     <string name="charging_explain_inductor_text">बड़ा प्रेरक धीमा होता है और बड़ा प्रतिरोधक तेज़। धारा अचानक नहीं बदल सकती, इसलिए वह इसी वक्र पर बढ़ती या घटती है।</string>
     <string name="filters_order">कोटि</string>
+    <string name="integrals_title">बहु समाकल</string>
+    <string name="integrals_double">द्वि</string>
+    <string name="integrals_triple">त्रि</string>
+    <string name="integrals_hint">घुमाने के लिए खींचें। रंग दिखाता है कि f कितना बड़ा है।</string>
+    <string name="integrals_value">मान</string>
+    <string name="integrals_area">क्षेत्र का क्षेत्रफल</string>
+    <string name="integrals_volume">ठोस का आयतन</string>
+    <string name="integrals_average">f का औसत</string>
+    <string name="integrals_function">फलन और सीमाएँ</string>
+    <string name="integrals_ramp">ढलान</string>
+    <string name="integrals_hill">पहाड़ी</string>
+    <string name="integrals_ball">गोला</string>
+    <string name="integrals_cone">शंकु</string>
+    <string name="integrals_invalid">फलन और सीमाएँ जाँचें: x, y और z, संख्याएँ, + − × ÷ ^, कोष्ठक और sin या √ जैसे फलन उपयोग करें।</string>
+    <string name="integrals_explain_order">एक बार में एक दिशा</string>
+    <string name="integrals_explain_order_text">भीतरी समाकल अगली दिशा के हर बिंदु के लिए निकाला जाता है, फिर ये परिणाम x तक जोड़े जाते हैं।</string>
+    <string name="integrals_explain_meaning">इसका अर्थ</string>
+    <string name="integrals_explain_meaning_double_text">यदि f क्षेत्र के ऊपर है, तो मान सतह के नीचे का आयतन है। f = 1 होने पर यह क्षेत्र का क्षेत्रफल है।</string>
+    <string name="integrals_explain_meaning_triple_text">f = 1 होने पर मान ठोस का आयतन है। यदि f घनत्व है, तो यह उसका द्रव्यमान है।</string>
+    <string name="vectors_title">सदिश क्षेत्र</string>
+    <string name="vectors_vector">सदिश क्षेत्र</string>
+    <string name="vectors_scalar">अदिश क्षेत्र</string>
+    <string name="vectors_hint">बिंदु हिलाने के लिए खींचें। तीर क्षेत्र दिखाते हैं, रंग चुना गया मान: 0 से ऊपर नारंगी, नीचे नीला।</string>
+    <string name="vectors_at">%1$s पर</string>
+    <string name="vectors_range">दृश्य की आधी चौड़ाई</string>
+    <string name="vectors_formulas">सूत्र</string>
+    <string name="vectors_swirl">भँवर</string>
+    <string name="vectors_source">स्रोत</string>
+    <string name="vectors_flow">प्रवाह</string>
+    <string name="vectors_hill">पहाड़ी</string>
+    <string name="vectors_saddle">काठी</string>
+    <string name="vectors_waves">तरंगें</string>
+    <string name="vectors_invalid">सूत्र जाँचें: x और y, संख्याएँ, + − × ÷ ^, कोष्ठक और sin या √ जैसे फलन उपयोग करें।</string>
+    <string name="vectors_explain_div">अपसरण</string>
+    <string name="vectors_explain_div_text">बिंदु से क्षेत्र कितना फैलता है: 0 से ऊपर स्रोत की तरह, 0 से नीचे गर्त की तरह।</string>
+    <string name="vectors_explain_rot">कर्ल</string>
+    <string name="vectors_explain_rot_text">बिंदु के चारों ओर क्षेत्र कितना घूमता है: 0 से ऊपर वामावर्त, 0 से नीचे दक्षिणावर्त।</string>
+    <string name="vectors_explain_grad">प्रवणता</string>
+    <string name="vectors_explain_grad_text">उस दिशा में इंगित करती है जहाँ f सबसे तेज़ी से बढ़ता है। इसकी लंबाई बताती है कितनी तेज़ी से। शिखर, गर्त या काठी पर यह 0 है।</string>
+    <string name="vectors_explain_laplacian">लाप्लासियन</string>
+    <string name="vectors_explain_laplacian_text">बिंदु पर f की तुलना आसपास के f से करता है: शिखर के पास 0 से नीचे, गर्त के पास 0 से ऊपर।</string>
 </resources>

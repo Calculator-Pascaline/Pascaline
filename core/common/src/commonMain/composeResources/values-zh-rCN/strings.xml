@@ -1878,4 +1878,45 @@
     <string name="charging_current_then">此时电流</string>
     <string name="charging_explain_inductor_text">电感越大越慢，电阻越大越快。电流不能突变，所以沿着这条曲线上升或下降。</string>
     <string name="filters_order">阶数</string>
+    <string name="integrals_title">重积分</string>
+    <string name="integrals_double">二重</string>
+    <string name="integrals_triple">三重</string>
+    <string name="integrals_hint">拖动可旋转。颜色表示 f 的大小。</string>
+    <string name="integrals_value">值</string>
+    <string name="integrals_area">区域面积</string>
+    <string name="integrals_volume">立体体积</string>
+    <string name="integrals_average">f 的平均值</string>
+    <string name="integrals_function">函数和上下限</string>
+    <string name="integrals_ramp">斜坡</string>
+    <string name="integrals_hill">山丘</string>
+    <string name="integrals_ball">球</string>
+    <string name="integrals_cone">圆锥</string>
+    <string name="integrals_invalid">请检查函数和上下限：可使用 x、y、z、数字、+ − × ÷ ^、括号以及 sin 或 √ 等函数。</string>
+    <string name="integrals_explain_order">一次一个方向</string>
+    <string name="integrals_explain_order_text">先对下一方向的每个点计算内层积分，再把这些结果一直累加到 x。</string>
+    <string name="integrals_explain_meaning">含义</string>
+    <string name="integrals_explain_meaning_double_text">当 f 在区域上方时，值就是曲面下方的体积。当 f = 1 时，它是区域的面积。</string>
+    <string name="integrals_explain_meaning_triple_text">当 f = 1 时，值就是立体的体积。若 f 是密度，它就是质量。</string>
+    <string name="vectors_title">向量场</string>
+    <string name="vectors_vector">向量场</string>
+    <string name="vectors_scalar">标量场</string>
+    <string name="vectors_hint">拖动以移动点。箭头表示场，颜色表示所选的量：大于 0 为橙色，小于 0 为蓝色。</string>
+    <string name="vectors_at">在 %1$s 处</string>
+    <string name="vectors_range">视图的半宽</string>
+    <string name="vectors_formulas">公式</string>
+    <string name="vectors_swirl">旋涡</string>
+    <string name="vectors_source">源</string>
+    <string name="vectors_flow">水流</string>
+    <string name="vectors_hill">山丘</string>
+    <string name="vectors_saddle">鞍面</string>
+    <string name="vectors_waves">波浪</string>
+    <string name="vectors_invalid">请检查公式：可使用 x 和 y、数字、+ − × ÷ ^、括号以及 sin 或 √ 等函数。</string>
+    <string name="vectors_explain_div">散度</string>
+    <string name="vectors_explain_div_text">场从该点向外发散的程度：大于 0 像源，小于 0 像汇。</string>
+    <string name="vectors_explain_rot">旋度</string>
+    <string name="vectors_explain_rot_text">场绕该点旋转的程度：大于 0 为逆时针，小于 0 为顺时针。</string>
+    <string name="vectors_explain_grad">梯度</string>
+    <string name="vectors_explain_grad_text">指向 f 增长最快的方向，长度表示增长多快。在山顶、谷底或鞍点处为 0。</string>
+    <string name="vectors_explain_laplacian">拉普拉斯算子</string>
+    <string name="vectors_explain_laplacian_text">比较该点的 f 与周围的 f：在山顶附近小于 0，在谷底附近大于 0。</string>
 </resources>

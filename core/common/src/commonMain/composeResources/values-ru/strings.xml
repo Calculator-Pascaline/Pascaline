@@ -1878,4 +1878,45 @@
     <string name="charging_current_then">Ток тогда</string>
     <string name="charging_explain_inductor_text">Большая катушка медленнее, а большой резистор быстрее. Ток не может скачком измениться, поэтому растёт или спадает по этой кривой.</string>
     <string name="filters_order">Порядок</string>
+    <string name="integrals_title">Кратные интегралы</string>
+    <string name="integrals_double">Двойной</string>
+    <string name="integrals_triple">Тройной</string>
+    <string name="integrals_hint">Проведите, чтобы повернуть. Цвет показывает величину f.</string>
+    <string name="integrals_value">Значение</string>
+    <string name="integrals_area">Площадь области</string>
+    <string name="integrals_volume">Объём тела</string>
+    <string name="integrals_average">Среднее f</string>
+    <string name="integrals_function">Функция и пределы</string>
+    <string name="integrals_ramp">Рампа</string>
+    <string name="integrals_hill">Холм</string>
+    <string name="integrals_ball">Шар</string>
+    <string name="integrals_cone">Конус</string>
+    <string name="integrals_invalid">Проверьте функцию и пределы: используйте x, y и z, числа, + − × ÷ ^, скобки и функции вроде sin или √.</string>
+    <string name="integrals_explain_order">По одному направлению</string>
+    <string name="integrals_explain_order_text">Внутренний интеграл считается для каждой точки следующего направления, затем результаты складываются, вплоть до x.</string>
+    <string name="integrals_explain_meaning">Что это значит</string>
+    <string name="integrals_explain_meaning_double_text">Если f над областью, значение — это объём под поверхностью. При f = 1 это площадь области.</string>
+    <string name="integrals_explain_meaning_triple_text">При f = 1 значение — объём тела. Если f — плотность, это его масса.</string>
+    <string name="vectors_title">Векторные поля</string>
+    <string name="vectors_vector">Векторное поле</string>
+    <string name="vectors_scalar">Скалярное поле</string>
+    <string name="vectors_hint">Проведите, чтобы сдвинуть точку. Стрелки показывают поле, цвета — выбранную величину: оранжевый выше 0, синий ниже.</string>
+    <string name="vectors_at">В %1$s</string>
+    <string name="vectors_range">Половина ширины обзора</string>
+    <string name="vectors_formulas">Формулы</string>
+    <string name="vectors_swirl">Вихрь</string>
+    <string name="vectors_source">Источник</string>
+    <string name="vectors_flow">Поток</string>
+    <string name="vectors_hill">Холм</string>
+    <string name="vectors_saddle">Седло</string>
+    <string name="vectors_waves">Волны</string>
+    <string name="vectors_invalid">Проверьте формулы: используйте x и y, числа, + − × ÷ ^, скобки и функции вроде sin или √.</string>
+    <string name="vectors_explain_div">Дивергенция</string>
+    <string name="vectors_explain_div_text">Насколько поле расходится из точки: выше 0 как источник, ниже 0 как сток.</string>
+    <string name="vectors_explain_rot">Ротор</string>
+    <string name="vectors_explain_rot_text">Насколько поле вращается вокруг точки: выше 0 против часовой стрелки, ниже 0 по часовой.</string>
+    <string name="vectors_explain_grad">Градиент</string>
+    <string name="vectors_explain_grad_text">Указывает, куда f растёт быстрее всего. Его длина — насколько быстро. На вершине, во впадине или в седле он равен 0.</string>
+    <string name="vectors_explain_laplacian">Лапласиан</string>
+    <string name="vectors_explain_laplacian_text">Сравнивает f в точке с f вокруг: ниже 0 у вершины, выше 0 у впадины.</string>
 </resources>

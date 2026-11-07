@@ -81,6 +81,14 @@ class ExtractRouteFromDeepLinkTest {
     assertExtractedRoute(OrbitsStartRoute, "app://com.sadellie.unitto/orbits_route")
 
   @Test
+  fun test_vectorsStartRoute() =
+    assertExtractedRoute(VectorFieldsStartRoute, "app://com.sadellie.unitto/vectors_route")
+
+  @Test
+  fun test_integralsStartRoute() =
+    assertExtractedRoute(IntegralsStartRoute, "app://com.sadellie.unitto/integrals_route")
+
+  @Test
   fun test_filtersStartRoute() =
     assertExtractedRoute(FiltersStartRoute, "app://com.sadellie.unitto/filters_route")
 

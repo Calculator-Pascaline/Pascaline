@@ -27,6 +27,7 @@ import com.sadellie.unitto.core.navigation.FinanceStartRoute
 import com.sadellie.unitto.core.navigation.FunctionsStartRoute
 import com.sadellie.unitto.core.navigation.HomeStartRoute
 import com.sadellie.unitto.core.navigation.InferenceStartRoute
+import com.sadellie.unitto.core.navigation.IntegralsStartRoute
 import com.sadellie.unitto.core.navigation.LocalNavigator
 import com.sadellie.unitto.core.navigation.LogicStartRoute
 import com.sadellie.unitto.core.navigation.OrbitsStartRoute
@@ -39,6 +40,7 @@ import com.sadellie.unitto.core.navigation.RegressionStartRoute
 import com.sadellie.unitto.core.navigation.ResistorsStartRoute
 import com.sadellie.unitto.core.navigation.SequencesStartRoute
 import com.sadellie.unitto.core.navigation.StatisticsStartRoute
+import com.sadellie.unitto.core.navigation.VectorFieldsStartRoute
 import com.sadellie.unitto.feature.calculator.CalculatorRoute
 import com.sadellie.unitto.feature.calculator.electrical.ChargingRoute
 import com.sadellie.unitto.feature.calculator.electrical.FiltersRoute
@@ -49,6 +51,7 @@ import com.sadellie.unitto.feature.calculator.finance.FinanceRoute
 import com.sadellie.unitto.feature.calculator.functions.FunctionsRoute
 import com.sadellie.unitto.feature.calculator.home.HomeRoute
 import com.sadellie.unitto.feature.calculator.inference.InferenceRoute
+import com.sadellie.unitto.feature.calculator.integrals.IntegralsRoute
 import com.sadellie.unitto.feature.calculator.physics.OrbitsRoute
 import com.sadellie.unitto.feature.calculator.place.PlaceRoute
 import com.sadellie.unitto.feature.calculator.prices.PricesRoute
@@ -58,6 +61,7 @@ import com.sadellie.unitto.feature.calculator.projectile.ProjectileRoute
 import com.sadellie.unitto.feature.calculator.regression.RegressionRoute
 import com.sadellie.unitto.feature.calculator.sequences.SequencesRoute
 import com.sadellie.unitto.feature.calculator.statistics.StatisticsRoute
+import com.sadellie.unitto.feature.calculator.vectors.VectorFieldsRoute
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.core.module.Module
 import org.koin.dsl.navigation3.navigation
@@ -132,6 +136,14 @@ fun Module.calculatorNavigation() {
   navigation<LogicStartRoute> {
     val navigator = LocalNavigator.current
     LogicRoute(openDrawer = navigator::openDrawer)
+  }
+  navigation<IntegralsStartRoute> {
+    val navigator = LocalNavigator.current
+    IntegralsRoute(openDrawer = navigator::openDrawer)
+  }
+  navigation<VectorFieldsStartRoute> {
+    val navigator = LocalNavigator.current
+    VectorFieldsRoute(openDrawer = navigator::openDrawer)
   }
   navigation<PlaceStartRoute> {
     val navigator = LocalNavigator.current

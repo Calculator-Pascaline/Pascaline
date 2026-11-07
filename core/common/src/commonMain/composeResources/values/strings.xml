@@ -2165,4 +2165,45 @@
     <string name="charging_current_then">Current then</string>
     <string name="charging_explain_inductor_text">A bigger coil is slower and a bigger resistor is faster. The current can’t jump, so it grows or fades along this curve.</string>
     <string name="filters_order">Order</string>
+    <string name="integrals_title">Multiple integrals</string>
+    <string name="integrals_double">Double</string>
+    <string name="integrals_triple">Triple</string>
+    <string name="integrals_hint">Drag to turn it. The color shows how big f is.</string>
+    <string name="integrals_value">Value</string>
+    <string name="integrals_area">Area of the region</string>
+    <string name="integrals_volume">Volume of the solid</string>
+    <string name="integrals_average">Average of f</string>
+    <string name="integrals_function">Function and bounds</string>
+    <string name="integrals_ramp">Ramp</string>
+    <string name="integrals_hill">Hill</string>
+    <string name="integrals_ball">Ball</string>
+    <string name="integrals_cone">Cone</string>
+    <string name="integrals_invalid">Check the function and the bounds: use x, y and z, numbers, + − × ÷ ^, brackets and functions like sin or √.</string>
+    <string name="integrals_explain_order">One direction at a time</string>
+    <string name="integrals_explain_order_text">The inner integral is worked out for every point of the next direction, then those results are added up, out to x.</string>
+    <string name="integrals_explain_meaning">What it means</string>
+    <string name="integrals_explain_meaning_double_text">With f above the region, the value is the volume under the surface. With f = 1, it is the area of the region.</string>
+    <string name="integrals_explain_meaning_triple_text">With f = 1, the value is the volume of the solid. With f a density, it is its mass.</string>
+    <string name="vectors_title">Vector fields</string>
+    <string name="vectors_vector">Vector field</string>
+    <string name="vectors_scalar">Scalar field</string>
+    <string name="vectors_hint">Drag to move the point. Arrows show the field, colors show the chosen value: orange above 0, blue below.</string>
+    <string name="vectors_at">At %1$s</string>
+    <string name="vectors_range">Half width of the view</string>
+    <string name="vectors_formulas">Formulas</string>
+    <string name="vectors_swirl">Swirl</string>
+    <string name="vectors_source">Source</string>
+    <string name="vectors_flow">Flow</string>
+    <string name="vectors_hill">Hill</string>
+    <string name="vectors_saddle">Saddle</string>
+    <string name="vectors_waves">Waves</string>
+    <string name="vectors_invalid">Check the formulas: use x and y, numbers, + − × ÷ ^, brackets and functions like sin or √.</string>
+    <string name="vectors_explain_div">Divergence</string>
+    <string name="vectors_explain_div_text">How much the field spreads out from the point: above 0 like a source, below 0 like a sink.</string>
+    <string name="vectors_explain_rot">Rotation</string>
+    <string name="vectors_explain_rot_text">How much the field turns around the point: above 0 counterclockwise, below 0 clockwise.</string>
+    <string name="vectors_explain_grad">Gradient</string>
+    <string name="vectors_explain_grad_text">Points where f rises the fastest. Its length is how fast. It is 0 at a top, a bottom or a saddle.</string>
+    <string name="vectors_explain_laplacian">Laplacian</string>
+    <string name="vectors_explain_laplacian_text">How f at the point compares to f around it: below 0 near a top, above 0 near a bottom.</string>
 </resources>

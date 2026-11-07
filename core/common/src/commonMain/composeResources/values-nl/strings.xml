@@ -1878,4 +1878,45 @@
     <string name="charging_current_then">Stroom dan</string>
     <string name="charging_explain_inductor_text">Een grotere spoel is trager en een grotere weerstand sneller. De stroom kan niet springen, dus hij stijgt of daalt langs deze curve.</string>
     <string name="filters_order">Orde</string>
+    <string name="integrals_title">Meervoudige integralen</string>
+    <string name="integrals_double">Dubbel</string>
+    <string name="integrals_triple">Drievoudig</string>
+    <string name="integrals_hint">Sleep om te draaien. De kleur laat zien hoe groot f is.</string>
+    <string name="integrals_value">Waarde</string>
+    <string name="integrals_area">Oppervlakte van het gebied</string>
+    <string name="integrals_volume">Volume van het lichaam</string>
+    <string name="integrals_average">Gemiddelde van f</string>
+    <string name="integrals_function">Functie en grenzen</string>
+    <string name="integrals_ramp">Helling</string>
+    <string name="integrals_hill">Heuvel</string>
+    <string name="integrals_ball">Bol</string>
+    <string name="integrals_cone">Kegel</string>
+    <string name="integrals_invalid">Controleer de functie en de grenzen: gebruik x, y en z, getallen, + − × ÷ ^, haakjes en functies zoals sin of √.</string>
+    <string name="integrals_explain_order">Eén richting tegelijk</string>
+    <string name="integrals_explain_order_text">De binnenste integraal wordt voor elk punt van de volgende richting berekend, daarna worden die uitkomsten opgeteld, tot x.</string>
+    <string name="integrals_explain_meaning">Wat het betekent</string>
+    <string name="integrals_explain_meaning_double_text">Met f boven het gebied is de waarde het volume onder het oppervlak. Met f = 1 is het de oppervlakte van het gebied.</string>
+    <string name="integrals_explain_meaning_triple_text">Met f = 1 is de waarde het volume van het lichaam. Is f een dichtheid, dan is het de massa.</string>
+    <string name="vectors_title">Vectorvelden</string>
+    <string name="vectors_vector">Vectorveld</string>
+    <string name="vectors_scalar">Scalair veld</string>
+    <string name="vectors_hint">Sleep om het punt te verplaatsen. Pijlen tonen het veld, kleuren de gekozen waarde: oranje boven 0, blauw eronder.</string>
+    <string name="vectors_at">In %1$s</string>
+    <string name="vectors_range">Halve breedte van het beeld</string>
+    <string name="vectors_formulas">Formules</string>
+    <string name="vectors_swirl">Werveling</string>
+    <string name="vectors_source">Bron</string>
+    <string name="vectors_flow">Stroming</string>
+    <string name="vectors_hill">Heuvel</string>
+    <string name="vectors_saddle">Zadel</string>
+    <string name="vectors_waves">Golven</string>
+    <string name="vectors_invalid">Controleer de formules: gebruik x en y, getallen, + − × ÷ ^, haakjes en functies zoals sin of √.</string>
+    <string name="vectors_explain_div">Divergentie</string>
+    <string name="vectors_explain_div_text">Hoeveel het veld uit het punt wegloopt: boven 0 als een bron, onder 0 als een put.</string>
+    <string name="vectors_explain_rot">Rotatie</string>
+    <string name="vectors_explain_rot_text">Hoeveel het veld rond het punt draait: boven 0 tegen de klok in, onder 0 met de klok mee.</string>
+    <string name="vectors_explain_grad">Gradiënt</string>
+    <string name="vectors_explain_grad_text">Wijst naar waar f het snelst stijgt. De lengte zegt hoe snel. Op een top, in een dal of op een zadel is hij 0.</string>
+    <string name="vectors_explain_laplacian">Laplaciaan</string>
+    <string name="vectors_explain_laplacian_text">Vergelijkt f in het punt met f eromheen: onder 0 bij een top, boven 0 bij een dal.</string>
 </resources>

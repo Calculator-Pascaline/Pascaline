@@ -1878,4 +1878,45 @@
     <string name="charging_current_then">Corrente nesse instante</string>
     <string name="charging_explain_inductor_text">Um indutor maior é mais lento e um resistor maior é mais rápido. A corrente não pode saltar: ela sobe ou desce por esta curva.</string>
     <string name="filters_order">Ordem</string>
+    <string name="integrals_title">Integrais múltiplas</string>
+    <string name="integrals_double">Dupla</string>
+    <string name="integrals_triple">Tripla</string>
+    <string name="integrals_hint">Arraste para girar. A cor mostra o tamanho de f.</string>
+    <string name="integrals_value">Valor</string>
+    <string name="integrals_area">Área da região</string>
+    <string name="integrals_volume">Volume do sólido</string>
+    <string name="integrals_average">Média de f</string>
+    <string name="integrals_function">Função e limites</string>
+    <string name="integrals_ramp">Rampa</string>
+    <string name="integrals_hill">Colina</string>
+    <string name="integrals_ball">Bola</string>
+    <string name="integrals_cone">Cone</string>
+    <string name="integrals_invalid">Confira a função e os limites: use x, y e z, números, + − × ÷ ^, parênteses e funções como sin ou √.</string>
+    <string name="integrals_explain_order">Uma direção de cada vez</string>
+    <string name="integrals_explain_order_text">A integral de dentro é calculada para cada ponto da próxima direção, depois esses resultados são somados, até x.</string>
+    <string name="integrals_explain_meaning">O que significa</string>
+    <string name="integrals_explain_meaning_double_text">Com f acima da região, o valor é o volume sob a superfície. Com f = 1, é a área da região.</string>
+    <string name="integrals_explain_meaning_triple_text">Com f = 1, o valor é o volume do sólido. Se f for uma densidade, é a massa.</string>
+    <string name="vectors_title">Campos vetoriais</string>
+    <string name="vectors_vector">Campo vetorial</string>
+    <string name="vectors_scalar">Campo escalar</string>
+    <string name="vectors_hint">Arraste para mover o ponto. As setas mostram o campo e as cores o valor escolhido: laranja acima de 0, azul abaixo.</string>
+    <string name="vectors_at">Em %1$s</string>
+    <string name="vectors_range">Meia largura da vista</string>
+    <string name="vectors_formulas">Fórmulas</string>
+    <string name="vectors_swirl">Redemoinho</string>
+    <string name="vectors_source">Fonte</string>
+    <string name="vectors_flow">Corrente</string>
+    <string name="vectors_hill">Colina</string>
+    <string name="vectors_saddle">Sela</string>
+    <string name="vectors_waves">Ondas</string>
+    <string name="vectors_invalid">Confira as fórmulas: use x e y, números, + − × ÷ ^, parênteses e funções como sin ou √.</string>
+    <string name="vectors_explain_div">Divergente</string>
+    <string name="vectors_explain_div_text">Quanto o campo se espalha a partir do ponto: acima de 0 como uma fonte, abaixo como um sorvedouro.</string>
+    <string name="vectors_explain_rot">Rotacional</string>
+    <string name="vectors_explain_rot_text">Quanto o campo gira em volta do ponto: acima de 0 no sentido anti-horário, abaixo no sentido horário.</string>
+    <string name="vectors_explain_grad">Gradiente</string>
+    <string name="vectors_explain_grad_text">Aponta para onde f sobe mais rápido. O comprimento diz quão rápido. Vale 0 num topo, num fundo ou numa sela.</string>
+    <string name="vectors_explain_laplacian">Laplaciano</string>
+    <string name="vectors_explain_laplacian_text">Compara f no ponto com f ao redor: abaixo de 0 perto de um topo, acima perto de um fundo.</string>
 </resources>
