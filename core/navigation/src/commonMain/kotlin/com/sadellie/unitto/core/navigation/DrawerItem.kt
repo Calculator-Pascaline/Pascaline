@@ -77,7 +77,6 @@ import unitto.core.common.generated.resources.resistors_title
 import unitto.core.common.generated.resources.sequences_title
 import unitto.core.common.generated.resources.settings_title
 import unitto.core.common.generated.resources.statistics_title
-import unitto.core.common.generated.resources.time_zone_title
 import unitto.core.common.generated.resources.vectors_title
 
 sealed interface DrawerItem {
@@ -176,13 +175,6 @@ data object DateCalculatorDrawerItem : DrawerItem {
   override val name = Res.string.date_calculator_title
   override val selectedIcon = Symbols.EventFill
   override val defaultIcon = Symbols.Event
-}
-
-data object TimeZonesDrawerItem : DrawerItem {
-  override val topLevelRoute = TimeZoneStartRoute
-  override val name = Res.string.time_zone_title
-  override val selectedIcon = Symbols.ScheduleFill
-  override val defaultIcon = Symbols.Schedule
 }
 
 data object BodyMassDrawerItem : DrawerItem {

@@ -38,7 +38,6 @@ import unitto.core.common.generated.resources.body_mass_title
 import unitto.core.common.generated.resources.calculator_title
 import unitto.core.common.generated.resources.converter_title
 import unitto.core.common.generated.resources.date_calculator_title
-import unitto.core.common.generated.resources.time_zone_title
 
 actual val mainDrawerItems: List<DrawerItem> by lazy {
   var all =
@@ -50,7 +49,6 @@ actual val mainDrawerItems: List<DrawerItem> by lazy {
       ElementsDrawerItem,
       PlaceDrawerItem,
       ProjectileDrawerItem,
-      TimeZonesDrawerItem,
       RegressionDrawerItem,
       ConverterDrawerItem,
       SequencesDrawerItem,
@@ -68,10 +66,6 @@ actual val mainDrawerItems: List<DrawerItem> by lazy {
       ChargingDrawerItem,
       LogicDrawerItem,
     )
-
-  if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-    all = all - TimeZonesDrawerItem
-  }
 
   all
 }
@@ -130,12 +124,6 @@ private fun generateShortcut(drawerItem: DrawerItem): Shortcut? {
         Res.string.date_calculator_title,
         Res.string.date_calculator_title,
         R.drawable.ic_shortcut_date_calculator,
-      )
-    TimeZonesDrawerItem ->
-      Shortcut(
-        Res.string.time_zone_title,
-        Res.string.time_zone_title,
-        R.drawable.ic_shortcut_time_zone,
       )
     // No launcher icon yet
     FunctionsDrawerItem,

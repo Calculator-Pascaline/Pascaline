@@ -47,7 +47,6 @@ kotlin {
     implementation(project(":feature:converter"))
     implementation(project(":feature:bodymass"))
     implementation(project(":feature:datecalculator"))
-    implementation(project(":feature:timezone"))
     implementation(project(":feature:settings"))
   }
   sourceSets.androidMain.dependencies {

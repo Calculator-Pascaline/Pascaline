@@ -27,7 +27,6 @@ import com.sadellie.unitto.feature.converter.converterModule
 import com.sadellie.unitto.feature.datecalculator.dateCalculatorModule
 import com.sadellie.unitto.feature.glance.converter.converterWidgetModule
 import com.sadellie.unitto.feature.settings.settingsModule
-import com.sadellie.unitto.feature.timezone.timeZoneModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.androix.startup.KoinStartup
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -47,7 +46,6 @@ class UnittoApplication : Application(), KoinStartup {
         converterModule,
         dateCalculatorModule,
         settingsModule,
-        timeZoneModule,
         converterWidgetModule,
       )
     )

@@ -71,7 +71,6 @@ import com.sadellie.unitto.core.navigation.RegressionStartRoute
 import com.sadellie.unitto.core.navigation.ResistorsStartRoute
 import com.sadellie.unitto.core.navigation.SequencesStartRoute
 import com.sadellie.unitto.core.navigation.StatisticsStartRoute
-import com.sadellie.unitto.core.navigation.TimeZoneStartRoute
 import com.sadellie.unitto.core.navigation.VectorFieldsStartRoute
 import com.sadellie.unitto.core.ui.BackHandler
 import com.sadellie.unitto.core.ui.datetime.LocalPlatformDateFormatSettings
@@ -83,7 +82,6 @@ import com.sadellie.unitto.feature.converter.navigation.UnitFromRoute
 import com.sadellie.unitto.feature.converter.navigation.UnitToRoute
 import com.sadellie.unitto.feature.datecalculator.dateCalculatorModule
 import com.sadellie.unitto.feature.settings.settingsModule
-import com.sadellie.unitto.feature.timezone.timeZoneModule
 import com.sadellie.unitto.shared.generated.resources.Res
 import com.sadellie.unitto.shared.generated.resources.noto_sans
 import com.sadellie.unitto.shared.generated.resources.noto_sans_devanagari
@@ -204,7 +202,6 @@ private val navBackStackConfig = SavedStateConfiguration {
       this.subclass(ChargingStartRoute::class, ChargingStartRoute.serializer())
       this.subclass(LogicStartRoute::class, LogicStartRoute.serializer())
       this.subclass(DateCalculatorStartRoute::class, DateCalculatorStartRoute.serializer())
-      this.subclass(TimeZoneStartRoute::class, TimeZoneStartRoute.serializer())
       this.subclass(ConverterStartRoute::class, ConverterStartRoute.serializer())
       this.subclass(UnitFromRoute::class, UnitFromRoute.serializer())
       this.subclass(UnitToRoute::class, UnitToRoute.serializer())
@@ -221,7 +218,6 @@ private fun initKoin() {
       converterModule,
       bodyMassModule,
       dateCalculatorModule,
-      timeZoneModule,
       settingsModule,
     )
   }

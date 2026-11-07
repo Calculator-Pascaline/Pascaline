@@ -55,130 +55,40 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.sadellie.unitto.feature.calculator.physics.LiveCard
 import com.sadellie.unitto.feature.calculator.physics.PhysicsScreen
-import com.sadellie.unitto.feature.calculator.physics.number
-import com.sadellie.unitto.feature.calculator.physics.numberFormat
-import com.sadellie.unitto.feature.calculator.physics.rememberFractional
-import com.sadellie.unitto.feature.calculator.probability.rounded
 import com.sadellie.unitto.feature.calculator.projectile.Card
-import com.sadellie.unitto.feature.calculator.projectile.Condition
-import com.sadellie.unitto.feature.calculator.projectile.ConditionRow
 import com.sadellie.unitto.feature.calculator.projectile.Step
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import unitto.core.common.generated.resources.Res
-import unitto.core.common.generated.resources.logic_decibels
-import unitto.core.common.generated.resources.logic_explain_db
-import unitto.core.common.generated.resources.logic_explain_db_text
 import unitto.core.common.generated.resources.logic_explain_gates
 import unitto.core.common.generated.resources.logic_explain_gates_text
-import unitto.core.common.generated.resources.logic_gain
-import unitto.core.common.generated.resources.logic_gates
 import unitto.core.common.generated.resources.logic_hint
-import unitto.core.common.generated.resources.logic_milliwatts
-import unitto.core.common.generated.resources.logic_power_ratio
 import unitto.core.common.generated.resources.logic_title
 import unitto.core.common.generated.resources.logic_truth
-import unitto.core.common.generated.resources.logic_voltage_ratio
 import unitto.core.common.generated.resources.projectile_explain_title
 
-private enum class LogicMode(val title: StringResource) {
-  GATES(Res.string.logic_gates),
-  DECIBELS(Res.string.logic_decibels),
-}
-
-private val GAIN = Condition("G", "dB", Res.string.logic_gain, -60.0..60.0, 0.1)
-private val POWER_RATIO = Condition("P₂/P₁", "", Res.string.logic_power_ratio, 0.0..1000.0, 0.1)
-private val VOLTAGE_RATIO = Condition("V₂/V₁", "", Res.string.logic_voltage_ratio, 0.0..1000.0, 0.1)
-private val MILLIWATTS_NOW = Condition("P", "mW", Res.string.logic_milliwatts, 0.0..1000.0, 0.1)
-
-/** Fields that show the same gain in four ways: changing one changes the others. */
-private enum class GainField(val condition: Condition) {
-  DECIBELS(GAIN),
-  POWER(POWER_RATIO),
-  VOLTAGE(VOLTAGE_RATIO),
-  MILLIWATTS(MILLIWATTS_NOW);
-
-  fun toDecibels(value: Double) =
-    when (this) {
-      DECIBELS -> value
-      POWER,
-      MILLIWATTS -> powerDecibels(value)
-      VOLTAGE -> voltageDecibels(value)
-    }
-
-  fun fromDecibels(decibels: Double) =
-    when (this) {
-      DECIBELS -> decibels
-      POWER,
-      MILLIWATTS -> powerRatio(decibels)
-      VOLTAGE -> voltageRatio(decibels)
-    }
-}
-
-private fun gainTexts(field: GainField, text: String, old: List<String>, decimals: (Double) -> String): List<String> {
-  val decibels = field.toDecibels(text.number())
-  return GainField.entries.map {
-    when {
-      it == field -> text
-      decibels.isFinite() -> decimals(it.fromDecibels(decibels))
-      else -> old[it.ordinal]
-    }
-  }
-}
-
-private val STARTING_GAIN = listOf("3", "2", "1.413", "2")
-
-/** Gates that can be tried with a tap, and decibels for what comes after them on a real board. */
+/** Gates that can be tried with a tap, with their truth table. */
 @Composable
 internal fun LogicRoute(openDrawer: () -> Unit) {
-  val fractional = rememberFractional()
-  val format = numberFormat(fractional)
-  var mode by rememberSaveable { mutableStateOf(LogicMode.GATES) }
   var gate by rememberSaveable { mutableStateOf(Gate.AND) }
   var a by rememberSaveable { mutableStateOf(true) }
   var b by rememberSaveable { mutableStateOf(false) }
-  var gains by rememberSaveable { mutableStateOf(STARTING_GAIN) }
-  val decimals = { value: Double -> value.rounded(GAIN_DECIMALS).replace(".", fractional) }
 
   PhysicsScreen(
     title = Res.string.logic_title,
     openDrawer = openDrawer,
     live = {
-      ModeChips(LogicMode.entries, mode, { it.title }) { mode = it }
-      if (mode == LogicMode.GATES) {
-        GateChips(gate) { gate = it }
-        GateCard(gate, a, b, { a = !a }, { b = !b })
-      } else {
-        Card(stringResource(Res.string.logic_decibels)) {
-          GainField.entries.forEach { field ->
-            ConditionRow(field.condition, gains[field.ordinal], fractional) { gains = gainTexts(field, it, gains, decimals) }
-          }
-        }
-      }
+      GateChips(gate) { gate = it }
+      GateCard(gate, a, b, { a = !a }, { b = !b })
     },
     settings = {
-      if (mode == LogicMode.GATES) {
-        TruthTable(gate, a, b) { newA, newB ->
-          a = newA
-          b = newB
-        }
+      TruthTable(gate, a, b) { newA, newB ->
+        a = newA
+        b = newB
       }
     },
     explanation = {
       Card(stringResource(Res.string.projectile_explain_title)) {
-        if (mode == LogicMode.GATES) {
-          Step(Res.string.logic_explain_gates, Res.string.logic_explain_gates_text, gate.expression)
-        } else {
-          val gain = gains[GainField.DECIBELS.ordinal].number()
-          val shown = if (gain.isFinite()) format(gain) else "—"
-          Step(
-            Res.string.logic_explain_db,
-            Res.string.logic_explain_db_text,
-            "G = 10 · log₁₀(P₂ / P₁) = 20 · log₁₀(V₂ / V₁)",
-            "$shown dB = ${gains[GainField.POWER.ordinal]} × P = ${gains[GainField.VOLTAGE.ordinal]} × V",
-            "$shown dBm = ${gains[GainField.MILLIWATTS.ordinal]} mW",
-          )
-        }
+        Step(Res.string.logic_explain_gates, Res.string.logic_explain_gates_text, gate.expression)
       }
     },
   )
@@ -330,7 +240,6 @@ private fun TruthTable(gate: Gate, a: Boolean, b: Boolean, onChoose: (Boolean, B
   }
 }
 
-private const val GAIN_DECIMALS = 3
 private const val INPUT_RISE = 0.24f
 private const val SWITCH_SHARE = 0.14f
 private const val TAP_SHARE = 0.34f

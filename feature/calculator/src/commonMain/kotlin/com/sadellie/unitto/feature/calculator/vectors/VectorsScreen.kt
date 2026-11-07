@@ -31,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -126,7 +127,8 @@ internal fun VectorFieldsRoute(openDrawer: () -> Unit) {
   var probeY by rememberSaveable { mutableDoubleStateOf(1.0) }
   val reach = range.number().takeIf { it > 0 } ?: 1.0
   val color = if (kind == FieldKind.VECTOR) vectorColor else scalarColor
-  val picture = picture(kind, color, read(p), read(q), read(f), reach)
+  // Only when a formula or the view changes: moving the point keeps the same picture
+  val picture = remember(kind, color, p, q, f, reach) { picture(kind, color, read(p), read(q), read(f), reach) }
 
   PhysicsScreen(
     title = Res.string.vectors_title,

@@ -21,12 +21,16 @@ package com.sadellie.unitto.feature.calculator.vectors
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -42,16 +46,49 @@ import kotlin.math.cos
 import kotlin.math.hypot
 import kotlin.math.sin
 
-private class FieldColors(val positive: Color, val negative: Color, val arrow: Color, val axis: Color, val probe: Color)
+@Immutable
+private data class FieldColors(val positive: Color, val negative: Color, val arrow: Color, val axis: Color, val probe: Color)
+
+/**
+ * The map of colors and the arrows, worked out once: moving the point then only redraws the point.
+ *
+ * @property values Under the arrows, row after row from the top left.
+ * @property arrows Where each arrow is, and its vector.
+ */
+@Immutable
+private class FieldGrid(picture: FieldPicture) {
+  val reach = picture.reach
+
+  val values =
+    DoubleArray(COLOR_CELLS * COLOR_CELLS) { index ->
+      val x = ((index % COLOR_CELLS + HALF) / COLOR_CELLS * 2 - 1) * picture.reach
+      val y = (1 - (index / COLOR_CELLS + HALF) / COLOR_CELLS * 2) * picture.reach
+      picture.color(x, y)
+    }
+
+  val largest = values.filter { it.isFinite() }.maxOfOrNull { abs(it) }?.takeIf { it > 0 }
+
+  val arrows =
+    (0 until ARROWS).flatMap { i ->
+      (0 until ARROWS).map { j ->
+        val x = ((i + HALF) / ARROWS * 2 - 1) * picture.reach
+        val y = (1 - (j + HALF) / ARROWS * 2) * picture.reach
+        Triple(x, y, picture.arrow(x, y))
+      }
+    }
+
+  val longest = arrows.map { hypot(it.third.first, it.third.second) }.filter { it.isFinite() }.maxOrNull()?.takeIf { it > 0 }
+}
 
 /** Arrows on a map of colors, and the point that a finger moves. */
 @Composable
 internal fun FieldView(picture: FieldPicture, probe: Pair<Double, Double>, onProbe: (Double, Double) -> Unit) {
   val scheme = MaterialTheme.colorScheme
   val colors = FieldColors(scheme.tertiary, scheme.primary, scheme.onSurface.copy(alpha = ARROW_ALPHA), scheme.outline, scheme.error)
+  val grid = remember(picture) { FieldGrid(picture) }
   val move by rememberUpdatedState(onProbe)
   val reach by rememberUpdatedState(picture.reach)
-  Canvas(
+  Box(
     Modifier.fillMaxWidth()
       .widthIn(max = MAX_SIZE)
       .aspectRatio(1f)
@@ -65,10 +102,18 @@ internal fun FieldView(picture: FieldPicture, probe: Pair<Double, Double>, onPro
         }
       }
   ) {
-    drawColors(picture, colors)
-    drawAxes(picture.reach, colors.axis)
-    drawArrows(picture, colors.arrow)
-    drawProbe(picture, probe, colors.probe)
+    FieldBackground(grid, colors)
+    Canvas(Modifier.fillMaxSize()) { drawProbe(picture, probe, colors.probe) }
+  }
+}
+
+/** Skipped while only the point moves, since [grid] and [colors] stay the same. */
+@Composable
+private fun FieldBackground(grid: FieldGrid, colors: FieldColors) {
+  Canvas(Modifier.fillMaxSize()) {
+    drawColors(grid, colors)
+    drawAxes(grid.reach, colors.axis)
+    drawArrows(grid, colors.arrow)
   }
 }
 
@@ -78,16 +123,10 @@ private fun DrawScope.toScreen(x: Double, y: Double, reach: Double) =
   Offset(((x / reach + 1) / 2 * size.width).toFloat(), ((1 - y / reach) / 2 * size.height).toFloat())
 
 /** Squares colored by the sign of the value, darker where it is bigger. */
-private fun DrawScope.drawColors(picture: FieldPicture, colors: FieldColors) {
+private fun DrawScope.drawColors(grid: FieldGrid, colors: FieldColors) {
+  val largest = grid.largest ?: return
   val cell = size.width / COLOR_CELLS
-  val values =
-    List(COLOR_CELLS * COLOR_CELLS) { index ->
-      val x = ((index % COLOR_CELLS + HALF) / COLOR_CELLS * 2 - 1) * picture.reach
-      val y = (1 - (index / COLOR_CELLS + HALF) / COLOR_CELLS * 2) * picture.reach
-      picture.color(x, y)
-    }
-  val largest = values.filter { it.isFinite() }.maxOfOrNull { abs(it) }?.takeIf { it > 0 } ?: return
-  values.forEachIndexed { index, value ->
+  grid.values.forEachIndexed { index, value ->
     if (!value.isFinite()) return@forEachIndexed
     val color = if (value >= 0) colors.positive else colors.negative
     drawRect(
@@ -105,22 +144,14 @@ private fun DrawScope.drawAxes(reach: Double, color: Color) {
 }
 
 /** All as long as the cells, but shorter where the field is weaker. */
-private fun DrawScope.drawArrows(picture: FieldPicture, color: Color) {
+private fun DrawScope.drawArrows(grid: FieldGrid, color: Color) {
+  val longest = grid.longest ?: return
   val cell = size.width / ARROWS
-  val points =
-    (0 until ARROWS).flatMap { i ->
-      (0 until ARROWS).map { j ->
-        val x = ((i + HALF) / ARROWS * 2 - 1) * picture.reach
-        val y = (1 - (j + HALF) / ARROWS * 2) * picture.reach
-        Triple(x, y, picture.arrow(x, y))
-      }
-    }
-  val longest = points.map { hypot(it.third.first, it.third.second) }.filter { it.isFinite() }.maxOrNull()?.takeIf { it > 0 } ?: return
-  points.forEach { (x, y, vector) ->
+  grid.arrows.forEach { (x, y, vector) ->
     val length = hypot(vector.first, vector.second)
     if (!length.isFinite() || length == 0.0) return@forEach
     val shown = (cell * ARROW_SHARE * (length / longest).coerceAtLeast(MIN_ARROW)).toFloat()
-    drawArrow(toScreen(x, y, picture.reach), vector, shown, color, ARROW_WIDTH)
+    drawArrow(toScreen(x, y, grid.reach), vector, shown, color, ARROW_WIDTH)
   }
 }
 

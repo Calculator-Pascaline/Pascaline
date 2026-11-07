@@ -51,9 +51,11 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
@@ -86,8 +88,13 @@ import androidx.compose.ui.zIndex
 import com.sadellie.unitto.core.datastore.UserPreferencesRepository
 import com.sadellie.unitto.core.designsystem.icons.symbols.Add
 import com.sadellie.unitto.core.designsystem.icons.symbols.Check
+import com.sadellie.unitto.core.designsystem.icons.symbols.Close
+import com.sadellie.unitto.core.designsystem.icons.symbols.Delete
 import com.sadellie.unitto.core.designsystem.icons.symbols.Edit
+import com.sadellie.unitto.core.designsystem.icons.symbols.KeyboardArrowDown
+import com.sadellie.unitto.core.designsystem.icons.symbols.KeyboardArrowUp
 import com.sadellie.unitto.core.designsystem.icons.symbols.Remove
+import com.sadellie.unitto.core.designsystem.icons.symbols.Search
 import com.sadellie.unitto.core.designsystem.icons.symbols.Settings
 import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
 import com.sadellie.unitto.core.navigation.BodyMassDrawerItem
@@ -119,11 +126,8 @@ import com.sadellie.unitto.core.navigation.ResistorsDrawerItem
 import com.sadellie.unitto.core.navigation.SequencesDrawerItem
 import com.sadellie.unitto.core.navigation.SettingsDrawerItem
 import com.sadellie.unitto.core.navigation.StatisticsDrawerItem
-import com.sadellie.unitto.core.navigation.TOOL_ORDER_KEY
-import com.sadellie.unitto.core.navigation.TimeZonesDrawerItem
 import com.sadellie.unitto.core.navigation.VectorFieldsDrawerItem
 import com.sadellie.unitto.core.navigation.inDefaultOrder
-import com.sadellie.unitto.core.navigation.ordered
 import com.sadellie.unitto.core.ui.ScaffoldWithTopBar
 import com.sadellie.unitto.core.ui.rememberKeyPress
 import com.sadellie.unitto.core.ui.squashable
@@ -131,16 +135,35 @@ import com.sadellie.unitto.core.ui.trackKeyPress
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import unitto.core.common.generated.resources.Res
 import unitto.core.common.generated.resources.app_name
+import unitto.core.common.generated.resources.common_cancel
+import unitto.core.common.generated.resources.common_clear
 import unitto.core.common.generated.resources.common_edit
 import unitto.core.common.generated.resources.common_ok
-import unitto.core.common.generated.resources.home_edit_hint
+import unitto.core.common.generated.resources.home_add_section
+import unitto.core.common.generated.resources.home_data
+import unitto.core.common.generated.resources.home_delete_section
+import unitto.core.common.generated.resources.home_edit_sections_hint
+import unitto.core.common.generated.resources.home_electronics
+import unitto.core.common.generated.resources.home_everyday
 import unitto.core.common.generated.resources.home_hidden
 import unitto.core.common.generated.resources.home_hide
+import unitto.core.common.generated.resources.home_math
+import unitto.core.common.generated.resources.home_move_down
+import unitto.core.common.generated.resources.home_move_to
+import unitto.core.common.generated.resources.home_move_up
+import unitto.core.common.generated.resources.home_new_section
+import unitto.core.common.generated.resources.home_no_tool
+import unitto.core.common.generated.resources.home_recent
+import unitto.core.common.generated.resources.home_rename
 import unitto.core.common.generated.resources.home_reset
+import unitto.core.common.generated.resources.home_science
+import unitto.core.common.generated.resources.home_search
+import unitto.core.common.generated.resources.home_section_name
 import unitto.core.common.generated.resources.home_show
 
 /** The list with the element at [from] moved to [to]. */
@@ -199,8 +222,8 @@ private class HomeReorder(private val grid: LazyGridState, private val scope: Co
     }
   }
 
-  fun end(onDrop: (List<String>) -> Unit) {
-    if (section != null) onDrop(draft)
+  fun end(onDrop: (String, List<String>) -> Unit) {
+    section?.let { onDrop(it, draft) }
     section = null
     dragged = null
     offset = Offset.Zero
@@ -215,23 +238,37 @@ private class TileActions(
   val reorder: HomeReorder,
   val onOpen: (NamedTool) -> Unit,
   val onHiddenChange: (NamedTool, Boolean) -> Unit,
-  val onDrop: (List<String>) -> Unit,
+  val onDrop: (String, List<String>) -> Unit,
+  val onMove: (NamedTool) -> Unit,
 )
 
-/** Every tool as a tile, the most used first until they are moved. In the edit mode tiles can be dragged and hidden. */
+/** The first sections: one per topic, with its tools. */
+private val DEFAULT_SECTIONS by lazy {
+  Topic.entries.map { topic -> HomeSection(topic.name, null, topic.items.map { it.topLevelRoute.routeId }) }
+}
+
+/**
+ * Every tool in its section, under a search and the tools used last. In the edit mode tiles can
+ * be dragged, hidden and moved to another section, and sections renamed, moved and added.
+ */
 @Composable
 internal fun HomeRoute() {
   val navigator = LocalNavigator.current
   val preferences = koinInject<UserPreferencesRepository>()
-  val savedLayout by
-    remember(preferences) { preferences.appData(DRAWER_LAYOUT_KEY) }.collectAsState(initial = "")
-  val savedOrder by
-    remember(preferences) { preferences.appData(TOOL_ORDER_KEY) }.collectAsState(initial = "")
+  val savedLayout by remember(preferences) { preferences.appData(DRAWER_LAYOUT_KEY) }.collectAsState(initial = "")
+  val savedSections by remember(preferences) { preferences.appData(SECTIONS_KEY) }.collectAsState(initial = "")
+  val savedRecent by remember(preferences) { preferences.appData(RECENT_KEY) }.collectAsState(initial = "")
   val scope = rememberCoroutineScope()
   val layout = DrawerLayout.parse(savedLayout)
-  val tools = layout.shown.map { NamedTool(it, stringResource(it.name)) }.inDefaultOrder().ordered(savedOrder)
+  val tools = layout.shown.map { NamedTool(it, stringResource(it.name)) }
   val hidden = layout.hidden.map { NamedTool(it, stringResource(it.name)) }.inDefaultOrder()
+  val sections = arrangeSections(HomeSection.decode(savedSections), DEFAULT_SECTIONS, tools.map { it.id })
   var isEditing by rememberSaveable { mutableStateOf(false) }
+  var query by rememberSaveable { mutableStateOf("") }
+  var moving by remember { mutableStateOf<NamedTool?>(null) }
+  var renaming by remember { mutableStateOf<HomeSection?>(null) }
+  val recent = savedRecent.split(ORDER_SEPARATOR).mapNotNull { id -> tools.firstOrNull { it.id == id } }
+  val names = sectionNames(sections)
   val grid = rememberLazyGridState()
   val reorder = remember(grid, scope) { HomeReorder(grid, scope) }
   // Names load after the first frame: the grid would follow its old first key down the list
@@ -239,11 +276,15 @@ internal fun HomeRoute() {
   fun save(key: String, value: String) {
     scope.launch { preferences.updateAppData(key, value) }
   }
+  fun saveSections(changed: List<HomeSection>) = save(SECTIONS_KEY, HomeSection.encode(changed))
   val actions =
     TileActions(
       isEditing = isEditing,
       reorder = reorder,
-      onOpen = { tool -> navigator.openTool(tool.item) },
+      onOpen = { tool ->
+        save(RECENT_KEY, (listOf(tool.id) + recent.map { it.id }.filter { it != tool.id }).take(RECENT_COUNT).joinToString(ORDER_SEPARATOR))
+        navigator.openTool(tool.item)
+      },
       onHiddenChange = { tool, hide ->
         when {
           !hide -> save(DRAWER_LAYOUT_KEY, DrawerLayout(layout.shown + tool.item, layout.hidden - tool.item).save())
@@ -251,7 +292,14 @@ internal fun HomeRoute() {
           tools.size > 1 -> save(DRAWER_LAYOUT_KEY, DrawerLayout(layout.shown - tool.item, layout.hidden + tool.item).save())
         }
       },
-      onDrop = { ids -> save(TOOL_ORDER_KEY, ids.joinToString(ORDER_SEPARATOR)) },
+      onDrop = { id, order -> saveSections(sections.map { if (it.id == id) it.copy(tools = order) else it }) },
+      onMove = { moving = it },
+    )
+  val edits =
+    SectionEdits(
+      onRename = { renaming = it },
+      onMove = { section, step -> saveSections(sections.withSectionMoved(section.id, step)) },
+      onDelete = { section -> saveSections(sections - section) },
     )
 
   ScaffoldWithTopBar(
@@ -271,8 +319,9 @@ internal fun HomeRoute() {
     colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
   ) { paddingValues ->
     Column(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
-      if (isEditing) EditBar(showsReset = savedOrder.isNotEmpty()) { save(TOOL_ORDER_KEY, "") }
-      val hiddenTitle = stringResource(Res.string.home_hidden)
+      if (isEditing) EditBar(showsReset = savedSections.isNotEmpty()) { save(SECTIONS_KEY, "") }
+      val labels = HomeLabels(stringResource(Res.string.home_recent), stringResource(Res.string.home_no_tool), stringResource(Res.string.home_hidden))
+      val newName = stringResource(Res.string.home_new_section)
       LazyVerticalGrid(
         modifier = Modifier.weight(1f),
         state = grid,
@@ -281,17 +330,84 @@ internal fun HomeRoute() {
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
       ) {
-        tiles(ALL_SECTION, tools, actions)
-        if (isEditing && hidden.isNotEmpty()) {
-          header(hiddenTitle)
-          tiles(HIDDEN_SECTION, hidden, actions)
+        val content = HomeContent(sections, names, tools, labels)
+        if (isEditing) {
+          editedSections(content, actions, edits)
+          wide("add") {
+            TextButton(onClick = { saveSections(sections + HomeSection(sections.newSectionId(), newName, emptyList())) }) {
+              Icon(Symbols.Add, null)
+              Text(stringResource(Res.string.home_add_section))
+            }
+          }
+          if (hidden.isNotEmpty()) {
+            header(labels.hidden)
+            tiles(HIDDEN_SECTION, hidden, actions)
+          }
+        } else {
+          wide("search") { ToolSearch(query) { query = it } }
+          shownSections(content, query, recent, actions)
         }
       }
     }
   }
+  SectionDialogs(moving, renaming, sections, names, ::saveSections) {
+    moving = null
+    renaming = null
+  }
 }
 
-/** What editing does, and the way back to the first order. */
+/** Moving a tool to another section, or renaming one, while one of them is chosen. */
+@Composable
+private fun SectionDialogs(
+  moving: NamedTool?,
+  renaming: HomeSection?,
+  sections: List<HomeSection>,
+  names: Map<String, String>,
+  onSave: (List<HomeSection>) -> Unit,
+  onClose: () -> Unit,
+) {
+  moving?.let { tool ->
+    MoveDialog(tool, sections, names, onDismiss = onClose) { to ->
+      onSave(sections.withToolMoved(tool.id, to))
+      onClose()
+    }
+  }
+  renaming?.let { section ->
+    RenameDialog(names.getValue(section.id), onDismiss = onClose) { name ->
+      onSave(sections.map { if (it.id == section.id) it.copy(name = name.ifBlank { null }) else it })
+      onClose()
+    }
+  }
+}
+
+/** The name of every section: the one the user gave, or the name of its topic. */
+@Composable
+private fun sectionNames(sections: List<HomeSection>): Map<String, String> {
+  val topics = Topic.entries.associate { it.name to stringResource(it.title) }
+  val fallback = stringResource(Res.string.home_new_section)
+  return sections.associate { it.id to (it.name ?: topics[it.id] ?: fallback) }
+}
+
+private class HomeLabels(val recent: String, val nothingFound: String, val hidden: String)
+
+/** The sections, their names, the tools and the words around them. */
+private class HomeContent(
+  val sections: List<HomeSection>,
+  val names: Map<String, String>,
+  val tools: List<NamedTool>,
+  val labels: HomeLabels,
+) {
+  fun toolsOf(section: HomeSection) = section.tools.mapNotNull { id -> tools.firstOrNull { it.id == id } }
+}
+
+/** What can be done to a section in the edit mode. */
+private class SectionEdits(
+  val onRename: (HomeSection) -> Unit,
+  val onMove: (HomeSection, Int) -> Unit,
+  val onDelete: (HomeSection) -> Unit,
+)
+
+/** What editing does, and the way back to the first sections. */
 @Composable
 private fun EditBar(showsReset: Boolean, onReset: () -> Unit) {
   Row(
@@ -300,7 +416,7 @@ private fun EditBar(showsReset: Boolean, onReset: () -> Unit) {
     horizontalArrangement = Arrangement.spacedBy(8.dp),
   ) {
     Text(
-      stringResource(Res.string.home_edit_hint),
+      stringResource(Res.string.home_edit_sections_hint),
       modifier = Modifier.weight(1f),
       style = MaterialTheme.typography.bodyMedium,
       color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -309,8 +425,140 @@ private fun EditBar(showsReset: Boolean, onReset: () -> Unit) {
   }
 }
 
-private fun LazyGridScope.header(text: String) {
-  item(key = text, span = { GridItemSpan(maxLineSpan) }) {
+/** The tools found, or the ones used last and every section that has tools. */
+private fun LazyGridScope.shownSections(content: HomeContent, query: String, recent: List<NamedTool>, actions: TileActions) {
+  val words = query.trim().lowercase()
+  if (words.isNotEmpty()) {
+    val found = content.tools.filter { words in it.name.lowercase() }
+    if (found.isEmpty()) header(content.labels.nothingFound) else tiles(SEARCH_SECTION, found, actions)
+    return
+  }
+  if (recent.isNotEmpty()) {
+    header(content.labels.recent)
+    tiles(RECENT_SECTION, recent, actions)
+  }
+  content.sections.forEach { section ->
+    val inSection = content.toolsOf(section)
+    if (inSection.isNotEmpty()) {
+      header(content.names.getValue(section.id), section.id)
+      tiles(section.id, inSection, actions)
+    }
+  }
+}
+
+/** Every section, empty ones too, with what can be changed on its title. */
+private fun LazyGridScope.editedSections(content: HomeContent, actions: TileActions, edits: SectionEdits) {
+  content.sections.forEachIndexed { index, section ->
+    val inSection = content.toolsOf(section)
+    wide("title/${section.id}") {
+      SectionTitle(
+        name = content.names.getValue(section.id),
+        canMoveUp = index > 0,
+        canMoveDown = index < content.sections.lastIndex,
+        canDelete = inSection.isEmpty() && content.sections.size > 1,
+      ) { action ->
+        when (action) {
+          TitleAction.RENAME -> edits.onRename(section)
+          TitleAction.UP -> edits.onMove(section, -1)
+          TitleAction.DOWN -> edits.onMove(section, 1)
+          TitleAction.DELETE -> edits.onDelete(section)
+        }
+      }
+    }
+    tiles(section.id, inSection, actions)
+  }
+}
+
+private enum class TitleAction {
+  RENAME,
+  UP,
+  DOWN,
+  DELETE,
+}
+
+@Composable
+private fun SectionTitle(name: String, canMoveUp: Boolean, canMoveDown: Boolean, canDelete: Boolean, onAction: (TitleAction) -> Unit) {
+  Row(modifier = Modifier.fillMaxWidth().padding(top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+    Text(
+      name,
+      modifier = Modifier.weight(1f).clickable { onAction(TitleAction.RENAME) }.padding(4.dp),
+      style = MaterialTheme.typography.titleSmall,
+      color = MaterialTheme.colorScheme.primary,
+    )
+    IconButton(onClick = { onAction(TitleAction.RENAME) }) { Icon(Symbols.Edit, stringResource(Res.string.home_rename)) }
+    IconButton(onClick = { onAction(TitleAction.UP) }, enabled = canMoveUp) {
+      Icon(Symbols.KeyboardArrowUp, stringResource(Res.string.home_move_up))
+    }
+    IconButton(onClick = { onAction(TitleAction.DOWN) }, enabled = canMoveDown) {
+      Icon(Symbols.KeyboardArrowDown, stringResource(Res.string.home_move_down))
+    }
+    if (canDelete) {
+      IconButton(onClick = { onAction(TitleAction.DELETE) }) { Icon(Symbols.Delete, stringResource(Res.string.home_delete_section)) }
+    }
+  }
+}
+
+/** The sections a tool can go to: a tap moves it to the end of that one. */
+@Composable
+private fun MoveDialog(tool: NamedTool, sections: List<HomeSection>, names: Map<String, String>, onDismiss: () -> Unit, onMove: (String) -> Unit) {
+  AlertDialog(
+    onDismissRequest = onDismiss,
+    title = { Text("${stringResource(Res.string.home_move_to)}: ${tool.name}") },
+    text = {
+      Column {
+        sections.forEach { section ->
+          val isHere = tool.id in section.tools
+          Text(
+            names.getValue(section.id),
+            modifier = Modifier.fillMaxWidth().clip(MaterialTheme.shapes.medium).clickable(enabled = !isHere) { onMove(section.id) }.padding(12.dp),
+            style = MaterialTheme.typography.bodyLarge,
+            color = if (isHere) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+            fontWeight = if (isHere) FontWeight.Bold else FontWeight.Normal,
+          )
+        }
+      }
+    },
+    confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(Res.string.common_cancel)) } },
+  )
+}
+
+@Composable
+private fun RenameDialog(current: String, onDismiss: () -> Unit, onRename: (String) -> Unit) {
+  var name by remember { mutableStateOf(current) }
+  AlertDialog(
+    onDismissRequest = onDismiss,
+    title = { Text(stringResource(Res.string.home_rename)) },
+    text = {
+      OutlinedTextField(value = name, onValueChange = { name = it.take(MAX_NAME) }, singleLine = true, label = { Text(stringResource(Res.string.home_section_name)) })
+    },
+    confirmButton = { TextButton(onClick = { onRename(name.trim()) }) { Text(stringResource(Res.string.common_ok)) } },
+    dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(Res.string.common_cancel)) } },
+  )
+}
+
+/** Something as wide as the grid. */
+private fun LazyGridScope.wide(key: String, content: @Composable () -> Unit) {
+  item(key = key, span = { GridItemSpan(maxLineSpan) }) { content() }
+}
+
+@Composable
+private fun ToolSearch(query: String, onChange: (String) -> Unit) {
+  OutlinedTextField(
+    value = query,
+    onValueChange = onChange,
+    modifier = Modifier.fillMaxWidth(),
+    placeholder = { Text(stringResource(Res.string.home_search)) },
+    leadingIcon = { Icon(Symbols.Search, null) },
+    trailingIcon = {
+      if (query.isNotEmpty()) IconButton(onClick = { onChange("") }) { Icon(Symbols.Close, stringResource(Res.string.common_clear)) }
+    },
+    singleLine = true,
+    shape = MaterialTheme.shapes.extraLarge,
+  )
+}
+
+private fun LazyGridScope.header(text: String, key: String = text) {
+  item(key = "header/$key", span = { GridItemSpan(maxLineSpan) }) {
     Text(
       text,
       modifier = Modifier.padding(start = 4.dp, top = 8.dp),
@@ -381,8 +629,9 @@ private fun LazyGridItemScope.ToolTile(
           .alpha(if (isHidden) HIDDEN_ALPHA else 1f)
           .trackKeyPress(keyPress)
           .squashable(
-            onClick = { actions.onOpen(tool) },
-            enabled = !actions.isEditing,
+            // In the edit mode a tap moves the tool to another section
+            onClick = { if (actions.isEditing) actions.onMove(tool) else actions.onOpen(tool) },
+            enabled = !isHidden,
             interactionSource = interactionSource,
             cornerRadiusRange = KEY_CORNER..KEY_PRESSED_CORNER,
             animationSpec = MaterialTheme.motionScheme.fastSpatialSpec(),
@@ -425,41 +674,40 @@ private val GREEN = TilePalette(Color(0xFFD4EEE2), Color(0xFF1C5C42), Color(0xFF
 private val PEACH = TilePalette(Color(0xFFFBE1CB), Color(0xFF8A4512), Color(0xFF4B3424), Color(0xFFFFD3B0))
 private val PINK = TilePalette(Color(0xFFFBDCE5), Color(0xFF8E2547), Color(0xFF4D2833), Color(0xFFFFCAD9))
 private val SKY = TilePalette(Color(0xFFD5ECF6), Color(0xFF1C5B77), Color(0xFF203F4C), Color(0xFFBDE6F7))
-private val INDIGO = TilePalette(Color(0xFFDCE3FB), Color(0xFF2B3F8F), Color(0xFF2A3352), Color(0xFFCBD6FF))
 
-private val TILE_PALETTES =
-  mapOf(
-    FunctionsDrawerItem to PURPLE,
-    VectorFieldsDrawerItem to PURPLE,
-    IntegralsDrawerItem to PURPLE,
-    SequencesDrawerItem to PURPLE,
-    ProgrammerDrawerItem to PURPLE,
-    ConverterDrawerItem to PURPLE,
-    StatisticsDrawerItem to GREEN,
-    RegressionDrawerItem to GREEN,
-    InferenceDrawerItem to GREEN,
-    ProbabilityDrawerItem to GREEN,
-    FinanceDrawerItem to PEACH,
-    PricesDrawerItem to PEACH,
-    ProjectileDrawerItem to PEACH,
-    ElementsDrawerItem to PINK,
-    FiltersDrawerItem to PINK,
-    ResistorsDrawerItem to PINK,
-    ChargingDrawerItem to PINK,
-    LogicDrawerItem to PINK,
-    PlaceDrawerItem to SKY,
-    OrbitsDrawerItem to SKY,
-    TimeZonesDrawerItem to INDIGO,
-    DateCalculatorDrawerItem to INDIGO,
-    BodyMassDrawerItem to INDIGO,
-  )
+/** Tools by what they are for. Each topic has its color and its own place on Home. */
+private enum class Topic(val title: StringResource, val palette: TilePalette, val items: List<DrawerItem>) {
+  MATH(
+    Res.string.home_math,
+    PURPLE,
+    listOf(
+      CalculatorDrawerItem,
+      FunctionsDrawerItem,
+      SequencesDrawerItem,
+      ProgrammerDrawerItem,
+      IntegralsDrawerItem,
+      VectorFieldsDrawerItem,
+    ),
+  ),
+  // What most people need, right after the calculator
+  EVERYDAY(
+    Res.string.home_everyday,
+    PEACH,
+    listOf(ConverterDrawerItem, PricesDrawerItem, FinanceDrawerItem, DateCalculatorDrawerItem, BodyMassDrawerItem),
+  ),
+  DATA(Res.string.home_data, GREEN, listOf(StatisticsDrawerItem, RegressionDrawerItem, InferenceDrawerItem, ProbabilityDrawerItem)),
+  SCIENCE(Res.string.home_science, SKY, listOf(ElementsDrawerItem, ProjectileDrawerItem, OrbitsDrawerItem, PlaceDrawerItem)),
+  ELECTRONICS(Res.string.home_electronics, PINK, listOf(FiltersDrawerItem, ResistorsDrawerItem, ChargingDrawerItem, LogicDrawerItem)),
+}
+
+/** New tools that are in no topic yet go with the everyday ones. */
+private fun topicOf(item: DrawerItem) = Topic.entries.firstOrNull { item in it.items } ?: Topic.EVERYDAY
 
 /** Background and content of a tile: the calculator is the one in the color of the app. */
 @Composable
 private fun tileColors(item: DrawerItem): Pair<Color, Color> {
   val scheme = MaterialTheme.colorScheme
-  if (item == CalculatorDrawerItem) return scheme.primary to scheme.onPrimary
-  val palette = TILE_PALETTES[item] ?: INDIGO
+  val palette = topicOf(item).palette
   val isDark = scheme.surface.luminance() < HALF
   return if (isDark) palette.dark to palette.onDark else palette.light to palette.onLight
 }
@@ -508,8 +756,13 @@ private fun EditBadge(modifier: Modifier, icon: ImageVector, label: String, colo
   }
 }
 
-private const val ALL_SECTION = "all"
 private const val HIDDEN_SECTION = "hidden"
+private const val SEARCH_SECTION = "search"
+private const val RECENT_SECTION = "recent"
+private const val RECENT_KEY = "HOME_RECENT"
+private const val SECTIONS_KEY = "HOME_SECTIONS"
+private const val MAX_NAME = 30
+private const val RECENT_COUNT = 3
 private const val KEY_SEPARATOR = "/"
 private const val DRAGGED_SCALE = 1.08f
 private const val HIDDEN_ALPHA = 0.5f
@@ -521,8 +774,8 @@ private const val APPEAR_DELAY = 28L
 private const val MAX_APPEAR_DELAY = 400L
 private const val APPEAR_SCALE = 0.7f
 private val APPEAR_RISE = 24.dp
-private val KEY_WIDTH = 150.dp
-private val KEY_HEIGHT = 92.dp
+private val KEY_WIDTH = 104.dp
+private val KEY_HEIGHT = 100.dp
 private val ICON_SIZE = 26.dp
 private const val KEY_CORNER = 22
 private const val KEY_PRESSED_CORNER = 32

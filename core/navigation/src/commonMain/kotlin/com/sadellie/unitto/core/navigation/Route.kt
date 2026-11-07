@@ -64,7 +64,6 @@ interface Route : NavKey {
             DateCalculatorStartRoute.serializer(),
             deepLink(DateCalculatorStartRoute).toKmpUri(),
           ),
-          DeepLinkPattern(TimeZoneStartRoute.serializer(), deepLink(TimeZoneStartRoute).toKmpUri()),
           DeepLinkPattern(BodyMassStartRoute.serializer(), deepLink(BodyMassStartRoute).toKmpUri()),
           DeepLinkPattern(PlaceStartRoute.serializer(), deepLink(PlaceStartRoute).toKmpUri()),
           DeepLinkPattern(ProjectileStartRoute.serializer(), deepLink(ProjectileStartRoute).toKmpUri()),
@@ -173,11 +172,6 @@ data class ConverterStartRoute(val unitFromId: String = "", val unitToId: String
 @Serializable
 data object DateCalculatorStartRoute : TopLevelRoute {
   override val routeId = "date_calculator_route"
-}
-
-@Serializable
-data object TimeZoneStartRoute : TopLevelRoute {
-  override val routeId = "time_zone_route"
 }
 
 @Serializable

@@ -28,7 +28,6 @@ actual val mainDrawerItems: List<DrawerItem> by lazy {
     ElementsDrawerItem,
     PlaceDrawerItem,
     ProjectileDrawerItem,
-    TimeZonesDrawerItem,
     RegressionDrawerItem,
     ConverterDrawerItem,
     SequencesDrawerItem,

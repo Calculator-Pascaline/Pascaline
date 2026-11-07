@@ -494,10 +494,15 @@ private fun simplifyProduct(left: Node, right: Node): Node {
   var coefficient = KBigDecimal.ONE
   // Fractions like 1/2 stay exact, decimals stay decimals
   var fraction = Rational.ONE
+  // How many times 180/π (minus how many times π/180): integrals in degrees bring one each
+  var degrees = 0
   val rest = mutableListOf<Node>()
   fun absorb(factor: Node) {
     when {
       factor is Node.Number -> coefficient = coefficient.multiply(factor.value)
+      factor.isDegreeFactor(DEGREES_IN_HALF_TURN_NUMBER, Node.Pi) -> degrees++
+      factor.isDegreeFactor(Node.Pi, DEGREES_IN_HALF_TURN_NUMBER) -> degrees--
+      factor.degreePower() != 0 -> degrees += factor.degreePower()
       factor.isNumberFraction() -> {
         val division = factor as Node.Binary
         fraction *=
@@ -526,6 +531,8 @@ private fun simplifyProduct(left: Node, right: Node): Node {
   }
   factors.forEach(::absorb)
   if (coefficient.isZero() || fraction.isZero) return number(0)
+  // x·180/π·180/π ==> (180/π)²·x
+  degreeFactor(degrees)?.let { rest.add(0, it) }
   val product = rest.reduceOrNull { acc, node -> Node.Binary(BinaryOperator.MULTIPLY, acc, node) }
   if (fraction != Rational.ONE) {
     val total = Rational.fromDecimal(coefficient) * fraction
@@ -541,6 +548,36 @@ private fun simplifyProduct(left: Node, right: Node): Node {
       Node.Negate(Node.Binary(BinaryOperator.MULTIPLY, Node.Number(-coefficient), product))
     else -> Node.Binary(BinaryOperator.MULTIPLY, Node.Number(coefficient), product)
   }
+}
+
+private val DEGREES_IN_HALF_TURN_NUMBER = Node.Number(KBigDecimal.valueOf(DEGREES_IN_HALF_TURN))
+
+/** [top] / [bottom], like 180/π. */
+private fun Node.isDegreeFactor(top: Node, bottom: Node) =
+  this is Node.Binary && operator == BinaryOperator.DIVIDE && left.sameAs(top) && right.sameAs(bottom)
+
+private fun Node.sameAs(other: Node) =
+  if (this is Node.Number && other is Node.Number) value.compareTo(other.value) == 0 else this == other
+
+/** n for (180/π)ⁿ, −n for (π/180)ⁿ, 0 for anything else. */
+private fun Node.degreePower(): Int {
+  if (this !is Node.Binary || operator != BinaryOperator.POWER) return 0
+  val exponent = (right as? Node.Number)?.value?.let { runCatching { it.intValueExact() }.getOrNull() } ?: return 0
+  return when {
+    left.isDegreeFactor(DEGREES_IN_HALF_TURN_NUMBER, Node.Pi) -> exponent
+    left.isDegreeFactor(Node.Pi, DEGREES_IN_HALF_TURN_NUMBER) -> -exponent
+    else -> 0
+  }
+}
+
+/** (180/π)ⁿ for n above 0, (π/180)⁻ⁿ below, null for 0. */
+private fun degreeFactor(power: Int): Node? {
+  if (power == 0) return null
+  val base =
+    if (power > 0) Node.Binary(BinaryOperator.DIVIDE, DEGREES_IN_HALF_TURN_NUMBER, Node.Pi)
+    else Node.Binary(BinaryOperator.DIVIDE, Node.Pi, DEGREES_IN_HALF_TURN_NUMBER)
+  val times = kotlin.math.abs(power)
+  return if (times == 1) base else Node.Binary(BinaryOperator.POWER, base, number(times.toLong()))
 }
 
 /**

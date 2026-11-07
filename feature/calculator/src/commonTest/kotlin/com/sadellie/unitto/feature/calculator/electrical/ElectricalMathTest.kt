@@ -159,10 +159,8 @@ class ElectricalMathTest {
   }
 
   @Test
-  fun decibelsGoBackAndForth() {
-    assertClose(3.0103, powerDecibels(2.0), 1e-4)
+  fun voltageGainInDecibels() {
     assertClose(20.0, voltageDecibels(10.0))
-    assertClose(100.0, powerRatio(20.0))
-    assertClose(10.0, voltageRatio(20.0))
+    assertClose(-6.0206, voltageDecibels(0.5), 1e-4)
   }
 }

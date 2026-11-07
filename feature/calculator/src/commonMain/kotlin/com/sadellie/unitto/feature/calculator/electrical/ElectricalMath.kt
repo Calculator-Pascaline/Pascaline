@@ -298,15 +298,8 @@ internal enum class Gate(val expression: String, val isInverted: Boolean) {
     }
 }
 
-/** Power ratio ==> decibels. */
-internal fun powerDecibels(ratio: Double) = DECIBELS_PER_BEL * log10(ratio)
-
 /** Voltage ratio ==> decibels. */
 internal fun voltageDecibels(ratio: Double) = 2 * DECIBELS_PER_BEL * log10(ratio)
-
-internal fun powerRatio(decibels: Double) = 10.0.pow(decibels / DECIBELS_PER_BEL)
-
-internal fun voltageRatio(decibels: Double) = 10.0.pow(decibels / (2 * DECIBELS_PER_BEL))
 
 private const val DECIBELS_PER_BEL = 10
 private const val HALF_TURN = 180.0

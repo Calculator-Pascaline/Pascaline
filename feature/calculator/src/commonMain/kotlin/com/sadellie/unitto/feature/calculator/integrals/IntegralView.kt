@@ -26,6 +26,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -81,9 +83,14 @@ private class ViewColors(val low: Color, val high: Color, val floor: Color, val 
 
 /** The graph over its region, or the solid, in 3D. A finger turns it. */
 @Composable
-internal fun IntegralView(faces: List<Face>) {
+internal fun IntegralView(faces: List<Face>, rough: List<Face>) {
   var yaw by rememberSaveable { mutableFloatStateOf(START_YAW) }
   var pitch by rememberSaveable { mutableFloatStateOf(START_PITCH) }
+  // While a finger turns it, a lighter drawing without lines keeps up with the finger
+  var isTurning by remember { mutableStateOf(false) }
+  val box = remember(faces) { faces.takeIf { it.isNotEmpty() }?.let { shown -> Box3(shown.flatMap { it.corners }) } }
+  val fine = remember(faces, box) { box?.let { prepare(faces, it) }.orEmpty() }
+  val light = remember(rough, box) { box?.let { prepare(rough, it) }.orEmpty() }
   val measurer = rememberTextMeasurer()
   val scheme = MaterialTheme.colorScheme
   val colors =
@@ -98,42 +105,55 @@ internal fun IntegralView(faces: List<Face>) {
   val label = MaterialTheme.typography.labelLarge.copy(color = scheme.onSurfaceVariant)
   Canvas(
     Modifier.fillMaxWidth().height(VIEW_HEIGHT).pointerInput(Unit) {
-      detectDragGestures { change, drag ->
+      detectDragGestures(
+        onDragStart = { isTurning = true },
+        onDragEnd = { isTurning = false },
+        onDragCancel = { isTurning = false },
+      ) { change, drag ->
         change.consume()
         yaw -= drag.x * TURN_SPEED
         pitch = (pitch + drag.y * TURN_SPEED).coerceIn(-MAX_PITCH, MAX_PITCH)
       }
     }
   ) {
-    if (faces.isEmpty()) return@Canvas
-    val box = Box3(faces.flatMap { it.corners })
+    val shownBox = box ?: return@Canvas
     val camera = Camera(yaw, pitch, center, size.minDimension * REACH)
-    drawAxes(box, camera, colors.axis, measurer, label)
-    drawFaces(faces, box, camera, colors)
+    drawAxes(shownBox, camera, colors.axis, measurer, label)
+    val isLight = isTurning && light.isNotEmpty()
+    drawFaces(if (isLight) light else fine, camera, colors, withLines = !isLight)
   }
 }
 
-private fun DrawScope.drawFaces(faces: List<Face>, box: Box3, camera: Camera, colors: ViewColors) {
+/** A face with its corners already fitted in the box: turning only projects them. */
+private class PlacedFace(val face: Face, val corners: List<Triple<Double, Double, Double>>, val shade: Float)
+
+private fun prepare(faces: List<Face>, box: Box3) =
+  faces.map { face ->
+    PlacedFace(face, face.corners.map { box.normal(it.x, it.y, it.z) }, (face.corners.sumOf { it.shade } / face.corners.size).toFloat())
+  }
+
+private fun DrawScope.drawFaces(faces: List<PlacedFace>, camera: Camera, colors: ViewColors, withLines: Boolean) {
   val line = Stroke(width = LINE_WIDTH.dp.toPx())
   faces
-    .map { face ->
-      val projected = face.corners.map { camera.project(box.normal(it.x, it.y, it.z)) }
-      Triple(face, projected.map { it.first }, projected.sumOf { it.second } / projected.size)
+    .map { placed ->
+      val projected = placed.corners.map { camera.project(it) }
+      Triple(placed, projected.map { it.first }, projected.sumOf { it.second } / projected.size)
     }
     .sortedByDescending { it.third }
-    .forEach { (face, points, _) ->
+    .forEach { (placed, points, _) ->
+      val face = placed.face
       val path = Path()
       path.moveTo(points[0].x, points[0].y)
       points.drop(1).forEach { path.lineTo(it.x, it.y) }
       path.close()
       val color =
         when (face.kind) {
-          FaceKind.SURFACE -> lerp(colors.low, colors.high, (face.corners.sumOf { it.shade } / face.corners.size).toFloat())
+          FaceKind.SURFACE -> lerp(colors.low, colors.high, placed.shade)
           FaceKind.FLOOR -> colors.floor
           FaceKind.WALL -> colors.wall
         }
       drawPath(path, color)
-      if (face.kind != FaceKind.WALL) drawPath(path, colors.line, style = line)
+      if (withLines && face.kind != FaceKind.WALL) drawPath(path, colors.line, style = line)
     }
 }
 

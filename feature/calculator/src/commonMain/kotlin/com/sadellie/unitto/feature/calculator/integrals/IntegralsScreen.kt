@@ -143,13 +143,17 @@ internal fun IntegralsRoute(openDrawer: () -> Unit) {
     produceState(emptyList<Face>(), setup?.let { texts to kind }) {
       value = setup?.let { withContext(Dispatchers.Default) { runCatching { it.faces(VIEW_STEPS) }.getOrNull() } }.orEmpty()
     }
+  val rough by
+    produceState(emptyList<Face>(), setup?.let { texts to kind }) {
+      value = setup?.let { withContext(Dispatchers.Default) { runCatching { it.faces(ROUGH_STEPS) }.getOrNull() } }.orEmpty()
+    }
 
   PhysicsScreen(
     title = Res.string.integrals_title,
     openDrawer = openDrawer,
     live = {
       ModeChips(IntegralKind.entries, kind, { it.title }) { kind = it }
-      IntegralCard(kind, faces, result.takeIf { setup != null }, fractional)
+      IntegralCard(kind, faces to rough, result.takeIf { setup != null }, fractional)
     },
     settings = { IntegralInputs(kind, texts, ::edit) },
     explanation = { result?.takeIf { it.isValid && setup != null }?.let { IntegralExplanation(kind, texts, it, fractional) } },
@@ -158,9 +162,9 @@ internal fun IntegralsRoute(openDrawer: () -> Unit) {
 
 /** The drawing, then the value with what it means. */
 @Composable
-private fun IntegralCard(kind: IntegralKind, faces: List<Face>, result: IntegralResult?, fractional: String) {
+private fun IntegralCard(kind: IntegralKind, faces: Pair<List<Face>, List<Face>>, result: IntegralResult?, fractional: String) {
   LiveCard {
-    IntegralView(faces)
+    IntegralView(faces.first, faces.second)
     Hint(stringResource(Res.string.integrals_hint))
     if (result == null || !result.isValid) {
       Text(stringResource(Res.string.integrals_invalid), color = MaterialTheme.colorScheme.error)
@@ -267,3 +271,4 @@ private const val Z_LOW = 5
 private const val Z_HIGH = 6
 private const val DECIMALS = 4
 private const val VIEW_STEPS = 18
+private const val ROUGH_STEPS = 9
