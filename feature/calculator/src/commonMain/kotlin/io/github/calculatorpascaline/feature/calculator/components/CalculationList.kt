@@ -19,10 +19,6 @@
 
 package io.github.calculatorpascaline.feature.calculator.components
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -289,17 +285,9 @@ internal fun SwipeActions(
       }
     )
   }
-  // The card closes before it is deleted, so the cards around it slide instead of jumping
-  val visibility = remember { MutableTransitionState(true) }
-  LaunchedEffect(visibility.isIdle, visibility.currentState) {
-    if (visibility.isIdle && !visibility.currentState) onDelete()
-  }
-  AnimatedVisibility(
-    visibleState = visibility,
-    modifier = modifier,
-    enter = EnterTransition.None,
-    exit = shrinkVertically(),
-  ) {
+  // Deleted at once: the list's own item animation fades the card out while the others slide into
+  // its place, in one movement
+  Box(modifier = modifier) {
     var showDeleteDialog by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     Box(modifier = Modifier.clip(CARD_SHAPE)) {
@@ -323,7 +311,7 @@ internal fun SwipeActions(
           tint = MaterialTheme.colorScheme.onErrorContainer,
           enabled = isOpen,
           onClick = {
-            if (label.isNullOrEmpty()) visibility.targetState = false else showDeleteDialog = true
+            if (label.isNullOrEmpty()) onDelete() else showDeleteDialog = true
           },
         )
       }
@@ -339,7 +327,7 @@ internal fun SwipeActions(
       DeleteLabeledDialog(
         onConfirm = {
           showDeleteDialog = false
-          visibility.targetState = false
+          onDelete()
         },
         onDismiss = { showDeleteDialog = false },
       )
