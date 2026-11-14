@@ -80,6 +80,8 @@ android {
       setOf(
         "en",
         "en-rGB",
+        "ar",
+        "bn",
         "cs",
         "de",
         "es",
@@ -88,11 +90,16 @@ android {
         "hu",
         "in",
         "it",
+        "ja",
+        "ko",
         "nl",
+        "pl",
         "pt-rBR",
         "ru",
         "sk",
         "tr",
+        "uk",
+        "vi",
         "zh-rCN",
       )
   }

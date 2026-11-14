@@ -90,7 +90,10 @@ import io.github.calculatorpascaline.feature.datecalculator.dateCalculatorModule
 import io.github.calculatorpascaline.feature.settings.settingsModule
 import io.github.calculatorpascaline.shared.generated.resources.Res
 import io.github.calculatorpascaline.shared.generated.resources.noto_sans
+import io.github.calculatorpascaline.shared.generated.resources.noto_sans_arabic
+import io.github.calculatorpascaline.shared.generated.resources.noto_sans_bengali
 import io.github.calculatorpascaline.shared.generated.resources.noto_sans_devanagari
+import io.github.calculatorpascaline.shared.generated.resources.noto_sans_kr
 import io.github.calculatorpascaline.shared.generated.resources.noto_sans_math
 import io.github.calculatorpascaline.shared.generated.resources.noto_sans_sc
 import io.github.sadellie.themmo.Themmo
@@ -131,14 +134,19 @@ fun main() {
 
 /**
  * The browser has no fonts to fall back on: characters missing from the default font, like
- * subscripts, maths symbols, Hindi and Chinese, show as boxes. Preloaded fonts fill them in.
+ * subscripts, maths symbols, Hindi, Chinese, Japanese, Korean, Arabic and Bengali, show as boxes.
+ * Preloaded fonts fill them in.
  *
  * Noto fonts (SIL Open Font License, resources/NotoFonts-OFL.txt) from
- * github.com/notofonts/notofonts.github.io and github.com/notofonts/noto-cjk. Math and Chinese are
- * cut down to what the app shows, WebFontsTest says when a translation needs them cut again:
+ * github.com/notofonts/notofonts.github.io and github.com/notofonts/noto-cjk. Math, Chinese (also
+ * used for Japanese) and Korean are cut down to what the app shows, Arabic and Bengali to their
+ * script. WebFontsTest says when a translation needs them cut again:
  * ```
  * pyftsubset NotoSansMath-Regular.ttf --layout-features='*' --output-file=noto_sans_math.ttf  *   --unicodes=2190-23FF,25A0-25FF,27C0-27FF,2980-2BFF
- * pyftsubset NotoSansSC-Regular.otf --layout-features='*' --output-file=noto_sans_sc.otf  *   --text-file=<characters of values-zh-rCN/strings.xml and of files/place/cities.tsv> --unicodes=3000-303F,FF00-FF65
+ * pyftsubset NotoSansSC-Regular.otf --layout-features='*' --output-file=noto_sans_sc.otf  *   --text-file=<characters of values-zh-rCN, values-ja and values strings.xml and of files/place/cities.tsv> --unicodes=3000-30FF,FF00-FF65
+ * pyftsubset NotoSansKR-Regular.otf --layout-features='*' --output-file=noto_sans_kr.otf  *   --text-file=<Hangul of values-ko/strings.xml and values/strings.xml>
+ * pyftsubset NotoSansArabic-Regular.ttf --layout-features='*' --output-file=noto_sans_arabic.ttf  *   --unicodes=0600-06FF,0750-077F,FB50-FDFF,FE70-FEFF,200C,200D
+ * pyftsubset NotoSansBengali-Regular.ttf --layout-features='*' --output-file=noto_sans_bengali.ttf  *   --unicodes=0980-09FF,0964,0965,200C,200D,25CC
  * ```
  */
 @OptIn(ExperimentalResourceApi::class)
@@ -150,6 +158,9 @@ private fun WithFallbackFonts(content: @Composable () -> Unit) {
       preloadFont(Res.font.noto_sans_math).value,
       preloadFont(Res.font.noto_sans_devanagari).value,
       preloadFont(Res.font.noto_sans_sc).value,
+      preloadFont(Res.font.noto_sans_kr).value,
+      preloadFont(Res.font.noto_sans_arabic).value,
+      preloadFont(Res.font.noto_sans_bengali).value,
     )
   val fontFamilyResolver = LocalFontFamilyResolver.current
   var fontsReady by remember { mutableStateOf(false) }
