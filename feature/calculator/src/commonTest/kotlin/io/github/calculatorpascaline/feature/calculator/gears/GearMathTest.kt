@@ -39,7 +39,7 @@ class GearMathTest {
       speed = 1500.0,
       torque = 10.0,
       efficiency = 1.0,
-      gears = listOf(GearSpec(40.0, false), GearSpec(15.0, true), GearSpec(45.0, false)),
+      gears = listOf(GearSpec(40.0, Link.MESH), GearSpec(15.0, Link.SHAFT), GearSpec(45.0, Link.MESH)),
     )
 
   @Test
@@ -110,7 +110,7 @@ class GearMathTest {
 
   @Test
   fun idlerChangesTheDirectionOnly() {
-    val train = compound.copy(gears = listOf(GearSpec(33.0, false), GearSpec(20.0, false)))
+    val train = compound.copy(gears = listOf(GearSpec(33.0, Link.MESH), GearSpec(20.0, Link.MESH)))
     val output = train.solve().output
     assertClose(1500.0, output.speed)
     assertClose(10.0, output.torque)
@@ -124,7 +124,7 @@ class GearMathTest {
 
   @Test
   fun teethMustBeAWholeNumberOfAtLeastThree() {
-    val train = compound.copy(gears = listOf(GearSpec(2.0, false), GearSpec(40.5, false)))
+    val train = compound.copy(gears = listOf(GearSpec(2.0, Link.MESH), GearSpec(40.5, Link.MESH)))
     val gears = train.solve().gears
     assertTrue(gears[1].speed.isNaN())
     assertTrue(gears[2].teeth.isNaN())
@@ -162,7 +162,7 @@ class GearMathTest {
 
   @Test
   fun layoutStopsAtTheFirstGearWithoutTeeth() {
-    val train = compound.copy(gears = listOf(GearSpec(40.0, false), GearSpec(1.0, false), GearSpec(20.0, false)))
+    val train = compound.copy(gears = listOf(GearSpec(40.0, Link.MESH), GearSpec(1.0, Link.MESH), GearSpec(20.0, Link.MESH)))
     assertEquals(2, layoutGears(train.solve().gears, 0.0).size)
   }
 }

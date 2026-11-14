@@ -18,336 +18,228 @@
 
 package io.github.calculatorpascaline.feature.calculator.gears
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import io.github.calculatorpascaline.core.designsystem.icons.symbols.Add
 import io.github.calculatorpascaline.core.designsystem.icons.symbols.Delete
-import io.github.calculatorpascaline.core.designsystem.icons.symbols.KeyboardArrowDown
-import io.github.calculatorpascaline.core.designsystem.icons.symbols.KeyboardArrowUp
 import io.github.calculatorpascaline.core.designsystem.icons.symbols.Symbols
-import io.github.calculatorpascaline.feature.calculator.electrical.AnswerList
-import io.github.calculatorpascaline.feature.calculator.electrical.Answers
 import io.github.calculatorpascaline.feature.calculator.electrical.Hint
 import io.github.calculatorpascaline.feature.calculator.electrical.ModeChips
-import io.github.calculatorpascaline.feature.calculator.electrical.engineering
-import io.github.calculatorpascaline.feature.calculator.physics.LiveCard
-import io.github.calculatorpascaline.feature.calculator.physics.PhysicsScreen
+import io.github.calculatorpascaline.feature.calculator.electrical.NameChips
 import io.github.calculatorpascaline.feature.calculator.physics.number
 import io.github.calculatorpascaline.feature.calculator.physics.numberFormat
 import io.github.calculatorpascaline.feature.calculator.physics.rememberFractional
 import io.github.calculatorpascaline.feature.calculator.projectile.Card
 import io.github.calculatorpascaline.feature.calculator.projectile.Condition
-import io.github.calculatorpascaline.feature.calculator.projectile.ConditionRow
-import io.github.calculatorpascaline.feature.calculator.projectile.Step
-import kotlin.math.abs
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import pascaline.core.common.generated.resources.Res
-import pascaline.core.common.generated.resources.gears_add
-import pascaline.core.common.generated.resources.gears_center
-import pascaline.core.common.generated.resources.gears_diameter
-import pascaline.core.common.generated.resources.gears_diametral
-import pascaline.core.common.generated.resources.gears_efficiency
-import pascaline.core.common.generated.resources.gears_gear
-import pascaline.core.common.generated.resources.gears_hint
-import pascaline.core.common.generated.resources.gears_how
-import pascaline.core.common.generated.resources.gears_input
-import pascaline.core.common.generated.resources.gears_input_power
-import pascaline.core.common.generated.resources.gears_meshes
-import pascaline.core.common.generated.resources.gears_module
-import pascaline.core.common.generated.resources.gears_move_down
-import pascaline.core.common.generated.resources.gears_move_up
-import pascaline.core.common.generated.resources.gears_output_power
-import pascaline.core.common.generated.resources.gears_output_speed
-import pascaline.core.common.generated.resources.gears_output_torque
+import pascaline.core.common.generated.resources.gears_examples
+import pascaline.core.common.generated.resources.gears_name
+import pascaline.core.common.generated.resources.gears_open
 import pascaline.core.common.generated.resources.gears_power
-import pascaline.core.common.generated.resources.gears_power_text
-import pascaline.core.common.generated.resources.gears_ratio
+import pascaline.core.common.generated.resources.gears_rack_force
+import pascaline.core.common.generated.resources.gears_rack_speed
 import pascaline.core.common.generated.resources.gears_remove
-import pascaline.core.common.generated.resources.gears_same_shaft
-import pascaline.core.common.generated.resources.gears_size_text
+import pascaline.core.common.generated.resources.gears_save
+import pascaline.core.common.generated.resources.gears_saved
+import pascaline.core.common.generated.resources.gears_saved_empty
 import pascaline.core.common.generated.resources.gears_speed
-import pascaline.core.common.generated.resources.gears_speed_text
-import pascaline.core.common.generated.resources.gears_teeth
-import pascaline.core.common.generated.resources.gears_title
 import pascaline.core.common.generated.resources.gears_torque
-import pascaline.core.common.generated.resources.gears_torque_text
-import pascaline.core.common.generated.resources.gears_train
-import pascaline.core.common.generated.resources.gears_train_efficiency
+import pascaline.core.common.generated.resources.gears_units
 
-private val TEETH = Condition("z", "", Res.string.gears_teeth, 6.0..120.0, 1.0)
-private val MODULE = Condition("m", "mm", Res.string.gears_module, 0.5..10.0, 0.25)
-private val DIAMETRAL = Condition("Pd", "1/in", Res.string.gears_diametral, 2.0..48.0, 1.0)
-private val SPEED = Condition("n", "rpm", Res.string.gears_speed, 0.0..6000.0, 10.0)
-private val TORQUE = Condition("T", "N·m", Res.string.gears_torque, 0.0..200.0, 0.5)
-private val POWER = Condition("P", "kW", Res.string.gears_power, 0.0..20.0, 0.05)
-private val EFFICIENCY = Condition("η", "%", Res.string.gears_efficiency, 80.0..100.0, 0.5)
-
-/** What is given at the input: its torque, or the power that turns it. */
-private enum class Drive(val title: StringResource) {
-  TORQUE(Res.string.gears_torque),
-  POWER(Res.string.gears_power),
-}
-
-private val PitchSystem.title
-  get() = if (this == PitchSystem.MODULE) Res.string.gears_module else Res.string.gears_diametral
-
-private val PitchSystem.unit
-  get() = if (this == PitchSystem.MODULE) "mm" else "in"
-
-/** A gear after the input as it is typed. */
-private data class GearEntry(val teeth: String, val sameShaft: Boolean)
-
-private val GEARS_SAVER =
-  listSaver<List<GearEntry>, Any>(
-    save = { gears -> gears.flatMap { listOf(it.teeth, it.sameShaft) } },
-    restore = { saved -> saved.chunked(2).map { (teeth, sameShaft) -> GearEntry(teeth as String, sameShaft as Boolean) } },
-  )
-
-// 20 teeth on the motor, a 40 that halves the speed, and a 15 on its shaft that drives a 45: 6 to 1 in all
-private val STARTING_GEARS = listOf(GearEntry("40", false), GearEntry("15", true), GearEntry("45", false))
-
-/** A gear train that turns: the input, then as many gears as wanted, each meshing or on the shaft of the one before. */
+/**
+ * Gears: a train that turns, as many gears as wanted, each meshing, on a shared shaft, in a ring, on a belt, turned by
+ * a worm or pushing a rack. Or a planetary set, or the trains that give a wanted ratio.
+ */
 @Composable
 internal fun GearsRoute(openDrawer: () -> Unit) {
   val fractional = rememberFractional()
-  val format = numberFormat(fractional)
-  var teeth by rememberSaveable { mutableStateOf("20") }
-  var system by rememberSaveable { mutableStateOf(PitchSystem.MODULE) }
-  var module by rememberSaveable { mutableStateOf("2") }
-  var diametral by rememberSaveable { mutableStateOf("12") }
-  var speed by rememberSaveable { mutableStateOf("1500") }
-  var drive by rememberSaveable { mutableStateOf(Drive.TORQUE) }
-  var torque by rememberSaveable { mutableStateOf("10") }
-  var power by rememberSaveable { mutableStateOf("1.5") }
-  var efficiency by rememberSaveable { mutableStateOf("98") }
-  var gears by rememberSaveable(stateSaver = GEARS_SAVER) { mutableStateOf(STARTING_GEARS) }
-
-  val rpm = speed.number()
-  val train =
-    GearTrain(
-      teeth = teeth.number(),
-      pitch = if (system == PitchSystem.MODULE) module.number() else diametral.number(),
-      system = system,
-      speed = rpm,
-      torque = if (drive == Drive.TORQUE) torque.number() else torqueFromPower(power.number() * KILO, rpm),
-      efficiency = efficiency.number() / PERCENT,
-      gears = gears.map { GearSpec(it.teeth.number(), it.sameShaft) },
-    )
-  val result = train.solve()
-  val texts = GearTexts(format, system.unit)
-
-  PhysicsScreen(
-    title = Res.string.gears_title,
-    openDrawer = openDrawer,
-    live = {
-      LiveCard {
-        GearDrawing(result.gears)
-        Hint(stringResource(Res.string.gears_hint))
-      }
-      TrainCard(result, texts)
-    },
-    settings = {
-      Card(stringResource(Res.string.gears_input)) {
-        ConditionRow(TEETH, teeth, fractional) { teeth = it }
-        ModeChips(PitchSystem.entries, system, { it.title }) { system = it }
-        if (system == PitchSystem.MODULE) {
-          ConditionRow(MODULE, module, fractional) { module = it }
-        } else {
-          ConditionRow(DIAMETRAL, diametral, fractional) { diametral = it }
-        }
-        ConditionRow(SPEED, speed, fractional) { speed = it }
-        ModeChips(Drive.entries, drive, { it.title }) { drive = it }
-        if (drive == Drive.TORQUE) {
-          ConditionRow(TORQUE, torque, fractional) { torque = it }
-        } else {
-          ConditionRow(POWER, power, fractional) { power = it }
-        }
-        ConditionRow(EFFICIENCY, efficiency, fractional) { efficiency = it }
-        GearAnswers(result.gears.first(), texts)
-      }
-      gears.forEachIndexed { index, entry ->
-        GearCard(
-          number = index + 2,
-          entry = entry,
-          state = result.gears[index + 1],
-          texts = texts,
-          fractional = fractional,
-          onChange = { changed -> gears = gears.toMutableList().also { it[index] = changed } },
-          onMove = { by -> gears = gears.moved(index, index + by) },
-          onRemove = { gears = gears.toMutableList().also { it.removeAt(index) } },
-          isLast = index == gears.lastIndex,
-        )
-      }
-      FilledTonalButton(onClick = { gears = gears + GearEntry(gears.lastOrNull()?.teeth ?: teeth, false) }) {
-        Icon(Symbols.Add, contentDescription = null)
-        Text(stringResource(Res.string.gears_add), modifier = Modifier.padding(start = 8.dp))
-      }
-    },
-    explanation = { Explanation(system) },
-  )
-}
-
-private fun <T> List<T>.moved(from: Int, to: Int): List<T> =
-  if (to !in indices) this else toMutableList().also { it.add(to, it.removeAt(from)) }
-
-/** How numbers are written: speed with the way it turns, ratio as 6 : 1, sizes in mm or inches. */
-private class GearTexts(val format: (Double) -> String, val unit: String) {
-  fun speed(rpm: Double): String {
-    if (!rpm.isFinite()) return DASH
-    val arrow =
-      when {
-        rpm > 0 -> " ↻"
-        rpm < 0 -> " ↺"
-        else -> ""
-      }
-    return "${format(abs(rpm))} rpm$arrow"
-  }
-
-  fun torque(value: Double) = if (value.isFinite()) "${format(value)} N·m" else DASH
-
-  fun ratio(value: Double) =
-    when {
-      !value.isFinite() || value <= 0 -> DASH
-      value >= 1 -> "${format(value)} : 1"
-      else -> "1 : ${format(1 / value)}"
-    }
-
-  fun size(value: Double) = if (value.isFinite()) "${format(value)} $unit" else DASH
-
-  fun power(watts: Double) = engineering(watts, "W", format)
-
-  fun percent(share: Double) = if (share.isFinite()) "${format(share * PERCENT)} %" else DASH
-}
-
-/** Ratio, speed, torque and power from the first gear to the last. */
-@Composable
-private fun TrainCard(result: TrainResult, texts: GearTexts) {
-  Card(stringResource(Res.string.gears_train)) {
-    Answers(
-      Res.string.gears_ratio to texts.ratio(result.ratio),
-      Res.string.gears_output_speed to texts.speed(result.output.speed),
-    )
-    Answers(
-      Res.string.gears_output_torque to texts.torque(result.output.torque),
-      Res.string.gears_train_efficiency to texts.percent(result.efficiency),
-    )
-    Answers(
-      Res.string.gears_input_power to texts.power(result.inputPower),
-      Res.string.gears_output_power to texts.power(result.outputPower),
-    )
+  var inputs by rememberSaveable(stateSaver = INPUTS_SAVER) { mutableStateOf(GearsInputs()) }
+  val screen = GearsContext(inputs, { inputs = it }, fractional, numberFormat(fractional), openDrawer)
+  when (inputs.mode) {
+    GearsMode.TRAIN -> TrainMode(screen)
+    GearsMode.PLANETARY -> PlanetaryMode(screen)
+    GearsMode.FIND -> FindMode(screen)
   }
 }
 
-/** Speed, torque and ratio of a gear, then its size and how far it is from the gear it meshes with. */
-@Composable
-private fun GearAnswers(state: GearState, texts: GearTexts) {
-  Answers(
-    Res.string.gears_speed to texts.speed(state.speed),
-    Res.string.gears_torque to texts.torque(state.torque),
-  )
-  AnswerList(
-    listOfNotNull(
-      Res.string.gears_ratio to texts.ratio(state.ratio),
-      Res.string.gears_diameter to texts.size(state.diameter),
-      state.centerDistance?.let { Res.string.gears_center to texts.size(it) },
-    )
-  )
-}
-
-@Composable
-private fun GearCard(
-  number: Int,
-  entry: GearEntry,
-  state: GearState,
-  texts: GearTexts,
-  fractional: String,
-  onChange: (GearEntry) -> Unit,
-  onMove: (Int) -> Unit,
-  onRemove: () -> Unit,
-  isLast: Boolean,
+/** What every part of the screen needs: the [inputs], how to [change] them, and how numbers are typed and written. */
+internal class GearsContext(
+  val inputs: GearsInputs,
+  val change: (GearsInputs) -> Unit,
+  val fractional: String,
+  val format: (Double) -> String,
+  val openDrawer: () -> Unit,
 ) {
-  Column(
-    modifier =
-      Modifier.fillMaxWidth().clip(CARD_SHAPE).background(MaterialTheme.colorScheme.surfaceContainer).padding(16.dp),
-    verticalArrangement = Arrangement.spacedBy(8.dp),
-  ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-      Text(
-        stringResource(Res.string.gears_gear, number),
-        modifier = Modifier.weight(1f),
-        style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.primary,
-      )
-      IconButton(onClick = { onMove(-1) }, enabled = number > 2) {
-        Icon(Symbols.KeyboardArrowUp, contentDescription = stringResource(Res.string.gears_move_up))
-      }
-      IconButton(onClick = { onMove(1) }, enabled = !isLast) {
-        Icon(Symbols.KeyboardArrowDown, contentDescription = stringResource(Res.string.gears_move_down))
-      }
-      IconButton(onClick = onRemove) {
-        Icon(Symbols.Delete, contentDescription = stringResource(Res.string.gears_remove))
+  val texts = GearTexts(format, if (inputs.system == PitchSystem.MODULE) "mm" else "in", inputs.speedUnit, inputs.units)
+
+  /** The turning speed typed, in rpm. */
+  val speedRpm: Double
+    get() = inputs.speed.number() / inputs.speedUnit.perRpm
+
+  /** The torque typed, in N·m, or the force on a rack in N when [rack]. */
+  fun torque(rack: Boolean = false): Double =
+    inputs.torque.number() / if (rack) inputs.units.forcePerNewton else inputs.units.torquePerNewtonMeter
+
+  /** The power typed, in watts. */
+  val powerWatts: Double
+    get() = inputs.power.number() / inputs.units.powerPerWatt
+
+  /** The speed field, in the chosen unit, or the straight speed of a rack when [rack]. */
+  fun speedCondition(rack: Boolean): Condition =
+    if (rack) {
+      if (inputs.units == ForceUnits.METRIC) RACK_SPEED_METRIC else RACK_SPEED_IMPERIAL
+    } else {
+      when (inputs.speedUnit) {
+        SpeedUnit.RPM -> SPEED_RPM
+        SpeedUnit.RAD_PER_SECOND -> SPEED_RAD
+        SpeedUnit.HERTZ -> SPEED_HZ
       }
     }
-    ConditionRow(TEETH, entry.teeth, fractional) { onChange(entry.copy(teeth = it)) }
+
+  fun torqueCondition(rack: Boolean): Condition =
+    when {
+      rack && inputs.units == ForceUnits.METRIC -> FORCE_METRIC
+      rack -> FORCE_IMPERIAL
+      inputs.units == ForceUnits.METRIC -> TORQUE_METRIC
+      else -> TORQUE_IMPERIAL
+    }
+
+  val powerCondition: Condition
+    get() = if (inputs.units == ForceUnits.METRIC) POWER_METRIC else POWER_IMPERIAL
+}
+
+/** The three modes of the tool. */
+@Composable
+internal fun ModeSelector(screen: GearsContext) {
+  ModeChips(GearsMode.entries, screen.inputs.mode, { it.title }) { screen.change(screen.inputs.copy(mode = it)) }
+}
+
+/** Trains to start from: picking one replaces what was typed, but keeps the units. */
+@Composable
+internal fun ExamplesCard(screen: GearsContext) {
+  Card(stringResource(Res.string.gears_examples)) {
     Row(
       modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
       horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-      FilterChip(
-        selected = !entry.sameShaft,
-        onClick = { onChange(entry.copy(sameShaft = false)) },
-        label = { Text(stringResource(Res.string.gears_meshes, number - 1)) },
-      )
-      FilterChip(
-        selected = entry.sameShaft,
-        onClick = { onChange(entry.copy(sameShaft = true)) },
-        label = { Text(stringResource(Res.string.gears_same_shaft, number - 1)) },
-      )
+      Example.entries.forEach { example ->
+        AssistChip(
+          onClick = { screen.change(example.inputs.inSameUnits(screen.inputs, screen.format)) },
+          label = { Text(stringResource(example.title)) },
+        )
+      }
     }
-    GearAnswers(state, texts)
   }
 }
 
+/** Units of speed, and of torque and power. What was typed is converted, so that it stays the same. */
 @Composable
-private fun Explanation(system: PitchSystem) {
-  Card(stringResource(Res.string.gears_how)) {
-    Step(Res.string.gears_speed, Res.string.gears_speed_text, "n₂ = −n₁ · z₁ / z₂")
-    Step(Res.string.gears_torque, Res.string.gears_torque_text, "T₂ = T₁ · z₂ / z₁ · η")
-    Step(
-      Res.string.gears_diameter,
-      Res.string.gears_size_text,
-      if (system == PitchSystem.MODULE) "d = m · z" else "d = z / Pd",
-      "a = (d₁ + d₂) / 2",
-    )
-    Step(Res.string.gears_power, Res.string.gears_power_text, "P = T · 2π · n / 60")
+internal fun UnitsCard(screen: GearsContext, rack: Boolean) {
+  val inputs = screen.inputs
+  Card(stringResource(Res.string.gears_units)) {
+    NameChips(SpeedUnit.entries, inputs.speedUnit, { it.symbol }) { unit ->
+      val speed = if (rack) inputs.speed else convert(inputs.speed, unit.perRpm / inputs.speedUnit.perRpm, screen.format)
+      screen.change(inputs.copy(speedUnit = unit, speed = speed))
+    }
+    NameChips(ForceUnits.entries, inputs.units, { "${it.torque}, ${it.power}" }) { units ->
+      screen.change(inputs.converted(units, rack, screen.format))
+    }
   }
 }
 
-private const val DASH = "—"
-private const val PERCENT = 100.0
-private const val KILO = 1000.0
-private val CARD_SHAPE = RoundedCornerShape(24.dp)
+/** [inputs] typed again in [units]. */
+private fun GearsInputs.converted(units: ForceUnits, rack: Boolean, format: (Double) -> String): GearsInputs {
+  val torqueFactor =
+    if (rack) units.forcePerNewton / this.units.forcePerNewton
+    else units.torquePerNewtonMeter / this.units.torquePerNewtonMeter
+  val speed =
+    if (rack) convert(speed, units.speedPerMeterPerSecond / this.units.speedPerMeterPerSecond, format) else speed
+  return copy(
+    units = units,
+    speed = speed,
+    torque = convert(torque, torqueFactor, format),
+    power = convert(power, units.powerPerWatt / this.units.powerPerWatt, format),
+  )
+}
+
+/** An example in the units of [current]: examples are written in rpm and metric units. */
+private fun GearsInputs.inSameUnits(current: GearsInputs, format: (Double) -> String): GearsInputs {
+  val inRpm = copy(speedUnit = SpeedUnit.RPM, units = ForceUnits.METRIC)
+  return inRpm
+    .copy(speedUnit = current.speedUnit, speed = convert(speed, current.speedUnit.perRpm, format))
+    .converted(current.units, rack = false, format = format)
+}
+
+private fun convert(text: String, factor: Double, format: (Double) -> String): String {
+  val value = text.number()
+  return if (value.isFinite()) format(value * factor) else text
+}
+
+/** Trains kept under a name, to open again later. */
+@Composable
+internal fun SavedCard(screen: GearsContext) {
+  val saved = rememberSavedTrains()
+  var name by rememberSaveable { mutableStateOf("") }
+  Card(stringResource(Res.string.gears_saved)) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+      OutlinedTextField(
+        value = name,
+        onValueChange = { name = it },
+        label = { Text(stringResource(Res.string.gears_name)) },
+        singleLine = true,
+        modifier = Modifier.weight(1f),
+      )
+      FilledTonalButton(onClick = { saved.save(name.trim(), screen.inputs) }, enabled = name.isNotBlank()) {
+        Text(stringResource(Res.string.gears_save))
+      }
+    }
+    val trains = saved.trains.orEmpty()
+    if (trains.isEmpty()) Hint(stringResource(Res.string.gears_saved_empty))
+    trains.forEach { train ->
+      Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(train.name, modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
+        TextButton(onClick = { screen.change(train.inputs) }) { Text(stringResource(Res.string.gears_open)) }
+        IconButton(onClick = { saved.delete(train) }) {
+          Icon(Symbols.Delete, contentDescription = stringResource(Res.string.gears_remove))
+        }
+      }
+    }
+  }
+}
+
+/** Something that could go wrong, in the color of errors. */
+@Composable
+internal fun Warning(text: String) {
+  Text(text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+}
+
+private val SPEED_RPM = Condition("n", "rpm", Res.string.gears_speed, 0.0..6000.0, 10.0)
+private val SPEED_RAD = Condition("ω", "rad/s", Res.string.gears_speed, 0.0..630.0, 1.0)
+private val SPEED_HZ = Condition("f", "Hz", Res.string.gears_speed, 0.0..100.0, 0.5)
+private val TORQUE_METRIC = Condition("T", "N·m", Res.string.gears_torque, 0.0..200.0, 0.5)
+private val TORQUE_IMPERIAL = Condition("T", "lbf·ft", Res.string.gears_torque, 0.0..150.0, 0.5)
+private val POWER_METRIC = Condition("P", "kW", Res.string.gears_power, 0.0..20.0, 0.05)
+private val POWER_IMPERIAL = Condition("P", "hp", Res.string.gears_power, 0.0..27.0, 0.05)
+private val RACK_SPEED_METRIC = Condition("v", "m/s", Res.string.gears_rack_speed, 0.0..5.0, 0.01)
+private val RACK_SPEED_IMPERIAL = Condition("v", "ft/s", Res.string.gears_rack_speed, 0.0..16.0, 0.05)
+private val FORCE_METRIC = Condition("F", "N", Res.string.gears_rack_force, 0.0..5000.0, 10.0)
+private val FORCE_IMPERIAL = Condition("F", "lbf", Res.string.gears_rack_force, 0.0..1100.0, 2.0)
