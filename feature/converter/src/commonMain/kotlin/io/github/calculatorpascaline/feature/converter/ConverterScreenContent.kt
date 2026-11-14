@@ -130,34 +130,23 @@ internal fun ConverterDefault(
       ColumnWithConstraints(modifier = contentModifier) { boxWithConstraintsScope ->
         val textFieldModifier = Modifier.fillMaxWidth().weight(2f)
 
-        when (uiState.unitFrom.id) {
-          UnitID.foot ->
+        // Units typed in two parts, like 5 ft 11 in
+        val twoParts =
+          when (uiState.unitFrom.id) {
+            UnitID.foot -> Res.string.unit_foot_short to Res.string.unit_inch_short
+            UnitID.pound -> Res.string.unit_pound_short to Res.string.unit_ounce_short
+            UnitID.hour -> Res.string.unit_hour_short to Res.string.unit_minute_short
+            else -> null
+          }
+
+        when {
+          twoParts != null ->
             DoubleUnitInput(
               modifier = textFieldModifier,
               input1 = uiState.input1,
               input2 = uiState.input2,
-              input1ShortName = stringResource(Res.string.unit_foot_short),
-              input2ShortName = stringResource(Res.string.unit_inch_short),
-              onFocusedOnInput1Changed = { focusedOnInput1 = it },
-              formatterSymbols = uiState.formatterSymbols,
-            )
-          UnitID.pound ->
-            DoubleUnitInput(
-              modifier = textFieldModifier,
-              input1 = uiState.input1,
-              input2 = uiState.input2,
-              input1ShortName = stringResource(Res.string.unit_pound_short),
-              input2ShortName = stringResource(Res.string.unit_ounce_short),
-              onFocusedOnInput1Changed = { focusedOnInput1 = it },
-              formatterSymbols = uiState.formatterSymbols,
-            )
-          UnitID.hour ->
-            DoubleUnitInput(
-              modifier = textFieldModifier,
-              input1 = uiState.input1,
-              input2 = uiState.input2,
-              input1ShortName = stringResource(Res.string.unit_hour_short),
-              input2ShortName = stringResource(Res.string.unit_minute_short),
+              input1ShortName = stringResource(twoParts.first),
+              input2ShortName = stringResource(twoParts.second),
               onFocusedOnInput1Changed = { focusedOnInput1 = it },
               formatterSymbols = uiState.formatterSymbols,
             )

@@ -27,7 +27,9 @@ data class ThirdParty(
   val description: String,
 ) {
   companion object {
-    fun allThirdParty(): List<ThirdParty> =
+    fun allThirdParty(): List<ThirdParty> = ALL_THIRD_PARTY
+
+    private val ALL_THIRD_PARTY =
       listOf(
         ThirdParty(
           name = "Lato",
