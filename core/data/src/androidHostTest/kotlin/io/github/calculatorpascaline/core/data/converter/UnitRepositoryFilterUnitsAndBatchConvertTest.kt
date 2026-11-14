@@ -71,6 +71,35 @@ class UnitRepositoryFilterUnitsAndBatchConvertTest {
   }
 
   @Test
+  fun filterUnitsAndBatchConvert_favoritesFirstWithInput() = runTest {
+    // Favorites lead the list of the second unit whether a value is typed or not
+    unitConverterRepo.favorite(UnitID.mile)
+    unitConverterRepo.favorite(UnitID.inch)
+
+    for (input in listOf("", "12")) {
+      val units =
+        unitConverterRepo
+          .filterUnitsAndBatchConvert(
+            query = "",
+            unitGroup = UnitGroup.LENGTH,
+            favoritesOnly = false,
+            sorting = UnitsListSorting.USAGE,
+            unitFromId = UnitID.kilometer,
+            input1 = input,
+            input2 = "",
+          )
+          .getValue(UnitGroup.LENGTH)
+
+      assertEquals(lengthCollection.size, units.size)
+      assertEquals(
+        setOf(UnitID.mile, UnitID.inch),
+        units.take(2).map { it.basicUnit.id }.toSet(),
+      )
+      assertEquals(listOf(true, true, false), units.take(3).map { it.stats.isFavorite })
+    }
+  }
+
+  @Test
   fun filterUnitsAndBatchConvert_brokenInput() = runTest {
     unitConverterRepo.favorite(UnitID.meter)
 
