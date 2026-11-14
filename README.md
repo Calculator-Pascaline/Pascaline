@@ -43,6 +43,20 @@
 
 <p align="center"><sub>Added to the home screen, the web app opens in its own window and works without internet.</sub></p>
 
+<details>
+<summary>Check that your <code>.apk</code> is the real one</summary>
+<br />
+
+Every release is signed with the same certificate. Its SHA-256 fingerprint is:
+
+```
+A4:A9:81:99:0C:02:D0:CB:78:FF:EE:07:14:F5:25:C6:A2:72:22:E4:94:FF:CC:32:AE:12:DA:74:F7:21:4C:AE
+```
+
+Apps like [AppVerifier](https://github.com/soupslurpr/AppVerifier) show it for an installed app, or run `apksigner verify --print-certs` on the `.apk`. A different fingerprint means someone else built and signed that file.
+
+</details>
+
 ## ✨ Features
 
 ### 🏠 Every tool on one screen
