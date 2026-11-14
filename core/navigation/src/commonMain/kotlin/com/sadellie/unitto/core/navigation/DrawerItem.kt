@@ -53,7 +53,6 @@ import com.sadellie.unitto.core.designsystem.icons.symbols.SettingsFill
 import com.sadellie.unitto.core.designsystem.icons.symbols.Surfaces
 import com.sadellie.unitto.core.designsystem.icons.symbols.SwapHoriz
 import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
-import com.sadellie.unitto.core.designsystem.icons.symbols.VectorFields
 import org.jetbrains.compose.resources.StringResource
 import unitto.core.common.generated.resources.Res
 import unitto.core.common.generated.resources.body_mass_title
@@ -83,7 +82,6 @@ import unitto.core.common.generated.resources.sequences_title
 import unitto.core.common.generated.resources.settings_title
 import unitto.core.common.generated.resources.statistics_title
 import unitto.core.common.generated.resources.surfaces_title
-import unitto.core.common.generated.resources.vectors_title
 
 sealed interface DrawerItem {
   val topLevelRoute: TopLevelRoute
@@ -245,13 +243,6 @@ data object IntegralsDrawerItem : DrawerItem {
   override val name = Res.string.integrals_title
   override val selectedIcon = Symbols.Integrals
   override val defaultIcon = Symbols.Integrals
-}
-
-data object VectorFieldsDrawerItem : DrawerItem {
-  override val topLevelRoute = VectorFieldsStartRoute
-  override val name = Res.string.vectors_title
-  override val selectedIcon = Symbols.VectorFields
-  override val defaultIcon = Symbols.VectorFields
 }
 
 data object InflationDrawerItem : DrawerItem {

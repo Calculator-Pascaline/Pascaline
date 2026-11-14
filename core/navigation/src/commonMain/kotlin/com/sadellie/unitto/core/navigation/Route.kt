@@ -71,7 +71,6 @@ interface Route : NavKey {
           DeepLinkPattern(SurfacesStartRoute.serializer(), deepLink(SurfacesStartRoute).toKmpUri()),
           DeepLinkPattern(ChangeoverStartRoute.serializer(), deepLink(ChangeoverStartRoute).toKmpUri()),
           DeepLinkPattern(InflationStartRoute.serializer(), deepLink(InflationStartRoute).toKmpUri()),
-          DeepLinkPattern(VectorFieldsStartRoute.serializer(), deepLink(VectorFieldsStartRoute).toKmpUri()),
           DeepLinkPattern(IntegralsStartRoute.serializer(), deepLink(IntegralsStartRoute).toKmpUri()),
           DeepLinkPattern(FiltersStartRoute.serializer(), deepLink(FiltersStartRoute).toKmpUri()),
           DeepLinkPattern(ResistorsStartRoute.serializer(), deepLink(ResistorsStartRoute).toKmpUri()),
@@ -220,11 +219,6 @@ data object LogicStartRoute : TopLevelRoute {
 @Serializable
 data object IntegralsStartRoute : TopLevelRoute {
   override val routeId = "integrals_route"
-}
-
-@Serializable
-data object VectorFieldsStartRoute : TopLevelRoute {
-  override val routeId = "vectors_route"
 }
 
 @Serializable

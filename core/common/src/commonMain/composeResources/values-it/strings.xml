@@ -1885,28 +1885,6 @@
     <string name="integrals_explain_meaning">Che cosa significa</string>
     <string name="integrals_explain_meaning_double_text">Con f sopra la regione, il valore è il volume sotto la superficie. Con f = 1 è l’area della regione.</string>
     <string name="integrals_explain_meaning_triple_text">Con f = 1 il valore è il volume del solido. Se f è una densità, è la sua massa.</string>
-    <string name="vectors_title">Campi vettoriali</string>
-    <string name="vectors_vector">Campo vettoriale</string>
-    <string name="vectors_scalar">Campo scalare</string>
-    <string name="vectors_hint">Trascina per spostare il punto. Le frecce mostrano il campo, i colori il valore scelto: arancione sopra 0, blu sotto.</string>
-    <string name="vectors_at">In %1$s</string>
-    <string name="vectors_range">Mezza larghezza della vista</string>
-    <string name="vectors_formulas">Formule</string>
-    <string name="vectors_swirl">Vortice</string>
-    <string name="vectors_source">Sorgente</string>
-    <string name="vectors_flow">Corrente</string>
-    <string name="vectors_hill">Collina</string>
-    <string name="vectors_saddle">Sella</string>
-    <string name="vectors_waves">Onde</string>
-    <string name="vectors_invalid">Controlla le formule: usa x e y, numeri, + − × ÷ ^, parentesi e funzioni come sin o √.</string>
-    <string name="vectors_explain_div">Divergenza</string>
-    <string name="vectors_explain_div_text">Quanto il campo si allarga dal punto: sopra 0 come una sorgente, sotto 0 come un pozzo.</string>
-    <string name="vectors_explain_rot">Rotore</string>
-    <string name="vectors_explain_rot_text">Quanto il campo gira intorno al punto: sopra 0 in senso antiorario, sotto 0 in senso orario.</string>
-    <string name="vectors_explain_grad">Gradiente</string>
-    <string name="vectors_explain_grad_text">Punta dove f sale più in fretta. La sua lunghezza dice quanto. Vale 0 in cima, sul fondo o in una sella.</string>
-    <string name="vectors_explain_laplacian">Laplaciano</string>
-    <string name="vectors_explain_laplacian_text">Confronta f nel punto con f intorno: sotto 0 vicino a una cima, sopra 0 vicino a un fondo.</string>
     <string name="home_search">Cerca strumenti</string>
     <string name="home_recent">Recenti</string>
     <string name="home_no_tool">Nessuno strumento con questo nome</string>

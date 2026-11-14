@@ -1885,28 +1885,6 @@
     <string name="integrals_explain_meaning">Was es bedeutet</string>
     <string name="integrals_explain_meaning_double_text">Liegt f über dem Bereich, ist der Wert das Volumen unter der Fläche. Mit f = 1 ist es die Fläche des Bereichs.</string>
     <string name="integrals_explain_meaning_triple_text">Mit f = 1 ist der Wert das Volumen des Körpers. Ist f eine Dichte, ist es seine Masse.</string>
-    <string name="vectors_title">Vektorfelder</string>
-    <string name="vectors_vector">Vektorfeld</string>
-    <string name="vectors_scalar">Skalarfeld</string>
-    <string name="vectors_hint">Ziehen verschiebt den Punkt. Pfeile zeigen das Feld, Farben den gewählten Wert: orange über 0, blau darunter.</string>
-    <string name="vectors_at">Bei %1$s</string>
-    <string name="vectors_range">Halbe Breite der Ansicht</string>
-    <string name="vectors_formulas">Formeln</string>
-    <string name="vectors_swirl">Wirbel</string>
-    <string name="vectors_source">Quelle</string>
-    <string name="vectors_flow">Strömung</string>
-    <string name="vectors_hill">Hügel</string>
-    <string name="vectors_saddle">Sattel</string>
-    <string name="vectors_waves">Wellen</string>
-    <string name="vectors_invalid">Prüfe die Formeln: Verwende x und y, Zahlen, + − × ÷ ^, Klammern und Funktionen wie sin oder √.</string>
-    <string name="vectors_explain_div">Divergenz</string>
-    <string name="vectors_explain_div_text">Wie stark das Feld vom Punkt auseinanderläuft: über 0 wie eine Quelle, unter 0 wie eine Senke.</string>
-    <string name="vectors_explain_rot">Rotation</string>
-    <string name="vectors_explain_rot_text">Wie stark das Feld um den Punkt dreht: über 0 gegen den Uhrzeigersinn, unter 0 im Uhrzeigersinn.</string>
-    <string name="vectors_explain_grad">Gradient</string>
-    <string name="vectors_explain_grad_text">Zeigt dorthin, wo f am schnellsten steigt. Seine Länge sagt, wie schnell. Auf einem Gipfel, in einer Mulde oder einem Sattel ist er 0.</string>
-    <string name="vectors_explain_laplacian">Laplace</string>
-    <string name="vectors_explain_laplacian_text">Vergleicht f am Punkt mit f ringsum: unter 0 nahe einem Gipfel, über 0 nahe einer Mulde.</string>
     <string name="home_search">Werkzeuge suchen</string>
     <string name="home_recent">Zuletzt</string>
     <string name="home_no_tool">Kein Werkzeug mit diesem Namen</string>

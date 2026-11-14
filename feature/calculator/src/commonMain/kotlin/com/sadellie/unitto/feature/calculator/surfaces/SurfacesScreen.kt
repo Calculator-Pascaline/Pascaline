@@ -62,7 +62,6 @@ import com.sadellie.unitto.feature.calculator.physics.rememberFractional
 import com.sadellie.unitto.feature.calculator.probability.rounded
 import com.sadellie.unitto.feature.calculator.projectile.Card
 import com.sadellie.unitto.feature.calculator.projectile.Step
-import com.sadellie.unitto.feature.calculator.vectors.scalarAt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.StringResource

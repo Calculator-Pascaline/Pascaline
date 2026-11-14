@@ -1885,28 +1885,6 @@
     <string name="integrals_explain_meaning">Ce que ça veut dire</string>
     <string name="integrals_explain_meaning_double_text">Avec f au-dessus du domaine, la valeur est le volume sous la surface. Avec f = 1, c’est l’aire du domaine.</string>
     <string name="integrals_explain_meaning_triple_text">Avec f = 1, la valeur est le volume du solide. Avec f une densité, c’est sa masse.</string>
-    <string name="vectors_title">Champs de vecteurs</string>
-    <string name="vectors_vector">Champ de vecteurs</string>
-    <string name="vectors_scalar">Champ scalaire</string>
-    <string name="vectors_hint">Glissez pour déplacer le point. Les flèches montrent le champ, les couleurs la valeur choisie : orange au-dessus de 0, bleu en dessous.</string>
-    <string name="vectors_at">En %1$s</string>
-    <string name="vectors_range">Demi-largeur de la vue</string>
-    <string name="vectors_formulas">Formules</string>
-    <string name="vectors_swirl">Tourbillon</string>
-    <string name="vectors_source">Source</string>
-    <string name="vectors_flow">Courant</string>
-    <string name="vectors_hill">Colline</string>
-    <string name="vectors_saddle">Selle</string>
-    <string name="vectors_waves">Vagues</string>
-    <string name="vectors_invalid">Vérifiez les formules : utilisez x et y, des nombres, + − × ÷ ^, des parenthèses et des fonctions comme sin ou √.</string>
-    <string name="vectors_explain_div">Divergence</string>
-    <string name="vectors_explain_div_text">À quel point le champ s’écarte du point : au-dessus de 0 comme une source, en dessous comme un puits.</string>
-    <string name="vectors_explain_rot">Rotationnel</string>
-    <string name="vectors_explain_rot_text">À quel point le champ tourne autour du point : au-dessus de 0 dans le sens trigonométrique, en dessous dans le sens horaire.</string>
-    <string name="vectors_explain_grad">Gradient</string>
-    <string name="vectors_explain_grad_text">Il pointe là où f monte le plus vite. Sa longueur dit à quelle vitesse. Il vaut 0 en haut, en bas ou sur un col.</string>
-    <string name="vectors_explain_laplacian">Laplacien</string>
-    <string name="vectors_explain_laplacian_text">Compare f au point et f autour : en dessous de 0 près d’un sommet, au-dessus près d’un creux.</string>
     <string name="home_search">Chercher un outil</string>
     <string name="home_recent">Récents</string>
     <string name="home_no_tool">Aucun outil de ce nom</string>

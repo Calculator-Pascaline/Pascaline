@@ -140,7 +140,6 @@ import com.sadellie.unitto.core.navigation.SequencesDrawerItem
 import com.sadellie.unitto.core.navigation.SettingsDrawerItem
 import com.sadellie.unitto.core.navigation.StatisticsDrawerItem
 import com.sadellie.unitto.core.navigation.SurfacesDrawerItem
-import com.sadellie.unitto.core.navigation.VectorFieldsDrawerItem
 import com.sadellie.unitto.core.navigation.inDefaultOrder
 import com.sadellie.unitto.core.ui.ScaffoldWithTopBar
 import com.sadellie.unitto.core.ui.keyHaptics
@@ -771,7 +770,6 @@ private enum class Topic(val title: StringResource, val palette: TilePalette, va
       ProgrammerDrawerItem,
       IntegralsDrawerItem,
       SurfacesDrawerItem,
-      VectorFieldsDrawerItem,
     ),
   ),
   // What most people need, right after the calculator

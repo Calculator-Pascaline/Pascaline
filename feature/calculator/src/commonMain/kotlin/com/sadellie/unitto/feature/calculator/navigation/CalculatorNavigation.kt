@@ -43,7 +43,6 @@ import com.sadellie.unitto.core.navigation.ResistorsStartRoute
 import com.sadellie.unitto.core.navigation.SequencesStartRoute
 import com.sadellie.unitto.core.navigation.StatisticsStartRoute
 import com.sadellie.unitto.core.navigation.SurfacesStartRoute
-import com.sadellie.unitto.core.navigation.VectorFieldsStartRoute
 import com.sadellie.unitto.feature.calculator.CalculatorRoute
 import com.sadellie.unitto.feature.calculator.electrical.ChargingRoute
 import com.sadellie.unitto.feature.calculator.electrical.FiltersRoute
@@ -67,7 +66,6 @@ import com.sadellie.unitto.feature.calculator.regression.RegressionRoute
 import com.sadellie.unitto.feature.calculator.sequences.SequencesRoute
 import com.sadellie.unitto.feature.calculator.statistics.StatisticsRoute
 import com.sadellie.unitto.feature.calculator.surfaces.SurfacesRoute
-import com.sadellie.unitto.feature.calculator.vectors.VectorFieldsRoute
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.core.module.Module
 import org.koin.dsl.navigation3.navigation
@@ -146,10 +144,6 @@ fun Module.calculatorNavigation() {
   navigation<IntegralsStartRoute> {
     val navigator = LocalNavigator.current
     IntegralsRoute(openDrawer = navigator::openDrawer)
-  }
-  navigation<VectorFieldsStartRoute> {
-    val navigator = LocalNavigator.current
-    VectorFieldsRoute(openDrawer = navigator::openDrawer)
   }
   navigation<InflationStartRoute> {
     val navigator = LocalNavigator.current

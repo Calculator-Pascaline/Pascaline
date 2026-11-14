@@ -113,11 +113,6 @@
       <img src="docs/screenshots/multiple-integrals.png" width="240" alt="The double integral of 4 − x² − y² over the unit disk drawn as a volume in 3D, equal to 10.9957" /><br />
       <sub>Double and triple integrals in 3D you turn with a finger, with bounds that depend on x and y</sub>
     </td>
-    <td align="center" valign="top" width="50%">
-      <b>Vector fields</b><br />
-      <img src="docs/screenshots/vector-fields.png" width="240" alt="The gradient of e^(−x²−y²) as arrows over a map of colors, with every value at a point" /><br />
-      <sub>Fields as arrows, with gradient, divergence, rotation and Laplacian at any point</sub>
-    </td>
   </tr>
 </table>
 

@@ -1885,28 +1885,6 @@
     <string name="integrals_explain_meaning">Что это значит</string>
     <string name="integrals_explain_meaning_double_text">Если f над областью, значение — это объём под поверхностью. При f = 1 это площадь области.</string>
     <string name="integrals_explain_meaning_triple_text">При f = 1 значение — объём тела. Если f — плотность, это его масса.</string>
-    <string name="vectors_title">Векторные поля</string>
-    <string name="vectors_vector">Векторное поле</string>
-    <string name="vectors_scalar">Скалярное поле</string>
-    <string name="vectors_hint">Проведите, чтобы сдвинуть точку. Стрелки показывают поле, цвета — выбранную величину: оранжевый выше 0, синий ниже.</string>
-    <string name="vectors_at">В %1$s</string>
-    <string name="vectors_range">Половина ширины обзора</string>
-    <string name="vectors_formulas">Формулы</string>
-    <string name="vectors_swirl">Вихрь</string>
-    <string name="vectors_source">Источник</string>
-    <string name="vectors_flow">Поток</string>
-    <string name="vectors_hill">Холм</string>
-    <string name="vectors_saddle">Седло</string>
-    <string name="vectors_waves">Волны</string>
-    <string name="vectors_invalid">Проверьте формулы: используйте x и y, числа, + − × ÷ ^, скобки и функции вроде sin или √.</string>
-    <string name="vectors_explain_div">Дивергенция</string>
-    <string name="vectors_explain_div_text">Насколько поле расходится из точки: выше 0 как источник, ниже 0 как сток.</string>
-    <string name="vectors_explain_rot">Ротор</string>
-    <string name="vectors_explain_rot_text">Насколько поле вращается вокруг точки: выше 0 против часовой стрелки, ниже 0 по часовой.</string>
-    <string name="vectors_explain_grad">Градиент</string>
-    <string name="vectors_explain_grad_text">Указывает, куда f растёт быстрее всего. Его длина — насколько быстро. На вершине, во впадине или в седле он равен 0.</string>
-    <string name="vectors_explain_laplacian">Лапласиан</string>
-    <string name="vectors_explain_laplacian_text">Сравнивает f в точке с f вокруг: ниже 0 у вершины, выше 0 у впадины.</string>
     <string name="home_search">Поиск инструментов</string>
     <string name="home_recent">Недавние</string>
     <string name="home_no_tool">Нет инструмента с таким названием</string>

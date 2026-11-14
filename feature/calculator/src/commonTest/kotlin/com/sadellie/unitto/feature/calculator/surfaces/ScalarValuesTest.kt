@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sadellie.unitto.feature.calculator.vectors
+package com.sadellie.unitto.feature.calculator.surfaces
 
 import com.sadellie.unitto.feature.calculator.integrals.MultiFunction
 import kotlin.math.abs
@@ -24,26 +24,11 @@ import kotlin.math.exp
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
-class FieldMathTest {
+class ScalarValuesTest {
   private fun f(text: String) = MultiFunction(text)
 
   private fun close(expected: Double, actual: Double, tolerance: Double = 1e-5) =
     assertTrue(abs(expected - actual) <= tolerance * maxOf(1.0, abs(expected)), "expected $expected, got $actual")
-
-  @Test
-  fun swirlTurnsWithoutSpreading() {
-    val values = vectorAt(f("−y"), f("x"), 0.7, -1.2)
-    close(0.0, values.divergence)
-    close(2.0, values.rotation)
-  }
-
-  @Test
-  fun sourceSpreadsWithoutTurning() {
-    val values = vectorAt(f("x"), f("y"), 2.0, 3.0)
-    close(2.0, values.divergence)
-    close(0.0, values.rotation)
-    close(kotlin.math.sqrt(13.0), values.length)
-  }
 
   @Test
   fun saddleHasNoLaplacian() {
