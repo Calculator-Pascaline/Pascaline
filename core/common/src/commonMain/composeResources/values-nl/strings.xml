@@ -2029,4 +2029,12 @@
     <string name="surfaces_field_title">Gradiënt, divergentie en rotatie</string>
     <string name="surfaces_field_text">∇f wijst waar f het snelst stijgt, dwars op de niveaulijnen, en zijn lengte is de helling. Zijn divergentie is de laplaciaan Δf: positief onderin een dal, negatief op een heuvel. Zijn rotatie is altijd 0.</string>
     <string name="surfaces_tap_point">Tik op een punt voor zijn Hesse-test, D = fxx·fyy − fxy².</string>
+    <string name="physical_unit_reduced_planck_constant">Gereduceerde constante van Planck</string>
+    <string name="physical_unit_stefan_boltzmann_constant">Constante van Stefan-Boltzmann</string>
+    <string name="physical_unit_bohr_radius">Bohrstraal</string>
+    <string name="physical_unit_atomic_mass_constant">Atomaire massaconstante</string>
+    <string name="physical_unit_molar_volume">Molair volume (0 °C, 1 atm)</string>
+    <string name="units_menu_fundamental">Fundamenteel</string>
+    <string name="units_menu_gravity">Zwaartekracht</string>
+    <string name="units_menu_chemistry_and_heat">Scheikunde en warmte</string>
 </resources>

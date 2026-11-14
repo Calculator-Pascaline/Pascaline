@@ -2029,4 +2029,12 @@
     <string name="surfaces_field_title">Gradient, Divergenz und Rotation</string>
     <string name="surfaces_field_text">∇f zeigt dorthin, wo f am schnellsten steigt, quer zu den Höhenlinien, und seine Länge ist die Steigung. Seine Divergenz ist der Laplace Δf: positiv in einem Tal, negativ auf einem Hügel. Seine Rotation ist immer 0.</string>
     <string name="surfaces_tap_point">Einen Punkt antippen, um seinen Hesse-Test zu sehen, D = fxx·fyy − fxy².</string>
+    <string name="physical_unit_reduced_planck_constant">Reduzierte Planck-Konstante</string>
+    <string name="physical_unit_stefan_boltzmann_constant">Stefan-Boltzmann-Konstante</string>
+    <string name="physical_unit_bohr_radius">Bohrscher Radius</string>
+    <string name="physical_unit_atomic_mass_constant">Atomare Masseneinheit</string>
+    <string name="physical_unit_molar_volume">Molvolumen (0 °C, 1 atm)</string>
+    <string name="units_menu_fundamental">Grundlegend</string>
+    <string name="units_menu_gravity">Gravitation</string>
+    <string name="units_menu_chemistry_and_heat">Chemie und Wärme</string>
 </resources>

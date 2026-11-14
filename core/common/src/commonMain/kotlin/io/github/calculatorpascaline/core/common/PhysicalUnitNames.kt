@@ -19,6 +19,14 @@
 package io.github.calculatorpascaline.core.common
 
 import org.jetbrains.compose.resources.StringResource
+import pascaline.core.common.generated.resources.physical_unit_reduced_planck_constant
+import pascaline.core.common.generated.resources.physical_unit_stefan_boltzmann_constant
+import pascaline.core.common.generated.resources.physical_unit_bohr_radius
+import pascaline.core.common.generated.resources.physical_unit_atomic_mass_constant
+import pascaline.core.common.generated.resources.physical_unit_molar_volume
+import pascaline.core.common.generated.resources.units_menu_fundamental
+import pascaline.core.common.generated.resources.units_menu_gravity
+import pascaline.core.common.generated.resources.units_menu_chemistry_and_heat
 import pascaline.core.common.generated.resources.Res
 import pascaline.core.common.generated.resources.electric_inductance
 import pascaline.core.common.generated.resources.physical_unit_acceleration_of_gravity
@@ -375,4 +383,12 @@ val physicalUnitNames: Map<String, StringResource> =
     "Temperature" to Res.string.unit_group_temperature,
     "Amount of substance" to Res.string.units_menu_amount_of_substance,
     "Constants" to Res.string.units_menu_constants,
+    "Reduced Planck constant" to Res.string.physical_unit_reduced_planck_constant,
+    "Stefan–Boltzmann constant" to Res.string.physical_unit_stefan_boltzmann_constant,
+    "Bohr radius" to Res.string.physical_unit_bohr_radius,
+    "Atomic mass constant" to Res.string.physical_unit_atomic_mass_constant,
+    "Molar volume (0 °C, 1 atm)" to Res.string.physical_unit_molar_volume,
+    "Fundamental" to Res.string.units_menu_fundamental,
+    "Gravity" to Res.string.units_menu_gravity,
+    "Chemistry and heat" to Res.string.units_menu_chemistry_and_heat,
   )

@@ -2029,4 +2029,12 @@
     <string name="surfaces_field_title">Gradien, divergensi, dan rotasi</string>
     <string name="surfaces_field_text">∇f mengarah ke tempat f naik paling cepat, memotong kurva ketinggian, dan panjangnya adalah kemiringan. Divergensinya adalah Laplacian Δf: positif di dasar lembah, negatif di puncak bukit. Rotasinya selalu 0.</string>
     <string name="surfaces_tap_point">Ketuk titik untuk melihat uji Hessian-nya, D = fxx·fyy − fxy².</string>
+    <string name="physical_unit_reduced_planck_constant">Konstanta Planck tereduksi</string>
+    <string name="physical_unit_stefan_boltzmann_constant">Konstanta Stefan-Boltzmann</string>
+    <string name="physical_unit_bohr_radius">Jari-jari Bohr</string>
+    <string name="physical_unit_atomic_mass_constant">Konstanta massa atom</string>
+    <string name="physical_unit_molar_volume">Volume molar (0 °C, 1 atm)</string>
+    <string name="units_menu_fundamental">Dasar</string>
+    <string name="units_menu_gravity">Gravitasi</string>
+    <string name="units_menu_chemistry_and_heat">Kimia dan kalor</string>
 </resources>

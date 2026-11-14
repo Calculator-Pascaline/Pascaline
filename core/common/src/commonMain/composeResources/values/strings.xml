@@ -2316,4 +2316,12 @@
     <string name="surfaces_field_title">Gradient, divergence and curl</string>
     <string name="surfaces_field_text">∇f points where f goes up the fastest, across the level curves, and its length is the slope. Its divergence is the Laplacian Δf: positive at the bottom of a valley, negative at the top of a hill. Its curl is always 0.</string>
     <string name="surfaces_tap_point">Tap a point to see its Hessian test, D = fxx·fyy − fxy².</string>
+    <string name="physical_unit_reduced_planck_constant">Reduced Planck constant</string>
+    <string name="physical_unit_stefan_boltzmann_constant">Stefan–Boltzmann constant</string>
+    <string name="physical_unit_bohr_radius">Bohr radius</string>
+    <string name="physical_unit_atomic_mass_constant">Atomic mass constant</string>
+    <string name="physical_unit_molar_volume">Molar volume (0 °C, 1 atm)</string>
+    <string name="units_menu_fundamental">Fundamental</string>
+    <string name="units_menu_gravity">Gravity</string>
+    <string name="units_menu_chemistry_and_heat">Chemistry and heat</string>
 </resources>

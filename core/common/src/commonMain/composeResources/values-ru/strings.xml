@@ -2029,4 +2029,12 @@
     <string name="surfaces_field_title">Градиент, дивергенция и ротор</string>
     <string name="surfaces_field_text">∇f направлен туда, где f растёт быстрее всего, поперёк линий уровня, а его длина — это наклон. Его дивергенция — лапласиан Δf: положительна на дне впадины, отрицательна на вершине холма. Его ротор всегда 0.</string>
     <string name="surfaces_tap_point">Нажмите на точку, чтобы увидеть её тест по гессиану, D = fxx·fyy − fxy².</string>
+    <string name="physical_unit_reduced_planck_constant">Приведённая постоянная Планка</string>
+    <string name="physical_unit_stefan_boltzmann_constant">Постоянная Стефана — Больцмана</string>
+    <string name="physical_unit_bohr_radius">Боровский радиус</string>
+    <string name="physical_unit_atomic_mass_constant">Атомная единица массы</string>
+    <string name="physical_unit_molar_volume">Молярный объём (0 °C, 1 атм)</string>
+    <string name="units_menu_fundamental">Фундаментальные</string>
+    <string name="units_menu_gravity">Гравитация</string>
+    <string name="units_menu_chemistry_and_heat">Химия и теплота</string>
 </resources>

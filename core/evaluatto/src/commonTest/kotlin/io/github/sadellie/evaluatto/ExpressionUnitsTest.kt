@@ -129,6 +129,10 @@ class ExpressionUnitsTest {
 
   @Test fun constantConvert() = assertEquals("9.80665" to "${NUM}_m$END${DEN}_s${pow(2)}$END", withUnit("_g0→_m÷_s${pow(2)}"))
 
+  @Test fun reducedPlanck() = assertEquals("1" to null, withUnit("_ħ×2×π÷_hplanck"))
+
+  @Test fun molarVolume() = assertEquals("22.41397" to "_L", withUnit("_Vm×1_mol→_L"))
+
   @Test fun dimensionless() = assertEquals("1000" to null, withUnit("(1_km)÷(1_m)"))
 
   @Test fun degrees() = assertEquals("0.5" to null, withUnit("sin(30_°)"))

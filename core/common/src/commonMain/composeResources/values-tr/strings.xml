@@ -2029,4 +2029,12 @@
     <string name="surfaces_field_title">Gradyan, diverjans ve rotasyonel</string>
     <string name="surfaces_field_text">∇f, f’nin en hızlı arttığı yöne, seviye eğrilerini keserek gösterir ve uzunluğu eğimdir. Diverjansı Laplasyen Δf’dir: vadinin dibinde pozitif, tepenin üstünde negatif. Rotasyoneli her zaman 0’dır.</string>
     <string name="surfaces_tap_point">Hessian testini görmek için bir noktaya dokunun, D = fxx·fyy − fxy².</string>
+    <string name="physical_unit_reduced_planck_constant">İndirgenmiş Planck sabiti</string>
+    <string name="physical_unit_stefan_boltzmann_constant">Stefan-Boltzmann sabiti</string>
+    <string name="physical_unit_bohr_radius">Bohr yarıçapı</string>
+    <string name="physical_unit_atomic_mass_constant">Atomik kütle sabiti</string>
+    <string name="physical_unit_molar_volume">Molar hacim (0 °C, 1 atm)</string>
+    <string name="units_menu_fundamental">Temel</string>
+    <string name="units_menu_gravity">Kütleçekim</string>
+    <string name="units_menu_chemistry_and_heat">Kimya ve ısı</string>
 </resources>

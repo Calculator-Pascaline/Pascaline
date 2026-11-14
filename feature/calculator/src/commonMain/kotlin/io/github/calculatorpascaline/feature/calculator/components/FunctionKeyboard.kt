@@ -121,6 +121,8 @@ import io.github.calculatorpascaline.core.designsystem.icons.symbols.ActivityZon
 import io.github.calculatorpascaline.core.designsystem.icons.symbols.ActivityZoneFill
 import io.github.calculatorpascaline.core.designsystem.icons.symbols.Airwave
 import io.github.calculatorpascaline.core.designsystem.icons.symbols.Atom
+import io.github.calculatorpascaline.core.designsystem.icons.symbols.Lightbulb
+import io.github.calculatorpascaline.core.designsystem.icons.symbols.Projectile
 import io.github.calculatorpascaline.core.designsystem.icons.symbols.Cached
 import io.github.calculatorpascaline.core.designsystem.icons.symbols.Close
 import io.github.calculatorpascaline.core.designsystem.icons.symbols.Compress
@@ -869,6 +871,10 @@ private val CATEGORY_ICONS: Map<String, ImageVector> by lazy {
     "Temperature" to Symbols.DeviceThermostat,
     "Amount of substance" to Symbols.Atom,
     "Constants" to Symbols._123,
+    "Fundamental" to Symbols.Lightbulb,
+    // A thrown ball falling back
+    "Gravity" to Symbols.Projectile,
+    "Chemistry and heat" to Symbols.DeviceThermostat,
   )
 }
 

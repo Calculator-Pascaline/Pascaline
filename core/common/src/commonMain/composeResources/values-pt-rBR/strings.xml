@@ -2029,4 +2029,12 @@
     <string name="surfaces_field_title">Gradiente, divergência e rotacional</string>
     <string name="surfaces_field_text">∇f aponta para onde f sobe mais rápido, atravessando as curvas de nível, e seu comprimento é a inclinação. Sua divergência é o laplaciano Δf: positiva no fundo de um vale, negativa no topo de um morro. Seu rotacional é sempre 0.</string>
     <string name="surfaces_tap_point">Toque em um ponto para ver o teste da hessiana, D = fxx·fyy − fxy².</string>
+    <string name="physical_unit_reduced_planck_constant">Constante de Planck reduzida</string>
+    <string name="physical_unit_stefan_boltzmann_constant">Constante de Stefan-Boltzmann</string>
+    <string name="physical_unit_bohr_radius">Raio de Bohr</string>
+    <string name="physical_unit_atomic_mass_constant">Constante de massa atômica</string>
+    <string name="physical_unit_molar_volume">Volume molar (0 °C, 1 atm)</string>
+    <string name="units_menu_fundamental">Fundamentais</string>
+    <string name="units_menu_gravity">Gravidade</string>
+    <string name="units_menu_chemistry_and_heat">Química e calor</string>
 </resources>

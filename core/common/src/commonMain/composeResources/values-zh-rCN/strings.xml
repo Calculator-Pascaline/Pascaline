@@ -2029,4 +2029,12 @@
     <string name="surfaces_field_title">梯度、散度和旋度</string>
     <string name="surfaces_field_text">∇f 指向 f 增长最快的方向，与等高线垂直，长度就是坡度。它的散度是拉普拉斯算子 Δf：谷底为正，山顶为负。它的旋度总是 0。</string>
     <string name="surfaces_tap_point">点按一个点查看其黑塞检验，D = fxx·fyy − fxy²。</string>
+    <string name="physical_unit_reduced_planck_constant">约化普朗克常数</string>
+    <string name="physical_unit_stefan_boltzmann_constant">斯特藩-玻尔兹曼常数</string>
+    <string name="physical_unit_bohr_radius">玻尔半径</string>
+    <string name="physical_unit_atomic_mass_constant">原子质量常数</string>
+    <string name="physical_unit_molar_volume">摩尔体积（0 °C，1 atm）</string>
+    <string name="units_menu_fundamental">基本</string>
+    <string name="units_menu_gravity">引力</string>
+    <string name="units_menu_chemistry_and_heat">化学与热学</string>
 </resources>

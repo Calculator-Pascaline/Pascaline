@@ -278,24 +278,37 @@ object PhysicalUnits {
   private val millimole = unit("mmol", "Millimole", "0.001", AMOUNT)
   val mole = unit("mol", "Mole", "1", AMOUNT)
 
-  // Constants
-  private val constants =
-    listOf(
-      constant("c", "Speed of light", "299792458", Dimension(m = 1, s = -1)),
-      constant("e", "Elementary charge", "1.602176634E-19", CHARGE),
-      constant("G", "Gravitational constant", "6.67430E-11", Dimension(m = 3, kg = -1, s = -2)),
-      constant("g0", "Acceleration of gravity", "9.80665", Dimension(m = 1, s = -2)),
-      constant("k", "Boltzmann constant", "1.380649E-23", Dimension(kg = 1, m = 2, s = -2, k = -1)),
-      constant("ke", "Coulomb constant", "8987551792.3", Dimension(kg = 1, m = 3, s = -4, a = -2)),
-      constant("me", "Electron mass", "9.1093837015E-31", MASS),
-      constant("mn", "Neutron mass", "1.67492749804E-27", MASS),
-      constant("mp", "Proton mass", "1.67262192369E-27", MASS),
-      constant("NA", "Avogadro constant", "6.02214076E23", Dimension(mol = -1)),
-      constant("R", "Molar gas constant", "8.314462618", Dimension(kg = 1, m = 2, s = -2, k = -1, mol = -1)),
-      constant("ε0", "Vacuum permittivity", "8.8541878128E-12", Dimension(kg = -1, m = -3, s = 4, a = 2)),
-      constant("μ0", "Vacuum permeability", "0.00000125663706212", Dimension(kg = 1, m = 1, s = -2, a = -2)),
-      constant("hplanck", "Planck constant", "6.62607015E-34", Dimension(kg = 1, m = 2, s = -1)),
-    )
+  // Constants, CODATA 2022 values (exact since the 2019 SI for c, h, ħ, e, k, NA, R, σ and Vm)
+  private val speedOfLight = constant("c", "Speed of light", "299792458", SPEED)
+  private val planck = constant("hplanck", "Planck constant", "6.62607015E-34", Dimension(kg = 1, m = 2, s = -1))
+  private val reducedPlanck =
+    constant("ħ", "Reduced Planck constant", "1.054571817646156E-34", Dimension(kg = 1, m = 2, s = -1))
+  private val gravitational = constant("G", "Gravitational constant", "6.67430E-11", Dimension(m = 3, kg = -1, s = -2))
+  private val gravity = constant("g0", "Acceleration of gravity", "9.80665", Dimension(m = 1, s = -2))
+  private val elementaryCharge = constant("e", "Elementary charge", "1.602176634E-19", CHARGE)
+  private val coulombConstant = constant("ke", "Coulomb constant", "8987551786.2", Dimension(kg = 1, m = 3, s = -4, a = -2))
+  private val permittivity =
+    constant("ε0", "Vacuum permittivity", "8.8541878188E-12", Dimension(kg = -1, m = -3, s = 4, a = 2))
+  private val permeability =
+    constant("μ0", "Vacuum permeability", "0.00000125663706127", Dimension(kg = 1, m = 1, s = -2, a = -2))
+  private val electronMass = constant("me", "Electron mass", "9.1093837139E-31", MASS)
+  private val protonMass = constant("mp", "Proton mass", "1.67262192595E-27", MASS)
+  private val neutronMass = constant("mn", "Neutron mass", "1.67492750056E-27", MASS)
+  private val atomicMass = constant("u", "Atomic mass constant", "1.66053906892E-27", MASS)
+  private val bohrRadius = constant("a0", "Bohr radius", "5.29177210544E-11", LENGTH)
+  private val avogadro = constant("NA", "Avogadro constant", "6.02214076E23", Dimension(mol = -1))
+  private val boltzmann = constant("k", "Boltzmann constant", "1.380649E-23", Dimension(kg = 1, m = 2, s = -2, k = -1))
+  private val gas =
+    constant("R", "Molar gas constant", "8.314462618", Dimension(kg = 1, m = 2, s = -2, k = -1, mol = -1))
+  // Ideal gas at 0 °C and 1 atm: 22.4 L/mol
+  private val molarVolume =
+    constant("Vm", "Molar volume (0 °C, 1 atm)", "0.02241396954", Dimension(m = 3, mol = -1))
+  private val stefanBoltzmann =
+    constant("σ", "Stefan–Boltzmann constant", "5.670374419E-8", Dimension(kg = 1, s = -3, k = -4))
+
+  // Not in the menu, since _m/_s, _km/_h and _mi/_h say the same, but still read in typed
+  // expressions and saved history
+  private val unlisted = listOf(meterPerSecond, kilometerPerHour, milePerHour)
 
   private fun leaves(vararg units: PhysicalUnit): List<UnitMenuItem> = units.map { UnitMenuItem.Leaf(it) }
 
@@ -318,7 +331,8 @@ object PhysicalUnits {
             category("Imperial", leaves(inch, foot, yard, mile)),
         ),
         category("Angle", leaves(degree, radian, gradian)),
-        category("Speed", leaves(meterPerSecond, kilometerPerHour) + category("Imperial", leaves(milePerHour, knot))),
+        // Only knots: other speeds are a length over a time, like _km/_h
+        category("Speed", leaves(knot)),
       ),
       category(
         "Time and frequency",
@@ -381,7 +395,15 @@ object PhysicalUnits {
       ),
       category("Temperature", leaves(kelvin, celsius, fahrenheit)),
       category("Other units", leaves(candela) + category("Amount of substance", leaves(micromole, millimole, mole))),
-      category("Constants", constants.map { UnitMenuItem.Leaf(it) }),
+      // From the most general to the most specific
+      category(
+        "Constants",
+        category("Fundamental", leaves(speedOfLight, planck, reducedPlanck)),
+        category("Gravity", leaves(gravitational, gravity)),
+        category("Electricity", leaves(elementaryCharge, coulombConstant, permittivity, permeability)),
+        category("Particles", leaves(electronMass, protonMass, neutronMass, atomicMass, bohrRadius)),
+        category("Chemistry and heat", leaves(avogadro, boltzmann, gas, molarVolume, stefanBoltzmann)),
+      ),
     )
 
   /** Every unit and constant, longest symbol first (for matching `_mmol` before `_m`). */
@@ -393,7 +415,7 @@ object PhysicalUnits {
           is UnitMenuItem.Leaf -> listOf(it.unit)
         }
       }
-    (collect(menu) + prefixed).distinctBy { it.symbol }.sortedByDescending { it.symbol.length }
+    (collect(menu) + unlisted + prefixed).distinctBy { it.symbol }.sortedByDescending { it.symbol.length }
   }
 
   /**
