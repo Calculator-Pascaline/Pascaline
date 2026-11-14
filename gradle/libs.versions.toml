@@ -5,7 +5,7 @@ versionName = "1.7.0"
 # https://mvnrepository.com/artifact/androidx.browser/browser
 androidxBrowserBrowser = "1.10.0"
 # https://developer.android.com/reference/tools/gradle-api
-androidGradlePlugin = "9.5.0"
+androidGradlePlugin = "9.5.1"
 # https://mvnrepository.com/artifact/androidx.activity/activity-compose
 androidxActivityActivityCompose = "1.13.0"
 # https://mvnrepository.com/artifact/androidx.appcompat/appcompat
