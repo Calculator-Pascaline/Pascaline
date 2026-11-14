@@ -56,6 +56,7 @@ import io.github.calculatorpascaline.core.ui.KeypadButton.Companion.PlusKey
 import io.github.calculatorpascaline.core.ui.KeypadButton.Companion.PowerKey
 import io.github.calculatorpascaline.core.ui.KeypadButton.Companion.RootKey
 import io.github.calculatorpascaline.core.ui.KeypadFlow
+import io.github.calculatorpascaline.core.ui.LocalSwapPointBackspace
 import io.github.calculatorpascaline.core.ui.inKeypadRow
 
 @Composable
@@ -73,6 +74,7 @@ internal fun DefaultKeyboard(
     else KeyboardButtonToken.ICON_HEIGHT_TALL
 
   val fractionalKey = remember(fractional) { if (fractional == Token.PERIOD) DotKey else CommaKey }
+  val swapPointBackspace = LocalSwapPointBackspace.current
   KeypadFlow(modifier = modifier, iconHeight = iconHeight) {
     KeypadRow {
       ButtonTertiary(ClearKey, onClearClick)
@@ -100,8 +102,13 @@ internal fun DefaultKeyboard(
     }
     KeypadRow {
       ButtonLight(Key0, onAddTokenClick)
-      ButtonLight(fractionalKey, onAddTokenClick)
-      ButtonLight(BackspaceKey, onLongClick = onClearClick, onClick = onDeleteClick)
+      if (swapPointBackspace) {
+        ButtonLight(BackspaceKey, onLongClick = onClearClick, onClick = onDeleteClick)
+        ButtonLight(fractionalKey, onAddTokenClick)
+      } else {
+        ButtonLight(fractionalKey, onAddTokenClick)
+        ButtonLight(BackspaceKey, onLongClick = onClearClick, onClick = onDeleteClick)
+      }
       ButtonFilled(PlusKey, onAddTokenClick)
     }
   }

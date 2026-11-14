@@ -496,6 +496,8 @@
     <string name="settings_phone">Telefon</string>
     <string name="settings_phone_keypad">Telefontastatur</string>
     <string name="settings_phone_keypad_support">1 2 3 in der oberen Reihe wie bei einem Telefon, statt 7 8 9</string>
+    <string name="settings_swap_point_backspace">Punkt und Löschen tauschen</string>
+    <string name="settings_swap_point_backspace_support">Die Löschtaste steht in der unteren Reihe des Einheitenumrechners vor dem Dezimalzeichen</string>
     <string name="settings_precision">Genauigkeit</string>
     <string name="settings_precision_max">%1$s (Max.)</string>
     <string name="settings_precision_support">Anzahl der Dezimalstellen. Erhöht die Berechnungszeit und den Akkuverbrauch.</string>

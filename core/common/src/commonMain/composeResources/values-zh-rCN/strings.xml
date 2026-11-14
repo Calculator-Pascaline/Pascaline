@@ -496,6 +496,8 @@
     <string name="settings_phone">手机</string>
     <string name="settings_phone_keypad">电话键盘</string>
     <string name="settings_phone_keypad_support">像电话一样把 1 2 3 放在第一行，而不是 7 8 9</string>
+    <string name="settings_swap_point_backspace">交换小数点和删除键</string>
+    <string name="settings_swap_point_backspace_support">单位转换器的最后一行把删除键放在小数点前面</string>
     <string name="settings_precision">精度</string>
     <string name="settings_precision_max">%1$s（最大）</string>
     <string name="settings_precision_support">小数位数。增加计算时间和电池消耗。</string>

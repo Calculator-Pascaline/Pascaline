@@ -75,6 +75,7 @@ import io.github.calculatorpascaline.core.ui.BackHandler
 import io.github.calculatorpascaline.core.ui.LocalKeyAnimation
 import io.github.calculatorpascaline.core.ui.LocalPhoneKeypad
 import io.github.calculatorpascaline.core.ui.LocalPlatform
+import io.github.calculatorpascaline.core.ui.LocalSwapPointBackspace
 import io.github.calculatorpascaline.core.ui.NavigationDrawer
 import io.github.calculatorpascaline.core.ui.Platform
 import io.github.calculatorpascaline.feature.settings.navigation.LocalThemmoController
@@ -127,12 +128,19 @@ fun MainAppContent(
     remember(userPrefsRepository) { userPrefsRepository.appData(PrefKeys.PHONE_KEYPAD_PREF_KEY) }
       .collectAsState(initial = "")
 
+  val swapPointBackspace by
+    remember(userPrefsRepository) {
+        userPrefsRepository.appData(PrefKeys.SWAP_POINT_BACKSPACE_PREF_KEY)
+      }
+      .collectAsState(initial = "")
+
   val keyAnimation by
     remember(userPrefsRepository) { userPrefsRepository.appData(PrefKeys.KEY_ANIMATION_PREF_KEY) }
       .collectAsState(initial = "")
 
   CompositionLocalProvider(
     LocalPhoneKeypad provides (phoneKeypad == "true"),
+    LocalSwapPointBackspace provides (swapPointBackspace == "true"),
     LocalKeyAnimation provides (keyAnimation != "false"),
     // A static cursor is less distracting than a blinking one
     LocalCursorBlinkEnabled provides false,

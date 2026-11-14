@@ -496,6 +496,8 @@
     <string name="settings_phone">Telefoon</string>
     <string name="settings_phone_keypad">Telefoontoetsen</string>
     <string name="settings_phone_keypad_support">1 2 3 op de bovenste rij, zoals een telefoon, in plaats van 7 8 9</string>
+    <string name="settings_swap_point_backspace">Punt en wissen omwisselen</string>
+    <string name="settings_swap_point_backspace_support">De wistoets staat voor het decimaalteken op de onderste rij van de eenhedenconverter</string>
     <string name="settings_precision">Precisie</string>
     <string name="settings_precision_max">%1$s (Max)</string>
     <string name="settings_precision_support">Aantal decimalen. Verhoogt de rekentijd en het batterijgebruik.</string>

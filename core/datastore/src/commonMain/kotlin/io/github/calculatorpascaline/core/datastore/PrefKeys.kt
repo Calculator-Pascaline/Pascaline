@@ -33,6 +33,8 @@ object PrefKeys {
   const val SHOW_ON_LOCK_SCREEN_PREF_KEY = "SHOW_ON_LOCK_SCREEN_PREF_KEY"
   /** App data key, "true" when keypads put 1 2 3 on top like a phone. */
   const val PHONE_KEYPAD_PREF_KEY = "PHONE_KEYPAD_PREF_KEY"
+  /** App data key, "true" when backspace comes before the decimal key: 0 ⌫ . instead of 0 . ⌫ */
+  const val SWAP_POINT_BACKSPACE_PREF_KEY = "SWAP_POINT_BACKSPACE_PREF_KEY"
   const val KEY_ANIMATION_PREF_KEY = "KEY_ANIMATION_PREF_KEY"
   // val RPN_MODE_PREF_KEY = "RPN_MODE_PREF_KEY"
   const val DIGITS_PRECISION_PREF_KEY = "DIGITS_PRECISION_PREF_KEY"

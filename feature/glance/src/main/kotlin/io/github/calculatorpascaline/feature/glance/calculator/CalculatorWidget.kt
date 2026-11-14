@@ -67,6 +67,7 @@ import io.github.calculatorpascaline.core.datastore.CalculatorPreferences
 import io.github.calculatorpascaline.core.datastore.PrefKeys
 import io.github.calculatorpascaline.core.datastore.UserPreferencesRepository
 import io.github.calculatorpascaline.core.ui.LocalPhoneKeypad
+import io.github.calculatorpascaline.core.ui.LocalSwapPointBackspace
 import io.github.calculatorpascaline.core.ui.textfield.formatExpression
 import io.github.calculatorpascaline.feature.glance.R
 import io.github.calculatorpascaline.feature.glance.common.IconButton
@@ -104,6 +105,11 @@ class CalculatorWidget : GlanceAppWidget(), KoinComponent {
           val appPrefs = userPrefsRepository.appPrefs.collectAsState(null).value
           val phoneKeypad =
             userPrefsRepository.appData(PrefKeys.PHONE_KEYPAD_PREF_KEY).collectAsState("").value
+          val swapPointBackspace =
+            userPrefsRepository
+              .appData(PrefKeys.SWAP_POINT_BACKSPACE_PREF_KEY)
+              .collectAsState("")
+              .value
 
           LaunchedEffect(calculatorPrefs) {
             updateAppWidgetState(context, id) { state ->
@@ -113,7 +119,10 @@ class CalculatorWidget : GlanceAppWidget(), KoinComponent {
             this@CalculatorWidget.update(context, id)
           }
 
-          CompositionLocalProvider(LocalPhoneKeypad provides (phoneKeypad == "true")) {
+          CompositionLocalProvider(
+            LocalPhoneKeypad provides (phoneKeypad == "true"),
+            LocalSwapPointBackspace provides (swapPointBackspace == "true"),
+          ) {
             WidgetTheme(appPrefs?.enableAmoledTheme ?: false) {
               if (calculatorPrefs == null) {
                 LoadingUI(actionRunCallback<RestartCalculatorWidget>())

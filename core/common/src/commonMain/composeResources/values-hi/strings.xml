@@ -496,6 +496,8 @@
     <string name="settings_phone">फ़ोन</string>
     <string name="settings_phone_keypad">फ़ोन कीपैड</string>
     <string name="settings_phone_keypad_support">7 8 9 की जगह फ़ोन की तरह ऊपर की पंक्ति में 1 2 3</string>
+    <string name="settings_swap_point_backspace">दशमलव और बैकस्पेस की जगह बदलें</string>
+    <string name="settings_swap_point_backspace_support">इकाई कनवर्टर की नीचे की पंक्ति में बैकस्पेस दशमलव से पहले आता है</string>
     <string name="settings_precision">परिशुद्धता</string>
     <string name="settings_precision_max">%1$s (अधिकतम)</string>
     <string name="settings_precision_support">दशमलव स्थानों की संख्या। गणना का समय और बैटरी की खपत बढ़ाता है।</string>

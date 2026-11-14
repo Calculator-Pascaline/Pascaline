@@ -31,6 +31,9 @@ import io.github.calculatorpascaline.core.ui.KeypadButton.Companion.Key9
 /** True when keypads put 1 2 3 on top like a phone, false for 7 8 9 like a calculator. */
 val LocalPhoneKeypad = staticCompositionLocalOf { false }
 
+/** True when backspace comes before the decimal key in a row: 0 ⌫ . instead of 0 . ⌫ */
+val LocalSwapPointBackspace = staticCompositionLocalOf { false }
+
 /** This digit key, or the one in its place on a phone keypad: 7 and 1, 8 and 2, 9 and 3 swap. */
 @Composable
 @ReadOnlyComposable

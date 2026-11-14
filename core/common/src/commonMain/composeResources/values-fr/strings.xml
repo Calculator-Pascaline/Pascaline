@@ -496,6 +496,8 @@
     <string name="settings_phone">Téléphone</string>
     <string name="settings_phone_keypad">Clavier de téléphone</string>
     <string name="settings_phone_keypad_support">1 2 3 sur la ligne du haut, comme un téléphone, au lieu de 7 8 9</string>
+    <string name="settings_swap_point_backspace">Inverser point et effacer</string>
+    <string name="settings_swap_point_backspace_support">La touche effacer passe avant la virgule décimale sur la ligne du bas du convertisseur d'unités</string>
     <string name="settings_precision">Précision</string>
     <string name="settings_precision_max">%1$s (Max)</string>
     <string name="settings_precision_support">Nombre de décimales. Augmente le temps de calcul et l'utilisation de la batterie.</string>

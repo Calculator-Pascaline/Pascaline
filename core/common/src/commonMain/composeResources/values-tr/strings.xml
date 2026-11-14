@@ -496,6 +496,8 @@
     <string name="settings_phone">Telefon</string>
     <string name="settings_phone_keypad">Telefon tuş takımı</string>
     <string name="settings_phone_keypad_support">7 8 9 yerine telefondaki gibi üst satırda 1 2 3</string>
+    <string name="settings_swap_point_backspace">Nokta ile silmeyi değiştir</string>
+    <string name="settings_swap_point_backspace_support">Birim dönüştürücünün alt satırında silme tuşu ondalık işaretten önce gelir</string>
     <string name="settings_precision">Hassasiyet</string>
     <string name="settings_precision_max">%1$s (Maks)</string>
     <string name="settings_precision_support">Ondalık basamak sayısı. Hesaplama süresini ve pil kullanımını artırır.</string>

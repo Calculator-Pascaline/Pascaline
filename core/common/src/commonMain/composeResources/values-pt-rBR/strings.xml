@@ -496,6 +496,8 @@
     <string name="settings_phone">Telefone</string>
     <string name="settings_phone_keypad">Teclado de telefone</string>
     <string name="settings_phone_keypad_support">1 2 3 na linha de cima, como um telefone, em vez de 7 8 9</string>
+    <string name="settings_swap_point_backspace">Trocar ponto e apagar</string>
+    <string name="settings_swap_point_backspace_support">A tecla apagar fica antes do separador decimal na linha de baixo do conversor de unidades</string>
     <string name="settings_precision">Precisão</string>
     <string name="settings_precision_max">%1$s (Máx.)</string>
     <string name="settings_precision_support">Número de casas decimais. Aumenta o tempo de cálculo e o uso da bateria.</string>

@@ -31,6 +31,7 @@ import androidx.glance.preview.ExperimentalGlancePreviewApi
 import androidx.glance.preview.Preview
 import io.github.calculatorpascaline.core.common.Token
 import io.github.calculatorpascaline.core.ui.LocalPhoneKeypad
+import io.github.calculatorpascaline.core.ui.LocalSwapPointBackspace
 import io.github.calculatorpascaline.feature.glance.R
 import io.github.calculatorpascaline.feature.glance.common.IconButton
 import io.github.calculatorpascaline.feature.glance.common.PascalineGlanceTheme
@@ -219,18 +220,29 @@ private fun KeyboardRow5(
       iconRes = R.drawable.key0,
       onClick = addTokenAction(Token.Digit.DIGIT_0),
     )
-    IconButton(
-      glanceModifier = buttonModifier,
-      containerColor = PascalineGlanceTheme.colors.inverseOnSurface,
-      iconRes = if (useDot) R.drawable.dot else R.drawable.comma,
-      onClick = addTokenAction(Token.Digit.DOT),
-    )
-    IconButton(
-      glanceModifier = buttonModifier,
-      containerColor = PascalineGlanceTheme.colors.inverseOnSurface,
-      iconRes = R.drawable.backspace,
-      onClick = deleteTokenAction(),
-    )
+    val pointKey: @Composable () -> Unit = {
+      IconButton(
+        glanceModifier = buttonModifier,
+        containerColor = PascalineGlanceTheme.colors.inverseOnSurface,
+        iconRes = if (useDot) R.drawable.dot else R.drawable.comma,
+        onClick = addTokenAction(Token.Digit.DOT),
+      )
+    }
+    val backspaceKey: @Composable () -> Unit = {
+      IconButton(
+        glanceModifier = buttonModifier,
+        containerColor = PascalineGlanceTheme.colors.inverseOnSurface,
+        iconRes = R.drawable.backspace,
+        onClick = deleteTokenAction(),
+      )
+    }
+    if (LocalSwapPointBackspace.current) {
+      backspaceKey()
+      pointKey()
+    } else {
+      pointKey()
+      backspaceKey()
+    }
     IconButton(
       glanceModifier = buttonModifier,
       containerColor = PascalineGlanceTheme.colors.primaryContainer,

@@ -38,6 +38,12 @@ class DisplayViewModel(private val userPrefsRepository: UserPreferencesRepositor
       .map { it == "true" }
       .stateIn(viewModelScope, false)
 
+  val swapPointBackspace =
+    userPrefsRepository
+      .appData(PrefKeys.SWAP_POINT_BACKSPACE_PREF_KEY)
+      .map { it == "true" }
+      .stateIn(viewModelScope, false)
+
   fun updateThemingMode(themingMode: ThemingMode) {
     viewModelScope.launch { userPrefsRepository.updateThemingMode(themingMode) }
   }
@@ -61,5 +67,10 @@ class DisplayViewModel(private val userPrefsRepository: UserPreferencesRepositor
   fun updatePhoneKeypad(enabled: Boolean) =
     viewModelScope.launch {
       userPrefsRepository.updateAppData(PrefKeys.PHONE_KEYPAD_PREF_KEY, enabled.toString())
+    }
+
+  fun updateSwapPointBackspace(enabled: Boolean) =
+    viewModelScope.launch {
+      userPrefsRepository.updateAppData(PrefKeys.SWAP_POINT_BACKSPACE_PREF_KEY, enabled.toString())
     }
 }

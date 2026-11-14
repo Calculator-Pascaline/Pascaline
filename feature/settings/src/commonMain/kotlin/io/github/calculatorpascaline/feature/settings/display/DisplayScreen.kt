@@ -52,6 +52,7 @@ import io.github.calculatorpascaline.core.designsystem.icons.symbols.DarkModeFil
 import io.github.calculatorpascaline.core.designsystem.icons.symbols.Keyboard
 import io.github.calculatorpascaline.core.designsystem.icons.symbols.Language
 import io.github.calculatorpascaline.core.designsystem.icons.symbols.Palette
+import io.github.calculatorpascaline.core.designsystem.icons.symbols.SwapHoriz
 import io.github.calculatorpascaline.core.designsystem.icons.symbols.Symbols
 import io.github.calculatorpascaline.core.designsystem.shapes.Sizes
 import io.github.calculatorpascaline.core.ui.ColorSelector
@@ -83,6 +84,8 @@ import pascaline.core.common.generated.resources.settings_language_support
 import pascaline.core.common.generated.resources.settings_light_mode
 import pascaline.core.common.generated.resources.settings_phone_keypad
 import pascaline.core.common.generated.resources.settings_phone_keypad_support
+import pascaline.core.common.generated.resources.settings_swap_point_backspace
+import pascaline.core.common.generated.resources.settings_swap_point_backspace_support
 import pascaline.core.common.generated.resources.settings_selected_color
 import pascaline.core.common.generated.resources.settings_selected_style
 
@@ -94,6 +97,7 @@ internal fun DisplayRoute(
 ) {
   val viewModel: DisplayViewModel = koinViewModel()
   val phoneKeypad = viewModel.phoneKeypad.collectAsStateWithLifecycleKMP().value
+  val swapPointBackspace = viewModel.swapPointBackspace.collectAsStateWithLifecycleKMP().value
   DisplayScreen(
     navigateUp = navigateUp,
     controller = themmoController,
@@ -119,6 +123,8 @@ internal fun DisplayRoute(
     },
     phoneKeypad = phoneKeypad,
     updatePhoneKeypad = viewModel::updatePhoneKeypad,
+    swapPointBackspace = swapPointBackspace,
+    updateSwapPointBackspace = viewModel::updateSwapPointBackspace,
     navigateToLanguages = navigateToLanguages,
   )
 }
@@ -134,6 +140,8 @@ private fun DisplayScreen(
   onMonetModeChange: (MonetMode) -> Unit,
   phoneKeypad: Boolean,
   updatePhoneKeypad: (Boolean) -> Unit,
+  swapPointBackspace: Boolean,
+  updateSwapPointBackspace: (Boolean) -> Unit,
   navigateToLanguages: () -> Unit,
 ) {
   ScaffoldWithLargeTopBar(
@@ -195,6 +203,15 @@ private fun DisplayScreen(
         switchState = phoneKeypad,
         onSwitchChange = updatePhoneKeypad,
         shape = ListItemExpressiveDefaults.firstShape,
+      )
+
+      ListItemExpressive(
+        icon = Symbols.SwapHoriz,
+        headlineText = stringResource(Res.string.settings_swap_point_backspace),
+        supportingText = stringResource(Res.string.settings_swap_point_backspace_support),
+        switchState = swapPointBackspace,
+        onSwitchChange = updateSwapPointBackspace,
+        shape = ListItemExpressiveDefaults.middleShape,
       )
 
       ListItemExpressive(
@@ -379,6 +396,8 @@ private fun Preview() {
       onMonetModeChange = themmoController::setMonetMode,
       phoneKeypad = false,
       updatePhoneKeypad = {},
+      swapPointBackspace = false,
+      updateSwapPointBackspace = {},
       navigateToLanguages = {},
     )
   }

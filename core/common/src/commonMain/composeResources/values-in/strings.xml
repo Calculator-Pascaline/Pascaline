@@ -496,6 +496,8 @@
     <string name="settings_phone">Ponsel</string>
     <string name="settings_phone_keypad">Keypad telepon</string>
     <string name="settings_phone_keypad_support">1 2 3 di baris atas, seperti telepon, bukan 7 8 9</string>
+    <string name="settings_swap_point_backspace">Tukar titik dan hapus</string>
+    <string name="settings_swap_point_backspace_support">Tombol hapus ada sebelum titik desimal di baris bawah konverter unit</string>
     <string name="settings_precision">Presisi</string>
     <string name="settings_precision_max">%1$s (Maks)</string>
     <string name="settings_precision_support">Jumlah angka di belakang koma. Menambah waktu perhitungan dan penggunaan baterai.</string>

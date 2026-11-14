@@ -496,6 +496,8 @@
     <string name="settings_phone">Телефон</string>
     <string name="settings_phone_keypad">Телефонная клавиатура</string>
     <string name="settings_phone_keypad_support">1 2 3 в верхнем ряду, как на телефоне, вместо 7 8 9</string>
+    <string name="settings_swap_point_backspace">Поменять точку и стирание</string>
+    <string name="settings_swap_point_backspace_support">Клавиша стирания стоит перед десятичным знаком в нижнем ряду конвертера единиц</string>
     <string name="settings_precision">Точность</string>
     <string name="settings_precision_max">%1$s (Макс.)</string>
     <string name="settings_precision_support">Количество знаков после запятой. Увеличивает время расчета и расход батареи.</string>
