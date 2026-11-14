@@ -1,0 +1,563 @@
+/*
+ * Unitto is a calculator for Android
+ * Copyright (c) 2026 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package io.github.calculatorpascaline.core.ui.textfield
+
+import androidx.compose.animation.core.Animatable
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.KeyboardActionHandler
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.InterceptPlatformTextInput
+import androidx.compose.ui.platform.LocalCursorBlinkEnabled
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextMeasurer
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.constrainHeight
+import androidx.compose.ui.unit.constrainWidth
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import io.github.calculatorpascaline.core.common.FormatterSymbols
+import io.github.calculatorpascaline.core.common.Token
+import io.github.calculatorpascaline.core.designsystem.LocalHapticFeedbackManager
+import io.github.calculatorpascaline.core.designsystem.theme.LocalNumberTypography
+import kotlin.math.ceil
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.delay
+
+/**
+ * Expression input that draws slots in two dimensions: fractions with a horizontal bar,
+ * superscripts and subscripts. See [ExpressionLayout].
+ *
+ * Text is scaled down to fit (but not below [minRatio]), aligned to the bottom end. Tapping places
+ * the cursor. A hidden [BasicTextField] keeps focus for hardware keyboard input.
+ *
+ * @param textStyle Text size, null for the big calculator input size.
+ * @param wrapHeight Height follows the expression (taller for fractions and integrals), within the
+ *   height [modifier] allows. Otherwise all the given height is used.
+ */
+@Composable
+fun ExpressionLayoutTextField(
+  modifier: Modifier,
+  state: TextFieldState,
+  formatterSymbols: FormatterSymbols,
+  textColor: Color,
+  minRatio: Float = 1f,
+  alignStart: Boolean = false,
+  keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+  onKeyboardAction: KeyboardActionHandler? = null,
+  textStyle: TextStyle? = null,
+  wrapHeight: Boolean = false,
+  centerShift: Float = 0f,
+) {
+  val measurer = rememberTextMeasurer()
+  val density = LocalDensity.current
+  val style = textStyle ?: LocalNumberTypography.current.displayLarge
+  val text = state.text.toString()
+  val layout =
+    remember(text, formatterSymbols, style, density) {
+      measurer.layoutExpression(text, style, formatterSymbols, density)
+    }
+  val cursor = state.selection.max
+  val focusRequester = remember { FocusRequester() }
+  val haptics = LocalHapticFeedbackManager.current
+  val scope = rememberCoroutineScope()
+
+  val caretAlpha = rememberCaretAlpha(text, cursor)
+
+  LaunchedEffect(text) { focusRequester.requestFocus() }
+
+  val sizedModifier = if (wrapHeight) modifier.heightOf(layout) else modifier
+  BoxWithConstraints(modifier = sizedModifier.clipToBounds()) {
+    val availableWidth = constraints.maxWidth.toFloat()
+    val availableHeight = constraints.maxHeight.toFloat()
+    val scale = layout.fitScale(availableWidth, availableHeight, minRatio)
+    val caret = layout.caretFor(cursor)
+    val caretMargin = with(density) { CARET_SCROLL_MARGIN.toPx() }
+
+    // When too long, scroll so that cursor is visible
+    val overflows = layout.width * scale > availableWidth - caretMargin * 2
+    var offsetX =
+      if (alignStart && !overflows) caretMargin else availableWidth - layout.width * scale - caretMargin
+    if (caret != null && caret.x * scale + offsetX < caretMargin) {
+      offsetX = caretMargin - caret.x * scale
+    }
+    // Digits sit high in their line (room for g and subscripts): text is moved down by this part of
+    // the font size to look centered, and the caret up so that it stays on the digits
+    val shift = with(density) { style.fontSize.toPx() } * centerShift
+    // One line input (alignStart) is centered vertically, otherwise aligned to the bottom
+    val baseline =
+      if (alignStart) (availableHeight - layout.height * scale) / 2 + layout.ascent * scale + shift * scale
+      else availableHeight - layout.descent * scale
+
+    HiddenExpressionInput(
+      state = state,
+      formatterSymbols = formatterSymbols,
+      focusRequester = focusRequester,
+      keyboardOptions = keyboardOptions,
+      onKeyboardAction = onKeyboardAction,
+    )
+
+    Canvas(
+      modifier =
+        Modifier.fillMaxSize().pointerInput(layout, scale, offsetX, baseline, haptics) {
+          detectTapGestures { position ->
+            val x = (position.x - offsetX) / scale
+            val y = (position.y - baseline) / scale
+            // Switching the angle is a key press
+            if (state.tap(layout, x, y, focusRequester)) haptics.vibrateKeyboardPress(scope)
+          }
+        }
+    ) {
+      translate(offsetX, baseline) {
+        scale(scale, scale, pivot = Offset.Zero) {
+          drawExpression(layout, textColor)
+          if (caret != null) {
+            drawLine(
+              color = textColor,
+              start = Offset(caret.x, caret.top - shift),
+              end = Offset(caret.x, caret.bottom - shift),
+              strokeWidth = CARET_WIDTH.toPx() / scale,
+              alpha = caretAlpha.value,
+            )
+          }
+        }
+      }
+    }
+  }
+}
+
+/** Alpha of the caret: blinks, and shows again on every change of [text] or [cursor]. */
+@Composable
+private fun rememberCaretAlpha(text: String, cursor: Int): Animatable<Float, *> {
+  val caretAlpha = remember { Animatable(1f) }
+  val caretBlinks = LocalCursorBlinkEnabled.current
+  LaunchedEffect(text, cursor, caretBlinks) {
+    caretAlpha.snapTo(1f)
+    while (caretBlinks) {
+      delay(CARET_BLINK_MS)
+      caretAlpha.snapTo(0f)
+      delay(CARET_BLINK_MS)
+      caretAlpha.snapTo(1f)
+    }
+  }
+  return caretAlpha
+}
+
+/** As tall as [layout] (taller for fractions and integrals), within the allowed height. */
+private fun Modifier.heightOf(layout: ExpressionLayout): Modifier =
+  layout { measurable, constraints ->
+    val height = ceil(layout.height).toInt().coerceIn(constraints.minHeight, constraints.maxHeight)
+    val placeable = measurable.measure(constraints.copy(minHeight = height, maxHeight = height))
+    layout(placeable.width, height) { placeable.place(0, 0) }
+  }
+
+/**
+ * Tap at [x], [y] of [layout]: on deg or rad switches it, elsewhere places the cursor.
+ *
+ * @return True when the angle was switched.
+ */
+private fun TextFieldState.tap(
+  layout: ExpressionLayout,
+  x: Float,
+  y: Float,
+  focusRequester: FocusRequester,
+): Boolean {
+  val index = layout.indexAt(x, y)
+  if (index != null) {
+    focusRequester.requestFocus()
+    val integral = layout.boundlessIntegralAt(text, x, y)
+    edit {
+      if (integral == null) {
+        selection = TextRange(index)
+      } else {
+        // A tap on ∫ opens its bounds, the lower one first
+        replace(integral + 1, integral + 1, INTEGRAL_BOUNDS)
+        selection = TextRange(integral + 2)
+      }
+    }
+  }
+  return false
+}
+
+/**
+ * [TextMeasurer] shared by many expressions, like the cards of a list: texts measured for a card
+ * are reused when it scrolls back into view. Each expression has its own measurer without it.
+ */
+val LocalExpressionTextMeasurer = staticCompositionLocalOf<TextMeasurer?> { null }
+
+@Composable
+private fun expressionTextMeasurer(): TextMeasurer {
+  val shared = LocalExpressionTextMeasurer.current
+  val own = rememberTextMeasurer(cacheSize = if (shared == null) DEFAULT_MEASURER_CACHE else 0)
+  return shared ?: own
+}
+
+/**
+ * Read only version of [ExpressionLayoutTextField] that wraps its content.
+ *
+ * @param minScale When content is wider than available space it is scaled down, but not below this.
+ */
+@Composable
+fun ExpressionLayoutText(
+  modifier: Modifier = Modifier,
+  value: String,
+  formatterSymbols: FormatterSymbols,
+  style: TextStyle,
+  textColor: Color,
+  minScale: Float = 1f,
+) {
+  val measurer = expressionTextMeasurer()
+  val density = LocalDensity.current
+  val layout =
+    remember(value, formatterSymbols, style, density) {
+      measurer.layoutExpression(value, style, formatterSymbols, density)
+    }
+  Spacer(
+    modifier =
+      modifier
+        .layout { measurable, constraints ->
+          var scale = 1f
+          if (constraints.hasBoundedWidth && layout.width > constraints.maxWidth) {
+            scale = (constraints.maxWidth / layout.width).coerceAtLeast(minScale)
+          }
+          val width = ceil(layout.width * scale).toInt()
+          val height = ceil(layout.height * scale).toInt()
+          val placeable = measurable.measure(Constraints.fixed(width, height))
+          layout(width, height) { placeable.place(0, 0) }
+        }
+        .drawBehind {
+          val scale = if (layout.width > 0f) size.width / layout.width else 1f
+          drawExpressionLine(layout, textColor, 0f, 0f, scale)
+        }
+  )
+}
+
+/**
+ * Read only expression that goes onto several lines instead of getting too small. Lines are split
+ * between terms (before + and −), between factors `(...)(...)` and after commas.
+ *
+ * One node measures, wraps and draws all lines: it is cheap to show in lists.
+ *
+ * @param minScale Lines are scaled down to fit, but not below this. Too long lines are split.
+ * @param alignEnd Align lines to the end, otherwise to the start.
+ * @param maxWidth Known width for components that use intrinsic measurements, like menus.
+ */
+@Composable
+fun WrappedExpressionLayoutText(
+  modifier: Modifier = Modifier,
+  value: String,
+  formatterSymbols: FormatterSymbols,
+  style: TextStyle,
+  textColor: Color,
+  minScale: Float,
+  alignEnd: Boolean,
+  maxWidth: Dp? = null,
+) {
+  val measurer = expressionTextMeasurer()
+  val density = LocalDensity.current
+  val wrapped =
+    remember(value, formatterSymbols, style, density, minScale) {
+      WrappedExpression(measurer, value, style, formatterSymbols, density, minScale)
+    }
+  val fixedWidth = maxWidth?.let { with(density) { it.toPx() } }
+  Spacer(
+    modifier =
+      modifier
+        .layout { measurable, constraints ->
+          val available =
+            fixedWidth
+              ?: if (constraints.hasBoundedWidth) constraints.maxWidth.toFloat()
+              else Float.POSITIVE_INFINITY
+          val lines = wrapped.linesFor(available)
+          val contentWidth = ceil(lines.maxOfOrNull { it.width } ?: 0f).toInt()
+          val width = constraints.constrainWidth(contentWidth)
+          val height = constraints.constrainHeight(ceil(lines.sumOf { it.height.toDouble() }).toInt())
+          val placeable = measurable.measure(Constraints.fixed(width, height))
+          layout(width, height) { placeable.place(0, 0) }
+        }
+        .drawBehind {
+          var top = 0f
+          wrapped.lines.forEach { line ->
+            val left = if (alignEnd) size.width - line.width else 0f
+            drawExpressionLine(line.layout, textColor, left, top, line.scale)
+            top += line.height
+          }
+        }
+  )
+}
+
+/** Line of [WrappedExpressionLayoutText], scaled down to fit. */
+private class WrappedLine(val layout: ExpressionLayout, val scale: Float) {
+  val width = layout.width * scale
+  val height = layout.height * scale
+}
+
+/** Lines of an expression for a width, measured once and kept until width changes. */
+private class WrappedExpression(
+  private val measurer: TextMeasurer,
+  private val text: String,
+  private val style: TextStyle,
+  private val formatterSymbols: FormatterSymbols,
+  private val density: Density,
+  private val minScale: Float,
+) {
+  private var linesWidth = Float.NaN
+  var lines: List<WrappedLine> = emptyList()
+    private set
+
+  fun linesFor(maxWidth: Float): List<WrappedLine> {
+    if (maxWidth != linesWidth) {
+      lines =
+        wrap(maxWidth / minScale).map { layout ->
+          val scale =
+            if (layout.width > maxWidth) (maxWidth / layout.width).coerceAtLeast(minScale) else 1f
+          WrappedLine(layout, scale)
+        }
+      linesWidth = maxWidth
+    }
+    return lines
+  }
+
+  private fun wrap(maxWidth: Float): List<ExpressionLayout> {
+    val measured = mutableMapOf<String, ExpressionLayout>()
+    fun layout(part: String) =
+      measured.getOrPut(part) { measurer.layoutExpression(part, style, formatterSymbols, density) }
+    fun width(start: Int, end: Int) = layout(text.substring(start, end)).width
+
+    if (width(0, text.length) <= maxWidth) return listOf(layout(text))
+    val breaks = text.lineBreaks()
+    val lines = mutableListOf<ExpressionLayout>()
+    var start = 0
+    while (start < text.length) {
+      var end = text.length
+      if (width(start, end) > maxWidth) {
+        val candidates = breaks.filter { it > start }
+        // longest line that fits, or the shortest possible one
+        end = candidates.lastOrNull { width(start, it) <= maxWidth } ?: candidates.firstOrNull() ?: end
+      }
+      lines += layout(text.substring(start, end).trim())
+      start = end
+    }
+    return lines
+  }
+}
+
+private fun DrawScope.drawExpressionLine(
+  layout: ExpressionLayout,
+  color: Color,
+  left: Float,
+  top: Float,
+  scale: Float,
+) {
+  translate(left, top) {
+    scale(scale, scale, pivot = Offset.Zero) {
+      translate(0f, layout.ascent) { drawExpression(layout, color) }
+    }
+  }
+}
+
+private const val DEFAULT_MEASURER_CACHE = 8
+
+/** Positions where expression can be split into lines: outside of slots and brackets. */
+private fun String.lineBreaks(): List<Int> {
+  val breaks = mutableListOf<Int>()
+  // Lists (like roots) are split only after commas
+  val isList = contains(',')
+  var depth = 0
+  forEachIndexed { index, char ->
+    val isOpening = char.isSlotStart() || char == LEFT_BRACKET
+    if (depth == 0 && index > 0) {
+      val previous = this[index - 1]
+      val canBreak =
+        if (isList) {
+          char != ' ' && previous == ' '
+        } else {
+          val isOperator = (char == PLUS_CHAR || char == MINUS_CHAR) && previous !in NO_BREAK_AFTER
+          val isNextFactor = char == LEFT_BRACKET && previous == RIGHT_BRACKET
+          isOperator || isNextFactor
+        }
+      if (canBreak) breaks += index
+    }
+    when {
+      isOpening -> depth++
+      char == SLOT_END || char == RIGHT_BRACKET -> depth = (depth - 1).coerceAtLeast(0)
+    }
+  }
+  return breaks
+}
+
+private val LEFT_BRACKET = Token.Operator.LEFT_BRACKET.first()
+private val RIGHT_BRACKET = Token.Operator.RIGHT_BRACKET.first()
+private val PLUS_CHAR = Token.Operator.PLUS.first()
+private val MINUS_CHAR = Token.Operator.MINUS.first()
+
+/** Sign belongs to the number after these: x≈−1, 2±−3 */
+private const val NO_BREAK_AFTER = "=≈±"
+
+/** Read only expression that is scaled down to fit its container, aligned to the bottom end. */
+@Composable
+fun FittedExpressionLayoutText(
+  modifier: Modifier,
+  value: String,
+  formatterSymbols: FormatterSymbols,
+  style: TextStyle,
+  textColor: Color,
+) {
+  val measurer = rememberTextMeasurer()
+  val density = LocalDensity.current
+  val layout =
+    remember(value, formatterSymbols, style, density) {
+      measurer.layoutExpression(value, style, formatterSymbols, density)
+    }
+  Canvas(modifier = modifier.clipToBounds()) {
+    val scale = layout.fitScale(size.width, size.height, minRatio = 0f)
+    translate(size.width - layout.width * scale, size.height - layout.descent * scale) {
+      scale(scale, scale, pivot = Offset.Zero) { drawExpression(layout, textColor) }
+    }
+  }
+}
+
+/** Expression contains slots that need [ExpressionLayoutText] to be displayed properly. */
+fun String.hasSlots(): Boolean = any { it.isSlotStart() || it == SLOT_END }
+
+private fun DrawScope.drawExpression(layout: ExpressionLayout, color: Color) {
+  layout.texts.forEach {
+    drawText(
+      textLayoutResult = it.layout,
+      color = color,
+      topLeft = Offset(it.x, it.baseline - it.layout.firstBaseline),
+    )
+  }
+  layout.bars.forEach { drawRect(color = color, topLeft = it.topLeft, size = it.size) }
+  layout.strokes.forEach { stroke ->
+    val path =
+      Path().apply {
+        moveTo(stroke.points.first().x, stroke.points.first().y)
+        stroke.points.drop(1).forEach { lineTo(it.x, it.y) }
+      }
+    drawPath(
+      path = path,
+      color = color,
+      style = Stroke(width = stroke.width, cap = StrokeCap.Round, join = StrokeJoin.Round),
+    )
+  }
+  layout.placeholders.forEach {
+    if (it.angleBoxIndex != null) {
+      // deg or rad: rounded like a chip, not like an empty slot
+      drawRoundRect(
+        color = color.copy(alpha = color.alpha * ANGLE_BOX_ALPHA),
+        topLeft = it.rect.topLeft,
+        size = it.rect.size,
+        cornerRadius = CornerRadius(it.rect.height * ANGLE_BOX_CORNER),
+        style = Stroke(it.strokeWidth),
+      )
+      return@forEach
+    }
+    // A soft key to fill in, not an outlined box
+    drawRoundRect(
+      color = color.copy(alpha = color.alpha * PLACEHOLDER_ALPHA),
+      topLeft = it.rect.topLeft,
+      size = it.rect.size,
+      cornerRadius = CornerRadius(minOf(it.rect.width, it.rect.height) * PLACEHOLDER_CORNER),
+    )
+  }
+}
+
+private fun ExpressionLayout.fitScale(width: Float, height: Float, minRatio: Float): Float {
+  var scale = 1f
+  if (this.width > 0f) scale = minOf(scale, width / this.width)
+  if (this.height > 0f) scale = minOf(scale, height / this.height)
+  return scale.coerceIn(minRatio, 1f)
+}
+
+/** Invisible text field: keeps focus, handles hardware keyboard and paste. */
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+private fun HiddenExpressionInput(
+  state: TextFieldState,
+  formatterSymbols: FormatterSymbols,
+  focusRequester: FocusRequester,
+  keyboardOptions: KeyboardOptions,
+  onKeyboardAction: KeyboardActionHandler?,
+) {
+  // Never show software keyboard, app has it's own
+  InterceptPlatformTextInput(interceptor = { _, _ -> awaitCancellation() }) {
+    Box(Modifier.size(1.dp).alpha(0f)) {
+      BasicTextField(
+        state = state,
+        modifier = Modifier.focusRequester(focusRequester),
+        inputTransformation = ExpressionInputTransformation(formatterSymbols),
+        textStyle = TextStyle(color = Color.Transparent, fontSize = 1.sp),
+        keyboardOptions = keyboardOptions,
+        onKeyboardAction = onKeyboardAction,
+        lineLimits = TextFieldLineLimits.SingleLine,
+        cursorBrush = SolidColor(Color.Transparent),
+      )
+    }
+  }
+}
+
+private val CARET_WIDTH = 2.dp
+private val CARET_SCROLL_MARGIN = 4.dp
+private const val CARET_BLINK_MS = 500L
+private const val PLACEHOLDER_ALPHA = 0.16f
+private const val PLACEHOLDER_CORNER = 0.3f
+private const val ANGLE_BOX_ALPHA = 0.6f
+private const val ANGLE_BOX_CORNER = 0.35f

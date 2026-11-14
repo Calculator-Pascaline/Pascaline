@@ -19,7 +19,7 @@
 
 package io.github.sadellie.evaluatto
 
-import com.sadellie.unitto.core.common.Token
+import io.github.calculatorpascaline.core.common.Token
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

@@ -27,7 +27,7 @@
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/unitto_calculator_widget_info" />
+                android:resource="@xml/pascaline_calculator_widget_info" />
         </receiver>
         <receiver
             android:name=".converter.ConverterWidgetReceiver"
@@ -37,7 +37,7 @@
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/unitto_converter_widget_info" />
+                android:resource="@xml/pascaline_converter_widget_info" />
         </receiver>
 
         <activity

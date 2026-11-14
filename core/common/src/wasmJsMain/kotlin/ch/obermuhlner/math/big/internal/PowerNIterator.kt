@@ -1,7 +1,7 @@
 package ch.obermuhlner.math.big.internal
 
-import com.sadellie.unitto.core.common.KBigDecimal as BigDecimal
-import com.sadellie.unitto.core.common.KMathContext as MathContext
+import io.github.calculatorpascaline.core.common.KBigDecimal as BigDecimal
+import io.github.calculatorpascaline.core.common.KMathContext as MathContext
 
 /** [PowerIterator] to calculate x<sup>n</sup>. */
 internal class PowerNIterator(private val x: BigDecimal, private val mathContext: MathContext) :

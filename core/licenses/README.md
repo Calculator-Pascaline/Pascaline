@@ -1,6 +1,6 @@
 # Licenses module
 
-Resources and libraries used in Unitto. Accessible from Settings. Do not translate!
+Resources and libraries used in Pascaline. Accessible from Settings. Do not translate!
 
 ## Graph
 

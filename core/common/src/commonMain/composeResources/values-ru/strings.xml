@@ -17,9 +17,6 @@
   -->
 
 <resources>
-    <string name="android_exclusive_action">Получить версию для Android</string>
-    <string name="android_exclusive_text">Эта функция доступна только в версии приложения для Android</string>
-    <string name="android_exclusive_title">Только для Android</string>
     <string name="body_mass_height">Рост</string>
     <string name="body_mass_imperial">Имперская система</string>
     <string name="body_mass_metric">Метрическая система</string>

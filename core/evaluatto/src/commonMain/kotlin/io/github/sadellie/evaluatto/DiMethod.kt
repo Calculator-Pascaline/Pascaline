@@ -18,8 +18,8 @@
 
 package io.github.sadellie.evaluatto
 
-import com.sadellie.unitto.core.common.KBigDecimal
-import com.sadellie.unitto.core.common.Token
+import io.github.calculatorpascaline.core.common.KBigDecimal
+import io.github.calculatorpascaline.core.common.Token
 
 /**
  * A row of the DI table of integration by parts. Expressions use layout slots.

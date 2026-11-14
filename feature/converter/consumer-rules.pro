@@ -3,4 +3,4 @@
 -keep @kotlinx.serialization.Serializable class * {*;}
 
 # enum is used in route which is serialazble
--keep class com.sadellie.unitto.core.model.converter.UnitGroup
+-keep class io.github.calculatorpascaline.core.model.converter.UnitGroup

@@ -73,7 +73,7 @@ moduleGraphConfig {
   heading = "## Module ~~spaghetti~~ Graph"
   theme.set(Theme.DARK)
 
-  val modules = allprojects.filter { "Unitto" !in it.name }
+  val modules = allprojects.filter { "Pascaline" !in it.name }
   modules.forEach { project: Project ->
     val readmePath = "${project.projectDir.path}/README.md"
     graph(readmePath, "## Graph") {

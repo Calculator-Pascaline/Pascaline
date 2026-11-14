@@ -4,8 +4,8 @@ import ch.obermuhlner.math.big.internal.AsinCalculator
 import ch.obermuhlner.math.big.internal.CosCalculator
 import ch.obermuhlner.math.big.internal.ExpCalculator
 import ch.obermuhlner.math.big.internal.SinCalculator
-import com.sadellie.unitto.core.common.KBigDecimal as BigDecimal
-import com.sadellie.unitto.core.common.KMathContext as MathContext
+import io.github.calculatorpascaline.core.common.KBigDecimal as BigDecimal
+import io.github.calculatorpascaline.core.common.KMathContext as MathContext
 import kotlin.math.ln
 
 /** Provides advanced functions operating on [BigDecimal]s. */

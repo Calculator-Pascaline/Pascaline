@@ -1,0 +1,88 @@
+/*
+ * Unitto is a calculator for Android
+ * Copyright (c) 2023-2026 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package io.github.calculatorpascaline.core.datastore
+
+import io.github.calculatorpascaline.core.common.FormatterSymbols
+import io.github.calculatorpascaline.core.model.converter.UnitGroup
+import io.github.calculatorpascaline.core.model.converter.UnitsListSorting
+import io.github.calculatorpascaline.core.navigation.Route
+import io.github.calculatorpascaline.core.navigation.TopLevelRoute
+import io.github.sadellie.themmo.core.MonetMode
+import io.github.sadellie.themmo.core.ThemingMode
+
+data class AppPreferences(
+  val themingMode: ThemingMode,
+  val enableDynamicTheme: Boolean,
+  val enableAmoledTheme: Boolean,
+  val customColor: Long,
+  val monetMode: MonetMode,
+  val enableToolsExperiment: Boolean,
+  val enableVibrations: Boolean,
+  val enableKeepScreenOn: Boolean,
+)
+
+data class GeneralPreferences(
+  val enableVibrations: Boolean,
+  val enableKeepScreenOn: Boolean,
+)
+
+data class CalculatorPreferences(
+  val radianMode: Boolean,
+  val formatterSymbols: FormatterSymbols,
+  val additionalButtons: Boolean,
+  val inverseMode: Boolean,
+  val partialHistoryView: Boolean,
+  val steppedPartialHistoryView: Boolean,
+  val initialPartialHistoryView: Boolean,
+  val openHistoryViewButton: Boolean,
+  val fractionalOutput: Boolean,
+  val constantCalculation: Boolean,
+  val precision: Int,
+  val outputFormat: Int,
+)
+
+data class ConverterPreferences(
+  val formatterSymbols: FormatterSymbols,
+  val precision: Int,
+  val outputFormat: Int,
+  val formatTime: Boolean,
+  val sorting: UnitsListSorting,
+  val shownUnitGroups: List<UnitGroup>,
+  val favoritesOnly: Boolean,
+  val latestLeftSideUnit: String,
+  val latestRightSideUnit: String,
+  val showIcons: Boolean,
+)
+
+
+data class FormattingPreferences(
+  val digitsPrecision: Int,
+  val formatterSymbols: FormatterSymbols,
+  val outputFormat: Int,
+)
+
+data class UnitGroupsPreferences(val shownUnitGroups: List<UnitGroup>)
+
+data class AddSubtractPreferences(val formatterSymbols: FormatterSymbols)
+
+data class BodyMassPreferences(val formatterSymbols: FormatterSymbols)
+
+data class AboutPreferences(val enableToolsExperiment: Boolean)
+

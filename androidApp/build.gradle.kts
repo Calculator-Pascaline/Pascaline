@@ -56,7 +56,7 @@ val keystoreProperties =
     ?.let { file -> Properties().apply { file.inputStream().use(::load) } }
 
 android {
-  namespace = "com.sadellie.unitto"
+  namespace = "io.github.calculatorpascaline"
 
   signingConfigs {
     if (keystoreProperties != null) {

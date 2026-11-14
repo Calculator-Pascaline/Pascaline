@@ -18,7 +18,7 @@
 
 package io.github.sadellie.evaluatto
 
-import com.sadellie.unitto.core.common.KBigDecimal
+import io.github.calculatorpascaline.core.common.KBigDecimal
 import kotlin.math.abs
 import kotlin.math.hypot
 import kotlin.math.roundToLong

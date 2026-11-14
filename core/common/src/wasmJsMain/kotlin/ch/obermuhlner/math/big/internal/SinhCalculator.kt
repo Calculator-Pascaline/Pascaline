@@ -1,8 +1,8 @@
 package ch.obermuhlner.math.big.internal
 
 import ch.obermuhlner.math.big.BigRational
-import com.sadellie.unitto.core.common.KBigDecimal as BigDecimal
-import com.sadellie.unitto.core.common.KMathContext as MathContext
+import io.github.calculatorpascaline.core.common.KBigDecimal as BigDecimal
+import io.github.calculatorpascaline.core.common.KMathContext as MathContext
 
 /**
  * Calculates sinus hyperbolicus using the Taylor series.

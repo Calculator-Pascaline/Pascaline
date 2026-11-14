@@ -18,7 +18,7 @@
 
 package io.github.sadellie.evaluatto
 
-import com.sadellie.unitto.core.common.Token
+import io.github.calculatorpascaline.core.common.Token
 import kotlin.math.E
 import kotlin.math.PI
 import kotlin.test.Test

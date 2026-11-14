@@ -18,8 +18,8 @@
 
 package io.github.sadellie.evaluatto
 
-import com.sadellie.unitto.core.common.KBigDecimal
-import com.sadellie.unitto.core.common.PhysicalUnits
+import io.github.calculatorpascaline.core.common.KBigDecimal
+import io.github.calculatorpascaline.core.common.PhysicalUnits
 
 /** `coefficient·√radicand`, radicand is square free. Radicand 1 means rational number. */
 internal class Surd(val coefficient: Rational, val radicand: Long) {

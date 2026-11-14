@@ -17,13 +17,13 @@
  */
 
 plugins {
-  id("unitto.multiplatform.library")
+  id("pascaline.multiplatform.library")
   alias(libs.plugins.compose.compiler)
   alias(libs.plugins.compose)
 }
 
 kotlin {
-  android { namespace = "com.sadellie.unitto.shared" }
+  android { namespace = "io.github.calculatorpascaline.shared" }
   sourceSets.commonMain.dependencies {
     implementation(libs.org.jetbrains.compose.material3.material3)
     implementation(libs.org.jetbrains.compose.components.components.resources)
@@ -57,7 +57,7 @@ kotlin {
 }
 
 // The web app's fonts are in wasmJsMain
-compose.resources { packageOfResClass = "com.sadellie.unitto.shared.generated.resources" }
+compose.resources { packageOfResClass = "io.github.calculatorpascaline.shared.generated.resources" }
 
 // Offline web app: the service worker gets the list of files to keep and a new cache version
 val wasmPrecache =

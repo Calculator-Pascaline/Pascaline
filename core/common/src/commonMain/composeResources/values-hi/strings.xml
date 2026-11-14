@@ -17,9 +17,6 @@
   -->
 
 <resources>
-    <string name="android_exclusive_action">Android संस्करण प्राप्त करें</string>
-    <string name="android_exclusive_text">यह सुविधा केवल ऐप के Android संस्करण में उपलब्ध है</string>
-    <string name="android_exclusive_title">केवल Android के लिए</string>
     <string name="body_mass_height">ऊँचाई</string>
     <string name="body_mass_imperial">इम्पीरियल</string>
     <string name="body_mass_metric">मीट्रिक</string>

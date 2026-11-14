@@ -1,0 +1,174 @@
+/*
+ * Unitto is a calculator for Android
+ * Copyright (c) 2023-2026 Elshan Agaev
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package io.github.calculatorpascaline.core.ui
+
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationDrawerItemColors
+import androidx.compose.material3.NavigationDrawerItemDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import io.github.calculatorpascaline.core.designsystem.ExpressivePreview
+import io.github.calculatorpascaline.core.designsystem.icons.symbols.Check
+import io.github.calculatorpascaline.core.designsystem.icons.symbols.Edit
+import io.github.calculatorpascaline.core.designsystem.icons.symbols.Symbols
+import io.github.calculatorpascaline.core.navigation.CalculatorStartRoute
+import io.github.calculatorpascaline.core.navigation.DrawerItem
+import io.github.calculatorpascaline.core.navigation.TopLevelRoute
+import io.github.calculatorpascaline.core.navigation.additionalDrawerItems
+import io.github.calculatorpascaline.core.navigation.mainDrawerItems
+import kotlinx.coroutines.delay
+import org.jetbrains.compose.resources.stringResource
+import pascaline.core.common.generated.resources.Res
+import pascaline.core.common.generated.resources.app_name
+import pascaline.core.common.generated.resources.common_edit
+import pascaline.core.common.generated.resources.common_hello
+import pascaline.core.common.generated.resources.common_ok
+
+@Composable
+internal fun SheetContent(
+  mainTabs: List<DrawerItem>,
+  additionalTabs: List<DrawerItem>,
+  currentDestination: TopLevelRoute?,
+  onItemClick: (DrawerItem) -> Unit,
+  onReorder: ((List<DrawerItem>) -> Unit)? = null,
+) {
+  var isEditing by remember { mutableStateOf(false) }
+  var showHello by remember { mutableStateOf(false) }
+  val interactionSource = remember { MutableInteractionSource() }
+  LaunchedEffect(showHello) {
+    if (showHello) {
+      delay(HELLO_DURATION_MS)
+      showHello = false
+    }
+  }
+
+  Row(verticalAlignment = Alignment.CenterVertically) {
+    AnimatedContent(
+      targetState = showHello,
+      label = "Hello reveal",
+      modifier =
+        Modifier.weight(1f)
+          .clickable(
+            interactionSource = interactionSource,
+            indication = null,
+            onClick = { showHello = true },
+          ),
+    ) { hello ->
+      Text(
+        text =
+          if (hello) stringResource(Res.string.common_hello) else stringResource(Res.string.app_name),
+        modifier = Modifier.padding(horizontal = 28.dp, vertical = 24.dp),
+        style = MaterialTheme.typography.titleLarge,
+        color = MaterialTheme.colorScheme.primary,
+      )
+    }
+    if (onReorder != null) {
+      IconButton(modifier = Modifier.padding(end = 12.dp), onClick = { isEditing = !isEditing }) {
+        if (isEditing) Icon(Symbols.Check, stringResource(Res.string.common_ok))
+        else Icon(Symbols.Edit, stringResource(Res.string.common_edit))
+      }
+    }
+  }
+
+  val navigationDrawerItemColors =
+    NavigationDrawerItemDefaults.colors(
+      unselectedIconColor = MaterialTheme.colorScheme.onSurface,
+      unselectedTextColor = MaterialTheme.colorScheme.onSurface,
+    )
+  if (isEditing && onReorder != null) {
+    EditableTabs(mainTabs, onReorder)
+  } else {
+    mainTabs.forEach { drawerItem ->
+      val selected = drawerItem.topLevelRoute == currentDestination
+      DrawerItem(
+        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+        destination = drawerItem,
+        icon = if (selected) drawerItem.selectedIcon else drawerItem.defaultIcon,
+        selected = selected,
+        onClick = { onItemClick(drawerItem) },
+        colors = navigationDrawerItemColors,
+      )
+    }
+  }
+
+  HorizontalDivider(Modifier.padding(horizontal = 12.dp, vertical = 8.dp))
+
+  additionalTabs.forEach { drawerItem ->
+    val selected = drawerItem.topLevelRoute == currentDestination
+    DrawerItem(
+      modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+      destination = drawerItem,
+      icon = if (selected) drawerItem.selectedIcon else drawerItem.defaultIcon,
+      selected = selected,
+      onClick = { onItemClick(drawerItem) },
+      colors = navigationDrawerItemColors,
+    )
+  }
+  // The last item can scroll above the navigation bar
+  Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
+}
+
+@Composable
+internal expect fun DrawerItem(
+  modifier: Modifier = Modifier,
+  destination: DrawerItem,
+  icon: ImageVector,
+  selected: Boolean,
+  onClick: () -> Unit,
+  colors: NavigationDrawerItemColors,
+)
+
+private const val HELLO_DURATION_MS = 2_000L
+
+@Preview
+@Composable
+private fun PreviewDrawerSheet() = ExpressivePreview {
+  Column(Modifier.background(MaterialTheme.colorScheme.surfaceContainer)) {
+    SheetContent(
+      mainTabs = mainDrawerItems,
+      additionalTabs = additionalDrawerItems,
+      currentDestination = CalculatorStartRoute,
+      onItemClick = {},
+    )
+  }
+}

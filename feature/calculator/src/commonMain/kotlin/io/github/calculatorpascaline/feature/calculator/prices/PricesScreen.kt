@@ -1,0 +1,418 @@
+/*
+ * Pascaline is a calculator for Android
+ * Copyright (c) 2026 Calculator-Pascaline
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package io.github.calculatorpascaline.feature.calculator.prices
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import io.github.calculatorpascaline.core.common.FormatterSymbols
+import io.github.calculatorpascaline.core.common.KBigDecimal
+import io.github.calculatorpascaline.core.common.KRoundingMode
+import io.github.calculatorpascaline.core.common.collectAsStateWithLifecycleKMP
+import io.github.calculatorpascaline.core.designsystem.icons.symbols.Add
+import io.github.calculatorpascaline.core.designsystem.icons.symbols.Delete
+import io.github.calculatorpascaline.core.designsystem.icons.symbols.Symbols
+import io.github.calculatorpascaline.core.ui.DrawerButton
+import io.github.calculatorpascaline.core.ui.EmptyScreen
+import io.github.calculatorpascaline.core.ui.ScaffoldWithTopBar
+import io.github.calculatorpascaline.core.ui.textfield.formatExpression
+import io.github.calculatorpascaline.feature.calculator.probability.toNumberOrNull
+import kotlin.math.abs
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
+import pascaline.core.common.generated.resources.Res
+import pascaline.core.common.generated.resources.prices_add
+import pascaline.core.common.generated.resources.prices_cheaper
+import pascaline.core.common.generated.resources.prices_currency
+import pascaline.core.common.generated.resources.prices_delete
+import pascaline.core.common.generated.resources.prices_different_kinds
+import pascaline.core.common.generated.resources.prices_not_enough
+import pascaline.core.common.generated.resources.prices_offer
+import pascaline.core.common.generated.resources.prices_per
+import pascaline.core.common.generated.resources.prices_piece
+import pascaline.core.common.generated.resources.prices_price
+import pascaline.core.common.generated.resources.prices_quantity
+import pascaline.core.common.generated.resources.prices_same
+import pascaline.core.common.generated.resources.prices_title
+import pascaline.core.common.generated.resources.prices_unit
+
+@Composable
+internal fun PricesRoute(openDrawer: () -> Unit) {
+  val viewModel: PricesViewModel = koinViewModel()
+  val formatterSymbols = viewModel.formatterSymbols.collectAsStateWithLifecycleKMP().value
+  if (formatterSymbols == null || !viewModel.isLoaded) {
+    EmptyScreen()
+    return
+  }
+  PricesScreen(openDrawer, viewModel, formatterSymbols)
+}
+
+/** Offers with their price and quantity, and which one is the cheapest per kg, liter… */
+@Composable
+private fun PricesScreen(openDrawer: () -> Unit, viewModel: PricesViewModel, formatterSymbols: FormatterSymbols) {
+  val offers = viewModel.offers
+  val result = compare(offers.map { it.toOffer() })
+  val money = { value: Double -> money(value, viewModel.currency, formatterSymbols) }
+
+  ScaffoldWithTopBar(
+    title = { Text(stringResource(Res.string.prices_title)) },
+    navigationIcon = { DrawerButton(onClick = openDrawer) },
+    colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
+  ) { paddingValues ->
+    LazyColumn(
+      modifier = Modifier.padding(paddingValues).fillMaxSize(),
+      contentPadding = PaddingValues(16.dp),
+      verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+      item {
+        CurrencyField(currency = viewModel.currency, onCurrencyChange = { viewModel.currency = it })
+      }
+      val comparison = (result as? ComparisonResult.Compared)?.comparison
+      itemsIndexed(offers) { index, offer ->
+        OfferCard(
+          letter = letter(index),
+          offer = offer,
+          currency = viewModel.currency,
+          isCheapest = comparison?.let { it.cheapest == index && !it.isTie } == true,
+          canDelete = offers.size > MIN_OFFERS,
+          onDelete = { viewModel.delete(index) },
+        ) {
+          comparison?.let { UnitPrice(it, index, money, formatterSymbols) }
+        }
+      }
+      if (offers.size < MAX_OFFERS) {
+        item {
+          TextButton(onClick = viewModel::add) {
+            Icon(Symbols.Add, contentDescription = null)
+            Spacer(Modifier.width(8.dp))
+            Text(stringResource(Res.string.prices_add))
+          }
+        }
+      }
+      // Only when the offers can't be compared, or all cost the same
+      if (comparison == null || comparison.isTie) item { ResultCard(result, money) }
+    }
+  }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun OfferCard(
+  letter: String,
+  offer: OfferItem,
+  currency: String,
+  isCheapest: Boolean,
+  canDelete: Boolean,
+  onDelete: () -> Unit,
+  price: @Composable () -> Unit,
+) {
+  val isDark = MaterialTheme.colorScheme.surface.luminance() < HALF
+  val background =
+    when {
+      !isCheapest -> MaterialTheme.colorScheme.surfaceContainer
+      isDark -> CHEAPEST_DARK
+      else -> CHEAPEST_LIGHT
+    }
+  Column(
+    modifier = Modifier.fillMaxWidth().clip(CARD_SHAPE).background(background).padding(16.dp),
+    verticalArrangement = Arrangement.spacedBy(8.dp),
+  ) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+      Text(
+        modifier = Modifier.weight(1f),
+        text = stringResource(Res.string.prices_offer, letter),
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.Bold,
+      )
+      if (canDelete) {
+        IconButton(onClick = onDelete) { Icon(Symbols.Delete, stringResource(Res.string.prices_delete)) }
+      }
+    }
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+      NumberField(
+        modifier = Modifier.weight(1f),
+        value = offer.price,
+        onValueChange = { offer.price = it },
+        label = stringResource(Res.string.prices_price),
+        // Same side as in the results: $2.50, 2.50 €
+        prefix = currency.takeIf { it in CURRENCIES_FIRST },
+        suffix = currency.takeIf { it !in CURRENCIES_FIRST },
+      )
+      NumberField(
+        modifier = Modifier.weight(1f),
+        value = offer.quantity,
+        onValueChange = { offer.quantity = it },
+        label = stringResource(Res.string.prices_quantity),
+      )
+      var expanded by remember { mutableStateOf(false) }
+      ExposedDropdownMenuBox(modifier = Modifier.weight(1f), expanded = expanded, onExpandedChange = { expanded = it }) {
+        OutlinedTextField(
+          modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
+          value = offer.unit.symbol,
+          onValueChange = {},
+          readOnly = true,
+          singleLine = true,
+          label = { Text(stringResource(Res.string.prices_unit)) },
+          trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+        )
+        ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+          QuantityUnit.entries.forEach { unit ->
+            DropdownMenuItem(
+              text = { Text(unit.symbol) },
+              onClick = {
+                offer.unit = unit
+                expanded = false
+              },
+            )
+          }
+        }
+      }
+    }
+    price()
+  }
+}
+
+/** The price per kg, liter… of offer [index] in big, and how much more it costs than the cheapest. */
+@Composable
+private fun UnitPrice(comparison: Comparison, index: Int, money: (Double) -> String, formatterSymbols: FormatterSymbols) {
+  val price = comparison.unitPrices[index]
+  if (price.isNaN()) return
+  val unit = if (comparison.kind == QuantityKind.COUNT) stringResource(Res.string.prices_piece) else comparison.kind.baseSymbol
+  val cheapest = comparison.unitPrices[comparison.cheapest]
+  val isCheapest = index == comparison.cheapest && !comparison.isTie
+  val isDark = MaterialTheme.colorScheme.surface.luminance() < HALF
+  val green = if (isDark) CHEAPEST_TEXT_DARK else CHEAPEST_TEXT_LIGHT
+  Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    Text(
+      text = stringResource(Res.string.prices_per, money(price), unit),
+      style = MaterialTheme.typography.headlineMedium,
+      fontWeight = FontWeight.Bold,
+      color = if (isCheapest) green else MaterialTheme.colorScheme.onSurface,
+    )
+    if (!isCheapest && price > cheapest) {
+      Text(
+        text = "+" + percent(price / cheapest - 1, formatterSymbols),
+        modifier = Modifier.padding(bottom = 4.dp),
+        style = MaterialTheme.typography.titleMedium,
+        color = MaterialTheme.colorScheme.error,
+      )
+    }
+  }
+}
+
+/**
+ * Currency of the prices: one of [COMMON_CURRENCIES] from the list, or any other symbol typed in.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CurrencyField(currency: String, onCurrencyChange: (String) -> Unit) {
+  var expanded by remember { mutableStateOf(false) }
+  ExposedDropdownMenuBox(
+    modifier = Modifier.width(CURRENCY_WIDTH),
+    expanded = expanded,
+    onExpandedChange = { expanded = it },
+  ) {
+    OutlinedTextField(
+      modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable),
+      value = currency,
+      onValueChange = { onCurrencyChange(it.take(MAX_CURRENCY_LENGTH)) },
+      label = { Text(stringResource(Res.string.prices_currency)) },
+      singleLine = true,
+      trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+    )
+    ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+      COMMON_CURRENCIES.forEach { (symbol, code) ->
+        DropdownMenuItem(
+          text = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+              Text(
+                text = symbol,
+                modifier = Modifier.width(CURRENCY_SYMBOL_WIDTH),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = if (symbol == currency) FontWeight.Bold else FontWeight.Normal,
+              )
+              Text(text = code, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+          },
+          onClick = {
+            onCurrencyChange(symbol)
+            expanded = false
+          },
+        )
+      }
+    }
+  }
+}
+
+/** Why the offers can't be compared, or that they all cost the same. */
+@Composable
+private fun ResultCard(result: ComparisonResult, money: (Double) -> String) {
+  Column(
+    modifier =
+      Modifier.fillMaxWidth().clip(CARD_SHAPE).background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(16.dp),
+    verticalArrangement = Arrangement.spacedBy(8.dp),
+  ) {
+    when (result) {
+      is ComparisonResult.Problem ->
+        Text(
+          text =
+            stringResource(
+              when (result.problem) {
+                ComparisonProblem.NOT_ENOUGH_OFFERS -> Res.string.prices_not_enough
+                ComparisonProblem.DIFFERENT_KINDS -> Res.string.prices_different_kinds
+              }
+            ),
+          style = MaterialTheme.typography.bodyLarge,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+      is ComparisonResult.Compared -> {
+        val comparison = result.comparison
+        val unit = if (comparison.kind == QuantityKind.COUNT) stringResource(Res.string.prices_piece) else comparison.kind.baseSymbol
+        @Composable fun perUnit(value: Double) = stringResource(Res.string.prices_per, money(value), unit)
+        Text(
+          text =
+            if (comparison.isTie) stringResource(Res.string.prices_same)
+            else stringResource(Res.string.prices_cheaper, letter(comparison.cheapest)),
+          style = MaterialTheme.typography.headlineSmall,
+          fontWeight = FontWeight.Bold,
+          color = MaterialTheme.colorScheme.primary,
+        )
+        Text(perUnit(comparison.unitPrices[comparison.cheapest]), style = MaterialTheme.typography.titleMedium)
+      }
+    }
+  }
+}
+
+@Composable
+private fun NumberField(
+  modifier: Modifier,
+  value: String,
+  onValueChange: (String) -> Unit,
+  label: String,
+  prefix: String? = null,
+  suffix: String? = null,
+) {
+  OutlinedTextField(
+    modifier = modifier,
+    value = value,
+    onValueChange = onValueChange,
+    label = { Text(label, maxLines = 1) },
+    prefix = prefix?.let { { Text(it) } },
+    suffix = suffix?.let { { Text(it) } },
+    singleLine = true,
+    isError = value.isNotBlank() && value.toNumberOrNull() == null,
+    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+  )
+}
+
+/** A for the first offer, B for the second… */
+private fun letter(index: Int): String = ('A' + index).toString()
+
+/** 2 decimals, 4 for small prices like 0.0042 per gram. Symbols like $ go first, others after. */
+private fun money(value: Double, currency: String, formatterSymbols: FormatterSymbols): String {
+  if (!value.isFinite()) return "—"
+  val decimals = if (abs(value) >= SMALL_PRICE || value == 0.0) PRICE_DECIMALS else SMALL_PRICE_DECIMALS
+  val number =
+    KBigDecimal.valueOf(value).setScale(decimals, KRoundingMode.HALF_EVEN).toPlainString().formatExpression(formatterSymbols)
+  return if (currency in CURRENCIES_FIRST) currency + number else "$number $currency"
+}
+
+private fun percent(share: Double, formatterSymbols: FormatterSymbols): String =
+  KBigDecimal.valueOf(share * PERCENT).setScale(1, KRoundingMode.HALF_EVEN).toPlainString().formatExpression(formatterSymbols) +
+    " %"
+
+private val CURRENCIES_FIRST =
+  setOf("$", "US$", "£", "¥", "CN¥", "₹", "₩", "₦", "₱", "R$", "A$", "C$", "MX$", "₺", "Rp", "R")
+
+/** Symbol and ISO code of the currencies in the list, the most used ones first. */
+private val COMMON_CURRENCIES =
+  listOf(
+    "$" to "USD",
+    "€" to "EUR",
+    "£" to "GBP",
+    "¥" to "JPY",
+    "CN¥" to "CNY",
+    "CHF" to "CHF",
+    "C$" to "CAD",
+    "A$" to "AUD",
+    "₹" to "INR",
+    "R$" to "BRL",
+    "MX$" to "MXN",
+    "₽" to "RUB",
+    "₺" to "TRY",
+    "Rp" to "IDR",
+    "Ft" to "HUF",
+    "₩" to "KRW",
+    "zł" to "PLN",
+    "kr" to "SEK",
+    "R" to "ZAR",
+    "₦" to "NGN",
+    "₱" to "PHP",
+  )
+private const val SMALL_PRICE = 0.1
+private const val HALF = 0.5f
+private val CHEAPEST_LIGHT = Color(0xFFD4EEE2)
+private val CHEAPEST_DARK = Color(0xFF22453A)
+private val CHEAPEST_TEXT_LIGHT = Color(0xFF1C5C42)
+private val CHEAPEST_TEXT_DARK = Color(0xFFB9EBD4)
+private const val PRICE_DECIMALS = 2
+private const val SMALL_PRICE_DECIMALS = 4
+private const val MAX_CURRENCY_LENGTH = 5
+private val CURRENCY_WIDTH = 160.dp
+private val CURRENCY_SYMBOL_WIDTH = 56.dp
+private val CARD_SHAPE = RoundedCornerShape(20.dp)
+
+private const val PERCENT = 100

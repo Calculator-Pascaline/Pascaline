@@ -108,4 +108,4 @@ class :feature:timezone focus
 ```
 # Feature modules
 
-Each tab in navigation drawer is a feature. This is specific for Unitto, you may modularize your app differently.
+Each tab in navigation drawer is a feature. This is specific for Pascaline, you may modularize your app differently.

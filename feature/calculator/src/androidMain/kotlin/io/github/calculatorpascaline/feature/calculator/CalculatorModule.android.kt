@@ -1,0 +1,52 @@
+/*
+ * Unitto is a calculator for Android
+ * Copyright (c) 2025-2026 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package io.github.calculatorpascaline.feature.calculator
+
+import io.github.calculatorpascaline.core.data.calculatorDataModule
+import io.github.calculatorpascaline.feature.calculator.functions.FunctionsViewModel
+import io.github.calculatorpascaline.feature.calculator.navigation.calculatorNavigation
+import io.github.calculatorpascaline.feature.calculator.finance.FinanceViewModel
+import io.github.calculatorpascaline.feature.calculator.programmer.ProgrammerViewModel
+import io.github.calculatorpascaline.feature.calculator.inference.InferenceViewModel
+import io.github.calculatorpascaline.feature.calculator.place.PlaceViewModel
+import io.github.calculatorpascaline.feature.calculator.prices.PricesViewModel
+import io.github.calculatorpascaline.feature.calculator.probability.ProbabilityViewModel
+import io.github.calculatorpascaline.feature.calculator.regression.RegressionViewModel
+import io.github.calculatorpascaline.feature.calculator.sequences.SequencesViewModel
+import io.github.calculatorpascaline.feature.calculator.statistics.StatisticsViewModel
+import org.koin.core.module.dsl.viewModelOf
+import org.koin.core.module.includes
+import org.koin.dsl.lazyModule
+
+val calculatorModule = lazyModule {
+  includes(calculatorDataModule)
+  calculatorNavigation()
+  viewModelOf(::CalculatorViewModel)
+  viewModelOf(::FunctionsViewModel)
+  viewModelOf(::ProbabilityViewModel)
+  viewModelOf(::SequencesViewModel)
+  viewModelOf(::StatisticsViewModel)
+  viewModelOf(::RegressionViewModel)
+  viewModelOf(::PricesViewModel)
+  viewModelOf(::InferenceViewModel)
+  viewModelOf(::FinanceViewModel)
+  viewModelOf(::ProgrammerViewModel)
+  viewModelOf(::PlaceViewModel)
+}

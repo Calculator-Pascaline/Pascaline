@@ -17,14 +17,14 @@
  */
 
 plugins {
-  id("unitto.multiplatform.library")
+  id("pascaline.multiplatform.library")
   alias(libs.plugins.compose.compiler)
   alias(libs.plugins.compose)
   alias(libs.plugins.serialization)
 }
 
 kotlin {
-  android { namespace = "com.sadellie.unitto.feature.settings" }
+  android { namespace = "io.github.calculatorpascaline.feature.settings" }
   sourceSets.commonMain.dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:ui"))

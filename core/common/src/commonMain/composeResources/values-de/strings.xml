@@ -17,9 +17,6 @@
   -->
 
 <resources>
-    <string name="android_exclusive_action">Android-Version herunterladen</string>
-    <string name="android_exclusive_text">Diese Funktion ist nur in der Android-Version der App verfügbar</string>
-    <string name="android_exclusive_title">Nur für Android</string>
     <string name="body_mass_height">Größe</string>
     <string name="body_mass_imperial">Imperial</string>
     <string name="body_mass_metric">Metrisch</string>

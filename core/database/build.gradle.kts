@@ -17,7 +17,7 @@
  */
 
 plugins {
-  id("unitto.multiplatform.library")
+  id("pascaline.multiplatform.library")
   alias(libs.plugins.compose)
   alias(libs.plugins.compose.compiler)
   alias(libs.plugins.ksp)
@@ -25,7 +25,7 @@ plugins {
 }
 
 kotlin {
-  android { namespace = "com.sadellie.unitto.core.database" }
+  android { namespace = "io.github.calculatorpascaline.core.database" }
   sourceSets.commonMain.dependencies {
     implementation(project(":core:common"))
     implementation(libs.org.jetbrains.compose.runtime.runtime) // need skiko

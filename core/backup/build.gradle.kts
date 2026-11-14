@@ -16,9 +16,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-plugins { id("unitto.library") }
+plugins { id("pascaline.library") }
 
-android.namespace = "com.sadellie.unitto.core.backup"
+android.namespace = "io.github.calculatorpascaline.core.backup"
 
 dependencies {
   implementation(project(":core:database"))

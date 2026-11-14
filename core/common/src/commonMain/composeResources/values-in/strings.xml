@@ -17,9 +17,6 @@
   -->
 
 <resources>
-    <string name="android_exclusive_action">Dapatkan versi Android</string>
-    <string name="android_exclusive_text">Fitur ini hanya tersedia di aplikasi versi Android</string>
-    <string name="android_exclusive_title">Khusus Android</string>
     <string name="body_mass_height">Tinggi</string>
     <string name="body_mass_imperial">Imperial</string>
     <string name="body_mass_metric">Metrik</string>

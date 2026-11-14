@@ -1,0 +1,197 @@
+/*
+ * Unitto is a calculator for Android
+ * Copyright (c) 2023-2026 Elshan Agaev
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package io.github.calculatorpascaline.feature.datecalculator.components
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.tooling.preview.Preview
+import io.github.calculatorpascaline.core.common.FormatterSymbols
+import io.github.calculatorpascaline.core.common.KBigDecimal
+import io.github.calculatorpascaline.core.common.OutputFormat
+import io.github.calculatorpascaline.core.common.Token
+import io.github.calculatorpascaline.core.common.toFormattedString
+import io.github.calculatorpascaline.core.ui.PagedIsland
+import io.github.calculatorpascaline.core.ui.textfield.formatExpression
+import io.github.calculatorpascaline.feature.datecalculator.difference.InstantDifference
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
+import pascaline.core.common.generated.resources.Res
+import pascaline.core.common.generated.resources.date_calculator_days
+import pascaline.core.common.generated.resources.date_calculator_difference
+import pascaline.core.common.generated.resources.date_calculator_hours
+import pascaline.core.common.generated.resources.date_calculator_minutes
+import pascaline.core.common.generated.resources.date_calculator_months
+import pascaline.core.common.generated.resources.date_calculator_weeks
+import pascaline.core.common.generated.resources.date_calculator_years
+
+@Composable
+internal fun DateTimeResultBlock(
+  modifier: Modifier = Modifier,
+  diff: InstantDifference.Default,
+  precision: Int,
+  outputFormat: Int,
+  formatterSymbols: FormatterSymbols,
+) {
+  val focusManager = LocalFocusManager.current
+  // After the difference in parts, one page per total: in years, months…
+  val totals =
+    listOf(
+      Res.string.date_calculator_years to diff.sumYears,
+      Res.string.date_calculator_months to diff.sumMonths,
+      Res.string.date_calculator_weeks to diff.sumWeeks,
+      Res.string.date_calculator_days to diff.sumDays,
+      Res.string.date_calculator_hours to diff.sumHours,
+      Res.string.date_calculator_minutes to diff.sumMinutes,
+    )
+
+  PagedIsland(
+    modifier = modifier,
+    pageCount = totals.size + 1,
+    onClick = { focusManager.clearFocus() },
+    backgroundColor = MaterialTheme.colorScheme.tertiaryContainer,
+  ) { currentPage ->
+    if (currentPage == 0) {
+      DifferenceParts(diff, precision, outputFormat, formatterSymbols)
+    } else {
+      val (header, total) = totals[currentPage - 1]
+      SingleDateText(
+        headerText = header,
+        value = total,
+        precision = precision,
+        outputFormat = outputFormat,
+        formatterSymbols = formatterSymbols,
+      )
+    }
+  }
+}
+
+/** The difference as years, months, days, hours and minutes, the ones that aren't 0. */
+@Composable
+private fun DifferenceParts(
+  diff: InstantDifference.Default,
+  precision: Int,
+  outputFormat: Int,
+  formatterSymbols: FormatterSymbols,
+) {
+  val parts =
+    listOf(
+      Res.string.date_calculator_years to diff.years,
+      Res.string.date_calculator_months to diff.months,
+      Res.string.date_calculator_days to diff.days,
+      Res.string.date_calculator_hours to diff.hours,
+      Res.string.date_calculator_minutes to diff.minutes,
+    )
+  Column(modifier = Modifier.fillMaxWidth()) {
+    Text(
+      text = stringResource(Res.string.date_calculator_difference),
+      style = MaterialTheme.typography.labelMedium,
+    )
+    SelectionContainer {
+      Column {
+        parts.forEach { (text, value) ->
+          if (value > 0) {
+            PartialDateText(
+              text = text,
+              value = value,
+              precision = precision,
+              outputFormat = outputFormat,
+              formatterSymbols = formatterSymbols,
+            )
+          }
+        }
+      }
+    }
+  }
+}
+
+@Composable
+private fun PartialDateText(
+  text: StringResource,
+  value: Long,
+  precision: Int,
+  outputFormat: Int,
+  formatterSymbols: FormatterSymbols,
+) {
+  val formattedValue =
+    remember(value, precision, outputFormat, formatterSymbols) {
+      formatDateValue(KBigDecimal.valueOf(value), precision, outputFormat, formatterSymbols)
+    }
+  Text(
+    text = "${stringResource(text)}: $formattedValue",
+    style = MaterialTheme.typography.displaySmall,
+  )
+}
+
+@Composable
+private fun SingleDateText(
+  headerText: StringResource,
+  value: KBigDecimal,
+  precision: Int,
+  outputFormat: Int,
+  formatterSymbols: FormatterSymbols,
+) {
+  Column {
+    Text(text = stringResource(headerText), style = MaterialTheme.typography.labelMedium)
+    SelectionContainer {
+      val formattedValue =
+        remember(value, precision, outputFormat, formatterSymbols) {
+          formatDateValue(value, precision, outputFormat, formatterSymbols)
+        }
+      Text(text = formattedValue, style = MaterialTheme.typography.displaySmall)
+    }
+  }
+}
+
+private fun formatDateValue(
+  value: KBigDecimal,
+  precision: Int,
+  outputFormat: Int,
+  formatterSymbols: FormatterSymbols,
+): String = value.toFormattedString(precision, outputFormat).formatExpression(formatterSymbols)
+
+@Preview
+@Composable
+private fun DateTimeResultBlockPreview() {
+  DateTimeResultBlock(
+    diff =
+      InstantDifference.Default(
+        years = 0,
+        months = 1,
+        days = 1,
+        hours = 0,
+        minutes = 0,
+        sumYears = KBigDecimal.ZERO,
+        sumMonths = KBigDecimal.ZERO,
+        sumWeeks = KBigDecimal.ZERO,
+        sumDays = KBigDecimal.ZERO,
+        sumHours = KBigDecimal.ZERO,
+        sumMinutes = KBigDecimal("46080"),
+      ),
+    precision = 3,
+    outputFormat = OutputFormat.PLAIN,
+    formatterSymbols = FormatterSymbols(Token.SPACE, Token.PERIOD, false),
+  )
+}

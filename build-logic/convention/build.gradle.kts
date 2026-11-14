@@ -22,7 +22,7 @@ plugins {
   `kotlin-dsl`
 }
 
-group = "com.sadellie.unitto.buildlogic"
+group = "io.github.calculatorpascaline.buildlogic"
 java.sourceCompatibility = JavaVersion.VERSION_21
 java.targetCompatibility = JavaVersion.VERSION_21
 kotlin.compilerOptions.jvmTarget = JvmTarget.JVM_21
@@ -42,13 +42,13 @@ dependencies {
 
 gradlePlugin {
   plugins {
-    register("unittoLibraryPlugin") {
-      id = "unitto.library"
-      implementationClass = "UnittoLibraryPlugin"
+    register("pascalineLibraryPlugin") {
+      id = "pascaline.library"
+      implementationClass = "PascalineLibraryPlugin"
     }
-    register("unittoMultiplatformLibraryPlugin") {
-      id = "unitto.multiplatform.library"
-      implementationClass = "UnittoMultiplatformLibraryPlugin"
+    register("pascalineMultiplatformLibraryPlugin") {
+      id = "pascaline.multiplatform.library"
+      implementationClass = "PascalineMultiplatformLibraryPlugin"
     }
   }
 }

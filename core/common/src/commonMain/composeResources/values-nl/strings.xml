@@ -17,9 +17,6 @@
   -->
 
 <resources>
-    <string name="android_exclusive_action">Android-versie ophalen</string>
-    <string name="android_exclusive_text">Deze functie is alleen beschikbaar in de Android-versie van de app</string>
-    <string name="android_exclusive_title">Exclusief voor Android</string>
     <string name="body_mass_height">Lengte</string>
     <string name="body_mass_imperial">Imperiaal</string>
     <string name="body_mass_metric">Metrisch</string>

@@ -19,8 +19,8 @@
 
 package io.github.sadellie.evaluatto
 
-import com.sadellie.unitto.core.common.PhysicalUnits
-import com.sadellie.unitto.core.common.Token
+import io.github.calculatorpascaline.core.common.PhysicalUnits
+import io.github.calculatorpascaline.core.common.Token
 
 internal sealed class TokenizerException(message: String) : Exception(message) {
 

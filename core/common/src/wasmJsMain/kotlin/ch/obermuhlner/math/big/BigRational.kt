@@ -1,8 +1,8 @@
 package ch.obermuhlner.math.big
 
-import com.sadellie.unitto.core.common.KBigDecimal as BigDecimal
-import com.sadellie.unitto.core.common.KBigInteger as BigInteger
-import com.sadellie.unitto.core.common.KMathContext as MathContext
+import io.github.calculatorpascaline.core.common.KBigDecimal as BigDecimal
+import io.github.calculatorpascaline.core.common.KBigInteger as BigInteger
+import io.github.calculatorpascaline.core.common.KMathContext as MathContext
 import kotlin.math.ln
 
 /**

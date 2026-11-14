@@ -1,0 +1,63 @@
+/*
+ * Unitto is a calculator for Android
+ * Copyright (c) 2024-2026 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package io.github.calculatorpascaline.core.data.converter
+
+import io.github.calculatorpascaline.core.common.KBigDecimal
+import io.github.calculatorpascaline.core.database.CurrencyRatesDaoInMemory
+import io.github.calculatorpascaline.core.database.UnitsDaoInMemory
+import io.github.calculatorpascaline.core.model.converter.UnitGroup
+import io.github.calculatorpascaline.core.model.converter.unit.NormalUnit
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertThrows
+import org.junit.Test
+import pascaline.core.common.generated.resources.Res
+import pascaline.core.common.generated.resources.unit_attometer
+import pascaline.core.common.generated.resources.unit_attometer_short
+
+class UnitRepositoryGetByIdTest {
+  private val fakeUnitsDao = UnitsDaoInMemory()
+  private val unitsRepository = UnitsRepository(fakeUnitsDao)
+  private val unitConverterRepo =
+    UnitConverterRepositoryImpl(unitsRepository)
+
+  @Test
+  fun getById_findRealUnit() = runTest {
+    val expected =
+      NormalUnit(
+        UnitID.attometer,
+        KBigDecimal("1"),
+        UnitGroup.LENGTH,
+        Res.string.unit_attometer,
+        Res.string.unit_attometer_short,
+      )
+    val actual = unitConverterRepo.getById(UnitID.attometer)
+
+    assertEquals(expected, actual)
+  }
+
+  @Test
+  fun getById_failToFind() = runTest {
+    assertThrows(NoSuchElementException::class.java) {
+      runBlocking { unitConverterRepo.getById("") }
+    }
+  }
+}

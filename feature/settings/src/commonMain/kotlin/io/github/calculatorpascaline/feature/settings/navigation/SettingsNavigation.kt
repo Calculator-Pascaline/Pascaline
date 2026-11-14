@@ -1,0 +1,131 @@
+/*
+ * Unitto is a calculator for Android
+ * Copyright (c) 2023-2026 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package io.github.calculatorpascaline.feature.settings.navigation
+
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.navigation3.runtime.NavBackStack
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.ui.NavDisplay
+import io.github.calculatorpascaline.core.designsystem.stackedTransition
+import io.github.calculatorpascaline.core.navigation.LocalNavigator
+import io.github.calculatorpascaline.core.navigation.Route
+import io.github.calculatorpascaline.core.navigation.SettingsStartRoute
+import io.github.calculatorpascaline.feature.settings.SettingsRoute
+import io.github.calculatorpascaline.feature.settings.calculator.CalculatorSettingsRoute
+import io.github.calculatorpascaline.feature.settings.converter.ConverterSettingsRoute
+import io.github.calculatorpascaline.feature.settings.display.DisplayRoute
+import io.github.calculatorpascaline.feature.settings.formatting.FormattingRoute
+import io.github.calculatorpascaline.feature.settings.thirdparty.ThirdPartyLicensesScreen
+import io.github.calculatorpascaline.feature.settings.unitgroups.UnitGroupsRoute
+import io.github.sadellie.themmo.ThemmoController
+import kotlinx.serialization.Serializable
+import org.koin.core.annotation.KoinExperimentalAPI
+import org.koin.core.module.Module
+import org.koin.dsl.navigation3.navigation
+
+fun NavBackStack<NavKey>.navigateToUnitGroups() = add(UnitGroupRoute)
+
+val LocalThemmoController =
+  staticCompositionLocalOf<ThemmoController> { error("LocalThemmoController not provided") }
+
+@OptIn(KoinExperimentalAPI::class)
+fun Module.settingNavigation() {
+  navigation<SettingsStartRoute> {
+    val navigator = LocalNavigator.current
+    SettingsRoute(openDrawer = navigator::openDrawer, navControllerAction = navigator::goTo)
+  }
+  navigation<DisplayRoute>(metadata = NavDisplay.stackedTransition()) {
+    val navigator = LocalNavigator.current
+    DisplayRoute(
+      navigateUp = navigator::goBack,
+      themmoController = LocalThemmoController.current,
+      navigateToLanguages = { navigator.goTo(LanguageRoute) },
+    )
+  }
+  languageNavigation()
+  navigation<FormattingRoute>(metadata = NavDisplay.stackedTransition()) {
+    val navigator = LocalNavigator.current
+    FormattingRoute(navigateUpAction = navigator::goBack)
+  }
+  navigation<CalculatorSettingsRoute>(metadata = NavDisplay.stackedTransition()) {
+    val navigator = LocalNavigator.current
+    CalculatorSettingsRoute(navigateUpAction = navigator::goBack)
+  }
+  navigation<ConverterSettingsRoute>(metadata = NavDisplay.stackedTransition()) {
+    val navigator = LocalNavigator.current
+    ConverterSettingsRoute(
+      navigateUpAction = navigator::goBack,
+      navigateToUnitsGroup = { navigator.goTo(UnitGroupRoute) },
+    )
+  }
+  navigation<UnitGroupRoute>(metadata = NavDisplay.stackedTransition()) {
+    val navigator = LocalNavigator.current
+    UnitGroupsRoute(navigateUpAction = navigator::goBack)
+  }
+  backupNavigation()
+  navigation<ThirdPartyRoute>(metadata = NavDisplay.stackedTransition()) {
+    val navigator = LocalNavigator.current
+    ThirdPartyLicensesScreen(navigateUpAction = navigator::goBack)
+  }
+}
+
+internal expect fun Module.backupNavigation()
+
+internal expect fun Module.languageNavigation()
+
+@Serializable
+internal data object DisplayRoute : Route {
+  override val routeId = "display_route"
+}
+
+@Serializable
+internal data object LanguageRoute : Route {
+  override val routeId = "language_route"
+}
+
+@Serializable
+internal data object FormattingRoute : Route {
+  override val routeId = "formatting_route"
+}
+
+@Serializable
+internal data object CalculatorSettingsRoute : Route {
+  override val routeId = "calculator_settings_route"
+}
+
+@Serializable
+internal data object ConverterSettingsRoute : Route {
+  override val routeId = "converter_settings_route"
+}
+
+@Serializable
+internal data object UnitGroupRoute : Route {
+  override val routeId = "unit_group_route"
+}
+
+@Serializable
+internal data object BackupRoute : Route {
+  override val routeId = "backup_route"
+}
+
+@Serializable
+internal data object ThirdPartyRoute : Route {
+  override val routeId = "third_party_route"
+}

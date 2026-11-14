@@ -17,9 +17,6 @@
   -->
 
 <resources>
-    <string name="android_exclusive_action">Android sürümünü edin</string>
-    <string name="android_exclusive_text">Bu özellik yalnızca uygulamanın Android sürümünde mevcuttur</string>
-    <string name="android_exclusive_title">Yalnızca Android'e özel</string>
     <string name="body_mass_height">Boy</string>
     <string name="body_mass_imperial">İmparatorluk</string>
     <string name="body_mass_metric">Metrik</string>

@@ -18,14 +18,14 @@
 
 package io.github.sadellie.evaluatto
 
-import com.sadellie.unitto.core.common.Dimension
-import com.sadellie.unitto.core.common.KBigDecimal
-import com.sadellie.unitto.core.common.KMathContext
-import com.sadellie.unitto.core.common.KRoundingMode
-import com.sadellie.unitto.core.common.PhysicalUnit
-import com.sadellie.unitto.core.common.PhysicalUnits
-import com.sadellie.unitto.core.common.Token
-import com.sadellie.unitto.core.common.isEqualTo
+import io.github.calculatorpascaline.core.common.Dimension
+import io.github.calculatorpascaline.core.common.KBigDecimal
+import io.github.calculatorpascaline.core.common.KMathContext
+import io.github.calculatorpascaline.core.common.KRoundingMode
+import io.github.calculatorpascaline.core.common.PhysicalUnit
+import io.github.calculatorpascaline.core.common.PhysicalUnits
+import io.github.calculatorpascaline.core.common.Token
+import io.github.calculatorpascaline.core.common.isEqualTo
 
 /** Units used anywhere in [this]. */
 internal fun Node.units(): List<PhysicalUnit> =

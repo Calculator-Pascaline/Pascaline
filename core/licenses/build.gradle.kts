@@ -16,6 +16,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-plugins { id("unitto.multiplatform.library") }
+plugins { id("pascaline.multiplatform.library") }
 
-kotlin.android { namespace = "com.sadellie.unitto.core.licenses" }
+kotlin.android { namespace = "io.github.calculatorpascaline.core.licenses" }

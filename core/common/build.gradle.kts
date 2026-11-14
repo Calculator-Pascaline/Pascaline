@@ -19,14 +19,14 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec
 
 plugins {
-  id("unitto.multiplatform.library")
+  id("pascaline.multiplatform.library")
   alias(libs.plugins.compose)
   alias(libs.plugins.compose.compiler)
   alias(libs.plugins.com.codingfeline.buildkonfig)
 }
 
 buildkonfig {
-  packageName = "com.sadellie.unitto.core.common"
+  packageName = "io.github.calculatorpascaline.core.common"
   defaultConfigs {
     buildConfigField(FieldSpec.Type.STRING, "VERSION_CODE", libs.versions.versionCode.get())
     buildConfigField(FieldSpec.Type.STRING, "VERSION_NAME", libs.versions.versionName.get())
@@ -34,7 +34,7 @@ buildkonfig {
 }
 
 kotlin {
-  android { namespace = "com.sadellie.unitto.core.common" }
+  android { namespace = "io.github.calculatorpascaline.core.common" }
   sourceSets.commonMain.dependencies {
     implementation(libs.org.jetbrains.compose.foundation.foundation)
     implementation(libs.org.jetbrains.compose.components.components.resources)

@@ -19,13 +19,13 @@
 
 package io.github.sadellie.evaluatto
 
-import com.sadellie.unitto.core.common.KBigDecimal
-import com.sadellie.unitto.core.common.KBigDecimalMath
-import com.sadellie.unitto.core.common.KMathContext
-import com.sadellie.unitto.core.common.KRoundingMode
-import com.sadellie.unitto.core.common.MAX_SCALE
-import com.sadellie.unitto.core.common.PhysicalUnits
-import com.sadellie.unitto.core.common.isEqualTo
+import io.github.calculatorpascaline.core.common.KBigDecimal
+import io.github.calculatorpascaline.core.common.KBigDecimalMath
+import io.github.calculatorpascaline.core.common.KMathContext
+import io.github.calculatorpascaline.core.common.KRoundingMode
+import io.github.calculatorpascaline.core.common.MAX_SCALE
+import io.github.calculatorpascaline.core.common.PhysicalUnits
+import io.github.calculatorpascaline.core.common.isEqualTo
 
 /** Expression has a variable or a symbolic operation, can't be calculated as a number. */
 internal class SymbolicExpressionException : Exception("Expression is not a number")

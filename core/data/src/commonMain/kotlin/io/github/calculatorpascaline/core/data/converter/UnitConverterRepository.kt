@@ -1,0 +1,61 @@
+/*
+ * Unitto is a calculator for Android
+ * Copyright (c) 2024-2026 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package io.github.calculatorpascaline.core.data.converter
+
+import io.github.calculatorpascaline.core.model.converter.UnitGroup
+import io.github.calculatorpascaline.core.model.converter.UnitsListSorting
+import io.github.calculatorpascaline.core.model.converter.unit.BasicUnit
+
+interface UnitConverterRepository {
+  suspend fun getById(id: String): BasicUnit
+
+  suspend fun getPairId(id: String): String
+
+  suspend fun incrementCounter(id: String)
+
+  suspend fun setPair(id: String, pairId: String)
+
+  suspend fun favorite(id: String)
+
+  suspend fun filterUnits(
+    query: String,
+    unitGroups: List<UnitGroup>,
+    favoritesOnly: Boolean,
+    sorting: UnitsListSorting,
+  ): Map<UnitGroup, List<UnitSearchResultItem>>
+
+  suspend fun filterUnitsAndBatchConvert(
+    query: String,
+    unitGroup: UnitGroup,
+    favoritesOnly: Boolean,
+    sorting: UnitsListSorting,
+    unitFromId: String,
+    input1: String,
+    input2: String,
+  ): Map<UnitGroup, List<UnitSearchResultItem>>
+
+  suspend fun convert(
+    unitFromId: String,
+    unitToId: String,
+    value1: String,
+    value2: String,
+    formatTime: Boolean,
+  ): ConverterResult
+}

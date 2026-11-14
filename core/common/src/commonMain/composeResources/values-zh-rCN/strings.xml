@@ -17,9 +17,6 @@
   -->
 
 <resources>
-    <string name="android_exclusive_action">获取 Android 版本</string>
-    <string name="android_exclusive_text">此功能仅在应用的 Android 版本中可用</string>
-    <string name="android_exclusive_title">Android 专属</string>
     <string name="body_mass_height">身高</string>
     <string name="body_mass_imperial">英制</string>
     <string name="body_mass_metric">公制</string>

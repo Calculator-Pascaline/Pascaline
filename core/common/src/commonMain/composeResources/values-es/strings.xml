@@ -17,9 +17,6 @@
   -->
 
 <resources>
-    <string name="android_exclusive_action">Obtener versión de Android</string>
-    <string name="android_exclusive_text">Esta función solo está disponible en la versión para Android de la app</string>
-    <string name="android_exclusive_title">Exclusivo de Android</string>
     <string name="body_mass_height">Altura</string>
     <string name="body_mass_imperial">Imperial</string>
     <string name="body_mass_metric">Métrico</string>

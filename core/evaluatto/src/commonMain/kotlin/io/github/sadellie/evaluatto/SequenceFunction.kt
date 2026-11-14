@@ -18,8 +18,8 @@
 
 package io.github.sadellie.evaluatto
 
-import com.sadellie.unitto.core.common.KRoundingMode
-import com.sadellie.unitto.core.common.Token
+import io.github.calculatorpascaline.core.common.KRoundingMode
+import io.github.calculatorpascaline.core.common.Token
 
 /**
  * Formula of a term of a sequence, like in the Sequences app of NumWorks. It can use n and terms

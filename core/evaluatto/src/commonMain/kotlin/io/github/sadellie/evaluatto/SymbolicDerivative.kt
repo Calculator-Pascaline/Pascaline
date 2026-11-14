@@ -18,11 +18,11 @@
 
 package io.github.sadellie.evaluatto
 
-import com.sadellie.unitto.core.common.KBigDecimal
-import com.sadellie.unitto.core.common.KRoundingMode
-import com.sadellie.unitto.core.common.Token
-import com.sadellie.unitto.core.common.isEqualTo
-import com.sadellie.unitto.core.common.toFormattedString
+import io.github.calculatorpascaline.core.common.KBigDecimal
+import io.github.calculatorpascaline.core.common.KRoundingMode
+import io.github.calculatorpascaline.core.common.Token
+import io.github.calculatorpascaline.core.common.isEqualTo
+import io.github.calculatorpascaline.core.common.toFormattedString
 
 /** `true` when there is `d/dx` without a point or `∫` without bounds. */
 internal fun Node.hasSymbolicCalculus(): Boolean =
@@ -434,7 +434,7 @@ private fun Node.simplePolynomial(): Polynomial? =
     this is Node.Negate -> node.simplePolynomial()?.let { -it }
     this is Node.Binary && operator == BinaryOperator.POWER && left == Node.X -> {
       val exponent = (right as? Node.Number)?.value
-      val whole = exponent?.setScale(0, com.sadellie.unitto.core.common.KRoundingMode.HALF_EVEN)
+      val whole = exponent?.setScale(0, io.github.calculatorpascaline.core.common.KRoundingMode.HALF_EVEN)
       if (exponent != null && whole != null && exponent.isEqualTo(whole) && exponent > KBigDecimal.ZERO) {
         Polynomial.X.pow(whole.intValueExact())
       } else {

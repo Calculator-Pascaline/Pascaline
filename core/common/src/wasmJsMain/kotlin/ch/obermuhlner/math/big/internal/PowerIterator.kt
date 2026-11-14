@@ -1,6 +1,6 @@
 package ch.obermuhlner.math.big.internal
 
-import com.sadellie.unitto.core.common.KBigDecimal as BigDecimal
+import io.github.calculatorpascaline.core.common.KBigDecimal as BigDecimal
 
 /**
  * Iterator over the powers of a value x.

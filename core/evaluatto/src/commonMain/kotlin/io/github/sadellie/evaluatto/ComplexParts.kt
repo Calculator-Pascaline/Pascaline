@@ -18,11 +18,11 @@
 
 package io.github.sadellie.evaluatto
 
-import com.sadellie.unitto.core.common.KBigDecimal
-import com.sadellie.unitto.core.common.KBigDecimalMath
-import com.sadellie.unitto.core.common.KMathContext
-import com.sadellie.unitto.core.common.KRoundingMode
-import com.sadellie.unitto.core.common.isEqualTo
+import io.github.calculatorpascaline.core.common.KBigDecimal
+import io.github.calculatorpascaline.core.common.KBigDecimalMath
+import io.github.calculatorpascaline.core.common.KMathContext
+import io.github.calculatorpascaline.core.common.KRoundingMode
+import io.github.calculatorpascaline.core.common.isEqualTo
 
 /**
  * Exact real part, imaginary part and length (|z|² = re² + im² is rational when both parts are

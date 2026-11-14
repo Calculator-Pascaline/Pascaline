@@ -28,12 +28,12 @@
         android:name="android.permission.INTERNET"
         tools:node="remove" />
     <application
-        android:name=".UnittoApplication"
+        android:name=".PascalineApplication"
         android:icon="@mipmap/ic_launcher_icon"
         android:label="@string/app_name"
         android:localeConfig="@xml/locales_config"
         android:supportsRtl="false"
-        android:theme="@style/Theme.Unitto"
+        android:theme="@style/Theme.Pascaline"
         tools:targetApi="tiramisu">
 
         <activity
@@ -53,13 +53,17 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
+                    android:host="io.github.calculatorpascaline"
+                    android:scheme="app" />
+                <!-- Shortcuts pinned before the rename to Pascaline -->
+                <data
                     android:host="com.sadellie.unitto"
                     android:scheme="app" />
             </intent-filter>
         </activity>
 
         <service
-            android:name=".UnittoTileService"
+            android:name=".PascalineTileService"
             android:exported="true"
             android:icon="@drawable/tile"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"

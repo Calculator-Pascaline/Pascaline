@@ -1,0 +1,62 @@
+/*
+ * Unitto is a calculator for Android
+ * Copyright (c) 2025-2026 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package io.github.calculatorpascaline.core.datastore
+
+object PrefKeys {
+  const val THEMING_MODE_PREF_KEY = "THEMING_MODE_PREF_KEY"
+  const val ENABLE_DYNAMIC_THEME_PREF_KEY = "ENABLE_DYNAMIC_THEME_PREF_KEY"
+  const val ENABLE_AMOLED_THEME_PREF_KEY = "ENABLE_AMOLED_THEME_PREF_KEY"
+  const val CUSTOM_COLOR_PREF_KEY = "CUSTOM_COLOR_PREF_KEY"
+  const val MONET_MODE_PREF_KEY = "MONET_MODE_PREF_KEY"
+  const val ENABLE_TOOLS_EXPERIMENT_PREF_KEY = "ENABLE_TOOLS_EXPERIMENT_PREF_KEY"
+  // val SYSTEM_FONT_PREF_KEY = "SYSTEM_FONT_PREF_KEY"
+  const val ENABLE_VIBRATIONS_PREF_KEY = "ENABLE_VIBRATIONS_PREF_KEY"
+  const val ENABLE_KEEP_SCREEN_ON_PREF_KEY = "ENABLE_KEEP_SCREEN_ON_PREF_KEY"
+  /** App data key, "false" when the app must not show over the lock screen. On by default. */
+  const val SHOW_ON_LOCK_SCREEN_PREF_KEY = "SHOW_ON_LOCK_SCREEN_PREF_KEY"
+  /** App data key, "true" when keypads put 1 2 3 on top like a phone. */
+  const val PHONE_KEYPAD_PREF_KEY = "PHONE_KEYPAD_PREF_KEY"
+  const val KEY_ANIMATION_PREF_KEY = "KEY_ANIMATION_PREF_KEY"
+  // val RPN_MODE_PREF_KEY = "RPN_MODE_PREF_KEY"
+  const val DIGITS_PRECISION_PREF_KEY = "DIGITS_PRECISION_PREF_KEY"
+  // val SEPARATOR_PREF_KEY = "SEPARATOR_PREF_KEY"
+  const val FORMATTER_GROUPING_PREF_KEY = "FORMATTER_GROUPING_PREF_KEY"
+  const val FORMATTER_FRACTIONAL_PREF_KEY = "FORMATTER_FRACTIONAL_PREF_KEY"
+  const val FORMATTER_INDIAN_PREF_KEY = "FORMATTER_INDIAN_PREF_KEY"
+  // Renamed so that everyone starts again in radians, the default, once
+  const val RADIAN_MODE_PREF_KEY = "RADIAN_MODE_RAD_DEFAULT_PREF_KEY"
+  const val GRAPH_FUNCTIONS_PREF_KEY = "GRAPH_FUNCTIONS_PREF_KEY"
+  const val PARTIAL_HISTORY_VIEW_PREF_KEY = "PARTIAL_HISTORY_VIEW_PREF_KEY"
+  const val STEPPED_PARTIAL_HISTORY_VIEW_PREF_KEY = "STEPPED_PARTIAL_HISTORY_VIEW_PREF_KEY"
+  const val OPEN_HISTORY_VIEW_BUTTON_PREF_KEY = "OPEN_HISTORY_VIEW_BUTTON_PREF_KEY"
+  const val INITIAL_PARTIAL_HISTORY_VIEW_PREF_KEY = "INITIAL_PARTIAL_HISTORY_VIEW_PREF_KEY"
+  const val FRACTIONAL_OUTPUT_PREF_KEY = "FRACTIONAL_OUTPUT_PREF_KEY"
+  const val CONSTANT_CALCULATION_PREF_KEY = "CONSTANT_CALCULATION_PREF_KEY"
+  const val ADDITIONAL_BUTTONS_PREF_KEY = "ADDITIONAL_BUTTONS_PREF_KEY"
+  const val INVERSE_MODE_PREF_KEY = "INVERSE_MODE_PREF_KEY"
+  const val LATEST_LEFT_SIDE_PREF_KEY = "LATEST_LEFT_SIDE_PREF_KEY"
+  const val LATEST_RIGHT_SIDE_PREF_KEY = "LATEST_RIGHT_SIDE_PREF_KEY"
+  const val SHOWN_UNIT_GROUPS_PREF_KEY = "SHOWN_UNIT_GROUPS_PREF_KEY"
+  const val UNIT_CONVERTER_FAVORITES_ONLY_PREF_KEY = "UNIT_CONVERTER_FAVORITES_ONLY_PREF_KEY"
+  const val UNIT_CONVERTER_FORMAT_TIME_PREF_KEY = "UNIT_CONVERTER_FORMAT_TIME_PREF_KEY"
+  const val UNIT_CONVERTER_SORTING_PREF_KEY = "UNIT_CONVERTER_SORTING_PREF_KEY"
+  const val UNIT_CONVERTER_CUSTOM_API_URL_PREF_KEY = "UNIT_CONVERTER_CUSTOM_API_URL_PREF_KEY"
+  const val UNIT_CONVERTER_SHOW_ICONS_PREF_KEY = "UNIT_CONVERTER_SHOW_ICONS_PREF_KEY"
+}

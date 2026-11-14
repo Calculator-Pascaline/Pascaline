@@ -1,0 +1,65 @@
+/*
+ * Unitto is a calculator for Android
+ * Copyright (c) 2023-2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package io.github.calculatorpascaline.feature.settings.display
+
+import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import io.github.calculatorpascaline.core.common.stateIn
+import io.github.calculatorpascaline.core.datastore.PrefKeys
+import io.github.calculatorpascaline.core.datastore.UserPreferencesRepository
+import io.github.sadellie.themmo.core.MonetMode
+import io.github.sadellie.themmo.core.ThemingMode
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+
+class DisplayViewModel(private val userPrefsRepository: UserPreferencesRepository) : ViewModel() {
+
+  val phoneKeypad =
+    userPrefsRepository
+      .appData(PrefKeys.PHONE_KEYPAD_PREF_KEY)
+      .map { it == "true" }
+      .stateIn(viewModelScope, false)
+
+  fun updateThemingMode(themingMode: ThemingMode) {
+    viewModelScope.launch { userPrefsRepository.updateThemingMode(themingMode) }
+  }
+
+  fun updateDynamicTheme(enabled: Boolean) {
+    viewModelScope.launch { userPrefsRepository.updateDynamicTheme(enabled) }
+  }
+
+  fun updateAmoledTheme(enabled: Boolean) {
+    viewModelScope.launch { userPrefsRepository.updateAmoledTheme(enabled) }
+  }
+
+  fun updateCustomColor(color: Color) {
+    viewModelScope.launch { userPrefsRepository.updateCustomColor(color.value.toLong()) }
+  }
+
+  fun updateMonetMode(monetMode: MonetMode) {
+    viewModelScope.launch { userPrefsRepository.updateMonetMode(monetMode) }
+  }
+
+  fun updatePhoneKeypad(enabled: Boolean) =
+    viewModelScope.launch {
+      userPrefsRepository.updateAppData(PrefKeys.PHONE_KEYPAD_PREF_KEY, enabled.toString())
+    }
+}

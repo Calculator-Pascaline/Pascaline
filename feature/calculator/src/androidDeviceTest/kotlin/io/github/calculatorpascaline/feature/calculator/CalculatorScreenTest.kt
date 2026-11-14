@@ -1,0 +1,122 @@
+/*
+ * Unitto is a calculator for Android
+ * Copyright (c) 2023-2026 Elshan Agaev
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package io.github.calculatorpascaline.feature.calculator
+
+import androidx.activity.ComponentActivity
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import io.github.calculatorpascaline.core.common.FormatterSymbols
+import io.github.calculatorpascaline.core.common.OutputFormat
+import io.github.calculatorpascaline.core.common.Token
+import io.github.calculatorpascaline.core.model.calculator.CalculatorHistoryItem
+import kotlinx.coroutines.runBlocking
+import org.jetbrains.compose.resources.getString
+import org.junit.Rule
+import org.junit.Test
+import pascaline.core.common.generated.resources.Res
+import pascaline.core.common.generated.resources.calculator_clear_history
+import pascaline.core.common.generated.resources.calculator_clear_history_support
+
+class CalculatorScreenTest {
+  @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+
+  @Test
+  fun ready(): Unit =
+    with(composeTestRule) {
+      setContent {
+        Ready(
+          uiState =
+            CalculatorUIState.Ready(
+              input = TextFieldState(),
+              output = CalculationResult.Empty,
+              radianMode = false,
+              precision = 3,
+              outputFormat = OutputFormat.PLAIN,
+              formatterSymbols = FormatterSymbols(Token.SPACE, Token.PERIOD, false),
+              history = emptyList(),
+              additionalButtons = false,
+              inverseMode = false,
+              partialHistoryView = true,
+              steppedPartialHistoryView = true,
+              initialPartialHistoryView = false,
+              openHistoryViewButton = false,
+            ),
+          openDrawer = {},
+          onAddTokenClick = {},
+          onBracketsClick = {},
+          onDeleteClick = {},
+          onClearClick = {},
+          onEqualClick = {},
+          onClearHistoryClick = {},
+          onDeleteHistoryItemClick = {},
+          onEditHistoryItem = {},
+          onHistoryResultClick = { _, _ -> },
+          onCancelEdit = {},
+        )
+      }
+
+      onNodeWithTag("loading").assertDoesNotExist()
+      onNodeWithTag("ready").assertExists()
+    }
+
+  @Test
+  fun ready_clearHistoryAsksFirst(): Unit =
+    with(composeTestRule) {
+      val buttonLabel = runBlocking { getString(Res.string.calculator_clear_history) }
+      val expectedLabel = runBlocking { getString(Res.string.calculator_clear_history_support) }
+      setContent {
+        Ready(
+          uiState =
+            CalculatorUIState.Ready(
+              input = TextFieldState(),
+              output = CalculationResult.Empty,
+              radianMode = false,
+              precision = 3,
+              outputFormat = OutputFormat.PLAIN,
+              formatterSymbols = FormatterSymbols(Token.SPACE, Token.PERIOD, false),
+              history = listOf(CalculatorHistoryItem(id = 1, expression = "1+1", result = "2")),
+              additionalButtons = false,
+              inverseMode = false,
+              partialHistoryView = true,
+              steppedPartialHistoryView = true,
+              initialPartialHistoryView = false,
+              openHistoryViewButton = false,
+            ),
+          openDrawer = {},
+          onAddTokenClick = {},
+          onBracketsClick = {},
+          onDeleteClick = {},
+          onClearClick = {},
+          onEqualClick = {},
+          onClearHistoryClick = {},
+          onDeleteHistoryItemClick = {},
+          onEditHistoryItem = {},
+          onHistoryResultClick = { _, _ -> },
+          onCancelEdit = {},
+        )
+      }
+
+      onNodeWithContentDescription(buttonLabel).performClick()
+      onNodeWithText(expectedLabel).assertExists()
+    }
+}

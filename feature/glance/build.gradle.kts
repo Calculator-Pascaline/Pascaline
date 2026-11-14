@@ -17,7 +17,7 @@
  */
 
 plugins {
-  id("unitto.library")
+  id("pascaline.library")
 
   alias(libs.plugins.compose.compiler)
   alias(libs.plugins.compose)
@@ -25,7 +25,7 @@ plugins {
 }
 
 android {
-  namespace = "com.sadellie.unitto.feature.glance"
+  namespace = "io.github.calculatorpascaline.feature.glance"
   buildFeatures.compose = true
   composeOptions.kotlinCompilerExtensionVersion = libs.versions.androidxComposeCompiler.get()
 }

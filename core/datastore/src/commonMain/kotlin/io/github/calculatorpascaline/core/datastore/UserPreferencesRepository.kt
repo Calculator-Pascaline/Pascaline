@@ -1,0 +1,200 @@
+/*
+ * Unitto is a calculator for Android
+ * Copyright (c) 2023-2026 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package io.github.calculatorpascaline.core.datastore
+
+import io.github.calculatorpascaline.core.common.FormatterSymbols
+import io.github.calculatorpascaline.core.common.OutputFormat
+import io.github.calculatorpascaline.core.common.Token
+import io.github.calculatorpascaline.core.data.converter.UnitID
+import io.github.calculatorpascaline.core.model.converter.UnitGroup
+import io.github.calculatorpascaline.core.model.converter.UnitsListSorting
+import io.github.sadellie.themmo.core.MonetMode
+import io.github.sadellie.themmo.core.ThemingMode
+import kotlinx.coroutines.flow.Flow
+
+interface UserPreferencesRepository {
+  val appPrefs: Flow<AppPreferences>
+  val generalPrefs: Flow<GeneralPreferences>
+  val calculatorPrefs: Flow<CalculatorPreferences>
+  val converterPrefs: Flow<ConverterPreferences>
+  val formattingPrefs: Flow<FormattingPreferences>
+  val unitGroupsPrefs: Flow<UnitGroupsPreferences>
+  val addSubtractPrefs: Flow<AddSubtractPreferences>
+  val bodyMassPrefs: Flow<BodyMassPreferences>
+
+  /** Functions of the Functions screen, one per line. Empty when there are none yet. */
+  val graphFunctions: Flow<String>
+
+  /** Data of an app (like Statistics) saved as text under [key]. Empty when there is none yet. */
+  fun appData(key: String): Flow<String>
+  val aboutPrefs: Flow<AboutPreferences>
+  companion object Defaults {
+    // Pascaline colors by default, wallpaper colors can be turned on in settings
+    val enableDynamicTheme: Boolean
+      get() = false
+
+    val themingMode: ThemingMode
+      get() = ThemingMode.AUTO
+
+    val enableAmoledTheme: Boolean
+      get() = false
+
+    val customColor: Long
+      get() = 16L
+
+    val monetMode: MonetMode
+      get() = MonetMode.TonalSpot
+
+    val enableToolsExperiment: Boolean
+      get() = false
+
+    val enableVibrations: Boolean
+      get() = true
+
+    val enableKeepScreenOn: Boolean
+      get() = false
+
+    val radianMode: Boolean
+      get() = true
+
+    val formatterSymbols: FormatterSymbols
+      get() = FormatterSymbols(Token.SPACE, Token.PERIOD, false)
+
+    val partialHistoryView: Boolean
+      get() = true
+
+    val steppedPartialHistoryView: Boolean
+      get() = true
+
+    val initialPartialHistoryView: Boolean
+      get() = false
+
+    val openHistoryViewButton: Boolean
+      get() = false
+
+    val digitsPrecision: Int
+      get() = 3
+
+    // Not a setting anymore, numbers switch to E notation only when they're too long to read
+    val outputFormat: Int
+      get() = OutputFormat.ALLOW_ENGINEERING
+
+    val unitConverterFormatTime: Boolean
+      get() = false
+
+    val unitConverterSorting: UnitsListSorting
+      get() = UnitsListSorting.USAGE
+
+    val shownUnitGroups: List<UnitGroup>
+      get() = UnitGroup.entries
+
+    val unitConverterFavoritesOnly: Boolean
+      get() = false
+
+    val unitConverterShowIcons: Boolean
+      get() = true
+
+    val latestLeftSide: String
+      get() = UnitID.kilometer
+
+    val latestRightSide: String
+      get() = UnitID.mile
+
+    val additionButtons: Boolean
+      get() = false
+
+    val constantCalculation: Boolean
+      get() = false
+
+    val fractionalOutput: Boolean
+      get() = true
+
+    val inverseMode: Boolean
+      get() = false
+  }
+
+  suspend fun updateDigitsPrecision(precision: Int)
+
+  suspend fun updateFormatterSymbols(grouping: String, fractional: String, indian: Boolean)
+
+  suspend fun updateLatestPairOfUnits(unitFrom: String, unitTo: String)
+
+  suspend fun updateThemingMode(themingMode: ThemingMode)
+
+  suspend fun updateDynamicTheme(enabled: Boolean)
+
+  suspend fun updateAmoledTheme(enabled: Boolean)
+
+  suspend fun updateCustomColor(color: Long)
+
+  suspend fun updateMonetMode(monetMode: MonetMode)
+
+  suspend fun updateShownUnitGroups(shownUnitGroups: List<UnitGroup>)
+
+  suspend fun addShownUnitGroup(unitGroup: UnitGroup)
+
+  suspend fun removeShownUnitGroup(unitGroup: UnitGroup)
+
+  suspend fun updateVibrations(enabled: Boolean)
+
+  suspend fun updateEnableKeepScreenOn(enabled: Boolean)
+
+  suspend fun updateToolsExperiment(enabled: Boolean)
+
+  suspend fun updateRadianMode(radianMode: Boolean)
+
+  suspend fun updateGraphFunctions(value: String)
+
+  suspend fun updateAppData(key: String, value: String)
+
+  suspend fun updateUnitConverterFavoritesOnly(enabled: Boolean)
+
+  suspend fun updateUnitConverterFormatTime(enabled: Boolean)
+
+  suspend fun updateUnitConverterSorting(sorting: UnitsListSorting)
+
+  suspend fun updateUnitConverterShowIcons(enabled: Boolean)
+
+  suspend fun updatePartialHistoryView(enabled: Boolean)
+
+  suspend fun updateSteppedPartialHistoryView(enabled: Boolean)
+
+  suspend fun updateInitialPartialHistoryView(enabled: Boolean)
+
+  suspend fun updateOpenHistoryViewButton(enabled: Boolean)
+
+  suspend fun updateFractionalOutput(enabled: Boolean)
+
+  suspend fun updateConstantCalculation(enabled: Boolean)
+
+  suspend fun updateAdditionalButtons(enabled: Boolean)
+
+  suspend fun updateInverseMode(enabled: Boolean)
+
+}
+
+internal inline fun <T, R> T.letTryOrNull(block: (T) -> R): R? =
+  try {
+    this?.let(block)
+  } catch (_: Exception) {
+    null
+  }
+
+internal fun List<UnitGroup>.packToString(): String = this.joinToString(",")

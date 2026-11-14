@@ -1,6 +1,6 @@
 # Navigation module
 
-App screen routes and shortcuts. Unitto uses type-safe navigation. This module doesn't have host.
+App screen routes and shortcuts. Pascaline uses type-safe navigation. This module doesn't have host.
 
 ## Graph
 

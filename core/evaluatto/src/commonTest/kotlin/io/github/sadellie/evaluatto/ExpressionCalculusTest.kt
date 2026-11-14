@@ -18,10 +18,10 @@
 
 package io.github.sadellie.evaluatto
 
-import com.sadellie.unitto.core.common.KBigDecimal
-import com.sadellie.unitto.core.common.OutputFormat
-import com.sadellie.unitto.core.common.Token
-import com.sadellie.unitto.core.common.toFormattedString
+import io.github.calculatorpascaline.core.common.KBigDecimal
+import io.github.calculatorpascaline.core.common.OutputFormat
+import io.github.calculatorpascaline.core.common.Token
+import io.github.calculatorpascaline.core.common.toFormattedString
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

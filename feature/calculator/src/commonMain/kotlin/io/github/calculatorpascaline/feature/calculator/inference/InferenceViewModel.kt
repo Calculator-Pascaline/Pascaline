@@ -1,0 +1,242 @@
+/*
+ * Pascaline is a calculator for Android
+ * Copyright (c) 2026 Calculator-Pascaline
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package io.github.calculatorpascaline.feature.calculator.inference
+
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import io.github.calculatorpascaline.core.common.stateIn
+import io.github.calculatorpascaline.core.datastore.UserPreferencesRepository
+import io.github.calculatorpascaline.feature.calculator.datatable.NumberFormat
+import io.github.calculatorpascaline.feature.calculator.datatable.SavedTable
+import io.github.calculatorpascaline.feature.calculator.datatable.column
+import io.github.calculatorpascaline.feature.calculator.probability.toNumberOrNull
+import kotlinx.coroutines.flow.map
+
+/** Value typed for a test or an interval. */
+internal enum class InferenceField(val symbol: String) {
+  P0("p₀"),
+  MU0("μ₀"),
+  SUCCESSES("x"),
+  N("n"),
+  MEAN("x̄"),
+  DEVIATION("s"),
+  SIGMA("σ"),
+  SUCCESSES_1("x₁"),
+  N_1("n₁"),
+  SUCCESSES_2("x₂"),
+  N_2("n₂"),
+  MEAN_1("x̄₁"),
+  DEVIATION_1("s₁"),
+  SIGMA_1("σ₁"),
+  MEAN_2("x̄₂"),
+  DEVIATION_2("s₂"),
+  SIGMA_2("σ₂"),
+}
+
+/**
+ * Tests and intervals of the NumWorks Inference app.
+ *
+ * @property hypothesis H₀ written with its value: `p = p₀`.
+ * @property testFields Fields of the test, [intervalFields] of the interval (null when there is none).
+ */
+internal enum class InferenceKind(
+  val hypothesis: String,
+  val testFields: List<InferenceField>,
+  val intervalFields: List<InferenceField>?,
+) {
+  ONE_PROPORTION(
+    "p = p₀",
+    listOf(InferenceField.P0, InferenceField.SUCCESSES, InferenceField.N),
+    listOf(InferenceField.SUCCESSES, InferenceField.N),
+  ),
+  TWO_PROPORTIONS(
+    "p₁ = p₂",
+    listOf(InferenceField.SUCCESSES_1, InferenceField.N_1, InferenceField.SUCCESSES_2, InferenceField.N_2),
+    listOf(InferenceField.SUCCESSES_1, InferenceField.N_1, InferenceField.SUCCESSES_2, InferenceField.N_2),
+  ),
+  ONE_MEAN_T(
+    "μ = μ₀",
+    listOf(InferenceField.MU0, InferenceField.MEAN, InferenceField.DEVIATION, InferenceField.N),
+    listOf(InferenceField.MEAN, InferenceField.DEVIATION, InferenceField.N),
+  ),
+  ONE_MEAN_Z(
+    "μ = μ₀",
+    listOf(InferenceField.MU0, InferenceField.MEAN, InferenceField.SIGMA, InferenceField.N),
+    listOf(InferenceField.MEAN, InferenceField.SIGMA, InferenceField.N),
+  ),
+  TWO_MEANS_T(
+    "μ₁ = μ₂",
+    listOf(
+      InferenceField.MEAN_1, InferenceField.DEVIATION_1, InferenceField.N_1,
+      InferenceField.MEAN_2, InferenceField.DEVIATION_2, InferenceField.N_2,
+    ),
+    listOf(
+      InferenceField.MEAN_1, InferenceField.DEVIATION_1, InferenceField.N_1,
+      InferenceField.MEAN_2, InferenceField.DEVIATION_2, InferenceField.N_2,
+    ),
+  ),
+  TWO_MEANS_Z(
+    "μ₁ = μ₂",
+    listOf(InferenceField.MEAN_1, InferenceField.SIGMA_1, InferenceField.N_1, InferenceField.MEAN_2, InferenceField.SIGMA_2, InferenceField.N_2),
+    listOf(InferenceField.MEAN_1, InferenceField.SIGMA_1, InferenceField.N_1, InferenceField.MEAN_2, InferenceField.SIGMA_2, InferenceField.N_2),
+  ),
+  GOODNESS_OF_FIT("", emptyList(), null),
+}
+
+/** Test or interval, its values and its result. Values are kept while the app is open. */
+/** What the user wants to know. Averages come with or without a known σ. */
+internal enum class InferenceQuestion(val kind: InferenceKind, val knownSigma: InferenceKind? = null) {
+  PERCENTAGE(InferenceKind.ONE_PROPORTION),
+  TWO_PERCENTAGES(InferenceKind.TWO_PROPORTIONS),
+  AVERAGE(InferenceKind.ONE_MEAN_T, InferenceKind.ONE_MEAN_Z),
+  TWO_AVERAGES(InferenceKind.TWO_MEANS_T, InferenceKind.TWO_MEANS_Z),
+  COUNTS(InferenceKind.GOODNESS_OF_FIT),
+}
+
+/** An example on every field, the screen shows what it does before anything is typed. */
+private val EXAMPLE_VALUES =
+  mapOf(
+    InferenceField.P0 to "0.5",
+    InferenceField.MU0 to "100",
+    InferenceField.SUCCESSES to "62",
+    InferenceField.N to "100",
+    InferenceField.MEAN to "104",
+    InferenceField.DEVIATION to "15",
+    InferenceField.SIGMA to "15",
+    InferenceField.SUCCESSES_1 to "62",
+    InferenceField.N_1 to "100",
+    InferenceField.SUCCESSES_2 to "48",
+    InferenceField.N_2 to "100",
+    InferenceField.MEAN_1 to "104",
+    InferenceField.DEVIATION_1 to "15",
+    InferenceField.SIGMA_1 to "15",
+    InferenceField.MEAN_2 to "98",
+    InferenceField.DEVIATION_2 to "14",
+    InferenceField.SIGMA_2 to "14",
+  )
+
+internal class InferenceViewModel(userPrefsRepository: UserPreferencesRepository) : ViewModel() {
+  val numberFormat =
+    userPrefsRepository.calculatorPrefs
+      .map { NumberFormat(it.formatterSymbols, it.precision, it.outputFormat) }
+      .stateIn(viewModelScope, null)
+
+  /** Test when true, confidence interval when false. */
+  var isTest by mutableStateOf(true)
+
+  var kind by mutableStateOf(InferenceKind.ONE_PROPORTION)
+    private set
+
+  var alternative by mutableStateOf(Alternative.NOT_EQUAL)
+
+  var significance by mutableStateOf("0.05")
+
+  var confidence by mutableStateOf("0.95")
+
+  /** Values of every field, shared by tests and intervals: x̄ typed for one is there for the other. */
+  val values = mutableStateMapOf<InferenceField, String>().apply { putAll(EXAMPLE_VALUES) }
+
+  val question: InferenceQuestion
+    get() = InferenceQuestion.entries.first { it.kind == kind || it.knownSigma == kind }
+
+  val knowsSigma: Boolean
+    get() = question.knownSigma == kind
+
+  fun ask(question: InferenceQuestion) {
+    kind = if (knowsSigma) question.knownSigma ?: question.kind else question.kind
+  }
+
+  fun selectKnowsSigma(knows: Boolean) {
+    kind = if (knows) question.knownSigma ?: question.kind else question.kind
+  }
+
+  /** Observed and expected counts of the goodness of fit test. */
+  val goodnessOfFit = SavedTable(GOODNESS_OF_FIT_KEY, columns = 2, userPrefsRepository, viewModelScope)
+
+  fun select(kind: InferenceKind) {
+    this.kind = kind
+  }
+
+  fun selectTest(isTest: Boolean) {
+    this.isTest = isTest
+    // Goodness of fit has no interval
+    if (!isTest && kind.intervalFields == null) kind = InferenceKind.ONE_PROPORTION
+  }
+
+  /** Result of the test, null until every value is typed and valid. */
+  fun test(): TestResult? {
+    if (kind == InferenceKind.GOODNESS_OF_FIT) {
+      val rows = goodnessOfFit.rows ?: return null
+      val observed = rows.column(0)
+      val expected = rows.column(1)
+      if (observed.any { it == null } || expected.any { it == null }) return null
+      return goodnessOfFitTest(observed.filterNotNull(), expected.filterNotNull())
+    }
+    // The fields in their order: Kotlin evaluates arguments from left to right
+    val v = numbers(kind.testFields)?.iterator() ?: return null
+    return when (kind) {
+      InferenceKind.ONE_PROPORTION -> oneProportionTest(v.next(), v.next(), v.next(), alternative)
+      InferenceKind.TWO_PROPORTIONS -> twoProportionsTest(v.next(), v.next(), v.next(), v.next(), alternative)
+      InferenceKind.ONE_MEAN_T -> oneMeanTTest(v.next(), v.next(), v.next(), v.next(), alternative)
+      InferenceKind.ONE_MEAN_Z -> oneMeanZTest(v.next(), v.next(), v.next(), v.next(), alternative)
+      InferenceKind.TWO_MEANS_T -> twoMeansTTest(v.next(), v.next(), v.next(), v.next(), v.next(), v.next(), alternative)
+      InferenceKind.TWO_MEANS_Z -> twoMeansZTest(v.next(), v.next(), v.next(), v.next(), v.next(), v.next(), alternative)
+      InferenceKind.GOODNESS_OF_FIT -> null
+    }
+  }
+
+  /** The two curves of the test, null until every value is typed and valid. */
+  fun bells(): Pair<Bell, Bell>? {
+    test() ?: return null
+    val v = numbers(kind.testFields)?.iterator() ?: return null
+    return when (kind) {
+      InferenceKind.ONE_PROPORTION -> oneProportionBells(v.next(), v.next(), v.next())
+      InferenceKind.TWO_PROPORTIONS -> twoProportionsBells(v.next(), v.next(), v.next(), v.next())
+      InferenceKind.ONE_MEAN_T,
+      InferenceKind.ONE_MEAN_Z -> oneMeanBells(v.next(), v.next(), v.next(), v.next())
+      InferenceKind.TWO_MEANS_T,
+      InferenceKind.TWO_MEANS_Z -> twoMeansBells(v.next(), v.next(), v.next(), v.next(), v.next(), v.next())
+      InferenceKind.GOODNESS_OF_FIT -> null
+    }
+  }
+
+  fun interval(): IntervalResult? {
+    val fields = kind.intervalFields ?: return null
+    // The fields in their order, like in test()
+    val v = numbers(fields)?.iterator() ?: return null
+    val level = confidence.toNumberOrNull() ?: return null
+    return when (kind) {
+      InferenceKind.ONE_PROPORTION -> oneProportionInterval(v.next(), v.next(), level)
+      InferenceKind.TWO_PROPORTIONS -> twoProportionsInterval(v.next(), v.next(), v.next(), v.next(), level)
+      InferenceKind.ONE_MEAN_T -> oneMeanTInterval(v.next(), v.next(), v.next(), level)
+      InferenceKind.ONE_MEAN_Z -> oneMeanZInterval(v.next(), v.next(), v.next(), level)
+      InferenceKind.TWO_MEANS_T -> twoMeansTInterval(v.next(), v.next(), v.next(), v.next(), v.next(), v.next(), level)
+      InferenceKind.TWO_MEANS_Z -> twoMeansZInterval(v.next(), v.next(), v.next(), v.next(), v.next(), v.next(), level)
+      InferenceKind.GOODNESS_OF_FIT -> null
+    }
+  }
+
+  private fun numbers(fields: List<InferenceField>): List<Double>? = fields.map { values[it]?.toNumberOrNull() ?: return null }
+}
+
+private const val GOODNESS_OF_FIT_KEY = "INFERENCE_GOODNESS_OF_FIT"

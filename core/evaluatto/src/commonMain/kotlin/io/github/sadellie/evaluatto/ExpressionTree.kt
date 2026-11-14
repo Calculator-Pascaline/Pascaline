@@ -19,12 +19,12 @@
 
 package io.github.sadellie.evaluatto
 
-import com.sadellie.unitto.core.common.KBigDecimal
-import com.sadellie.unitto.core.common.KRoundingMode
-import com.sadellie.unitto.core.common.MAX_SCALE
-import com.sadellie.unitto.core.common.PhysicalUnit
-import com.sadellie.unitto.core.common.PhysicalUnits
-import com.sadellie.unitto.core.common.Token
+import io.github.calculatorpascaline.core.common.KBigDecimal
+import io.github.calculatorpascaline.core.common.KRoundingMode
+import io.github.calculatorpascaline.core.common.MAX_SCALE
+import io.github.calculatorpascaline.core.common.PhysicalUnit
+import io.github.calculatorpascaline.core.common.PhysicalUnits
+import io.github.calculatorpascaline.core.common.Token
 
 /** Parsed expression. Can be evaluated many times, for example for every point of an integral. */
 internal sealed interface Node {

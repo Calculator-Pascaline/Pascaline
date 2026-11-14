@@ -19,9 +19,9 @@
 
 package io.github.sadellie.evaluatto
 
-import com.sadellie.unitto.core.common.KBigDecimal
-import com.sadellie.unitto.core.common.KRoundingMode
-import com.sadellie.unitto.core.common.Token
+import io.github.calculatorpascaline.core.common.KBigDecimal
+import io.github.calculatorpascaline.core.common.KRoundingMode
+import io.github.calculatorpascaline.core.common.Token
 
 sealed class ExpressionException(override val message: String) : Exception(message) {
   class DivideByZero : ExpressionException("Can't divide by zero")
@@ -93,7 +93,7 @@ sealed interface ExpressionResult {
 
   /**
    * Expression with x, like expanded polynomial or derivative. Uses layout slots, see
-   * [com.sadellie.unitto.core.common.Token.Layout].
+   * [io.github.calculatorpascaline.core.common.Token.Layout].
    *
    * @property factorization Factorized polynomial, null when [expression] is not a polynomial.
    * @property roots Lines with exact and approximate roots of a polynomial.

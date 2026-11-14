@@ -18,9 +18,9 @@
 
 package io.github.sadellie.evaluatto
 
-import com.sadellie.unitto.core.common.KBigDecimal
-import com.sadellie.unitto.core.common.KBigDecimalMath
-import com.sadellie.unitto.core.common.KMathContext
+import io.github.calculatorpascaline.core.common.KBigDecimal
+import io.github.calculatorpascaline.core.common.KBigDecimalMath
+import io.github.calculatorpascaline.core.common.KMathContext
 
 internal fun KBigDecimal.sin(radianMode: Boolean, mathContext: KMathContext): KBigDecimal {
   val angle = if (radianMode) this else KBigDecimalMath.toRadians(this, mathContext)

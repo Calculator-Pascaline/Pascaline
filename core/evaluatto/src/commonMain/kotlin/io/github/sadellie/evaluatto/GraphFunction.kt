@@ -18,8 +18,8 @@
 
 package io.github.sadellie.evaluatto
 
-import com.sadellie.unitto.core.common.KBigDecimal
-import com.sadellie.unitto.core.common.KRoundingMode
+import io.github.calculatorpascaline.core.common.KBigDecimal
+import io.github.calculatorpascaline.core.common.KRoundingMode
 import kotlin.math.E
 import kotlin.math.PI
 import kotlin.math.abs

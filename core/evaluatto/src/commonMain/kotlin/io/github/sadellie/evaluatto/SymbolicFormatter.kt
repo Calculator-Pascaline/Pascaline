@@ -18,10 +18,10 @@
 
 package io.github.sadellie.evaluatto
 
-import com.sadellie.unitto.core.common.KBigDecimal
-import com.sadellie.unitto.core.common.Token
-import com.sadellie.unitto.core.common.isEqualTo
-import com.sadellie.unitto.core.common.toFormattedString
+import io.github.calculatorpascaline.core.common.KBigDecimal
+import io.github.calculatorpascaline.core.common.Token
+import io.github.calculatorpascaline.core.common.isEqualTo
+import io.github.calculatorpascaline.core.common.toFormattedString
 
 /**
  * Writes polynomials as expressions with slots (powers in superscript, fractions with a bar), so

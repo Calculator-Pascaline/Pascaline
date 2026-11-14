@@ -18,8 +18,8 @@
 
 package io.github.sadellie.evaluatto
 
-import com.sadellie.unitto.core.common.OutputFormat
-import com.sadellie.unitto.core.common.Token
+import io.github.calculatorpascaline.core.common.OutputFormat
+import io.github.calculatorpascaline.core.common.Token
 import kotlin.math.abs
 import kotlin.test.Test
 import kotlin.test.assertTrue

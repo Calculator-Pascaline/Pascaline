@@ -17,9 +17,6 @@
   -->
 
 <resources>
-    <string name="android_exclusive_action">Android verzió letöltése</string>
-    <string name="android_exclusive_text">Ez a funkció csak az alkalmazás Android verziójában érhető el</string>
-    <string name="android_exclusive_title">Kizárólag Androidon</string>
     <string name="body_mass_height">Magasság</string>
     <string name="body_mass_imperial">Angolszász</string>
     <string name="body_mass_metric">Metrikus</string>

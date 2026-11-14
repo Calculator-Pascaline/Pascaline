@@ -18,7 +18,7 @@
 
 package io.github.sadellie.evaluatto.programmer
 
-import com.sadellie.unitto.core.common.Token
+import io.github.calculatorpascaline.core.common.Token
 import io.github.sadellie.evaluatto.ExpressionException
 
 /** Bases of numbers in programmer mode. */

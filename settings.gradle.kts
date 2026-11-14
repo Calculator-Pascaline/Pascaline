@@ -37,7 +37,7 @@ dependencyResolutionManagement {
   }
 }
 
-rootProject.name = "Unitto"
+rootProject.name = "Pascaline"
 
 with(this) {
   include(":sharedApp")
