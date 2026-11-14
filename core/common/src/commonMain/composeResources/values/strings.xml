@@ -2444,4 +2444,6 @@
     <string name="gears_worm_efficiency">Worm efficiency</string>
     <string name="gears_worm_note">Gears after a worm turn at a right angle and aren't drawn.</string>
     <string name="gears_worm_text">Each turn of the worm moves its wheel by as many teeth as it has threads, so the ratio is the wheel's teeth over the threads. It slips a lot: below about 50 % efficiency, the wheel can't turn the worm back.</string>
+    <string name="place_sun_above">Sun %1$s above the horizon</string>
+    <string name="place_sun_below">Sun %1$s below the horizon</string>
 </resources>

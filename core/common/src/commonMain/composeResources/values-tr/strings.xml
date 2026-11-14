@@ -2148,4 +2148,6 @@
     <string name="gears_worm_efficiency">Sonsuz vida verimi</string>
     <string name="gears_worm_note">Sonsuz vidadan sonraki dişliler dik açıyla döner ve çizilmez.</string>
     <string name="gears_worm_text">Sonsuz vidanın her turu, çarkını ağız sayısı kadar diş ilerletir: oran, çarkın dişlerinin ağız sayısına bölümüdür. Çok kayar: yaklaşık %50 verimin altında çark vidayı geri döndüremez.</string>
+    <string name="place_sun_above">Güneş ufkun %1$s üstünde</string>
+    <string name="place_sun_below">Güneş ufkun %1$s altında</string>
 </resources>

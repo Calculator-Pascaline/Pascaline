@@ -2148,4 +2148,6 @@
     <string name="gears_worm_efficiency">Účinnosť závitovky</string>
     <string name="gears_worm_note">Kolesá za závitovkou sa točia v pravom uhle a nie sú nakreslené.</string>
     <string name="gears_worm_text">Každá otáčka závitovky posunie jej koleso o toľko zubov, koľko má chodov: prevod je počet zubov kolesa delený chodmi. Veľmi preklzáva: pod asi 50 % účinnosti koleso závitovku späť neroztočí.</string>
+    <string name="place_sun_above">Slnko %1$s nad obzorom</string>
+    <string name="place_sun_below">Slnko %1$s pod obzorom</string>
 </resources>

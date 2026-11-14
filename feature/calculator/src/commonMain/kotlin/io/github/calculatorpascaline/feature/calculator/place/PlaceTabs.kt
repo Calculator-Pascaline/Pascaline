@@ -135,6 +135,8 @@ import pascaline.core.common.generated.resources.place_solar_eclipse
 import pascaline.core.common.generated.resources.place_solar_noon
 import pascaline.core.common.generated.resources.place_south
 import pascaline.core.common.generated.resources.place_spring_tides
+import pascaline.core.common.generated.resources.place_sun_above
+import pascaline.core.common.generated.resources.place_sun_below
 import pascaline.core.common.generated.resources.place_sunrise
 import pascaline.core.common.generated.resources.place_sunrise_on
 import pascaline.core.common.generated.resources.place_sunset
@@ -183,7 +185,7 @@ private fun SunTab(report: PlaceReport, units: PlaceUnits) {
   }
   var selected by remember(report) { mutableIntStateOf(defaultIndex(report)) }
   GraphCard(
-    readout = "${formatTime(report.dayStart + selected * CURVE_STEP, zone)} · ${units.degrees(report.sunCurve[selected])}"
+    readout = "${formatTime(report.dayStart + selected * CURVE_STEP, zone)} · ${sunHeight(report.sunCurve[selected], units)}"
   ) {
     CurveGraph(
       listOf(report.sunCurve to MaterialTheme.colorScheme.tertiary),
@@ -224,6 +226,14 @@ private fun SolarPanels(report: PlaceReport, units: PlaceUnits) {
     )
   )
 }
+
+/** How high the Sun is, an angle and not a temperature: "Sun 58° below the horizon". */
+@Composable
+private fun sunHeight(altitude: Double, units: PlaceUnits): String =
+  stringResource(
+    if (altitude >= 0) Res.string.place_sun_above else Res.string.place_sun_below,
+    units.degrees(kotlin.math.abs(altitude)),
+  )
 
 @Composable
 private fun sunriseCaption(sunrise: Long?, zone: String): String? =

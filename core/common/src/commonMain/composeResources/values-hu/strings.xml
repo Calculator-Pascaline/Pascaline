@@ -2148,4 +2148,6 @@
     <string name="gears_worm_efficiency">Csiga hatásfoka</string>
     <string name="gears_worm_note">A csiga utáni kerekek derékszögben forognak, és nincsenek megrajzolva.</string>
     <string name="gears_worm_text">A csiga minden fordulata annyi foggal fordítja a kerekét, ahány bekezdése van: az áttétel a kerék fogszáma osztva a bekezdésekkel. Sokat csúszik: kb. 50 % hatásfok alatt a kerék nem tudja visszaforgatni a csigát.</string>
+    <string name="place_sun_above">Nap: %1$s a látóhatár felett</string>
+    <string name="place_sun_below">Nap: %1$s a látóhatár alatt</string>
 </resources>

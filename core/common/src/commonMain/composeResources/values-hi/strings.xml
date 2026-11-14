@@ -2148,4 +2148,6 @@
     <string name="gears_worm_efficiency">वर्म की दक्षता</string>
     <string name="gears_worm_note">वर्म के बाद के गियर समकोण पर घूमते हैं और बनाए नहीं जाते।</string>
     <string name="gears_worm_text">वर्म का हर चक्कर उसके पहिये को उतने दाँत आगे करता है जितनी उसकी चूड़ियाँ हैं: अनुपात पहिये के दाँत भाग चूड़ियाँ है। इसमें बहुत फिसलन है: लगभग 50 % दक्षता से कम पर पहिया वर्म को उल्टा नहीं घुमा सकता।</string>
+    <string name="place_sun_above">सूर्य क्षितिज से %1$s ऊपर</string>
+    <string name="place_sun_below">सूर्य क्षितिज से %1$s नीचे</string>
 </resources>

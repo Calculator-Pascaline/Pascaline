@@ -2148,4 +2148,6 @@
     <string name="gears_worm_efficiency">Účinnost šneku</string>
     <string name="gears_worm_note">Kola za šnekem se točí v pravém úhlu a nejsou nakreslena.</string>
     <string name="gears_worm_text">Každá otáčka šneku posune jeho kolo o tolik zubů, kolik má chodů: převod je počet zubů kola dělený chody. Hodně prokluzuje: pod asi 50 % účinnosti kolo šnek zpět neroztočí.</string>
+    <string name="place_sun_above">Slunce %1$s nad obzorem</string>
+    <string name="place_sun_below">Slunce %1$s pod obzorem</string>
 </resources>

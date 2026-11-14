@@ -2148,4 +2148,6 @@
     <string name="gears_worm_efficiency">Rendimento da rosca</string>
     <string name="gears_worm_note">As rodas depois de uma rosca sem fim giram em ângulo reto e não são desenhadas.</string>
     <string name="gears_worm_text">Cada volta da rosca move sua roda tantos dentes quanto ela tem entradas: a razão é o número de dentes da roda dividido pelas entradas. Ela desliza muito: abaixo de cerca de 50 % de rendimento, a roda não consegue girar a rosca.</string>
+    <string name="place_sun_above">Sol a %1$s acima do horizonte</string>
+    <string name="place_sun_below">Sol a %1$s abaixo do horizonte</string>
 </resources>

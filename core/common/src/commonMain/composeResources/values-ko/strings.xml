@@ -2148,4 +2148,6 @@
     <string name="gears_worm_efficiency">웜 효율</string>
     <string name="gears_worm_note">웜 다음 기어는 직각으로 돌아서 그리지 않습니다.</string>
     <string name="gears_worm_text">웜이 한 바퀴 돌면 휠은 줄 수만큼 이가 나아갑니다. 비는 휠의 잇수를 줄 수로 나눈 값입니다. 미끄럼이 커서 효율이 약 50 %보다 낮으면 휠이 웜을 거꾸로 돌릴 수 없습니다.</string>
+    <string name="place_sun_above">해가 지평선 위 %1$s</string>
+    <string name="place_sun_below">해가 지평선 아래 %1$s</string>
 </resources>

@@ -2148,4 +2148,6 @@
     <string name="gears_worm_efficiency">ККД черв'яка</string>
     <string name="gears_worm_note">Колеса після черв'яка обертаються під прямим кутом і не малюються.</string>
     <string name="gears_worm_text">Кожен оберт черв'яка повертає його колесо на стільки зубців, скільки в нього заходів: передаточне число — зубці колеса, поділені на заходи. Він сильно ковзає: за ККД нижче приблизно 50 % колесо не може провернути черв'як.</string>
+    <string name="place_sun_above">Сонце на %1$s над горизонтом</string>
+    <string name="place_sun_below">Сонце на %1$s під горизонтом</string>
 </resources>

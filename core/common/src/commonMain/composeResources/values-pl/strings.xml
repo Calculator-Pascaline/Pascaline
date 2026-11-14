@@ -2148,4 +2148,6 @@
     <string name="gears_worm_efficiency">Sprawność ślimaka</string>
     <string name="gears_worm_note">Koła za ślimakiem obracają się pod kątem prostym i nie są rysowane.</string>
     <string name="gears_worm_text">Każdy obrót ślimaka przesuwa jego koło o tyle zębów, ile ma zwojów: przełożenie to liczba zębów koła podzielona przez zwoje. Mocno się ślizga: poniżej około 50 % sprawności koło nie obróci ślimaka.</string>
+    <string name="place_sun_above">Słońce %1$s nad horyzontem</string>
+    <string name="place_sun_below">Słońce %1$s pod horyzontem</string>
 </resources>

@@ -2148,4 +2148,6 @@
     <string name="gears_worm_efficiency">Rendimiento del tornillo</string>
     <string name="gears_worm_note">Las ruedas tras un tornillo sin fin giran en ángulo recto y no se dibujan.</string>
     <string name="gears_worm_text">Cada vuelta del tornillo mueve su rueda tantos dientes como entradas tiene: la relación es los dientes de la rueda entre las entradas. Desliza mucho: por debajo de un 50 % de rendimiento, la rueda no puede hacer girar el tornillo.</string>
+    <string name="place_sun_above">Sol a %1$s sobre el horizonte</string>
+    <string name="place_sun_below">Sol a %1$s bajo el horizonte</string>
 </resources>

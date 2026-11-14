@@ -2148,4 +2148,6 @@
     <string name="gears_worm_efficiency">Wirkungsgrad der Schnecke</string>
     <string name="gears_worm_note">Zahnräder nach einer Schnecke drehen sich im rechten Winkel und werden nicht gezeichnet.</string>
     <string name="gears_worm_text">Jede Umdrehung der Schnecke bewegt ihr Rad um so viele Zähne, wie sie Gänge hat: Die Übersetzung ist die Zähnezahl des Rads geteilt durch die Gänge. Sie gleitet stark: Unter etwa 50 % Wirkungsgrad kann das Rad die Schnecke nicht zurückdrehen.</string>
+    <string name="place_sun_above">Sonne %1$s über dem Horizont</string>
+    <string name="place_sun_below">Sonne %1$s unter dem Horizont</string>
 </resources>

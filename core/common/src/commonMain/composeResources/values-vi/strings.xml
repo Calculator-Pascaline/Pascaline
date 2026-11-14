@@ -2148,4 +2148,6 @@
     <string name="gears_worm_efficiency">Hiệu suất trục vít</string>
     <string name="gears_worm_note">Các bánh răng sau trục vít quay vuông góc và không được vẽ.</string>
     <string name="gears_worm_text">Mỗi vòng quay của trục vít đẩy bánh vít đi số răng bằng số mối ren: tỉ số là số răng bánh vít chia cho số mối ren. Nó trượt nhiều: dưới khoảng 50 % hiệu suất, bánh vít không thể quay ngược trục vít.</string>
+    <string name="place_sun_above">Mặt trời %1$s trên đường chân trời</string>
+    <string name="place_sun_below">Mặt trời %1$s dưới đường chân trời</string>
 </resources>

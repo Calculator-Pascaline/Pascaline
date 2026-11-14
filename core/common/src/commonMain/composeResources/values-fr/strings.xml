@@ -2148,4 +2148,6 @@
     <string name="gears_worm_efficiency">Rendement de la vis</string>
     <string name="gears_worm_note">Les roues après une vis sans fin tournent à angle droit et ne sont pas dessinées.</string>
     <string name="gears_worm_text">Chaque tour de la vis avance sa roue d'autant de dents qu'elle a de filets : le rapport est le nombre de dents de la roue divisé par les filets. Elle glisse beaucoup : sous environ 50 % de rendement, la roue ne peut pas faire tourner la vis.</string>
+    <string name="place_sun_above">Soleil à %1$s au-dessus de l'horizon</string>
+    <string name="place_sun_below">Soleil à %1$s sous l'horizon</string>
 </resources>

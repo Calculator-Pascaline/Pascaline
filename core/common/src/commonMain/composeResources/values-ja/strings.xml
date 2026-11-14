@@ -2148,4 +2148,6 @@
     <string name="gears_worm_efficiency">ウォームの効率</string>
     <string name="gears_worm_note">ウォームの先の歯車は直角に回るので、図には出ません。</string>
     <string name="gears_worm_text">ウォームが1回転するとホイールは条数と同じ歯数だけ進みます。比はホイールの歯数を条数で割ったものです。すべりが大きく、効率がおよそ50 %未満ならホイールからウォームを回せません。</string>
+    <string name="place_sun_above">太陽は地平線の上 %1$s</string>
+    <string name="place_sun_below">太陽は地平線の下 %1$s</string>
 </resources>

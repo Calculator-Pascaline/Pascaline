@@ -2148,4 +2148,6 @@
     <string name="gears_worm_efficiency">كفاءة الدودة</string>
     <string name="gears_worm_note">التروس بعد الدودة تدور بزاوية قائمة ولا تُرسم.</string>
     <string name="gears_worm_text">كل دورة للدودة تحرك عجلتها بعدد من الأسنان يساوي عدد أفواهها: النسبة هي أسنان العجلة مقسومة على الأفواه. انزلاقها كبير: تحت نحو 50 % من الكفاءة لا تستطيع العجلة إدارة الدودة إلى الخلف.</string>
+    <string name="place_sun_above">الشمس %1$s فوق الأفق</string>
+    <string name="place_sun_below">الشمس %1$s تحت الأفق</string>
 </resources>

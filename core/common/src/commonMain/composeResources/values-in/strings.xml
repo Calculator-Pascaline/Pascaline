@@ -2148,4 +2148,6 @@
     <string name="gears_worm_efficiency">Efisiensi cacing</string>
     <string name="gears_worm_note">Roda gigi setelah cacing berputar tegak lurus dan tidak digambar.</string>
     <string name="gears_worm_text">Setiap putaran cacing menggeser rodanya sebanyak jumlah ulirnya: rasionya adalah gigi roda dibagi ulir. Gesekannya besar: di bawah sekitar 50 % efisiensi, roda tidak bisa memutar balik cacing.</string>
+    <string name="place_sun_above">Matahari %1$s di atas cakrawala</string>
+    <string name="place_sun_below">Matahari %1$s di bawah cakrawala</string>
 </resources>

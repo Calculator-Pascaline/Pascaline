@@ -2148,4 +2148,6 @@
     <string name="gears_worm_efficiency">КПД червяка</string>
     <string name="gears_worm_note">Колёса после червяка вращаются под прямым углом и не рисуются.</string>
     <string name="gears_worm_text">Каждый оборот червяка поворачивает его колесо на столько зубьев, сколько у него заходов: передаточное число — зубья колеса, делённые на заходы. Он сильно скользит: при КПД ниже примерно 50 % колесо не может провернуть червяк.</string>
+    <string name="place_sun_above">Солнце на %1$s над горизонтом</string>
+    <string name="place_sun_below">Солнце на %1$s под горизонтом</string>
 </resources>

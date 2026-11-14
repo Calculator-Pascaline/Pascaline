@@ -2148,4 +2148,6 @@
     <string name="gears_worm_efficiency">蜗杆效率</string>
     <string name="gears_worm_note">蜗杆后面的齿轮以直角转动，图中不画出。</string>
     <string name="gears_worm_text">蜗杆每转一圈，蜗轮转过的齿数等于蜗杆头数，所以传动比是蜗轮齿数除以头数。蜗杆滑动很大：效率低于约 50 % 时，蜗轮不能反过来带动蜗杆。</string>
+    <string name="place_sun_above">太阳在地平线上 %1$s</string>
+    <string name="place_sun_below">太阳在地平线下 %1$s</string>
 </resources>

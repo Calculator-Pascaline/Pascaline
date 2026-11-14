@@ -2148,4 +2148,6 @@
     <string name="gears_worm_efficiency">Rendement van de worm</string>
     <string name="gears_worm_note">Tandwielen na een worm draaien haaks en worden niet getekend.</string>
     <string name="gears_worm_text">Elke omwenteling van de worm verdraait zijn wiel zoveel tanden als hij gangen heeft: de verhouding is het aantal tanden van het wiel gedeeld door de gangen. Hij glijdt veel: onder ongeveer 50 % rendement kan het wiel de worm niet terugdraaien.</string>
+    <string name="place_sun_above">Zon %1$s boven de horizon</string>
+    <string name="place_sun_below">Zon %1$s onder de horizon</string>
 </resources>

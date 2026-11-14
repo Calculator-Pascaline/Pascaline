@@ -2148,4 +2148,6 @@
     <string name="gears_worm_efficiency">Rendimento della vite</string>
     <string name="gears_worm_note">Le ruote dopo una vite senza fine girano ad angolo retto e non sono disegnate.</string>
     <string name="gears_worm_text">Ogni giro della vite fa avanzare la ruota di tanti denti quanti sono i suoi principi: il rapporto è il numero di denti della ruota diviso i principi. Striscia molto: sotto circa il 50 % di rendimento, la ruota non può far girare la vite.</string>
+    <string name="place_sun_above">Sole a %1$s sopra l'orizzonte</string>
+    <string name="place_sun_below">Sole a %1$s sotto l'orizzonte</string>
 </resources>

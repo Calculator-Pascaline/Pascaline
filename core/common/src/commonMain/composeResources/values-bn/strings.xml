@@ -2148,4 +2148,6 @@
     <string name="gears_worm_efficiency">ওয়ার্মের দক্ষতা</string>
     <string name="gears_worm_note">ওয়ার্মের পরের গিয়ারগুলো সমকোণে ঘোরে আর আঁকা হয় না।</string>
     <string name="gears_worm_text">ওয়ার্মের প্রতিটি পাক তার চাকাকে প্যাঁচের সংখ্যার সমান দাঁত এগিয়ে দেয়: অনুপাত হলো চাকার দাঁত ভাগ প্যাঁচ। এটি অনেক পিছলায়: প্রায় ৫০ % দক্ষতার নিচে চাকাটি ওয়ার্মকে উল্টো ঘোরাতে পারে না।</string>
+    <string name="place_sun_above">সূর্য দিগন্তের %1$s ওপরে</string>
+    <string name="place_sun_below">সূর্য দিগন্তের %1$s নিচে</string>
 </resources>
