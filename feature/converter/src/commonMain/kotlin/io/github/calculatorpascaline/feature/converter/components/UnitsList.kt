@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2024-2025 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -98,6 +99,8 @@ internal fun UnitsList(
         buttonLabel = stringResource(Res.string.common_open_settings),
       )
     } else {
+      // Rows only slide, they don't fade: results change with every typed letter and a fade in
+      // could stop at alpha 0, leaving rows that take space but can't be seen
       LazyColumn(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = ListItemExpressiveDefaults.ListArrangement,
@@ -107,7 +110,7 @@ internal fun UnitsList(
           item(key = group.name, contentType = ContentType.HEADER) {
             ListHeader(
               modifier =
-                Modifier.animateItem()
+                Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null)
                   .padding(
                     start = Sizes.large,
                     end = Sizes.large,
@@ -124,7 +127,7 @@ internal fun UnitsList(
             contentType = { _, _ -> ContentType.ITEM },
           ) { index, item ->
             UnitListItem(
-              modifier = Modifier.animateItem().padding(horizontal = Sizes.medium).fillMaxWidth(),
+              modifier = Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null).padding(horizontal = Sizes.medium).fillMaxWidth(),
               shape = ListItemExpressiveDefaults.listedShaped(index, units.size),
               name = stringResource(item.basicUnit.displayName),
               supportLabel = supportLabel(item),
