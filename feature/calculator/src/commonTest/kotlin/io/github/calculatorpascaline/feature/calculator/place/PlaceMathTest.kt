@@ -387,7 +387,7 @@ class PlaceMathTest {
     assertEquals("Paris", defaultCity(cities, "fr")?.names?.first())
     assertEquals("Berlin", defaultCity(cities, "de")?.names?.first())
     // English for languages without a city
-    assertEquals("London", defaultCity(cities, "ja")?.names?.first())
+    assertEquals("London", defaultCity(cities, "sw")?.names?.first())
     assertNull(defaultCity(emptyList(), "fr"))
   }
 
