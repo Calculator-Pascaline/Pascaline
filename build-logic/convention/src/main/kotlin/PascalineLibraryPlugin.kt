@@ -24,6 +24,8 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
+import org.gradle.api.services.BuildService
+import org.gradle.api.services.BuildServiceParameters
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.assign
@@ -64,6 +66,9 @@ class PascalineMultiplatformLibraryPlugin : Plugin<Project> {
           // Shared tests in Firefox (wasmJsBrowserTest), CI runs them
           browser {
             testTask {
+              // One browser at a time: on CI, several Firefox loading the app at once next to
+              // Gradle ran out of memory and stopped answering, failing modules at random
+              usesService(oneBrowserAtATime())
               useKarma {
                 useFirefoxHeadless()
                 // Timeouts for slow calculations, shared by every module
@@ -185,3 +190,9 @@ private inline fun <reified T : KotlinBaseExtension> Project.configureKotlin() =
       "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
     )
   }
+
+/** Shared by the browser tests of every module so that only one runs at a time. */
+abstract class OneBrowser : BuildService<BuildServiceParameters.None>
+
+private fun Project.oneBrowserAtATime() =
+  gradle.sharedServices.registerIfAbsent("oneBrowser", OneBrowser::class.java) { maxParallelUsages.set(1) }
