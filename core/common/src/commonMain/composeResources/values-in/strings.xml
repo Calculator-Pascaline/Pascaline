@@ -1939,4 +1939,12 @@
     <string name="projectile_golf">Golf</string>
     <string name="projectile_volleyball">Voli</string>
     <string name="projectile_cannonball">Peluru meriam</string>
+    <string name="physical_unit_megaohm">Megaohm</string>
+    <string name="physical_unit_nanohenry">Nanohenry</string>
+    <string name="physical_unit_microhenry">Mikrohenry</string>
+    <string name="physical_unit_millihenry">Milihenry</string>
+    <string name="physical_unit_calorie">Kalori</string>
+    <string name="physical_unit_kilocalorie">Kilokalori</string>
+    <string name="units_menu_food">Makanan</string>
+    <string name="units_menu_particles">Partikel</string>
 </resources>

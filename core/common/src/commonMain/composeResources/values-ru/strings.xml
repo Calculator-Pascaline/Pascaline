@@ -1939,4 +1939,12 @@
     <string name="projectile_golf">Гольф</string>
     <string name="projectile_volleyball">Волейбол</string>
     <string name="projectile_cannonball">Пушечное ядро</string>
+    <string name="physical_unit_megaohm">Мегаом</string>
+    <string name="physical_unit_nanohenry">Наногенри</string>
+    <string name="physical_unit_microhenry">Микрогенри</string>
+    <string name="physical_unit_millihenry">Миллигенри</string>
+    <string name="physical_unit_calorie">Калория</string>
+    <string name="physical_unit_kilocalorie">Килокалория</string>
+    <string name="units_menu_food">Питание</string>
+    <string name="units_menu_particles">Частицы</string>
 </resources>

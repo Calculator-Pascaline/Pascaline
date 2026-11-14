@@ -20,11 +20,13 @@ package com.sadellie.unitto.core.common
 
 import org.jetbrains.compose.resources.StringResource
 import unitto.core.common.generated.resources.Res
+import unitto.core.common.generated.resources.electric_inductance
 import unitto.core.common.generated.resources.physical_unit_acceleration_of_gravity
 import unitto.core.common.generated.resources.physical_unit_ampere
 import unitto.core.common.generated.resources.physical_unit_atmosphere
 import unitto.core.common.generated.resources.physical_unit_avogadro_constant
 import unitto.core.common.generated.resources.physical_unit_boltzmann_constant
+import unitto.core.common.generated.resources.physical_unit_calorie
 import unitto.core.common.generated.resources.physical_unit_candela
 import unitto.core.common.generated.resources.physical_unit_coulomb
 import unitto.core.common.generated.resources.physical_unit_coulomb_constant
@@ -38,6 +40,7 @@ import unitto.core.common.generated.resources.physical_unit_gradian
 import unitto.core.common.generated.resources.physical_unit_gravitational_constant
 import unitto.core.common.generated.resources.physical_unit_henry
 import unitto.core.common.generated.resources.physical_unit_hertz
+import unitto.core.common.generated.resources.physical_unit_kilocalorie
 import unitto.core.common.generated.resources.physical_unit_kiloelectronvolt
 import unitto.core.common.generated.resources.physical_unit_kilohertz
 import unitto.core.common.generated.resources.physical_unit_kiloohm
@@ -45,12 +48,15 @@ import unitto.core.common.generated.resources.physical_unit_kilovolt
 import unitto.core.common.generated.resources.physical_unit_long_ton
 import unitto.core.common.generated.resources.physical_unit_megaelectronvolt
 import unitto.core.common.generated.resources.physical_unit_megahertz
+import unitto.core.common.generated.resources.physical_unit_megaohm
 import unitto.core.common.generated.resources.physical_unit_microampere
+import unitto.core.common.generated.resources.physical_unit_microhenry
 import unitto.core.common.generated.resources.physical_unit_micromole
 import unitto.core.common.generated.resources.physical_unit_microvolt
 import unitto.core.common.generated.resources.physical_unit_microwatt
 import unitto.core.common.generated.resources.physical_unit_milliampere
 import unitto.core.common.generated.resources.physical_unit_millielectronvolt
+import unitto.core.common.generated.resources.physical_unit_millihenry
 import unitto.core.common.generated.resources.physical_unit_millijoule
 import unitto.core.common.generated.resources.physical_unit_millimole
 import unitto.core.common.generated.resources.physical_unit_millivolt
@@ -58,6 +64,7 @@ import unitto.core.common.generated.resources.physical_unit_milliwatt
 import unitto.core.common.generated.resources.physical_unit_molar_gas_constant
 import unitto.core.common.generated.resources.physical_unit_mole
 import unitto.core.common.generated.resources.physical_unit_month
+import unitto.core.common.generated.resources.physical_unit_nanohenry
 import unitto.core.common.generated.resources.physical_unit_neutron_mass
 import unitto.core.common.generated.resources.physical_unit_ohm
 import unitto.core.common.generated.resources.physical_unit_picometer
@@ -80,6 +87,8 @@ import unitto.core.common.generated.resources.unit_bar
 import unitto.core.common.generated.resources.unit_celsius
 import unitto.core.common.generated.resources.unit_centiliter
 import unitto.core.common.generated.resources.unit_centimeter
+import unitto.core.common.generated.resources.unit_cubic_centimeter
+import unitto.core.common.generated.resources.unit_cubic_meter
 import unitto.core.common.generated.resources.unit_day
 import unitto.core.common.generated.resources.unit_deciliter
 import unitto.core.common.generated.resources.unit_degree
@@ -99,6 +108,7 @@ import unitto.core.common.generated.resources.unit_group_length
 import unitto.core.common.generated.resources.unit_group_mass
 import unitto.core.common.generated.resources.unit_group_power
 import unitto.core.common.generated.resources.unit_group_pressure
+import unitto.core.common.generated.resources.unit_group_speed
 import unitto.core.common.generated.resources.unit_group_temperature
 import unitto.core.common.generated.resources.unit_group_time
 import unitto.core.common.generated.resources.unit_group_volume
@@ -112,38 +122,57 @@ import unitto.core.common.generated.resources.unit_kelvin
 import unitto.core.common.generated.resources.unit_kilogram
 import unitto.core.common.generated.resources.unit_kilojoule
 import unitto.core.common.generated.resources.unit_kilometer
+import unitto.core.common.generated.resources.unit_kilometer_per_hour
 import unitto.core.common.generated.resources.unit_kilonewton
+import unitto.core.common.generated.resources.unit_kilopascal
 import unitto.core.common.generated.resources.unit_kilowatt
 import unitto.core.common.generated.resources.unit_kilowatt_hour
+import unitto.core.common.generated.resources.unit_knot
 import unitto.core.common.generated.resources.unit_light_year
 import unitto.core.common.generated.resources.unit_liter
+import unitto.core.common.generated.resources.unit_megapascal
 import unitto.core.common.generated.resources.unit_megawatt
 import unitto.core.common.generated.resources.unit_megawatt_hour
 import unitto.core.common.generated.resources.unit_meter
+import unitto.core.common.generated.resources.unit_meter_per_second
 import unitto.core.common.generated.resources.unit_metric_ton
 import unitto.core.common.generated.resources.unit_microfarad
 import unitto.core.common.generated.resources.unit_microgram
 import unitto.core.common.generated.resources.unit_micrometer
 import unitto.core.common.generated.resources.unit_microsecond
 import unitto.core.common.generated.resources.unit_mile
+import unitto.core.common.generated.resources.unit_mile_per_hour
 import unitto.core.common.generated.resources.unit_millifarad
 import unitto.core.common.generated.resources.unit_milligram
 import unitto.core.common.generated.resources.unit_milliliter
 import unitto.core.common.generated.resources.unit_millimeter
+import unitto.core.common.generated.resources.unit_millimeter_of_mercury
 import unitto.core.common.generated.resources.unit_millinewton
 import unitto.core.common.generated.resources.unit_millisecond
 import unitto.core.common.generated.resources.unit_milliwatt_hour
 import unitto.core.common.generated.resources.unit_minute
+import unitto.core.common.generated.resources.unit_nanofarad
 import unitto.core.common.generated.resources.unit_nanometer
 import unitto.core.common.generated.resources.unit_nanosecond
 import unitto.core.common.generated.resources.unit_newton
 import unitto.core.common.generated.resources.unit_ounce
 import unitto.core.common.generated.resources.unit_parsec
 import unitto.core.common.generated.resources.unit_pascal
+import unitto.core.common.generated.resources.unit_picofarad
 import unitto.core.common.generated.resources.unit_pound
+import unitto.core.common.generated.resources.unit_pound_force
+import unitto.core.common.generated.resources.unit_psi
 import unitto.core.common.generated.resources.unit_radian
 import unitto.core.common.generated.resources.unit_second
 import unitto.core.common.generated.resources.unit_short_ton
+import unitto.core.common.generated.resources.unit_square_centimeter
+import unitto.core.common.generated.resources.unit_square_foot
+import unitto.core.common.generated.resources.unit_square_inch
+import unitto.core.common.generated.resources.unit_square_kilometer
+import unitto.core.common.generated.resources.unit_square_meter
+import unitto.core.common.generated.resources.unit_square_mile
+import unitto.core.common.generated.resources.unit_square_millimeter
+import unitto.core.common.generated.resources.unit_square_yard
 import unitto.core.common.generated.resources.unit_watt
 import unitto.core.common.generated.resources.unit_watt_hour
 import unitto.core.common.generated.resources.unit_week
@@ -155,11 +184,13 @@ import unitto.core.common.generated.resources.units_menu_constants
 import unitto.core.common.generated.resources.units_menu_current
 import unitto.core.common.generated.resources.units_menu_electricity
 import unitto.core.common.generated.resources.units_menu_energy_and_power
+import unitto.core.common.generated.resources.units_menu_food
 import unitto.core.common.generated.resources.units_menu_force_and_pressure
 import unitto.core.common.generated.resources.units_menu_frequency
 import unitto.core.common.generated.resources.units_menu_imperial
 import unitto.core.common.generated.resources.units_menu_length_and_angle
 import unitto.core.common.generated.resources.units_menu_other_units
+import unitto.core.common.generated.resources.units_menu_particles
 import unitto.core.common.generated.resources.units_menu_resistance
 import unitto.core.common.generated.resources.units_menu_time_and_frequency
 import unitto.core.common.generated.resources.units_menu_voltage
@@ -205,6 +236,30 @@ val physicalUnitNames: Map<String, StringResource> =
     "Hectare" to Res.string.unit_hectare,
     "Hectopascal" to Res.string.unit_hectopascal,
     "Henry" to Res.string.physical_unit_henry,
+    "Square millimeter" to Res.string.unit_square_millimeter,
+    "Square centimeter" to Res.string.unit_square_centimeter,
+    "Square meter" to Res.string.unit_square_meter,
+    "Square kilometer" to Res.string.unit_square_kilometer,
+    "Square inch" to Res.string.unit_square_inch,
+    "Square foot" to Res.string.unit_square_foot,
+    "Square yard" to Res.string.unit_square_yard,
+    "Square mile" to Res.string.unit_square_mile,
+    "Cubic centimeter" to Res.string.unit_cubic_centimeter,
+    "Cubic meter" to Res.string.unit_cubic_meter,
+    "Meter/second" to Res.string.unit_meter_per_second,
+    "Kilometer/hour" to Res.string.unit_kilometer_per_hour,
+    "Mile/hour" to Res.string.unit_mile_per_hour,
+    "Knot" to Res.string.unit_knot,
+    "Pound-force" to Res.string.unit_pound_force,
+    "Kilopascal" to Res.string.unit_kilopascal,
+    "Megapascal" to Res.string.unit_megapascal,
+    "Millimeter of mercury" to Res.string.unit_millimeter_of_mercury,
+    "Pound/square inch" to Res.string.unit_psi,
+    "Calorie" to Res.string.physical_unit_calorie,
+    "Kilocalorie" to Res.string.physical_unit_kilocalorie,
+    "Nanohenry" to Res.string.physical_unit_nanohenry,
+    "Microhenry" to Res.string.physical_unit_microhenry,
+    "Millihenry" to Res.string.physical_unit_millihenry,
     "Hertz" to Res.string.physical_unit_hertz,
     "Horsepower" to Res.string.unit_horse_power_mechanical,
     "Hour" to Res.string.unit_hour,
@@ -218,6 +273,7 @@ val physicalUnitNames: Map<String, StringResource> =
     "Kilometer" to Res.string.unit_kilometer,
     "Kilonewton" to Res.string.unit_kilonewton,
     "Kiloohm" to Res.string.physical_unit_kiloohm,
+    "Megaohm" to Res.string.physical_unit_megaohm,
     "Kilovolt" to Res.string.physical_unit_kilovolt,
     "Kilowatt" to Res.string.unit_kilowatt,
     "Kilowatt-hour" to Res.string.unit_kilowatt_hour,
@@ -232,6 +288,8 @@ val physicalUnitNames: Map<String, StringResource> =
     "Metric ton" to Res.string.unit_metric_ton,
     "Microampere" to Res.string.physical_unit_microampere,
     "Microfarad" to Res.string.unit_microfarad,
+    "Nanofarad" to Res.string.unit_nanofarad,
+    "Picofarad" to Res.string.unit_picofarad,
     "Microgram" to Res.string.unit_microgram,
     "Micrometer" to Res.string.unit_micrometer,
     "Micromole" to Res.string.physical_unit_micromole,
@@ -303,6 +361,10 @@ val physicalUnitNames: Map<String, StringResource> =
     "Voltage" to Res.string.units_menu_voltage,
     "Resistance" to Res.string.units_menu_resistance,
     "Capacitance" to Res.string.unit_group_electrostatic_capacitance,
+    "Inductance" to Res.string.electric_inductance,
+    "Speed" to Res.string.unit_group_speed,
+    "Food" to Res.string.units_menu_food,
+    "Particles" to Res.string.units_menu_particles,
     "Other units" to Res.string.units_menu_other_units,
     "Force and pressure" to Res.string.units_menu_force_and_pressure,
     "Force" to Res.string.unit_group_force,

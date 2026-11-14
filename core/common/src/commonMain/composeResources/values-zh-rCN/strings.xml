@@ -1939,4 +1939,12 @@
     <string name="projectile_golf">高尔夫球</string>
     <string name="projectile_volleyball">排球</string>
     <string name="projectile_cannonball">炮弹</string>
+    <string name="physical_unit_megaohm">兆欧</string>
+    <string name="physical_unit_nanohenry">纳亨</string>
+    <string name="physical_unit_microhenry">微亨</string>
+    <string name="physical_unit_millihenry">毫亨</string>
+    <string name="physical_unit_calorie">卡路里</string>
+    <string name="physical_unit_kilocalorie">千卡</string>
+    <string name="units_menu_food">食物</string>
+    <string name="units_menu_particles">粒子</string>
 </resources>

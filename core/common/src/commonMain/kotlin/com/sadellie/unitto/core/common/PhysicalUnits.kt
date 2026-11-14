@@ -94,6 +94,7 @@ object PhysicalUnits {
   private val FREQUENCY = Dimension(s = -1)
   private val AREA = Dimension(m = 2)
   private val VOLUME = Dimension(m = 3)
+  private val SPEED = Dimension(m = 1, s = -1)
   private val FORCE = Dimension(kg = 1, m = 1, s = -2)
   private val PRESSURE = Dimension(kg = 1, m = -1, s = -2)
   private val ENERGY = Dimension(kg = 1, m = 2, s = -2)
@@ -153,8 +154,18 @@ object PhysicalUnits {
   private val gigahertz = unit("GHz", "Gigahertz", "1E9", FREQUENCY)
 
   // Area and volume
+  private val squareMillimeter = unit("mm²", "Square millimeter", "1E-6", AREA)
+  private val squareCentimeter = unit("cm²", "Square centimeter", "1E-4", AREA)
+  private val squareMeter = unit("m²", "Square meter", "1", AREA)
   private val hectare = unit("ha", "Hectare", "10000", AREA)
+  private val squareKilometer = unit("km²", "Square kilometer", "1E6", AREA)
+  private val squareInch = unit("in²", "Square inch", "0.00064516", AREA)
+  private val squareFoot = unit("ft²", "Square foot", "0.09290304", AREA)
+  private val squareYard = unit("yd²", "Square yard", "0.83612736", AREA)
   private val acre = unit("acre", "Acre", "4046.8564224", AREA)
+  private val squareMile = unit("mi²", "Square mile", "2589988.110336", AREA)
+  private val cubicCentimeter = unit("cm³", "Cubic centimeter", "1E-6", VOLUME)
+  private val cubicMeter = unit("m³", "Cubic meter", "1", VOLUME)
   private val milliliter = unit("mL", "Milliliter", "1E-6", VOLUME)
   private val centiliter = unit("cL", "Centiliter", "1E-5", VOLUME)
   private val deciliter = unit("dL", "Deciliter", "1E-4", VOLUME)
@@ -166,6 +177,14 @@ object PhysicalUnits {
   private val pint = unit("pt", "Pint", "0.000473176473", VOLUME)
   private val quart = unit("qt", "Quart", "0.000946352946", VOLUME)
   private val gallon = unit("gal", "Gallon", "0.003785411784", VOLUME)
+
+  // Speed. The slash is a fraction slash (⁄): a typed / becomes a division. "knot", not "kn",
+  // which k (Boltzmann) and n would make
+  private val meterPerSecond = unit("m⁄s", "Meter/second", "1", SPEED)
+  private val kilometerPerHour =
+    unit("km⁄h", "Kilometer/hour", "0.27777777777777777777777777777777777777777777777778", SPEED)
+  private val milePerHour = unit("mph", "Mile/hour", "0.44704", SPEED)
+  private val knot = unit("knot", "Knot", "0.51444444444444444444444444444444444444444444444444", SPEED)
 
   // Mass
   private val microgram = unit("μg", "Microgram", "1E-9", MASS)
@@ -188,9 +207,15 @@ object PhysicalUnits {
   private val kilovolt = unit("kV", "Kilovolt", "1000", VOLTAGE)
   val ohm = unit("Ω", "Ohm", "1", RESISTANCE)
   private val kiloohm = unit("kΩ", "Kiloohm", "1000", RESISTANCE)
+  private val megaohm = unit("MΩ", "Megaohm", "1E6", RESISTANCE)
+  private val picofarad = unit("pF", "Picofarad", "1E-12", CAPACITANCE)
+  private val nanofarad = unit("nF", "Nanofarad", "1E-9", CAPACITANCE)
   private val microfarad = unit("μF", "Microfarad", "1E-6", CAPACITANCE)
   private val millifarad = unit("mF", "Millifarad", "0.001", CAPACITANCE)
   val farad = unit("F", "Farad", "1", CAPACITANCE)
+  private val nanohenry = unit("nH", "Nanohenry", "1E-9", INDUCTANCE)
+  private val microhenry = unit("μH", "Microhenry", "1E-6", INDUCTANCE)
+  private val millihenry = unit("mH", "Millihenry", "0.001", INDUCTANCE)
   val henry = unit("H", "Henry", "1", INDUCTANCE)
   val coulomb = unit("C", "Coulomb", "1", CHARGE)
   val siemens = unit("S", "Siemens", "1", CONDUCTANCE)
@@ -200,8 +225,13 @@ object PhysicalUnits {
   private val millinewton = unit("mN", "Millinewton", "0.001", FORCE)
   val newton = unit("N", "Newton", "1", FORCE)
   private val kilonewton = unit("kN", "Kilonewton", "1000", FORCE)
+  private val poundForce = unit("lbf", "Pound-force", "4.4482216152605", FORCE)
   val pascal = unit("Pa", "Pascal", "1", PRESSURE)
   private val hectopascal = unit("hPa", "Hectopascal", "100", PRESSURE)
+  private val kilopascal = unit("kPa", "Kilopascal", "1000", PRESSURE)
+  private val megapascal = unit("MPa", "Megapascal", "1E6", PRESSURE)
+  private val millimeterOfMercury = unit("mmHg", "Millimeter of mercury", "133.322387415", PRESSURE)
+  private val psi = unit("psi", "Pound/square inch", "6894.757293168361", PRESSURE)
   private val bar = unit("bar", "Bar", "100000", PRESSURE)
   private val atmosphere = unit("atm", "Atmosphere", "101325", PRESSURE)
 
@@ -209,6 +239,8 @@ object PhysicalUnits {
   private val millijoule = unit("mJ", "Millijoule", "0.001", ENERGY)
   val joule = unit("J", "Joule", "1", ENERGY)
   private val kilojoule = unit("kJ", "Kilojoule", "1000", ENERGY)
+  private val calorie = unit("cal", "Calorie", "4.184", ENERGY)
+  private val kilocalorie = unit("kcal", "Kilocalorie", "4184", ENERGY)
   private val millielectronvolt = unit("meV", "Millielectronvolt", "1.602176634E-22", ENERGY)
   private val electronvolt = unit("eV", "Electronvolt", "1.602176634E-19", ENERGY)
   private val kiloelectronvolt = unit("keV", "Kiloelectronvolt", "1.602176634E-16", ENERGY)
@@ -286,6 +318,7 @@ object PhysicalUnits {
             category("Imperial", leaves(inch, foot, yard, mile)),
         ),
         category("Angle", leaves(degree, radian, gradian)),
+        category("Speed", leaves(meterPerSecond, kilometerPerHour) + category("Imperial", leaves(milePerHour, knot))),
       ),
       category(
         "Time and frequency",
@@ -297,10 +330,14 @@ object PhysicalUnits {
       ),
       category(
         "Area and volume",
-        category("Area", leaves(hectare) + category("Imperial", leaves(acre))),
+        category(
+          "Area",
+          leaves(squareMillimeter, squareCentimeter, squareMeter, hectare, squareKilometer) +
+            category("Imperial", leaves(squareInch, squareFoot, squareYard, acre, squareMile)),
+        ),
         category(
           "Volume",
-          leaves(milliliter, centiliter, deciliter, liter) +
+          leaves(milliliter, cubicCentimeter, centiliter, deciliter, liter, cubicMeter) +
             category("Imperial", leaves(teaspoon, tablespoon, fluidOunce, cup, pint, quart, gallon)),
         ),
       ),
@@ -313,22 +350,29 @@ object PhysicalUnits {
         "Electricity",
         category("Current", leaves(microampere, milliampere, ampere)),
         category("Voltage", leaves(microvolt, millivolt, volt, kilovolt)),
-        category("Resistance", leaves(ohm, kiloohm)),
-        category("Capacitance", leaves(microfarad, millifarad, farad)),
-        category("Other units", leaves(henry, coulomb, siemens, tesla)),
+        category("Resistance", leaves(ohm, kiloohm, megaohm)),
+        category("Capacitance", leaves(picofarad, nanofarad, microfarad, millifarad, farad)),
+        category("Inductance", leaves(nanohenry, microhenry, millihenry, henry)),
+        category("Other units", leaves(coulomb, siemens, tesla)),
       ),
       category(
         "Force and pressure",
-        category("Force", leaves(millinewton, newton, kilonewton)),
-        category("Pressure", leaves(pascal, hectopascal, bar, atmosphere)),
+        category("Force", leaves(millinewton, newton, kilonewton) + category("Imperial", leaves(poundForce))),
+        category(
+          "Pressure",
+          leaves(pascal, hectopascal, kilopascal, megapascal, bar, atmosphere, millimeterOfMercury) +
+            category("Imperial", leaves(psi)),
+        ),
       ),
       category(
         "Energy and power",
+        // Joules, then the units of food, of the electricity bill and of particles
         category(
           "Energy",
-          category("Joule", leaves(millijoule, joule, kilojoule)),
-          category("Electronvolt", leaves(millielectronvolt, electronvolt, kiloelectronvolt, megaelectronvolt)),
-          category("Watt-hour", leaves(milliwattHour, wattHour, kilowattHour, megawattHour, gigawattHour)),
+          leaves(millijoule, joule, kilojoule) +
+            category("Food", leaves(calorie, kilocalorie)) +
+            category("Electricity", leaves(milliwattHour, wattHour, kilowattHour, megawattHour, gigawattHour)) +
+            category("Particles", leaves(millielectronvolt, electronvolt, kiloelectronvolt, megaelectronvolt)),
         ),
         category(
           "Power",

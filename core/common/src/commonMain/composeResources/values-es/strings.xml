@@ -1939,4 +1939,12 @@
     <string name="projectile_golf">Golf</string>
     <string name="projectile_volleyball">Vóley</string>
     <string name="projectile_cannonball">Bala de cañón</string>
+    <string name="physical_unit_megaohm">Megaohmio</string>
+    <string name="physical_unit_nanohenry">Nanohenrio</string>
+    <string name="physical_unit_microhenry">Microhenrio</string>
+    <string name="physical_unit_millihenry">Milihenrio</string>
+    <string name="physical_unit_calorie">Caloría</string>
+    <string name="physical_unit_kilocalorie">Kilocaloría</string>
+    <string name="units_menu_food">Alimentación</string>
+    <string name="units_menu_particles">Partículas</string>
 </resources>

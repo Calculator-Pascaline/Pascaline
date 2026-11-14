@@ -121,6 +121,7 @@ import com.sadellie.unitto.core.designsystem.icons.symbols.ActivityZone
 import com.sadellie.unitto.core.designsystem.icons.symbols.ActivityZoneFill
 import com.sadellie.unitto.core.designsystem.icons.symbols.Airwave
 import com.sadellie.unitto.core.designsystem.icons.symbols.Atom
+import com.sadellie.unitto.core.designsystem.icons.symbols.Cached
 import com.sadellie.unitto.core.designsystem.icons.symbols.Close
 import com.sadellie.unitto.core.designsystem.icons.symbols.Compress
 import com.sadellie.unitto.core.designsystem.icons.symbols.DeviceThermostat
@@ -129,6 +130,7 @@ import com.sadellie.unitto.core.designsystem.icons.symbols.DiagonalLine
 import com.sadellie.unitto.core.designsystem.icons.symbols.ElectricBolt
 import com.sadellie.unitto.core.designsystem.icons.symbols.ElectricBoltFill
 import com.sadellie.unitto.core.designsystem.icons.symbols.Energy
+import com.sadellie.unitto.core.designsystem.icons.symbols.Favorite
 import com.sadellie.unitto.core.designsystem.icons.symbols.FitnessCenter
 import com.sadellie.unitto.core.designsystem.icons.symbols.Language
 import com.sadellie.unitto.core.designsystem.icons.symbols.LineAxis
@@ -832,6 +834,7 @@ private val CATEGORY_ICONS: Map<String, ImageVector> by lazy {
     "Length and angle" to Symbols.Straighten,
     "Length" to Symbols.Straighten,
     "Angle" to Symbols.DiagonalLine,
+    "Speed" to Symbols.Speed,
     // Inches, ounces, gallons: the units of other countries
     "Imperial" to Symbols.Language,
     // au, light-years and parsecs: distances in space
@@ -850,15 +853,17 @@ private val CATEGORY_ICONS: Map<String, ImageVector> by lazy {
     "Resistance" to Symbols.LineAxis,
     // Two plates, like a capacitor
     "Capacitance" to Symbols.SplitscreenBottom,
+    // Loops, like the turns of a coil
+    "Inductance" to Symbols.Cached,
     "Other units" to Symbols.DevicesOther,
     "Force and pressure" to Symbols.FitnessCenter,
     "Force" to Symbols.FitnessCenter,
     "Pressure" to Symbols.Compress,
     "Energy and power" to Symbols.Energy,
     "Energy" to Symbols.Energy,
-    "Joule" to Symbols.Energy,
-    "Electronvolt" to Symbols.Atom,
-    "Watt-hour" to Symbols.Power,
+    // Calories, the energy in food
+    "Food" to Symbols.Favorite,
+    "Particles" to Symbols.Atom,
     "Power" to Symbols.Power,
     "Horsepower" to Symbols.Speed,
     "Temperature" to Symbols.DeviceThermostat,

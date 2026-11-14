@@ -1939,4 +1939,12 @@
     <string name="projectile_golf">गोल्फ़</string>
     <string name="projectile_volleyball">वॉलीबॉल</string>
     <string name="projectile_cannonball">तोप का गोला</string>
+    <string name="physical_unit_megaohm">मेगाओम</string>
+    <string name="physical_unit_nanohenry">नैनोहेनरी</string>
+    <string name="physical_unit_microhenry">माइक्रोहेनरी</string>
+    <string name="physical_unit_millihenry">मिलीहेनरी</string>
+    <string name="physical_unit_calorie">कैलोरी</string>
+    <string name="physical_unit_kilocalorie">किलोकैलोरी</string>
+    <string name="units_menu_food">भोजन</string>
+    <string name="units_menu_particles">कण</string>
 </resources>

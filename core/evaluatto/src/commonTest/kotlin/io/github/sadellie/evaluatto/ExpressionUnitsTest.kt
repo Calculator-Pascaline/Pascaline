@@ -85,6 +85,29 @@ class ExpressionUnitsTest {
 
   @Test fun convert() = assertEquals("3000" to "_m", withUnit("3_km→_m"))
 
+  @Test fun speedUnits() = assertEquals("27.777778" to "_m⁄s", withUnit("100_km⁄h→_m⁄s"))
+
+  @Test fun knotsToKilometersPerHour() = assertEquals("1.852" to "_km⁄h", withUnit("1_knot→_km⁄h"))
+
+  @Test fun milesPerHour() = assertEquals("96.56064" to "_km⁄h", withUnit("60_mph→_km⁄h"))
+
+  // A speed from a distance and a time
+  @Test fun distanceOverTimeInSpeedUnit() = assertEquals("50" to "_km⁄h", withUnit("${NUM}100_km$END${DEN}2_h$END→_km⁄h"))
+
+  @Test fun squareUnits() = assertEquals("2.589988" to "_km²", withUnit("1_mi²→_km²"))
+
+  @Test fun squareFromLengths() = assertEquals("6" to "_m²", withUnit("2_m×3_m→_m²"))
+
+  @Test fun cubicMeterToLiters() = assertEquals("1000" to "_L", withUnit("1_m³→_L"))
+
+  @Test fun psiToKilopascals() = assertEquals("6.894757" to "_kPa", withUnit("1_psi→_kPa"))
+
+  @Test fun bloodPressure() = assertEquals("15.998686" to "_kPa", withUnit("120_mmHg→_kPa"))
+
+  @Test fun poundForce() = assertEquals("4.448222" to "_N", withUnit("1_lbf→_N"))
+
+  @Test fun kilocalories() = assertEquals("418.4" to "_kJ", withUnit("100_kcal→_kJ"))
+
   @Test fun kilowattHourToJoules() = assertEquals("3600000" to "_J", withUnit("1_kWh→_J"))
 
   @Test fun powerTimesTime() = assertEquals("6" to "_kWh", withUnit("2_kW×3_h→_kWh"))
