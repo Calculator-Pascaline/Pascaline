@@ -108,6 +108,14 @@ class UnitConverterRepositoryImpl(private val unitsRepo: UnitsRepository) :
                 unitFrom = unitFrom as BasicUnit.Default,
               )
 
+            // hours and minutes input
+            unitFrom.id == UnitID.hour ->
+              convertDefaultBatch(
+                input = calculateHourAndMinutesInput(input1, input2),
+                unitSearchResultItems = units,
+                unitFrom = getById(UnitID.minute) as BasicUnit.Default,
+              )
+
             else ->
               convertDefaultBatch(
                 input = calculateInput(input1),
@@ -142,16 +150,23 @@ class UnitConverterRepositoryImpl(private val unitsRepo: UnitsRepository) :
         )
 
       unitFrom.group == UnitGroup.TIME && unitTo.group == UnitGroup.TIME && formatTime ->
-        convertTimeAndFormatToHumanReadable(
-          unitFrom = unitFrom as BasicUnit.Default,
-          value = calculateInput(value1),
-        )
+        if (unitFrom.id == UnitID.hour) {
+          convertTimeAndFormatToHumanReadable(
+            unitFrom = getById(UnitID.minute) as BasicUnit.Default,
+            value = calculateHourAndMinutesInput(value1, value2),
+          )
+        } else {
+          convertTimeAndFormatToHumanReadable(
+            unitFrom = unitFrom as BasicUnit.Default,
+            value = calculateInput(value1),
+          )
+        }
 
       else -> convertWithTwoFields(unitFrom, unitTo, value1, value2)
     }
   }
 
-  /** Feet and inches or pounds and ounces have two fields, other units one. */
+  /** Feet and inches, pounds and ounces or hours and minutes have two fields, other units one. */
   private suspend fun convertWithTwoFields(
     unitFrom: BasicUnit,
     unitTo: BasicUnit,
@@ -205,6 +220,14 @@ class UnitConverterRepositoryImpl(private val unitsRepo: UnitsRepository) :
           unitFrom = unitFrom as BasicUnit.Default,
           unitTo = unitTo as BasicUnit.Default,
           value = calculatePoundAndOuncesInput(value1, value2),
+        )
+
+      // hours and minutes input: 8 h 25 min is 505 min
+      unitFrom.id == UnitID.hour ->
+        convertDefault(
+          unitFrom = getById(UnitID.minute) as BasicUnit.Default,
+          unitTo = unitTo as BasicUnit.Default,
+          value = calculateHourAndMinutesInput(value1, value2),
         )
 
       else ->
@@ -403,6 +426,20 @@ class UnitConverterRepositoryImpl(private val unitsRepo: UnitsRepository) :
     calculated += ouncesConvertedToPounds
 
     return calculated
+  }
+
+  /**
+   * Takes input from both text fields and returns amount of minutes. Minutes and not hours: a
+   * minute is 1/60 of an hour, that would round 8 h 25 min to 505.000…1 min.
+   */
+  private suspend fun calculateHourAndMinutesInput(
+    hourInput: String,
+    minuteInput: String,
+  ): KBigDecimal {
+    val minute = getById(UnitID.minute) as BasicUnit.Default
+    val hour = getById(UnitID.hour) as BasicUnit.Default
+    return hour.convert(minute, Expression(hourInput).calculate()) +
+      Expression(minuteInput).calculate()
   }
 
 

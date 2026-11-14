@@ -151,6 +151,16 @@ internal fun ConverterDefault(
               onFocusedOnInput1Changed = { focusedOnInput1 = it },
               formatterSymbols = uiState.formatterSymbols,
             )
+          UnitID.hour ->
+            DoubleUnitInput(
+              modifier = textFieldModifier,
+              input1 = uiState.input1,
+              input2 = uiState.input2,
+              input1ShortName = stringResource(Res.string.unit_hour_short),
+              input2ShortName = stringResource(Res.string.unit_minute_short),
+              onFocusedOnInput1Changed = { focusedOnInput1 = it },
+              formatterSymbols = uiState.formatterSymbols,
+            )
           else ->
             SingleUnitInput(
               modifier = textFieldModifier,
