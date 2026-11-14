@@ -24,6 +24,9 @@ import kotlin.math.max
 /** Current maximum scale that will be used in app. Used in various places in code. */
 const val MAX_SCALE: Int = 1_000
 
+/** Digits a value below 1 keeps from its first non-zero one, whatever the precision is. */
+private const val SIGNIFICANT_DIGITS = 3
+
 fun KBigDecimal.toFormattedString(scale: Int, outputFormat: Int): String {
   if (outputFormat == OutputFormat.ALLOW_ENGINEERING && isScientific()) {
     val (mantissa, exponent) = scientificMantissa()
@@ -87,7 +90,8 @@ fun KBigDecimal.isLessThan(bd: KBigDecimal): Boolean = compareTo(bd) == -1
 fun KBigDecimal.setMaxScale(): KBigDecimal = setScale(MAX_SCALE, KRoundingMode.HALF_EVEN)
 
 /**
- * Sets the minimum scale that is required to get first non-zero value in fractional part
+ * Sets the minimum scale that keeps [SIGNIFICANT_DIGITS] digits of a value below 1, from its first
+ * non-zero one: 0.00345 stays 0.00345 instead of 0.003.
  *
  * @param[prefScale] Is the preferred scale, the one which will be compared against
  */
@@ -98,10 +102,9 @@ internal fun KBigDecimal.setMinimumRequiredScale(prefScale: Int): KBigDecimal {
   if (absValue.isLessThan(KBigDecimal.ONE)) {
     // remainder returns 0.01234. Need to use substring to skip "0." part
     val fractionalPart = absValue.remainder(KBigDecimal.ONE).toPlainString().substring(2)
-    // indexOfFirst can give -1, but it's okay
-    // +1 to show first non-zero digit in fractional part
-    val scaleToShowFirstNonZeroDigit = fractionalPart.indexOfFirst { char -> char != '0' } + 1
-    val scaleToSet = max(prefScale, scaleToShowFirstNonZeroDigit)
+    // indexOfFirst gives -1 for zero, then the preferred scale wins
+    val firstNonZero = fractionalPart.indexOfFirst { char -> char != '0' }
+    val scaleToSet = max(prefScale, firstNonZero + SIGNIFICANT_DIGITS)
     return setScale(scaleToSet, KRoundingMode.HALF_EVEN)
   } else {
     return setScale(prefScale, KRoundingMode.HALF_EVEN)

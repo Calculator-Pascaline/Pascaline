@@ -37,7 +37,8 @@ class ShownExactlyTest {
 
   @Test fun oneThirdIsRounded() = assertFalse(isExact("1÷3"))
 
-  @Test fun moreDigitsThanShownIsRounded() = assertFalse(isExact("1÷8", precision = 2))
+  // 0.0078125 shows 0.00781: 3 digits from the first one that isn't zero
+  @Test fun moreDigitsThanShownIsRounded() = assertFalse(isExact("1÷128", precision = 2))
 
   @Test fun terminatingDecimalIsExact() = assertTrue(isExact("1÷8"))
 

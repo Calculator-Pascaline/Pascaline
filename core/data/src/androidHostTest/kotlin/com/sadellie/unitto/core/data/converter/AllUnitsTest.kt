@@ -85,8 +85,8 @@ class AllUnitsTest {
   fun testAcceleration() = testWithUnits {
     attometer_per_square_second.checkWith(femtometer_per_square_second, "69", "0.069")
     femtometer_per_square_second.checkWith(picometer_per_square_second, "69", "0.069")
-    picometer_per_square_second.checkWith(micrometer_per_square_second, "69", "0.00007")
-    nanometer_per_square_second.checkWith(centimeter_per_square_second, "69", "0.000007")
+    picometer_per_square_second.checkWith(micrometer_per_square_second, "69", "0.000069")
+    nanometer_per_square_second.checkWith(centimeter_per_square_second, "69", "0.0000069")
     micrometer_per_square_second.checkWith(nanometer_per_square_second, "69", "69000")
     millimeter_per_square_second.checkWith(centimeter_per_square_second, "69", "6.9")
     centimeter_per_square_second.checkWith(meter_per_square_second, "69", "0.69")
@@ -127,9 +127,9 @@ class AllUnitsTest {
     square_mile.checkWith(square_foot, "75.9", "2115970560")
     square_yard.checkWith(square_foot, "75.9", "683.1")
     square_inch.checkWith(square_foot, "75.9", "0.52708")
-    square_micrometer.checkWith(square_millimeter, "75.9", "0.00008")
+    square_micrometer.checkWith(square_millimeter, "75.9", "0.0000759")
     square_millimeter.checkWith(square_centimeter, "75.9", "0.759")
-    square_centimeter.checkWith(acre, "75.9", "0.000002")
+    square_centimeter.checkWith(acre, "75.9", "0.00000188")
     square_decimeter.checkWith(square_meter, "75.9", "0.759")
     square_meter.checkWith(acre, "75.9", "0.01876")
     square_kilometer.checkWith(hectare, "75.9", "7590")
@@ -250,7 +250,7 @@ class AllUnitsTest {
 
   @Test
   fun testMass() = testWithUnits {
-    electron_mass_rest.checkWith(milligram, "1500000000000000000", "0.000001")
+    electron_mass_rest.checkWith(milligram, "1500000000000000000", "0.00000137")
     atomic_mass_unit.checkWith(electron_mass_rest, "150", "273433.27951")
     grain.checkWith(milligram, "1500", "97198.365")
     microgram.checkWith(gram, "1500", "0.0015")
@@ -322,7 +322,7 @@ class AllUnitsTest {
 
   @Test
   fun testSpeed() = testWithUnits {
-    millimeter_per_hour.checkWith(kilometer_per_hour, "396", "0.0004")
+    millimeter_per_hour.checkWith(kilometer_per_hour, "396", "0.000396")
     millimeter_per_minute.checkWith(kilometer_per_hour, "396", "0.02376")
     millimeter_per_second.checkWith(kilometer_per_hour, "396", "1.4256")
     centimeter_per_hour.checkWith(kilometer_per_hour, "396", "0.00396")
@@ -397,8 +397,8 @@ class AllUnitsTest {
 
   @Test
   fun testTime() = testWithUnits {
-    attosecond.checkWith(millisecond, "366000000000", "0.00037")
-    nanosecond.checkWith(millisecond, "366", "0.00037")
+    attosecond.checkWith(millisecond, "366000000000", "0.000366")
+    nanosecond.checkWith(millisecond, "366", "0.000366")
     microsecond.checkWith(millisecond, "366", "0.366")
     millisecond.checkWith(second, "366", "0.366")
     jiffy.checkWith(second, "366", "3.66")
@@ -430,7 +430,7 @@ class AllUnitsTest {
     imperial_fluid_ounce.checkWith(us_liquid_gallon, "1507", "11.31145")
     imperial_tablespoon.checkWith(us_liquid_gallon, "1507", "7.06965")
     imperial_teaspoon.checkWith(us_liquid_gallon, "1507", "2.35655")
-    cubic_millimeter.checkWith(us_liquid_gallon, "1507", "0.0004")
+    cubic_millimeter.checkWith(us_liquid_gallon, "1507", "0.000398")
     cubic_centimeter.checkWith(us_liquid_gallon, "1507", "0.39811")
     cubic_meter.checkWith(us_liquid_gallon, "1507", "398107.2829")
     cubic_kilometer.checkWith(us_liquid_gallon, "0.0000001507", "39810.72829")
@@ -442,7 +442,7 @@ class AllUnitsTest {
 
   @Test
   fun testFlux() = testWithUnits {
-    maxwell.checkWith(milliweber, "68.2", "0.00068")
+    maxwell.checkWith(milliweber, "68.2", "0.000682")
     weber.checkWith(milliweber, "68.2", "68200")
     milliweber.checkWith(weber, "68.2", "0.0682")
     microweber.checkWith(milliweber, "68.2", "0.0682")
@@ -523,7 +523,7 @@ class AllUnitsTest {
     kilogram_force.checkWith(ton_force, "6553", "6.553")
     ton_force.checkWith(millinewton, "6553", "64262977450")
     millinewton.checkWith(kilonewton, "6553", "0.00655")
-    attonewton.checkWith(dyne, "6553123123", "0.00066")
+    attonewton.checkWith(dyne, "6553123123", "0.000655")
     dyne.checkWith(joule_per_meter, "6553", "0.06553")
     joule_per_meter.checkWith(pond, "6553", "668220.03436")
     joule_per_centimeter.checkWith(kilopond, "6553", "6.6822")
@@ -548,7 +548,7 @@ class AllUnitsTest {
     kilogram_force_millimeter.checkWith(ounce_force_inch, "2134", "2963.56822")
     gram_force_meter.checkWith(newton_millimeter, "2134", "20927.3911")
     gram_force_centimeter.checkWith(kilogram_force_centimeter, "2134", "2.134")
-    gram_force_millimeter.checkWith(kilonewton_meter, "2134", "0.00002")
+    gram_force_millimeter.checkWith(kilonewton_meter, "2134", "0.0000209")
     ounce_force_foot.checkWith(kilogram_force_millimeter, "2134", "18439.75503")
     ounce_force_inch.checkWith(dyne_meter, "2134", "1506935.1968")
     pound_force_foot.checkWith(newton_millimeter, "2134", "2893315.612")
@@ -567,7 +567,7 @@ class AllUnitsTest {
     cubic_meter_per_minute.checkWith(liter_per_minute, "312", "312000")
     cubic_meter_per_second.checkWith(milliliter_per_minute, "312", "18720000000")
     cubic_millimeter_per_hour.checkWith(milliliter_per_minute, "312", "0.0052")
-    cubic_millimeter_per_minute.checkWith(liter_per_minute, "312", "0.00031")
+    cubic_millimeter_per_minute.checkWith(liter_per_minute, "312", "0.000312")
     cubic_millimeter_per_second.checkWith(cubic_millimeter_per_minute, "312", "18720")
     cubic_foot_per_hour.checkWith(milliliter_per_hour, "312", "8834856.1367")
     cubic_foot_per_minute.checkWith(cubic_meter_per_hour, "312", "530.09137")

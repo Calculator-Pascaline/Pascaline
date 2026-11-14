@@ -105,6 +105,19 @@ class KBigDecimalUtilsTest {
   }
 
   @Test
+  fun smallValuesKeepThreeDigits() {
+    val plain = OutputFormat.ALLOW_ENGINEERING
+    // Written out, with 3 digits from the first one that isn't zero
+    assertEquals("0.00345", KBigDecimal("0.003451234").toFormattedString(3, plain))
+    assertEquals("-0.0123", KBigDecimal("-0.012345").toFormattedString(3, plain))
+    assertEquals("0.0000457", KBigDecimal("0.0000456789").toFormattedString(3, plain))
+    // A higher precision still wins, and round values stay short
+    assertEquals("0.003451", KBigDecimal("0.003451234").toFormattedString(6, plain))
+    assertEquals("0.003", KBigDecimal("0.003").toFormattedString(3, plain))
+    assertEquals("0.123", KBigDecimal("0.123456").toFormattedString(3, plain))
+  }
+
+  @Test
   fun trimZeros_test() {
     // zero
     var input = KBigDecimal("0")
@@ -192,9 +205,9 @@ class KBigDecimalUtilsTest {
 
   @Test
   fun setMinimumRequiredScale_test() {
-    // prefer scale of 2, which is too low
+    // prefer scale of 2, which is too low: 3 digits from the first one that isn't zero
     var bd = KBigDecimal("0.000000123456")
-    assertEquals("0.0000001", bd.setMinimumRequiredScale(2).toPlainString())
+    assertEquals("0.000000123", bd.setMinimumRequiredScale(2).toPlainString())
 
     // prefer scale of 15, which is too high
     bd = KBigDecimal("0.000000123456")
