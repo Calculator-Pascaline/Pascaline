@@ -42,5 +42,11 @@ private fun sortKey(text: String) =
 const val TOOL_ORDER_KEY = "HOME_ORDER"
 const val ORDER_SEPARATOR = ","
 
+/** Key of the tool that was open last in app data, to open it again. Empty when it was Home. */
+const val LAST_TOOL_KEY = "LAST_TOOL"
+
+/** The tool saved under [LAST_TOOL_KEY], null for Home, the settings or a tool that is gone. */
+fun lastTool(saved: String): TopLevelRoute? = mainDrawerItems.firstOrNull { it.topLevelRoute.routeId == saved }?.topLevelRoute
+
 private val ACCENTS =
   mapOf("àáâãäå" to 'a', "ç" to 'c', "èéêë" to 'e', "ìíîï" to 'i', "ñ" to 'n', "òóôõöő" to 'o', "ùúûüű" to 'u', "ş" to 's', "ğ" to 'g', "ı" to 'i')

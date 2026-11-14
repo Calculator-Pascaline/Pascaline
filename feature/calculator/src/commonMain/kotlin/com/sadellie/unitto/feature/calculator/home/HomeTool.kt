@@ -18,15 +18,24 @@
 
 package com.sadellie.unitto.feature.calculator.home
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.StartOffset
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -51,6 +60,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -62,7 +72,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -97,6 +106,8 @@ import com.sadellie.unitto.core.designsystem.icons.symbols.Remove
 import com.sadellie.unitto.core.designsystem.icons.symbols.Search
 import com.sadellie.unitto.core.designsystem.icons.symbols.Settings
 import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
+import com.sadellie.unitto.core.designsystem.sharedTool
+import com.sadellie.unitto.core.designsystem.sharedToolKey
 import com.sadellie.unitto.core.navigation.BodyMassDrawerItem
 import com.sadellie.unitto.core.navigation.CalculatorDrawerItem
 import com.sadellie.unitto.core.navigation.ChargingDrawerItem
@@ -235,13 +246,34 @@ private fun key(section: String?, id: String) = "$section$KEY_SEPARATOR$id"
 
 /** What can be done with a tile, the edit mode changes it. */
 private class TileActions(
-  val isEditing: Boolean,
+  val state: TileState,
   val reorder: HomeReorder,
-  val onOpen: (NamedTool) -> Unit,
+  val onOpen: (String, NamedTool) -> Unit,
   val onHiddenChange: (NamedTool, Boolean) -> Unit,
   val onDrop: (String, List<String>) -> Unit,
   val onMove: (NamedTool) -> Unit,
-)
+) {
+  val isEditing get() = state.isEditing
+  val animatesIn get() = state.animatesIn
+  val opened get() = state.opened
+}
+
+/**
+ * @property animatesIn Tiles rise into place, only when Home first shows.
+ * @property opened The tile a tool was opened from, that the tool shrinks back into.
+ */
+private class TileState(val isEditing: Boolean, val animatesIn: Boolean, val opened: String?)
+
+/**
+ * App data that Home keeps while a tool is open, so it comes back as it was instead of filling in
+ * a moment later and pushing everything down. Null until it is first read.
+ */
+@Composable
+private fun savedAppData(preferences: UserPreferencesRepository, key: String): String? {
+  var value by rememberSaveable(key) { mutableStateOf<String?>(null) }
+  LaunchedEffect(preferences, key) { preferences.appData(key).collect { value = it } }
+  return value
+}
 
 /** The first sections: one per topic, with its tools. */
 private val DEFAULT_SECTIONS by lazy {
@@ -256,9 +288,13 @@ private val DEFAULT_SECTIONS by lazy {
 internal fun HomeRoute() {
   val navigator = LocalNavigator.current
   val preferences = koinInject<UserPreferencesRepository>()
-  val savedLayout by remember(preferences) { preferences.appData(DRAWER_LAYOUT_KEY) }.collectAsState(initial = "")
-  val savedSections by remember(preferences) { preferences.appData(SECTIONS_KEY) }.collectAsState(initial = "")
-  val savedRecent by remember(preferences) { preferences.appData(RECENT_KEY) }.collectAsState(initial = "")
+  val savedLayout = savedAppData(preferences, DRAWER_LAYOUT_KEY)
+  val savedSections = savedAppData(preferences, SECTIONS_KEY)
+  val latestRecent = savedAppData(preferences, RECENT_KEY)
+  // Opening a tool puts it first in the recent ones. Home shows that when it comes back, not while
+  // the tool grows out of it
+  val savedRecent = remember(latestRecent == null) { latestRecent }
+  if (savedLayout == null || savedSections == null || savedRecent == null) return
   val scope = rememberCoroutineScope()
   val layout = DrawerLayout.parse(savedLayout)
   val tools = layout.shown.map { NamedTool(it, stringResource(it.name)) }
@@ -271,6 +307,8 @@ internal fun HomeRoute() {
   val recent = savedRecent.split(ORDER_SEPARATOR).mapNotNull { id -> tools.firstOrNull { it.id == id } }
   val names = sectionNames(sections)
   val grid = rememberLazyGridState()
+  val hasAppeared = rememberHasAppeared()
+  var opened by rememberSaveable { mutableStateOf<String?>(null) }
   val reorder = remember(grid, scope) { HomeReorder(grid, scope) }
   fun save(key: String, value: String) {
     scope.launch { preferences.updateAppData(key, value) }
@@ -278,9 +316,10 @@ internal fun HomeRoute() {
   fun saveSections(changed: List<HomeSection>) = save(SECTIONS_KEY, HomeSection.encode(changed))
   val actions =
     TileActions(
-      isEditing = isEditing,
+      state = TileState(isEditing, animatesIn = !hasAppeared, opened = opened),
       reorder = reorder,
-      onOpen = { tool ->
+      onOpen = { section, tool ->
+        opened = key(section, tool.id)
         save(RECENT_KEY, (listOf(tool.id) + recent.map { it.id }.filter { it != tool.id }).take(RECENT_COUNT).joinToString(ORDER_SEPARATOR))
         navigator.openTool(tool.item)
       },
@@ -303,12 +342,7 @@ internal fun HomeRoute() {
 
   ScaffoldWithTopBar(
     title = { Text(stringResource(Res.string.app_name)) },
-    navigationIcon = {
-      IconButton(onClick = { isEditing = !isEditing }) {
-        if (isEditing) Icon(Symbols.Check, stringResource(Res.string.common_ok))
-        else Icon(Symbols.Edit, stringResource(Res.string.common_edit))
-      }
-    },
+    navigationIcon = { EditButton(isEditing) { isEditing = !isEditing } },
     keepNavigationIconOnWideScreens = true,
     actions = {
       IconButton(onClick = { navigator.openTool(SettingsDrawerItem) }) {
@@ -318,7 +352,9 @@ internal fun HomeRoute() {
     colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
   ) { paddingValues ->
     Column(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
-      if (isEditing) EditBar(showsReset = savedSections.isNotEmpty()) { save(SECTIONS_KEY, "") }
+      AnimatedVisibility(isEditing, enter = expandVertically() + fadeIn(), exit = shrinkVertically() + fadeOut()) {
+        EditBar(showsReset = savedSections.isNotEmpty()) { save(SECTIONS_KEY, "") }
+      }
       val labels = HomeLabels(stringResource(Res.string.home_recent), stringResource(Res.string.home_no_tool), stringResource(Res.string.home_hidden))
       val newName = stringResource(Res.string.home_new_section)
       LazyVerticalGrid(
@@ -406,6 +442,27 @@ private class SectionEdits(
   val onDelete: (HomeSection) -> Unit,
 )
 
+/** Tiles rise into place when Home first shows, not each time they scroll back or a tool closes. */
+@Composable
+private fun rememberHasAppeared(): Boolean {
+  var hasAppeared by rememberSaveable { mutableStateOf(false) }
+  LaunchedEffect(Unit) {
+    delay(MAX_APPEAR_DELAY + APPEAR_MILLIS)
+    hasAppeared = true
+  }
+  return hasAppeared
+}
+
+@Composable
+private fun EditButton(isEditing: Boolean, onClick: () -> Unit) {
+  IconButton(onClick = onClick) {
+    Crossfade(isEditing, label = "Edit button") { editing ->
+      if (editing) Icon(Symbols.Check, stringResource(Res.string.common_ok))
+      else Icon(Symbols.Edit, stringResource(Res.string.common_edit))
+    }
+  }
+}
+
 /** What editing does, and the way back to the first sections. */
 @Composable
 private fun EditBar(showsReset: Boolean, onReset: () -> Unit) {
@@ -432,15 +489,18 @@ private fun LazyGridScope.shownSections(content: HomeContent, query: String, rec
     if (found.isEmpty()) header(content.labels.nothingFound) else tiles(SEARCH_SECTION, found, actions)
     return
   }
+  var placed = 0
   if (recent.isNotEmpty()) {
-    header(content.labels.recent)
-    tiles(RECENT_SECTION, recent, actions)
+    header(content.labels.recent, appearsAt = placed.takeIf { actions.animatesIn })
+    tiles(RECENT_SECTION, recent, actions, placed)
+    placed += recent.size
   }
   content.sections.forEach { section ->
     val inSection = content.toolsOf(section)
     if (inSection.isNotEmpty()) {
-      header(content.names.getValue(section.id), section.id)
-      tiles(section.id, inSection, actions)
+      header(content.names.getValue(section.id), section.id, placed.takeIf { actions.animatesIn })
+      tiles(section.id, inSection, actions, placed)
+      placed += inSection.size
     }
   }
 }
@@ -556,23 +616,24 @@ private fun ToolSearch(query: String, onChange: (String) -> Unit) {
   )
 }
 
-private fun LazyGridScope.header(text: String, key: String = text) {
+private fun LazyGridScope.header(text: String, key: String = text, appearsAt: Int? = null) {
   item(key = "header/$key", span = { GridItemSpan(maxLineSpan) }) {
     Text(
       text,
-      modifier = Modifier.padding(start = 4.dp, top = 8.dp),
+      modifier = Modifier.animateItem().then(if (appearsAt != null) Modifier.appearing(appearsAt) else Modifier).padding(start = 4.dp, top = 8.dp),
       style = MaterialTheme.typography.titleSmall,
       color = MaterialTheme.colorScheme.primary,
     )
   }
 }
 
-private fun LazyGridScope.tiles(section: String, tools: List<NamedTool>, actions: TileActions) {
+private fun LazyGridScope.tiles(section: String, tools: List<NamedTool>, actions: TileActions, first: Int = 0) {
   val reorder = actions.reorder
   val shown =
     if (reorder.section == section) reorder.draft.mapNotNull { id -> tools.firstOrNull { it.id == id } } else tools
   itemsIndexed(shown, key = { _, tool -> key(section, tool.id) }) { index, tool ->
-    ToolTile(section, tool, tools, actions, Modifier.appearing(index))
+    val appearance = if (actions.animatesIn) Modifier.appearing(first + index) else Modifier
+    ToolTile(section, tool, tools, actions, appearance.then(wiggle(actions.isEditing, first + index)))
   }
 }
 
@@ -621,17 +682,30 @@ private fun LazyGridItemScope.ToolTile(
   val keyPress = rememberKeyPress()
   val interactionSource = remember { MutableInteractionSource() }
   // The badge is outside of the key: keys clip what is in them
-  Box(modifier = placed.then(appearance).then(wiggle(actions.isEditing)).then(dragging).height(KEY_HEIGHT)) {
+  // Opening a tool grows this tile into it. A tool has one tile to grow from: the one it was
+  // opened from, else the one in its section rather than in the recent ones
+  val growsIntoTool =
+    !actions.isEditing &&
+      when (actions.opened?.substringAfter(KEY_SEPARATOR)) {
+        tool.id -> actions.opened == key(section, tool.id)
+        else -> section != RECENT_SECTION
+      }
+  val shape = RoundedCornerShape(KEY_CORNER.dp)
+  Box(modifier = placed.then(appearance).then(dragging).height(KEY_HEIGHT)) {
     Column(
       modifier =
         Modifier.fillMaxSize()
+          .then(
+            if (growsIntoTool) Modifier.sharedTool(sharedToolKey(tool.item.topLevelRoute.routeId), shape, isScreen = false)
+            else Modifier
+          )
           .alpha(if (isHidden) HIDDEN_ALPHA else 1f)
           .trackKeyPress(keyPress)
           // Only real taps vibrate, not a touch that starts a scroll
           .keyHaptics(keyPress)
           .squashable(
             // In the edit mode a tap moves the tool to another section
-            onClick = { if (actions.isEditing) actions.onMove(tool) else actions.onOpen(tool) },
+            onClick = { if (actions.isEditing) actions.onMove(tool) else actions.onOpen(section, tool) },
             enabled = !isHidden,
             interactionSource = interactionSource,
             cornerRadiusRange = KEY_CORNER..KEY_PRESSED_CORNER,
@@ -653,9 +727,14 @@ private fun LazyGridItemScope.ToolTile(
         overflow = TextOverflow.Ellipsis,
       )
     }
-    if (actions.isEditing) {
+    AnimatedVisibility(
+      actions.isEditing,
+      modifier = Modifier.align(Alignment.TopEnd),
+      enter = scaleIn(spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessMedium)) + fadeIn(),
+      exit = scaleOut() + fadeOut(),
+    ) {
       EditBadge(
-        modifier = Modifier.align(Alignment.TopEnd).padding(2.dp),
+        modifier = Modifier.padding(2.dp),
         icon = if (isHidden) Symbols.Add else Symbols.Remove,
         label = stringResource(if (isHidden) Res.string.home_show else Res.string.home_hide),
         color = if (isHidden) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
@@ -731,16 +810,22 @@ private fun Modifier.appearing(index: Int): Modifier {
   }
 }
 
-/** Keys gently shake while they can be moved. */
+/** Keys gently shake while they can be moved, each at its own moment and neighbors the other way. */
 @Composable
-private fun wiggle(isEditing: Boolean): Modifier {
+private fun wiggle(isEditing: Boolean, index: Int): Modifier {
   if (!isEditing) return Modifier
   val transition = rememberInfiniteTransition(label = "Editing tiles")
+  val direction = if (index % 2 == 0) 1f else -1f
   val angle by
     transition.animateFloat(
-      initialValue = -WIGGLE_ANGLE,
-      targetValue = WIGGLE_ANGLE,
-      animationSpec = infiniteRepeatable(tween(WIGGLE_MILLIS, easing = LinearEasing), RepeatMode.Reverse),
+      initialValue = -WIGGLE_ANGLE * direction,
+      targetValue = WIGGLE_ANGLE * direction,
+      animationSpec =
+        infiniteRepeatable(
+          tween(WIGGLE_MILLIS, easing = FastOutSlowInEasing),
+          RepeatMode.Reverse,
+          StartOffset(index * WIGGLE_STEP % WIGGLE_MILLIS),
+        ),
       label = "Wiggle",
     )
   return Modifier.graphicsLayer { rotationZ = angle }
@@ -769,7 +854,9 @@ private const val KEY_SEPARATOR = "/"
 private const val DRAGGED_SCALE = 1.08f
 private const val HIDDEN_ALPHA = 0.5f
 private const val WIGGLE_ANGLE = 1f
-private const val WIGGLE_MILLIS = 130
+private const val WIGGLE_MILLIS = 150
+private const val WIGGLE_STEP = 47
+private const val APPEAR_MILLIS = 600L
 private const val SCROLL_EDGE = 120
 private const val SCROLL_STEP = 12f
 private const val APPEAR_DELAY = 28L

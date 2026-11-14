@@ -19,22 +19,28 @@
 
 package com.sadellie.unitto
 
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalCursorBlinkEnabled
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavEntryDecorator
@@ -43,6 +49,9 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.sadellie.unitto.core.datastore.PrefKeys
 import com.sadellie.unitto.core.datastore.UserPreferencesRepository
+import com.sadellie.unitto.core.designsystem.LocalSharedTransitionScope
+import com.sadellie.unitto.core.designsystem.sharedTool
+import com.sadellie.unitto.core.designsystem.sharedToolKey
 import com.sadellie.unitto.core.designsystem.unittoFadeIn
 import com.sadellie.unitto.core.designsystem.unittoFadeOut
 import com.sadellie.unitto.core.navigation.DRAWER_LAYOUT_KEY
@@ -50,6 +59,7 @@ import com.sadellie.unitto.core.navigation.DrawerItem
 import com.sadellie.unitto.core.navigation.DrawerLayout
 import com.sadellie.unitto.core.navigation.HomeDrawerItem
 import com.sadellie.unitto.core.navigation.HomeStartRoute
+import com.sadellie.unitto.core.navigation.LAST_TOOL_KEY
 import com.sadellie.unitto.core.navigation.LocalNavigator
 import com.sadellie.unitto.core.navigation.NamedTool
 import com.sadellie.unitto.core.navigation.Navigator
@@ -58,6 +68,7 @@ import com.sadellie.unitto.core.navigation.TOOL_ORDER_KEY
 import com.sadellie.unitto.core.navigation.TopLevelRoute
 import com.sadellie.unitto.core.navigation.additionalDrawerItems
 import com.sadellie.unitto.core.navigation.inDefaultOrder
+import com.sadellie.unitto.core.navigation.lastTool
 import com.sadellie.unitto.core.navigation.mainDrawerItems
 import com.sadellie.unitto.core.navigation.ordered
 import com.sadellie.unitto.core.ui.BackHandler
@@ -88,6 +99,11 @@ fun MainAppContent(
   val currentRoute = backStack.lastOrNull()
   val currentTopLevelRoute = remember(currentRoute) { backStack.currentTopLevelRoute() }
   val userPrefsRepository = koinInject<UserPreferencesRepository>()
+  // Opens again at the next launch. Home and the settings save nothing, so the app starts on Home
+  LaunchedEffect(currentTopLevelRoute) {
+    val route = currentTopLevelRoute ?: return@LaunchedEffect
+    userPrefsRepository.updateAppData(LAST_TOOL_KEY, lastTool(route.routeId)?.routeId.orEmpty())
+  }
   val savedLayout by
     remember(userPrefsRepository) { userPrefsRepository.appData(DRAWER_LAYOUT_KEY) }
       .collectAsState(initial = "")
@@ -188,9 +204,12 @@ private fun UnittoNavigation(
     LocalNavigator provides navigator,
     LocalThemmoController provides themmoController,
   ) {
+    SharedTransitionLayout {
+    CompositionLocalProvider(LocalSharedTransitionScope provides this.takeIf { hasHome }) {
     NavDisplay(
       modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainer),
       backStack = backStack,
+      sharedTransitionScope = this.takeIf { hasHome },
       // A tool grows out of the grid, and shrinks back into it
       popTransitionSpec = { unittoFadeIn() togetherWith (unittoFadeOut() + scaleOut(targetScale = SCREEN_SCALE)) },
       transitionSpec = { (unittoFadeIn() + scaleIn(initialScale = SCREEN_SCALE)) togetherWith unittoFadeOut() },
@@ -200,9 +219,12 @@ private fun UnittoNavigation(
           rememberSaveableStateHolderNavEntryDecorator(),
           rememberViewModelStoreNavEntryDecorator(),
           rememberDrawerCloseGestureNavEntryDecorator(drawerState, drawerScope),
+          remember { SharedToolNavEntryDecorator() },
         ),
       entryProvider = koinEntryProvider(),
     )
+    }
+    }
   }
 }
 
@@ -230,4 +252,23 @@ private class DrawerCloseGestureNavEntryDecorator<T : Any>(
     }
   )
 
+/** The screen of a tool is its tile on Home grown big: it grows out of it and shrinks back into it. */
+private class SharedToolNavEntryDecorator<T : Any> :
+  NavEntryDecorator<T>(
+    decorate = { entry ->
+      val tool = mainDrawerItems.firstOrNull { it.topLevelRoute.contentKey() == entry.contentKey }
+      if (tool == null) {
+        entry.Content()
+      } else {
+        Box(Modifier.fillMaxSize().sharedTool(sharedToolKey(tool.topLevelRoute.routeId), TOOL_SHAPE, isScreen = true)) {
+          entry.Content()
+        }
+      }
+    }
+  )
+
+/** The content key Navigation gives the entry of [this] when it isn't given one. */
+private fun NavKey.contentKey(): Any = "$this:${this::class}"
+
 private const val SCREEN_SCALE = 0.92f
+private val TOOL_SHAPE = RoundedCornerShape(22.dp)

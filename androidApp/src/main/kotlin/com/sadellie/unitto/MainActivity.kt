@@ -96,7 +96,7 @@ internal class MainActivity : AppCompatActivity(), KoinComponent {
             locale = Locale.current,
           ),
       ) {
-        App(deepLinkRoute, prefs)
+        App(deepLinkRoute, prefs, userPrefsRepository)
       }
     }
   }

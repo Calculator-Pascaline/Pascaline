@@ -27,6 +27,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -60,6 +61,7 @@ import com.sadellie.unitto.core.navigation.FunctionsStartRoute
 import com.sadellie.unitto.core.navigation.HomeStartRoute
 import com.sadellie.unitto.core.navigation.InferenceStartRoute
 import com.sadellie.unitto.core.navigation.IntegralsStartRoute
+import com.sadellie.unitto.core.navigation.LAST_TOOL_KEY
 import com.sadellie.unitto.core.navigation.LogicStartRoute
 import com.sadellie.unitto.core.navigation.OrbitsStartRoute
 import com.sadellie.unitto.core.navigation.PlaceStartRoute
@@ -72,6 +74,7 @@ import com.sadellie.unitto.core.navigation.ResistorsStartRoute
 import com.sadellie.unitto.core.navigation.SequencesStartRoute
 import com.sadellie.unitto.core.navigation.StatisticsStartRoute
 import com.sadellie.unitto.core.navigation.VectorFieldsStartRoute
+import com.sadellie.unitto.core.navigation.lastTool
 import com.sadellie.unitto.core.ui.BackHandler
 import com.sadellie.unitto.core.ui.datetime.LocalPlatformDateFormatSettings
 import com.sadellie.unitto.core.ui.datetime.PlatformDateFormatSettings
@@ -89,6 +92,7 @@ import com.sadellie.unitto.shared.generated.resources.noto_sans_math
 import com.sadellie.unitto.shared.generated.resources.noto_sans_sc
 import io.github.sadellie.themmo.Themmo
 import kotlinx.browser.document
+import kotlinx.coroutines.flow.first
 import kotlinx.datetime.TimeZone
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
@@ -161,9 +165,12 @@ private fun App() {
   // The settings saved in the browser, like on Android the app waits for them before showing
   val userPrefsRepository = koinInject<UserPreferencesRepository>()
   val appPreferences = userPrefsRepository.appPrefs.collectAsState(null).value ?: return
+  // The tool that was open last opens again, the calculator the first time
+  val saved =
+    produceState<String?>(null, userPrefsRepository) { value = userPrefsRepository.appData(LAST_TOOL_KEY).first() }.value ?: return
   val themmoController = rememberUnittoThemmoController(appPreferences)
   Themmo(themmoController = themmoController) {
-    val backStack = rememberNavBackStack(navBackStackConfig, CalculatorStartRoute)
+    val backStack = rememberNavBackStack(navBackStackConfig, lastTool(saved) ?: CalculatorStartRoute)
     // The browser's back button closes the open screen. Before the content, so a drawer or a
     // search inside it is closed first
     BackHandler(backStack.size > 1) { backStack.removeLastOrNull() }

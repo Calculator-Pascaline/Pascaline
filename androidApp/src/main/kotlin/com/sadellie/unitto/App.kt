@@ -26,28 +26,41 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MotionScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.sadellie.unitto.core.datastore.AppPreferences
+import com.sadellie.unitto.core.datastore.UserPreferencesRepository
 import com.sadellie.unitto.core.designsystem.theme.isDark
 import com.sadellie.unitto.core.navigation.HomeStartRoute
+import com.sadellie.unitto.core.navigation.LAST_TOOL_KEY
 import com.sadellie.unitto.core.navigation.Route
+import com.sadellie.unitto.core.navigation.lastTool
 import com.sadellie.unitto.core.navigation.pushDynamicShortcut
 import io.github.sadellie.themmo.Themmo
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-internal fun ComponentActivity.App(deepLinkRoute: Route?, prefs: AppPreferences?) {
+internal fun ComponentActivity.App(deepLinkRoute: Route?, prefs: AppPreferences?, preferences: UserPreferencesRepository) {
   val themmoController = rememberUnittoThemmoController(prefs ?: return)
   Themmo(themmoController = themmoController, motionScheme = MotionScheme.expressive()) {
     val mContext = LocalContext.current
     val backgroundColor = MaterialTheme.colorScheme.surfaceContainer
     val isDarkThemeEnabled = remember(backgroundColor) { backgroundColor.isDark() }
     val shortcutsScope = rememberCoroutineScope()
-    val backStack = rememberNavBackStack(deepLinkRoute ?: HomeStartRoute)
+    // The tool that was open last opens again, over Home so that back goes to Home
+    val saved = produceState<String?>(null, preferences) { value = preferences.appData(LAST_TOOL_KEY).first() }.value ?: return@Themmo
+    val tool = lastTool(saved)
+    val backStack =
+      when {
+        deepLinkRoute != null -> rememberNavBackStack(deepLinkRoute)
+        tool != null -> rememberNavBackStack(HomeStartRoute, tool)
+        else -> rememberNavBackStack(HomeStartRoute)
+      }
     MainAppContent(
       backStack = backStack,
       onDrawerItemClick = { drawerItem ->
