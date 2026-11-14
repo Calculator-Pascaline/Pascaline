@@ -221,10 +221,14 @@ Apps like [AppVerifier](https://github.com/soupslurpr/AppVerifier) show it for a
     </td>
     <td align="center" valign="top" width="33%">
       <b>And more</b><br />
-      <sub>Sequences, Orbits, Gears, Logic gates, Price comparison, Date calculator and Body mass</sub>
+      <sub>Sequences, 3D graphs, Orbits, Gears (trains, worms, racks, planetary sets and a ratio finder), Logic gates, Inflation, Currency changeover, Price comparison, Date calculator and Body mass</sub>
     </td>
   </tr>
 </table>
+
+## 🌍 22 languages
+
+Arabic, Bengali, Chinese, Czech, Dutch, English, French, German, Hindi, Hungarian, Indonesian, Italian, Japanese, Korean, Polish, Portuguese, Russian, Slovak, Spanish, Turkish, Ukrainian and Vietnamese. Arabic reads from right to left, while the keypads and the math stay left to right.
 
 ## 🔒 Privacy
 
@@ -244,13 +248,13 @@ Ideas, bugs or anything that could make Pascaline better are welcome.
 
 Pascaline is based on [Unitto](https://github.com/sadellie/unitto) by Elshan Agaev. Thanks for building the foundation this app grew from. Pascaline is not affiliated with or endorsed by Unitto.
 
-How much comes from each, as of version 1.6.0, in lines of Kotlin code. Only real code is counted: license headers, blank lines, comments, the bundled math library (`kt-math`), the icon drawings and the translations are left out.
+How much comes from each, as of version 1.8.0, in lines of Kotlin code. Only real code is counted: license headers, blank lines, comments, the bundled math library (`kt-math`), the icon drawings and the translations are left out.
 
 | | From Unitto | From Pascaline |
 |---|---|---|
-| All code | 27,339 lines (45.6%) | 32,560 lines (54.4%) |
-| Calculator and its tools | 1,487 lines (6.7%) | 20,629 lines (93.3%) |
-| Math engine | 572 lines (11.0%) | 4,624 lines (89.0%) |
+| All code | 24,256 lines (36.9%) | 41,423 lines (63.1%) |
+| Calculator and its tools | 1,362 lines (5.0%) | 25,671 lines (95.0%) |
+| Math engine | 511 lines (9.5%) | 4,854 lines (90.5%) |
 
 Unitto's code is mostly the base underneath: storage, settings, the unit converter and the home screen widget. The calculator, its math engine and the tools are mostly Pascaline's. Each line is counted for whoever wrote it (`git blame -w -M -C`): a Unitto line that was only reformatted or moved still counts as Unitto's.
 
