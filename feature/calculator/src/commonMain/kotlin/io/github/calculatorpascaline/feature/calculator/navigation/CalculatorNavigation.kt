@@ -24,6 +24,7 @@ import io.github.calculatorpascaline.core.navigation.ChangeoverStartRoute
 import io.github.calculatorpascaline.core.navigation.ChargingStartRoute
 import io.github.calculatorpascaline.core.navigation.ElementsStartRoute
 import io.github.calculatorpascaline.core.navigation.FiltersStartRoute
+import io.github.calculatorpascaline.core.navigation.GearsStartRoute
 import io.github.calculatorpascaline.core.navigation.FinanceStartRoute
 import io.github.calculatorpascaline.core.navigation.FunctionsStartRoute
 import io.github.calculatorpascaline.core.navigation.HomeStartRoute
@@ -50,6 +51,7 @@ import io.github.calculatorpascaline.feature.calculator.electrical.LogicRoute
 import io.github.calculatorpascaline.feature.calculator.electrical.ResistorsRoute
 import io.github.calculatorpascaline.feature.calculator.elements.ElementsRoute
 import io.github.calculatorpascaline.feature.calculator.finance.FinanceRoute
+import io.github.calculatorpascaline.feature.calculator.gears.GearsRoute
 import io.github.calculatorpascaline.feature.calculator.functions.FunctionsRoute
 import io.github.calculatorpascaline.feature.calculator.home.HomeRoute
 import io.github.calculatorpascaline.feature.calculator.inference.InferenceRoute
@@ -124,6 +126,10 @@ fun Module.calculatorNavigation() {
   navigation<OrbitsStartRoute> {
     val navigator = LocalNavigator.current
     OrbitsRoute(openDrawer = navigator::openDrawer)
+  }
+  navigation<GearsStartRoute> {
+    val navigator = LocalNavigator.current
+    GearsRoute(openDrawer = navigator::openDrawer)
   }
   navigation<FiltersStartRoute> {
     val navigator = LocalNavigator.current

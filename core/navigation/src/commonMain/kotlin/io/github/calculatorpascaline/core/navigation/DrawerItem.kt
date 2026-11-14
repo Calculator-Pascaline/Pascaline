@@ -33,6 +33,7 @@ import io.github.calculatorpascaline.core.designsystem.icons.symbols.Code
 import io.github.calculatorpascaline.core.designsystem.icons.symbols.Event
 import io.github.calculatorpascaline.core.designsystem.icons.symbols.EventFill
 import io.github.calculatorpascaline.core.designsystem.icons.symbols.Filters
+import io.github.calculatorpascaline.core.designsystem.icons.symbols.Gears
 import io.github.calculatorpascaline.core.designsystem.icons.symbols.Home
 import io.github.calculatorpascaline.core.designsystem.icons.symbols.Inflation
 import io.github.calculatorpascaline.core.designsystem.icons.symbols.Integrals
@@ -63,6 +64,7 @@ import pascaline.core.common.generated.resources.converter_title
 import pascaline.core.common.generated.resources.date_calculator_title
 import pascaline.core.common.generated.resources.elements_title
 import pascaline.core.common.generated.resources.filters_title
+import pascaline.core.common.generated.resources.gears_title
 import pascaline.core.common.generated.resources.finance_title
 import pascaline.core.common.generated.resources.functions_title
 import pascaline.core.common.generated.resources.home_title
@@ -208,6 +210,13 @@ data object OrbitsDrawerItem : DrawerItem {
   override val name = Res.string.orbits_title
   override val selectedIcon = Symbols.Orbits
   override val defaultIcon = Symbols.Orbits
+}
+
+data object GearsDrawerItem : DrawerItem {
+  override val topLevelRoute = GearsStartRoute
+  override val name = Res.string.gears_title
+  override val selectedIcon = Symbols.Gears
+  override val defaultIcon = Symbols.Gears
 }
 
 data object FiltersDrawerItem : DrawerItem {

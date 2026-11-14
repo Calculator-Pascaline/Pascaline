@@ -121,6 +121,7 @@ import io.github.calculatorpascaline.core.navigation.ElementsDrawerItem
 import io.github.calculatorpascaline.core.navigation.FiltersDrawerItem
 import io.github.calculatorpascaline.core.navigation.FinanceDrawerItem
 import io.github.calculatorpascaline.core.navigation.FunctionsDrawerItem
+import io.github.calculatorpascaline.core.navigation.GearsDrawerItem
 import io.github.calculatorpascaline.core.navigation.InferenceDrawerItem
 import io.github.calculatorpascaline.core.navigation.InflationDrawerItem
 import io.github.calculatorpascaline.core.navigation.IntegralsDrawerItem
@@ -779,7 +780,7 @@ private enum class Topic(val title: StringResource, val palette: TilePalette, va
     listOf(ConverterDrawerItem, PricesDrawerItem, FinanceDrawerItem, InflationDrawerItem, ChangeoverDrawerItem, DateCalculatorDrawerItem, BodyMassDrawerItem),
   ),
   DATA(Res.string.home_data, GREEN, listOf(StatisticsDrawerItem, RegressionDrawerItem, InferenceDrawerItem, ProbabilityDrawerItem)),
-  SCIENCE(Res.string.home_science, SKY, listOf(ElementsDrawerItem, ProjectileDrawerItem, OrbitsDrawerItem, PlaceDrawerItem)),
+  SCIENCE(Res.string.home_science, SKY, listOf(ElementsDrawerItem, ProjectileDrawerItem, OrbitsDrawerItem, GearsDrawerItem, PlaceDrawerItem)),
   ELECTRONICS(Res.string.home_electronics, PINK, listOf(FiltersDrawerItem, ResistorsDrawerItem, ChargingDrawerItem, LogicDrawerItem)),
 }
 

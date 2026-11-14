@@ -221,7 +221,7 @@ Apps like [AppVerifier](https://github.com/soupslurpr/AppVerifier) show it for a
     </td>
     <td align="center" valign="top" width="33%">
       <b>And more</b><br />
-      <sub>Sequences, Orbits, Logic gates, Price comparison, Date calculator and Body mass</sub>
+      <sub>Sequences, Orbits, Gears, Logic gates, Price comparison, Date calculator and Body mass</sub>
     </td>
   </tr>
 </table>

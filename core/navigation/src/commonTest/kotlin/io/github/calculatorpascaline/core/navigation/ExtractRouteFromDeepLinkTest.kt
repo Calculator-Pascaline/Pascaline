@@ -93,6 +93,10 @@ class ExtractRouteFromDeepLinkTest {
     assertExtractedRoute(IntegralsStartRoute, "app://io.github.calculatorpascaline/integrals_route")
 
   @Test
+  fun test_gearsStartRoute() =
+    assertExtractedRoute(GearsStartRoute, "app://io.github.calculatorpascaline/gears_route")
+
+  @Test
   fun test_filtersStartRoute() =
     assertExtractedRoute(FiltersStartRoute, "app://io.github.calculatorpascaline/filters_route")
 

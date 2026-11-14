@@ -19,6 +19,7 @@
 package io.github.calculatorpascaline.feature.settings.language
 
 import pascaline.core.common.generated.resources.Res
+import pascaline.core.common.generated.resources.locale_cs
 import pascaline.core.common.generated.resources.locale_de
 import pascaline.core.common.generated.resources.locale_en
 import pascaline.core.common.generated.resources.locale_en_rGB
@@ -31,6 +32,7 @@ import pascaline.core.common.generated.resources.locale_it
 import pascaline.core.common.generated.resources.locale_nl
 import pascaline.core.common.generated.resources.locale_pt_rBR
 import pascaline.core.common.generated.resources.locale_ru
+import pascaline.core.common.generated.resources.locale_sk
 import pascaline.core.common.generated.resources.locale_tr
 import pascaline.core.common.generated.resources.locale_zh_rCN
 import pascaline.core.common.generated.resources.settings_system
@@ -40,6 +42,7 @@ internal val languages by lazy {
     "" to Res.string.settings_system,
     "en" to Res.string.locale_en,
     "en-GB" to Res.string.locale_en_rGB,
+    "cs" to Res.string.locale_cs,
     "de" to Res.string.locale_de,
     "es" to Res.string.locale_es,
     "fr" to Res.string.locale_fr,
@@ -50,6 +53,7 @@ internal val languages by lazy {
     "nl" to Res.string.locale_nl,
     "pt-BR" to Res.string.locale_pt_rBR,
     "ru" to Res.string.locale_ru,
+    "sk" to Res.string.locale_sk,
     "tr" to Res.string.locale_tr,
     "zh-CN" to Res.string.locale_zh_rCN,
   )

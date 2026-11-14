@@ -523,6 +523,7 @@ private const val ENGLISH = "en"
 private val LANGUAGE_CITIES =
   mapOf(
     ENGLISH to "London",
+    "cs" to "Prague",
     "de" to "Berlin",
     "es" to "Madrid",
     "fr" to "Paris",
@@ -534,6 +535,7 @@ private val LANGUAGE_CITIES =
     "nl" to "Amsterdam",
     "pt" to "Brasília",
     "ru" to "Moscow",
+    "sk" to "Bratislava",
     "tr" to "Ankara",
     "zh" to "Beijing",
   )

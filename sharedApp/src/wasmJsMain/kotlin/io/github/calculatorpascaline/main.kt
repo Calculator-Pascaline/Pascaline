@@ -57,6 +57,7 @@ import io.github.calculatorpascaline.core.navigation.ConverterStartRoute
 import io.github.calculatorpascaline.core.navigation.DateCalculatorStartRoute
 import io.github.calculatorpascaline.core.navigation.ElementsStartRoute
 import io.github.calculatorpascaline.core.navigation.FiltersStartRoute
+import io.github.calculatorpascaline.core.navigation.GearsStartRoute
 import io.github.calculatorpascaline.core.navigation.FinanceStartRoute
 import io.github.calculatorpascaline.core.navigation.FunctionsStartRoute
 import io.github.calculatorpascaline.core.navigation.HomeStartRoute
@@ -204,6 +205,7 @@ private val navBackStackConfig = SavedStateConfiguration {
       this.subclass(PlaceStartRoute::class, PlaceStartRoute.serializer())
       this.subclass(ProjectileStartRoute::class, ProjectileStartRoute.serializer())
       this.subclass(OrbitsStartRoute::class, OrbitsStartRoute.serializer())
+      this.subclass(GearsStartRoute::class, GearsStartRoute.serializer())
       this.subclass(SurfacesStartRoute::class, SurfacesStartRoute.serializer())
       this.subclass(ChangeoverStartRoute::class, ChangeoverStartRoute.serializer())
       this.subclass(InflationStartRoute::class, InflationStartRoute.serializer())

@@ -1043,4 +1043,6 @@
     <string name="unit_yard_per_second_short">yd/s</string>
     <string name="unit_yard_short">yd</string>
     <string name="place_elevation_note">From a global model averaged over a few kilometres, peaks and valleys can be far off.</string>
+    <string name="gears_center">Centre distance</string>
+    <string name="gears_size_text">Meshing gears need teeth of the same size. The pitch diameter is the circle on which they roll; their centres are half the sum of both diameters apart.</string>
 </resources>

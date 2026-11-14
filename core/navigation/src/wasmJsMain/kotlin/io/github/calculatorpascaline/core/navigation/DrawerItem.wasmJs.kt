@@ -42,6 +42,7 @@ actual val mainDrawerItems: List<DrawerItem> by lazy {
     PricesDrawerItem,
     BodyMassDrawerItem,
     OrbitsDrawerItem,
+    GearsDrawerItem,
     FiltersDrawerItem,
     ResistorsDrawerItem,
     ChargingDrawerItem,

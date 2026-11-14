@@ -471,6 +471,7 @@
     <string name="keyboard_root">Square root</string>
     <string name="keyboard_sin">Sine</string>
     <string name="keyboard_tan">Tangent</string>
+    <string name="locale_cs" translatable="false">Čeština</string>
     <string name="locale_de" translatable="false">Deutsch</string>
     <string name="locale_en" translatable="false">English</string>
     <string name="locale_en_rGB" translatable="false">English (UK)</string>
@@ -483,6 +484,7 @@
     <string name="locale_nl" translatable="false">Nederlands</string>
     <string name="locale_pt_rBR" translatable="false">Português (Brasil)</string>
     <string name="locale_ru" translatable="false">Русский</string>
+    <string name="locale_sk" translatable="false">Slovenčina</string>
     <string name="locale_tr" translatable="false">Türkçe</string>
     <string name="locale_zh_rCN" translatable="false">简体中文</string>
     <string name="settings_additional">Additional</string>
@@ -2324,4 +2326,35 @@
     <string name="units_menu_fundamental">Fundamental</string>
     <string name="units_menu_gravity">Gravity</string>
     <string name="units_menu_chemistry_and_heat">Chemistry and heat</string>
+    <string name="gears_title">Gears</string>
+    <string name="gears_input">Input gear</string>
+    <string name="gears_teeth">Teeth</string>
+    <string name="gears_module">Module</string>
+    <string name="gears_diametral">Diametral pitch</string>
+    <string name="gears_speed">Speed</string>
+    <string name="gears_torque">Torque</string>
+    <string name="gears_power">Power</string>
+    <string name="gears_efficiency">Efficiency per mesh</string>
+    <string name="gears_gear">Gear %1$d</string>
+    <string name="gears_meshes">Meshes with %1$d</string>
+    <string name="gears_same_shaft">Same shaft as %1$d</string>
+    <string name="gears_add">Add a gear</string>
+    <string name="gears_move_up">Move up</string>
+    <string name="gears_move_down">Move down</string>
+    <string name="gears_remove">Remove</string>
+    <string name="gears_ratio">Ratio</string>
+    <string name="gears_diameter">Pitch diameter</string>
+    <string name="gears_center">Center distance</string>
+    <string name="gears_train">Whole train</string>
+    <string name="gears_output_speed">Output speed</string>
+    <string name="gears_output_torque">Output torque</string>
+    <string name="gears_input_power">Input power</string>
+    <string name="gears_output_power">Output power</string>
+    <string name="gears_train_efficiency">Efficiency</string>
+    <string name="gears_hint">Gear 1 turns clockwise ↻. Each gear meshes with the one before it and turns the other way, or turns with it on the same shaft.</string>
+    <string name="gears_how">How it works</string>
+    <string name="gears_speed_text">Meshing teeth go by at the same rate, so the gear with more teeth turns slower, and the other way. Gears on the same shaft turn together.</string>
+    <string name="gears_torque_text">Torque grows as much as speed drops, less what each mesh loses (η). Gears on the same shaft share their torque.</string>
+    <string name="gears_size_text">Meshing gears need teeth of the same size. The pitch diameter is the circle on which they roll; their centers are half the sum of both diameters apart.</string>
+    <string name="gears_power_text">Power is torque times angular speed. Each mesh keeps its efficiency, often 98 to 99 % for spur gears; without losses the power is the same everywhere.</string>
 </resources>
