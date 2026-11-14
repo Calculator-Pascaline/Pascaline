@@ -75,6 +75,7 @@ import com.sadellie.unitto.core.navigation.RegressionStartRoute
 import com.sadellie.unitto.core.navigation.ResistorsStartRoute
 import com.sadellie.unitto.core.navigation.SequencesStartRoute
 import com.sadellie.unitto.core.navigation.StatisticsStartRoute
+import com.sadellie.unitto.core.navigation.SurfacesStartRoute
 import com.sadellie.unitto.core.navigation.VectorFieldsStartRoute
 import com.sadellie.unitto.core.navigation.lastTool
 import com.sadellie.unitto.core.ui.BackHandler
@@ -204,6 +205,7 @@ private val navBackStackConfig = SavedStateConfiguration {
       this.subclass(PlaceStartRoute::class, PlaceStartRoute.serializer())
       this.subclass(ProjectileStartRoute::class, ProjectileStartRoute.serializer())
       this.subclass(OrbitsStartRoute::class, OrbitsStartRoute.serializer())
+      this.subclass(SurfacesStartRoute::class, SurfacesStartRoute.serializer())
       this.subclass(ChangeoverStartRoute::class, ChangeoverStartRoute.serializer())
       this.subclass(InflationStartRoute::class, InflationStartRoute.serializer())
       this.subclass(VectorFieldsStartRoute::class, VectorFieldsStartRoute.serializer())

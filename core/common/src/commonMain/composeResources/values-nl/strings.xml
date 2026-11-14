@@ -2019,4 +2019,28 @@
     <string name="country_finland">Finland</string>
     <string name="country_greece">Griekenland</string>
     <string name="country_united_kingdom">Verenigd Koninkrijk</string>
+    <string name="surfaces_title">3D-grafieken</string>
+    <string name="surfaces_3d">3D</string>
+    <string name="surfaces_levels">Niveaulijnen</string>
+    <string name="surfaces_hint_3d">Draai hem met een vinger.</string>
+    <string name="surfaces_hint_levels">Van boven gezien: één lijn per hoogte. De pijlen zijn ∇f en wijzen omhoog. Tik om een punt te lezen.</string>
+    <string name="surfaces_invalid">Controleer de functie en de grenzen.</string>
+    <string name="surfaces_at">In (%1$s, %2$s)</string>
+    <string name="surfaces_function">Functie</string>
+    <string name="surfaces_gradient">Gradiënt ∇f</string>
+    <string name="surfaces_slope">Helling |∇f|</string>
+    <string name="surfaces_divergence">Divergentie van ∇f</string>
+    <string name="surfaces_rotation">Rotatie van ∇f</string>
+    <string name="surfaces_rotation_zero">De rotatie van een gradiënt is altijd 0: fxy = fyx, dus ∇f draait nooit rond een punt.</string>
+    <string name="surfaces_points">Punten waar ∇f = 0</string>
+    <string name="surfaces_none">Geen punt met ∇f = 0 in dit gebied.</string>
+    <string name="surfaces_maximum">Maximum</string>
+    <string name="surfaces_minimum">Minimum</string>
+    <string name="surfaces_saddle">Zadelpunt</string>
+    <string name="surfaces_flat">De test beslist niet</string>
+    <string name="surfaces_test_title">Tweede-afgeleidetest</string>
+    <string name="surfaces_test_text">Een maximum, minimum of zadel ligt waar ∇f = 0. Dan zegt D welke: D &gt; 0 en fxx &lt; 0, een maximum; D &gt; 0 en fxx &gt; 0, een minimum; D &lt; 0, een zadelpunt; D = 0, de test beslist niet.</string>
+    <string name="surfaces_field_title">Gradiënt, divergentie en rotatie</string>
+    <string name="surfaces_field_text">∇f wijst waar f het snelst stijgt, dwars op de niveaulijnen, en zijn lengte is de helling. Zijn divergentie is de laplaciaan Δf: positief onderin een dal, negatief op een heuvel. Zijn rotatie is altijd 0.</string>
+    <string name="surfaces_tap_point">Tik op een punt voor zijn Hesse-test, D = fxx·fyy − fxy².</string>
 </resources>

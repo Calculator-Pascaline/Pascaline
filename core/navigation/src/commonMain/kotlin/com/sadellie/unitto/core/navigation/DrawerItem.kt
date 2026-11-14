@@ -50,6 +50,7 @@ import com.sadellie.unitto.core.designsystem.icons.symbols.ScheduleFill
 import com.sadellie.unitto.core.designsystem.icons.symbols.Sequence
 import com.sadellie.unitto.core.designsystem.icons.symbols.Settings
 import com.sadellie.unitto.core.designsystem.icons.symbols.SettingsFill
+import com.sadellie.unitto.core.designsystem.icons.symbols.Surfaces
 import com.sadellie.unitto.core.designsystem.icons.symbols.SwapHoriz
 import com.sadellie.unitto.core.designsystem.icons.symbols.Symbols
 import com.sadellie.unitto.core.designsystem.icons.symbols.VectorFields
@@ -81,6 +82,7 @@ import unitto.core.common.generated.resources.resistors_title
 import unitto.core.common.generated.resources.sequences_title
 import unitto.core.common.generated.resources.settings_title
 import unitto.core.common.generated.resources.statistics_title
+import unitto.core.common.generated.resources.surfaces_title
 import unitto.core.common.generated.resources.vectors_title
 
 sealed interface DrawerItem {
@@ -264,6 +266,13 @@ data object ChangeoverDrawerItem : DrawerItem {
   override val name = Res.string.changeover_title
   override val selectedIcon = Symbols.Changeover
   override val defaultIcon = Symbols.Changeover
+}
+
+data object SurfacesDrawerItem : DrawerItem {
+  override val topLevelRoute = SurfacesStartRoute
+  override val name = Res.string.surfaces_title
+  override val selectedIcon = Symbols.Surfaces
+  override val defaultIcon = Symbols.Surfaces
 }
 
 data object PlaceDrawerItem : DrawerItem {

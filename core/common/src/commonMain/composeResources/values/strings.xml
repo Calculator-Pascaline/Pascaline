@@ -2306,4 +2306,28 @@
     <string name="country_finland">Finland</string>
     <string name="country_greece">Greece</string>
     <string name="country_united_kingdom">United Kingdom</string>
+    <string name="surfaces_title">3D graphs</string>
+    <string name="surfaces_3d">3D</string>
+    <string name="surfaces_levels">Level curves</string>
+    <string name="surfaces_hint_3d">Turn it with a finger.</string>
+    <string name="surfaces_hint_levels">Seen from above: one curve per height. Arrows are ∇f, they point uphill. Tap to read a point.</string>
+    <string name="surfaces_invalid">Check the function and the bounds.</string>
+    <string name="surfaces_at">At (%1$s, %2$s)</string>
+    <string name="surfaces_function">Function</string>
+    <string name="surfaces_gradient">Gradient ∇f</string>
+    <string name="surfaces_slope">Slope |∇f|</string>
+    <string name="surfaces_divergence">Divergence of ∇f</string>
+    <string name="surfaces_rotation">Curl of ∇f</string>
+    <string name="surfaces_rotation_zero">The curl of a gradient is always 0: fxy = fyx, so ∇f never turns around a point.</string>
+    <string name="surfaces_points">Points where ∇f = 0</string>
+    <string name="surfaces_none">No point where ∇f = 0 in this region.</string>
+    <string name="surfaces_maximum">Maximum</string>
+    <string name="surfaces_minimum">Minimum</string>
+    <string name="surfaces_saddle">Saddle point</string>
+    <string name="surfaces_flat">The test can’t tell</string>
+    <string name="surfaces_test_title">Second derivative test</string>
+    <string name="surfaces_test_text">A maximum, a minimum or a saddle is where ∇f = 0. Then D tells which: D &gt; 0 and fxx &lt; 0, a maximum; D &gt; 0 and fxx &gt; 0, a minimum; D &lt; 0, a saddle point; D = 0, the test can’t tell.</string>
+    <string name="surfaces_field_title">Gradient, divergence and curl</string>
+    <string name="surfaces_field_text">∇f points where f goes up the fastest, across the level curves, and its length is the slope. Its divergence is the Laplacian Δf: positive at the bottom of a valley, negative at the top of a hill. Its curl is always 0.</string>
+    <string name="surfaces_tap_point">Tap a point to see its Hessian test, D = fxx·fyy − fxy².</string>
 </resources>

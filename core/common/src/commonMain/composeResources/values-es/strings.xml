@@ -2019,4 +2019,28 @@
     <string name="country_finland">Finlandia</string>
     <string name="country_greece">Grecia</string>
     <string name="country_united_kingdom">Reino Unido</string>
+    <string name="surfaces_title">Gráficas 3D</string>
+    <string name="surfaces_3d">3D</string>
+    <string name="surfaces_levels">Curvas de nivel</string>
+    <string name="surfaces_hint_3d">Gíralo con un dedo.</string>
+    <string name="surfaces_hint_levels">Visto desde arriba: una curva por altura. Las flechas son ∇f y apuntan hacia arriba. Toca para leer un punto.</string>
+    <string name="surfaces_invalid">Revisa la función y los límites.</string>
+    <string name="surfaces_at">En (%1$s, %2$s)</string>
+    <string name="surfaces_function">Función</string>
+    <string name="surfaces_gradient">Gradiente ∇f</string>
+    <string name="surfaces_slope">Pendiente |∇f|</string>
+    <string name="surfaces_divergence">Divergencia de ∇f</string>
+    <string name="surfaces_rotation">Rotacional de ∇f</string>
+    <string name="surfaces_rotation_zero">El rotacional de un gradiente siempre es 0: fxy = fyx, así que ∇f nunca gira alrededor de un punto.</string>
+    <string name="surfaces_points">Puntos donde ∇f = 0</string>
+    <string name="surfaces_none">Ningún punto con ∇f = 0 en esta región.</string>
+    <string name="surfaces_maximum">Máximo</string>
+    <string name="surfaces_minimum">Mínimo</string>
+    <string name="surfaces_saddle">Punto de silla</string>
+    <string name="surfaces_flat">El test no decide</string>
+    <string name="surfaces_test_title">Criterio de la segunda derivada</string>
+    <string name="surfaces_test_text">Un máximo, un mínimo o una silla están donde ∇f = 0. Luego D dice cuál: D &gt; 0 y fxx &lt; 0, un máximo; D &gt; 0 y fxx &gt; 0, un mínimo; D &lt; 0, un punto de silla; D = 0, el test no decide.</string>
+    <string name="surfaces_field_title">Gradiente, divergencia y rotacional</string>
+    <string name="surfaces_field_text">∇f apunta hacia donde f sube más rápido, a través de las curvas de nivel, y su longitud es la pendiente. Su divergencia es el laplaciano Δf: positiva en el fondo de un valle, negativa en la cima de una colina. Su rotacional siempre es 0.</string>
+    <string name="surfaces_tap_point">Toca un punto para ver su test de la hessiana, D = fxx·fyy − fxy².</string>
 </resources>

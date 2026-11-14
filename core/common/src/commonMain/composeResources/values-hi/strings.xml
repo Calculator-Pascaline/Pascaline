@@ -2019,4 +2019,28 @@
     <string name="country_finland">फ़िनलैंड</string>
     <string name="country_greece">ग्रीस</string>
     <string name="country_united_kingdom">यूनाइटेड किंगडम</string>
+    <string name="surfaces_title">3D ग्राफ़</string>
+    <string name="surfaces_3d">3D</string>
+    <string name="surfaces_levels">स्तर वक्र</string>
+    <string name="surfaces_hint_3d">उंगली से घुमाएँ।</string>
+    <string name="surfaces_hint_levels">ऊपर से: हर ऊँचाई की एक रेखा। तीर ∇f हैं, चढ़ाई की ओर। किसी बिंदु को पढ़ने के लिए छुएँ।</string>
+    <string name="surfaces_invalid">फ़ंक्शन और सीमाएँ जाँचें।</string>
+    <string name="surfaces_at">(%1$s, %2$s) पर</string>
+    <string name="surfaces_function">फ़ंक्शन</string>
+    <string name="surfaces_gradient">प्रवणता ∇f</string>
+    <string name="surfaces_slope">ढलान |∇f|</string>
+    <string name="surfaces_divergence">∇f का अपसरण</string>
+    <string name="surfaces_rotation">∇f का कर्ल</string>
+    <string name="surfaces_rotation_zero">प्रवणता का कर्ल हमेशा 0 होता है: fxy = fyx, इसलिए ∇f किसी बिंदु के चारों ओर नहीं घूमता।</string>
+    <string name="surfaces_points">बिंदु जहाँ ∇f = 0</string>
+    <string name="surfaces_none">इस क्षेत्र में ∇f = 0 वाला कोई बिंदु नहीं।</string>
+    <string name="surfaces_maximum">उच्चिष्ठ</string>
+    <string name="surfaces_minimum">निम्निष्ठ</string>
+    <string name="surfaces_saddle">काठी बिंदु</string>
+    <string name="surfaces_flat">परीक्षण तय नहीं करता</string>
+    <string name="surfaces_test_title">द्वितीय अवकलज परीक्षण</string>
+    <string name="surfaces_test_text">उच्चिष्ठ, निम्निष्ठ या काठी वहाँ होते हैं जहाँ ∇f = 0। फिर D बताता है कौन-सा: D &gt; 0 और fxx &lt; 0, उच्चिष्ठ; D &gt; 0 और fxx &gt; 0, निम्निष्ठ; D &lt; 0, काठी बिंदु; D = 0, परीक्षण तय नहीं करता।</string>
+    <string name="surfaces_field_title">प्रवणता, अपसरण और कर्ल</string>
+    <string name="surfaces_field_text">∇f उस ओर इशारा करता है जहाँ f सबसे तेज़ी से बढ़ता है, स्तर वक्रों के आर-पार, और उसकी लंबाई ढलान है। उसका अपसरण लाप्लासियन Δf है: घाटी के तल में धनात्मक, पहाड़ी की चोटी पर ऋणात्मक। उसका कर्ल हमेशा 0 है।</string>
+    <string name="surfaces_tap_point">हेसियन परीक्षण देखने के लिए किसी बिंदु को छुएँ, D = fxx·fyy − fxy²।</string>
 </resources>

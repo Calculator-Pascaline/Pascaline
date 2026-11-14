@@ -77,6 +77,10 @@ class ExtractRouteFromDeepLinkTest {
     assertExtractedRoute(OrbitsStartRoute, "app://com.sadellie.unitto/orbits_route")
 
   @Test
+  fun test_surfacesStartRoute() =
+    assertExtractedRoute(SurfacesStartRoute, "app://com.sadellie.unitto/surfaces_route")
+
+  @Test
   fun test_changeoverStartRoute() =
     assertExtractedRoute(ChangeoverStartRoute, "app://com.sadellie.unitto/changeover_route")
 

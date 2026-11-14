@@ -2019,4 +2019,28 @@
     <string name="country_finland">Финляндия</string>
     <string name="country_greece">Греция</string>
     <string name="country_united_kingdom">Великобритания</string>
+    <string name="surfaces_title">3D-графики</string>
+    <string name="surfaces_3d">3D</string>
+    <string name="surfaces_levels">Линии уровня</string>
+    <string name="surfaces_hint_3d">Поворачивайте пальцем.</string>
+    <string name="surfaces_hint_levels">Вид сверху: одна линия на высоту. Стрелки — это ∇f, они смотрят вверх по склону. Нажмите, чтобы прочитать точку.</string>
+    <string name="surfaces_invalid">Проверьте функцию и границы.</string>
+    <string name="surfaces_at">В точке (%1$s, %2$s)</string>
+    <string name="surfaces_function">Функция</string>
+    <string name="surfaces_gradient">Градиент ∇f</string>
+    <string name="surfaces_slope">Наклон |∇f|</string>
+    <string name="surfaces_divergence">Дивергенция ∇f</string>
+    <string name="surfaces_rotation">Ротор ∇f</string>
+    <string name="surfaces_rotation_zero">Ротор градиента всегда равен 0: fxy = fyx, поэтому ∇f никогда не вращается вокруг точки.</string>
+    <string name="surfaces_points">Точки, где ∇f = 0</string>
+    <string name="surfaces_none">В этой области нет точек, где ∇f = 0.</string>
+    <string name="surfaces_maximum">Максимум</string>
+    <string name="surfaces_minimum">Минимум</string>
+    <string name="surfaces_saddle">Седловая точка</string>
+    <string name="surfaces_flat">Тест не решает</string>
+    <string name="surfaces_test_title">Признак по вторым производным</string>
+    <string name="surfaces_test_text">Максимум, минимум или седло находятся там, где ∇f = 0. Затем D говорит, что это: D &gt; 0 и fxx &lt; 0 — максимум; D &gt; 0 и fxx &gt; 0 — минимум; D &lt; 0 — седловая точка; D = 0 — тест не решает.</string>
+    <string name="surfaces_field_title">Градиент, дивергенция и ротор</string>
+    <string name="surfaces_field_text">∇f направлен туда, где f растёт быстрее всего, поперёк линий уровня, а его длина — это наклон. Его дивергенция — лапласиан Δf: положительна на дне впадины, отрицательна на вершине холма. Его ротор всегда 0.</string>
+    <string name="surfaces_tap_point">Нажмите на точку, чтобы увидеть её тест по гессиану, D = fxx·fyy − fxy².</string>
 </resources>

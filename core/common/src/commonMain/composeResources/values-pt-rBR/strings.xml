@@ -2019,4 +2019,28 @@
     <string name="country_finland">Finlândia</string>
     <string name="country_greece">Grécia</string>
     <string name="country_united_kingdom">Reino Unido</string>
+    <string name="surfaces_title">Gráficos 3D</string>
+    <string name="surfaces_3d">3D</string>
+    <string name="surfaces_levels">Curvas de nível</string>
+    <string name="surfaces_hint_3d">Gire com um dedo.</string>
+    <string name="surfaces_hint_levels">Visto de cima: uma curva por altura. As setas são ∇f e apontam para cima. Toque para ler um ponto.</string>
+    <string name="surfaces_invalid">Verifique a função e os limites.</string>
+    <string name="surfaces_at">Em (%1$s, %2$s)</string>
+    <string name="surfaces_function">Função</string>
+    <string name="surfaces_gradient">Gradiente ∇f</string>
+    <string name="surfaces_slope">Inclinação |∇f|</string>
+    <string name="surfaces_divergence">Divergência de ∇f</string>
+    <string name="surfaces_rotation">Rotacional de ∇f</string>
+    <string name="surfaces_rotation_zero">O rotacional de um gradiente é sempre 0: fxy = fyx, então ∇f nunca gira em torno de um ponto.</string>
+    <string name="surfaces_points">Pontos onde ∇f = 0</string>
+    <string name="surfaces_none">Nenhum ponto com ∇f = 0 nesta região.</string>
+    <string name="surfaces_maximum">Máximo</string>
+    <string name="surfaces_minimum">Mínimo</string>
+    <string name="surfaces_saddle">Ponto de sela</string>
+    <string name="surfaces_flat">O teste não decide</string>
+    <string name="surfaces_test_title">Teste da segunda derivada</string>
+    <string name="surfaces_test_text">Um máximo, um mínimo ou uma sela estão onde ∇f = 0. Depois D diz qual: D &gt; 0 e fxx &lt; 0, um máximo; D &gt; 0 e fxx &gt; 0, um mínimo; D &lt; 0, um ponto de sela; D = 0, o teste não decide.</string>
+    <string name="surfaces_field_title">Gradiente, divergência e rotacional</string>
+    <string name="surfaces_field_text">∇f aponta para onde f sobe mais rápido, atravessando as curvas de nível, e seu comprimento é a inclinação. Sua divergência é o laplaciano Δf: positiva no fundo de um vale, negativa no topo de um morro. Seu rotacional é sempre 0.</string>
+    <string name="surfaces_tap_point">Toque em um ponto para ver o teste da hessiana, D = fxx·fyy − fxy².</string>
 </resources>

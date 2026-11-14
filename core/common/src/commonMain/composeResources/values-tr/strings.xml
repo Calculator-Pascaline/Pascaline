@@ -2019,4 +2019,28 @@
     <string name="country_finland">Finlandiya</string>
     <string name="country_greece">Yunanistan</string>
     <string name="country_united_kingdom">Birleşik Krallık</string>
+    <string name="surfaces_title">3B grafikler</string>
+    <string name="surfaces_3d">3B</string>
+    <string name="surfaces_levels">Seviye eğrileri</string>
+    <string name="surfaces_hint_3d">Parmağınızla döndürün.</string>
+    <string name="surfaces_hint_levels">Yukarıdan görünüm: her yükseklik için bir eğri. Oklar ∇f’dir ve yokuş yukarı gösterir. Bir noktayı okumak için dokunun.</string>
+    <string name="surfaces_invalid">Fonksiyonu ve sınırları kontrol edin.</string>
+    <string name="surfaces_at">(%1$s, %2$s) noktasında</string>
+    <string name="surfaces_function">Fonksiyon</string>
+    <string name="surfaces_gradient">Gradyan ∇f</string>
+    <string name="surfaces_slope">Eğim |∇f|</string>
+    <string name="surfaces_divergence">∇f’nin diverjansı</string>
+    <string name="surfaces_rotation">∇f’nin rotasyoneli</string>
+    <string name="surfaces_rotation_zero">Bir gradyanın rotasyoneli her zaman 0’dır: fxy = fyx, yani ∇f hiçbir noktanın etrafında dönmez.</string>
+    <string name="surfaces_points">∇f = 0 olan noktalar</string>
+    <string name="surfaces_none">Bu bölgede ∇f = 0 olan nokta yok.</string>
+    <string name="surfaces_maximum">Maksimum</string>
+    <string name="surfaces_minimum">Minimum</string>
+    <string name="surfaces_saddle">Eyer noktası</string>
+    <string name="surfaces_flat">Test karar veremiyor</string>
+    <string name="surfaces_test_title">İkinci türev testi</string>
+    <string name="surfaces_test_text">Maksimum, minimum veya eyer ∇f = 0 olan yerdedir. Sonra D hangisi olduğunu söyler: D &gt; 0 ve fxx &lt; 0 ise maksimum; D &gt; 0 ve fxx &gt; 0 ise minimum; D &lt; 0 ise eyer noktası; D = 0 ise test karar veremez.</string>
+    <string name="surfaces_field_title">Gradyan, diverjans ve rotasyonel</string>
+    <string name="surfaces_field_text">∇f, f’nin en hızlı arttığı yöne, seviye eğrilerini keserek gösterir ve uzunluğu eğimdir. Diverjansı Laplasyen Δf’dir: vadinin dibinde pozitif, tepenin üstünde negatif. Rotasyoneli her zaman 0’dır.</string>
+    <string name="surfaces_tap_point">Hessian testini görmek için bir noktaya dokunun, D = fxx·fyy − fxy².</string>
 </resources>

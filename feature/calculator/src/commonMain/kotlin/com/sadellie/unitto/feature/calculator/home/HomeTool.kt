@@ -110,6 +110,7 @@ import com.sadellie.unitto.core.designsystem.sharedTool
 import com.sadellie.unitto.core.designsystem.sharedToolKey
 import com.sadellie.unitto.core.navigation.BodyMassDrawerItem
 import com.sadellie.unitto.core.navigation.CalculatorDrawerItem
+import com.sadellie.unitto.core.navigation.ChangeoverDrawerItem
 import com.sadellie.unitto.core.navigation.ChargingDrawerItem
 import com.sadellie.unitto.core.navigation.ConverterDrawerItem
 import com.sadellie.unitto.core.navigation.DRAWER_LAYOUT_KEY
@@ -121,7 +122,6 @@ import com.sadellie.unitto.core.navigation.FiltersDrawerItem
 import com.sadellie.unitto.core.navigation.FinanceDrawerItem
 import com.sadellie.unitto.core.navigation.FunctionsDrawerItem
 import com.sadellie.unitto.core.navigation.InferenceDrawerItem
-import com.sadellie.unitto.core.navigation.ChangeoverDrawerItem
 import com.sadellie.unitto.core.navigation.InflationDrawerItem
 import com.sadellie.unitto.core.navigation.IntegralsDrawerItem
 import com.sadellie.unitto.core.navigation.LocalNavigator
@@ -139,6 +139,7 @@ import com.sadellie.unitto.core.navigation.ResistorsDrawerItem
 import com.sadellie.unitto.core.navigation.SequencesDrawerItem
 import com.sadellie.unitto.core.navigation.SettingsDrawerItem
 import com.sadellie.unitto.core.navigation.StatisticsDrawerItem
+import com.sadellie.unitto.core.navigation.SurfacesDrawerItem
 import com.sadellie.unitto.core.navigation.VectorFieldsDrawerItem
 import com.sadellie.unitto.core.navigation.inDefaultOrder
 import com.sadellie.unitto.core.ui.ScaffoldWithTopBar
@@ -769,6 +770,7 @@ private enum class Topic(val title: StringResource, val palette: TilePalette, va
       SequencesDrawerItem,
       ProgrammerDrawerItem,
       IntegralsDrawerItem,
+      SurfacesDrawerItem,
       VectorFieldsDrawerItem,
     ),
   ),

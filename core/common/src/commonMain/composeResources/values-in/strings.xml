@@ -2019,4 +2019,28 @@
     <string name="country_finland">Finlandia</string>
     <string name="country_greece">Yunani</string>
     <string name="country_united_kingdom">Britania Raya</string>
+    <string name="surfaces_title">Grafik 3D</string>
+    <string name="surfaces_3d">3D</string>
+    <string name="surfaces_levels">Kurva ketinggian</string>
+    <string name="surfaces_hint_3d">Putar dengan jari.</string>
+    <string name="surfaces_hint_levels">Dilihat dari atas: satu kurva per ketinggian. Panahnya ∇f, mengarah ke atas. Ketuk untuk membaca titik.</string>
+    <string name="surfaces_invalid">Periksa fungsi dan batasnya.</string>
+    <string name="surfaces_at">Di (%1$s, %2$s)</string>
+    <string name="surfaces_function">Fungsi</string>
+    <string name="surfaces_gradient">Gradien ∇f</string>
+    <string name="surfaces_slope">Kemiringan |∇f|</string>
+    <string name="surfaces_divergence">Divergensi ∇f</string>
+    <string name="surfaces_rotation">Rotasi ∇f</string>
+    <string name="surfaces_rotation_zero">Rotasi gradien selalu 0: fxy = fyx, jadi ∇f tidak pernah berputar di sekitar titik.</string>
+    <string name="surfaces_points">Titik dengan ∇f = 0</string>
+    <string name="surfaces_none">Tidak ada titik dengan ∇f = 0 di wilayah ini.</string>
+    <string name="surfaces_maximum">Maksimum</string>
+    <string name="surfaces_minimum">Minimum</string>
+    <string name="surfaces_saddle">Titik pelana</string>
+    <string name="surfaces_flat">Uji tidak bisa menentukan</string>
+    <string name="surfaces_test_title">Uji turunan kedua</string>
+    <string name="surfaces_test_text">Maksimum, minimum, atau pelana ada di tempat ∇f = 0. Lalu D menentukan jenisnya: D &gt; 0 dan fxx &lt; 0, maksimum; D &gt; 0 dan fxx &gt; 0, minimum; D &lt; 0, titik pelana; D = 0, uji tidak bisa menentukan.</string>
+    <string name="surfaces_field_title">Gradien, divergensi, dan rotasi</string>
+    <string name="surfaces_field_text">∇f mengarah ke tempat f naik paling cepat, memotong kurva ketinggian, dan panjangnya adalah kemiringan. Divergensinya adalah Laplacian Δf: positif di dasar lembah, negatif di puncak bukit. Rotasinya selalu 0.</string>
+    <string name="surfaces_tap_point">Ketuk titik untuk melihat uji Hessian-nya, D = fxx·fyy − fxy².</string>
 </resources>

@@ -42,6 +42,7 @@ import com.sadellie.unitto.core.navigation.RegressionStartRoute
 import com.sadellie.unitto.core.navigation.ResistorsStartRoute
 import com.sadellie.unitto.core.navigation.SequencesStartRoute
 import com.sadellie.unitto.core.navigation.StatisticsStartRoute
+import com.sadellie.unitto.core.navigation.SurfacesStartRoute
 import com.sadellie.unitto.core.navigation.VectorFieldsStartRoute
 import com.sadellie.unitto.feature.calculator.CalculatorRoute
 import com.sadellie.unitto.feature.calculator.electrical.ChargingRoute
@@ -65,6 +66,7 @@ import com.sadellie.unitto.feature.calculator.projectile.ProjectileRoute
 import com.sadellie.unitto.feature.calculator.regression.RegressionRoute
 import com.sadellie.unitto.feature.calculator.sequences.SequencesRoute
 import com.sadellie.unitto.feature.calculator.statistics.StatisticsRoute
+import com.sadellie.unitto.feature.calculator.surfaces.SurfacesRoute
 import com.sadellie.unitto.feature.calculator.vectors.VectorFieldsRoute
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.core.module.Module
@@ -156,6 +158,10 @@ fun Module.calculatorNavigation() {
   navigation<ChangeoverStartRoute> {
     val navigator = LocalNavigator.current
     ChangeoverRoute(openDrawer = navigator::openDrawer)
+  }
+  navigation<SurfacesStartRoute> {
+    val navigator = LocalNavigator.current
+    SurfacesRoute(openDrawer = navigator::openDrawer)
   }
   navigation<PlaceStartRoute> {
     val navigator = LocalNavigator.current

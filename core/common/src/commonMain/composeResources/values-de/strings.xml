@@ -2019,4 +2019,28 @@
     <string name="country_finland">Finnland</string>
     <string name="country_greece">Griechenland</string>
     <string name="country_united_kingdom">Vereinigtes Königreich</string>
+    <string name="surfaces_title">3D-Graphen</string>
+    <string name="surfaces_3d">3D</string>
+    <string name="surfaces_levels">Höhenlinien</string>
+    <string name="surfaces_hint_3d">Mit dem Finger drehen.</string>
+    <string name="surfaces_hint_levels">Von oben gesehen: eine Linie pro Höhe. Die Pfeile sind ∇f und zeigen bergauf. Antippen, um einen Punkt zu lesen.</string>
+    <string name="surfaces_invalid">Funktion und Grenzen prüfen.</string>
+    <string name="surfaces_at">Bei (%1$s, %2$s)</string>
+    <string name="surfaces_function">Funktion</string>
+    <string name="surfaces_gradient">Gradient ∇f</string>
+    <string name="surfaces_slope">Steigung |∇f|</string>
+    <string name="surfaces_divergence">Divergenz von ∇f</string>
+    <string name="surfaces_rotation">Rotation von ∇f</string>
+    <string name="surfaces_rotation_zero">Die Rotation eines Gradienten ist immer 0: fxy = fyx, also dreht sich ∇f nie um einen Punkt.</string>
+    <string name="surfaces_points">Punkte mit ∇f = 0</string>
+    <string name="surfaces_none">Kein Punkt mit ∇f = 0 in diesem Bereich.</string>
+    <string name="surfaces_maximum">Maximum</string>
+    <string name="surfaces_minimum">Minimum</string>
+    <string name="surfaces_saddle">Sattelpunkt</string>
+    <string name="surfaces_flat">Der Test entscheidet nicht</string>
+    <string name="surfaces_test_title">Test der zweiten Ableitungen</string>
+    <string name="surfaces_test_text">Maximum, Minimum oder Sattel liegen dort, wo ∇f = 0. Dann sagt D, was es ist: D &gt; 0 und fxx &lt; 0, ein Maximum; D &gt; 0 und fxx &gt; 0, ein Minimum; D &lt; 0, ein Sattelpunkt; D = 0, der Test entscheidet nicht.</string>
+    <string name="surfaces_field_title">Gradient, Divergenz und Rotation</string>
+    <string name="surfaces_field_text">∇f zeigt dorthin, wo f am schnellsten steigt, quer zu den Höhenlinien, und seine Länge ist die Steigung. Seine Divergenz ist der Laplace Δf: positiv in einem Tal, negativ auf einem Hügel. Seine Rotation ist immer 0.</string>
+    <string name="surfaces_tap_point">Einen Punkt antippen, um seinen Hesse-Test zu sehen, D = fxx·fyy − fxy².</string>
 </resources>

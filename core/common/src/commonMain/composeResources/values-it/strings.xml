@@ -2019,4 +2019,28 @@
     <string name="country_finland">Finlandia</string>
     <string name="country_greece">Grecia</string>
     <string name="country_united_kingdom">Regno Unito</string>
+    <string name="surfaces_title">Grafici 3D</string>
+    <string name="surfaces_3d">3D</string>
+    <string name="surfaces_levels">Curve di livello</string>
+    <string name="surfaces_hint_3d">Giralo con un dito.</string>
+    <string name="surfaces_hint_levels">Visto dall’alto: una curva per altezza. Le frecce sono ∇f e puntano in salita. Tocca per leggere un punto.</string>
+    <string name="surfaces_invalid">Controlla la funzione e i limiti.</string>
+    <string name="surfaces_at">In (%1$s, %2$s)</string>
+    <string name="surfaces_function">Funzione</string>
+    <string name="surfaces_gradient">Gradiente ∇f</string>
+    <string name="surfaces_slope">Pendenza |∇f|</string>
+    <string name="surfaces_divergence">Divergenza di ∇f</string>
+    <string name="surfaces_rotation">Rotore di ∇f</string>
+    <string name="surfaces_rotation_zero">Il rotore di un gradiente è sempre 0: fxy = fyx, quindi ∇f non gira mai attorno a un punto.</string>
+    <string name="surfaces_points">Punti dove ∇f = 0</string>
+    <string name="surfaces_none">Nessun punto con ∇f = 0 in questa regione.</string>
+    <string name="surfaces_maximum">Massimo</string>
+    <string name="surfaces_minimum">Minimo</string>
+    <string name="surfaces_saddle">Punto di sella</string>
+    <string name="surfaces_flat">Il test non decide</string>
+    <string name="surfaces_test_title">Test delle derivate seconde</string>
+    <string name="surfaces_test_text">Un massimo, un minimo o una sella sono dove ∇f = 0. Poi D dice quale: D &gt; 0 e fxx &lt; 0, un massimo; D &gt; 0 e fxx &gt; 0, un minimo; D &lt; 0, un punto di sella; D = 0, il test non decide.</string>
+    <string name="surfaces_field_title">Gradiente, divergenza e rotore</string>
+    <string name="surfaces_field_text">∇f punta dove f sale più in fretta, attraverso le curve di livello, e la sua lunghezza è la pendenza. La sua divergenza è il laplaciano Δf: positiva in fondo a una valle, negativa in cima a una collina. Il suo rotore è sempre 0.</string>
+    <string name="surfaces_tap_point">Tocca un punto per vedere il suo test dell’hessiana, D = fxx·fyy − fxy².</string>
 </resources>

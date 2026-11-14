@@ -2019,4 +2019,28 @@
     <string name="country_finland">Finnország</string>
     <string name="country_greece">Görögország</string>
     <string name="country_united_kingdom">Egyesült Királyság</string>
+    <string name="surfaces_title">3D grafikonok</string>
+    <string name="surfaces_3d">3D</string>
+    <string name="surfaces_levels">Szintvonalak</string>
+    <string name="surfaces_hint_3d">Forgasd az ujjaddal.</string>
+    <string name="surfaces_hint_levels">Felülnézet: magasságonként egy vonal. A nyilak ∇f, felfelé mutatnak. Koppints egy pont leolvasásához.</string>
+    <string name="surfaces_invalid">Ellenőrizd a függvényt és a határokat.</string>
+    <string name="surfaces_at">A (%1$s, %2$s) pontban</string>
+    <string name="surfaces_function">Függvény</string>
+    <string name="surfaces_gradient">Gradiens ∇f</string>
+    <string name="surfaces_slope">Meredekség |∇f|</string>
+    <string name="surfaces_divergence">∇f divergenciája</string>
+    <string name="surfaces_rotation">∇f rotációja</string>
+    <string name="surfaces_rotation_zero">Egy gradiens rotációja mindig 0: fxy = fyx, ezért ∇f sosem forog egy pont körül.</string>
+    <string name="surfaces_points">Pontok, ahol ∇f = 0</string>
+    <string name="surfaces_none">Ebben a tartományban nincs olyan pont, ahol ∇f = 0.</string>
+    <string name="surfaces_maximum">Maximum</string>
+    <string name="surfaces_minimum">Minimum</string>
+    <string name="surfaces_saddle">Nyeregpont</string>
+    <string name="surfaces_flat">A teszt nem dönt</string>
+    <string name="surfaces_test_title">Második derivált teszt</string>
+    <string name="surfaces_test_text">Maximum, minimum vagy nyereg ott van, ahol ∇f = 0. Ezután D megmondja, melyik: D &gt; 0 és fxx &lt; 0, maximum; D &gt; 0 és fxx &gt; 0, minimum; D &lt; 0, nyeregpont; D = 0, a teszt nem dönt.</string>
+    <string name="surfaces_field_title">Gradiens, divergencia és rotáció</string>
+    <string name="surfaces_field_text">∇f arra mutat, amerre f a leggyorsabban nő, keresztben a szintvonalakon, hossza a meredekség. Divergenciája a Laplace Δf: völgy alján pozitív, domb tetején negatív. Rotációja mindig 0.</string>
+    <string name="surfaces_tap_point">Koppints egy pontra a Hesse-teszthez, D = fxx·fyy − fxy².</string>
 </resources>

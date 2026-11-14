@@ -2019,4 +2019,28 @@
     <string name="country_finland">芬兰</string>
     <string name="country_greece">希腊</string>
     <string name="country_united_kingdom">英国</string>
+    <string name="surfaces_title">三维图像</string>
+    <string name="surfaces_3d">三维</string>
+    <string name="surfaces_levels">等高线</string>
+    <string name="surfaces_hint_3d">用手指转动。</string>
+    <string name="surfaces_hint_levels">俯视图：每个高度一条曲线。箭头是 ∇f，指向上坡。点按可读取一点。</string>
+    <string name="surfaces_invalid">请检查函数和范围。</string>
+    <string name="surfaces_at">在 (%1$s, %2$s)</string>
+    <string name="surfaces_function">函数</string>
+    <string name="surfaces_gradient">梯度 ∇f</string>
+    <string name="surfaces_slope">坡度 |∇f|</string>
+    <string name="surfaces_divergence">∇f 的散度</string>
+    <string name="surfaces_rotation">∇f 的旋度</string>
+    <string name="surfaces_rotation_zero">梯度的旋度总是 0：fxy = fyx，所以 ∇f 从不绕一点旋转。</string>
+    <string name="surfaces_points">∇f = 0 的点</string>
+    <string name="surfaces_none">此区域内没有 ∇f = 0 的点。</string>
+    <string name="surfaces_maximum">极大值</string>
+    <string name="surfaces_minimum">极小值</string>
+    <string name="surfaces_saddle">鞍点</string>
+    <string name="surfaces_flat">检验无法判断</string>
+    <string name="surfaces_test_title">二阶导数检验</string>
+    <string name="surfaces_test_text">极大值、极小值或鞍点都在 ∇f = 0 处。再由 D 判断：D &gt; 0 且 fxx &lt; 0 为极大值；D &gt; 0 且 fxx &gt; 0 为极小值；D &lt; 0 为鞍点；D = 0 时检验无法判断。</string>
+    <string name="surfaces_field_title">梯度、散度和旋度</string>
+    <string name="surfaces_field_text">∇f 指向 f 增长最快的方向，与等高线垂直，长度就是坡度。它的散度是拉普拉斯算子 Δf：谷底为正，山顶为负。它的旋度总是 0。</string>
+    <string name="surfaces_tap_point">点按一个点查看其黑塞检验，D = fxx·fyy − fxy²。</string>
 </resources>
