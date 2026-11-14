@@ -23,6 +23,7 @@ object Token {
   const val SPACE = " "
   const val PERIOD = "."
   const val COMMA = ","
+  const val APOSTROPHE = "'"
 
   object Digit {
     const val DIGIT_1 = "1"

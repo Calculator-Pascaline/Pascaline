@@ -515,6 +515,7 @@
     <string name="settings_sort_by_scale_desc">Skala (Turun)</string>
     <string name="settings_sort_by_usage">Sering digunakan</string>
     <string name="settings_space">Spasi</string>
+    <string name="settings_apostrophe">Apostrof</string>
     <string name="settings_stepped_drag_gesture">Gestur seret bertahap</string>
     <string name="settings_stepped_drag_gesture_support">Jangan lewati tampilan riwayat sebagian saat menyeret terlalu jauh</string>
     <string name="settings_system">Sistem</string>

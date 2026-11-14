@@ -515,6 +515,7 @@
     <string name="settings_sort_by_scale_desc">Escala (Desc.)</string>
     <string name="settings_sort_by_usage">Uso</string>
     <string name="settings_space">Espacio</string>
+    <string name="settings_apostrophe">Apóstrofo</string>
     <string name="settings_stepped_drag_gesture">Gesto de arrastre escalonado</string>
     <string name="settings_stepped_drag_gesture_support">No omitir la vista parcial del historial al arrastrar demasiado</string>
     <string name="settings_system">Sistema</string>

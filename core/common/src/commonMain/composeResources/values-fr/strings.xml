@@ -515,6 +515,7 @@
     <string name="settings_sort_by_scale_desc">Échelle (Décroiss.)</string>
     <string name="settings_sort_by_usage">Utilisation</string>
     <string name="settings_space">Espace</string>
+    <string name="settings_apostrophe">Apostrophe</string>
     <string name="settings_stepped_drag_gesture">Geste de glissement par étapes</string>
     <string name="settings_stepped_drag_gesture_support">Ne pas sauter la vue partielle de l'historique lors d'un glissement excessif</string>
     <string name="settings_system">Système</string>

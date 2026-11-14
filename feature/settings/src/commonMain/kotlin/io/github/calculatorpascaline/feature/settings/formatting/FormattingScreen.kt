@@ -1,6 +1,7 @@
 /*
  * Unitto is a calculator for Android
  * Copyright (c) 2023-2026 Elshan Agaev
+ * Copyright (c) 2026 Calculator-Pascaline (modifications)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,8 +57,10 @@ import io.github.calculatorpascaline.core.common.KBigDecimal
 import io.github.calculatorpascaline.core.common.MAX_SCALE
 import io.github.calculatorpascaline.core.common.OutputFormat
 import io.github.calculatorpascaline.core.common.Token
+import io.github.calculatorpascaline.core.common.canChooseFractional
 import io.github.calculatorpascaline.core.common.collectAsStateWithLifecycleKMP
 import io.github.calculatorpascaline.core.common.toFormattedString
+import io.github.calculatorpascaline.core.common.withFractional
 import io.github.calculatorpascaline.core.designsystem.icons.symbols.Architecture
 import io.github.calculatorpascaline.core.designsystem.icons.symbols.Symbols
 import io.github.calculatorpascaline.core.designsystem.icons.symbols._123
@@ -77,6 +80,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import pascaline.core.common.generated.resources.Res
 import pascaline.core.common.generated.resources.common_comma
+import pascaline.core.common.generated.resources.settings_apostrophe
 import pascaline.core.common.generated.resources.settings_decimal_separator
 import pascaline.core.common.generated.resources.settings_formatting
 import pascaline.core.common.generated.resources.settings_indian_numbering_system
@@ -169,7 +173,7 @@ fun FormattingScreen(
 
       // Decimal separator
       AnimatedVisibility(
-        visible = uiState.formatterSymbols.grouping == Token.SPACE,
+        visible = uiState.formatterSymbols.canChooseFractional,
         enter = expandVertically() + fadeIn(),
         exit = shrinkVertically() + fadeOut(),
       ) {
@@ -286,7 +290,8 @@ private fun FractionalSymbolSelector(
     ToggleButton(
       checked = formatterSymbols.fractional == Token.PERIOD,
       onCheckedChange = {
-        updateFormatterSymbols(Token.SPACE, Token.PERIOD, formatterSymbols.indian)
+        val symbols = formatterSymbols.withFractional(Token.PERIOD)
+        updateFormatterSymbols(symbols.grouping, symbols.fractional, symbols.indian)
       },
       modifier = Modifier.weight(1f),
     ) {
@@ -295,7 +300,8 @@ private fun FractionalSymbolSelector(
     ToggleButton(
       checked = formatterSymbols.fractional == Token.COMMA,
       onCheckedChange = {
-        updateFormatterSymbols(Token.SPACE, Token.COMMA, formatterSymbols.indian)
+        val symbols = formatterSymbols.withFractional(Token.COMMA)
+        updateFormatterSymbols(symbols.grouping, symbols.fractional, symbols.indian)
       },
       modifier = Modifier.weight(1f),
     ) {
@@ -338,6 +344,15 @@ private fun GroupingSymbolSelector(
       modifier = Modifier.weight(1f),
     ) {
       Text(stringResource(Res.string.common_comma))
+    }
+    ToggleButton(
+      checked = formatterSymbols.grouping == Token.APOSTROPHE,
+      onCheckedChange = {
+        updateFormatterSymbols(Token.APOSTROPHE, formatterSymbols.fractional, formatterSymbols.indian)
+      },
+      modifier = Modifier.weight(1f),
+    ) {
+      Text(stringResource(Res.string.settings_apostrophe))
     }
   }
 }

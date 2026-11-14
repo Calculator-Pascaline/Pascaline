@@ -61,6 +61,27 @@ class TextFieldTransformationTest {
   }
 
   @Test
+  fun apostropheGrouping_test() {
+    // 1'234'567.89 and 1'234'567,89
+    for (fractional in listOf(Token.PERIOD, Token.COMMA)) {
+      val fs = FormatterSymbols(Token.APOSTROPHE, fractional, false)
+      assertEquals("1'234'567${fractional}89", "1234567.89".formatExpression(fs))
+      assertEquals("12'345+6'789", "12345+6789".formatExpression(fs))
+      assertOutputTransformation(
+        ExpressionOutputTransformation(fs),
+        "[]1'234'567${fractional}89",
+        "[]1234567.89",
+      )
+      // Pasted numbers lose their apostrophes
+      assertInputTransformation(
+        ExpressionInputTransformation(fs),
+        "1234567.89[]",
+        "1'234'567${fractional}89[]",
+      )
+    }
+  }
+
+  @Test
   fun expressionOutputTransformation_test() {
     val fs = FormatterSymbols(Token.PERIOD, Token.COMMA, false)
     val outputTransformation = ExpressionOutputTransformation(fs)

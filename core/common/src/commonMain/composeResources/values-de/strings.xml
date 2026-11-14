@@ -515,6 +515,7 @@
     <string name="settings_sort_by_scale_desc">Skala (Abst.)</string>
     <string name="settings_sort_by_usage">Nutzung</string>
     <string name="settings_space">Leerzeichen</string>
+    <string name="settings_apostrophe">Apostroph</string>
     <string name="settings_stepped_drag_gesture">Gestufter Ziehvorgang</string>
     <string name="settings_stepped_drag_gesture_support">Teilweise Verlaufansicht beim Ziehen nicht überspringen</string>
     <string name="settings_system">System</string>

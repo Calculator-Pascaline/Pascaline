@@ -515,6 +515,7 @@
     <string name="settings_sort_by_scale_desc">Skála (Csökkenő)</string>
     <string name="settings_sort_by_usage">Használat</string>
     <string name="settings_space">Szóköz</string>
+    <string name="settings_apostrophe">Aposztróf</string>
     <string name="settings_stepped_drag_gesture">Lépcsőzetes húzási gesztus</string>
     <string name="settings_stepped_drag_gesture_support">Ne ugorja át a részleges előzménynézetet túlzott húzáskor</string>
     <string name="settings_system">Rendszer</string>

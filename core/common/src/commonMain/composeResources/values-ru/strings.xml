@@ -515,6 +515,7 @@
     <string name="settings_sort_by_scale_desc">Шкала (по убыванию)</string>
     <string name="settings_sort_by_usage">По использованию</string>
     <string name="settings_space">Пробел</string>
+    <string name="settings_apostrophe">Апостроф</string>
     <string name="settings_stepped_drag_gesture">Пошаговый жест перетаскивания</string>
     <string name="settings_stepped_drag_gesture_support">Не пропускать частичный просмотр истории при слишком сильном перетаскивании</string>
     <string name="settings_system">Системная</string>

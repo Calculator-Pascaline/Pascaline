@@ -515,6 +515,7 @@
     <string name="settings_sort_by_scale_desc">按量级（降序）</string>
     <string name="settings_sort_by_usage">按使用频率</string>
     <string name="settings_space">空格</string>
+    <string name="settings_apostrophe">单引号</string>
     <string name="settings_stepped_drag_gesture">步进拖动手势</string>
     <string name="settings_stepped_drag_gesture_support">拖动过多时不跳过部分历史视图</string>
     <string name="settings_system">跟随系统</string>

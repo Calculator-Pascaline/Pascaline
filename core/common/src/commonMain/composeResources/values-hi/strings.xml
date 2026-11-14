@@ -515,6 +515,7 @@
     <string name="settings_sort_by_scale_desc">मापक्रम (अवरोही)</string>
     <string name="settings_sort_by_usage">उपयोग</string>
     <string name="settings_space">स्थान</string>
+    <string name="settings_apostrophe">एपॉस्ट्रॉफ़ी</string>
     <string name="settings_stepped_drag_gesture">चरणबद्ध ड्रैग जेस्चर</string>
     <string name="settings_stepped_drag_gesture_support">ज़्यादा खींचने पर आंशिक इतिहास दृश्य को न छोड़ें</string>
     <string name="settings_system">सिस्टम</string>

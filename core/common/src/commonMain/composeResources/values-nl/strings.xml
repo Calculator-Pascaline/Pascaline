@@ -515,6 +515,7 @@
     <string name="settings_sort_by_scale_desc">Schaal (Aflopend)</string>
     <string name="settings_sort_by_usage">Gebruik</string>
     <string name="settings_space">Spatie</string>
+    <string name="settings_apostrophe">Apostrof</string>
     <string name="settings_stepped_drag_gesture">Gestapt sleepgebaar</string>
     <string name="settings_stepped_drag_gesture_support">Sla de gedeeltelijke geschiedenisweergave niet over bij te veel slepen</string>
     <string name="settings_system">Systeem</string>
