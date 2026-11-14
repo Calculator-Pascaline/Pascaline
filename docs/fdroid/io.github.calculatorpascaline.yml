@@ -1,0 +1,31 @@
+Categories:
+  - Science & Education
+License: GPL-3.0-or-later
+AuthorName: Calculator-Pascaline
+WebSite: https://calculator-pascaline.github.io/Pascaline/
+SourceCode: https://github.com/Calculator-Pascaline/Pascaline
+IssueTracker: https://github.com/Calculator-Pascaline/Pascaline/issues
+Changelog: https://github.com/Calculator-Pascaline/Pascaline/releases
+
+AutoName: Pascaline
+
+RepoType: git
+Repo: https://github.com/Calculator-Pascaline/Pascaline.git
+
+Builds:
+  - versionName: 1.7.1
+    versionCode: 85
+    commit: v1.7.1
+    subdir: androidApp
+    sudo:
+      - apt-get update
+      - apt-get install -y openjdk-21-jdk-headless
+      - update-java-alternatives -a
+    gradle:
+      - yes
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+UpdateCheckData: gradle/libs.versions.toml|versionCode\s*=\s*"(\d+)"|.|versionName\s*=\s*"([^"]+)"
+CurrentVersion: 1.7.1
+CurrentVersionCode: 85

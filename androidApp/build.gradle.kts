@@ -136,9 +136,13 @@ android {
     targetCompatibility = JavaVersion.VERSION_11
     isCoreLibraryDesugaringEnabled = true
   }
-  kotlin.jvmToolchain(11)
   composeOptions.kotlinCompilerExtensionVersion = libs.versions.androidxComposeCompiler.get()
   packaging.resources.excludes.add("/META-INF/{AL2.0,LGPL2.1}")
+  // No encrypted list of libraries in the APK, which only Google can read: F-Droid refuses it
+  dependenciesInfo {
+    includeInApk = false
+    includeInBundle = false
+  }
 }
 
 dependencies { coreLibraryDesugaring(libs.com.android.tools.desugar.jdk.libs) }

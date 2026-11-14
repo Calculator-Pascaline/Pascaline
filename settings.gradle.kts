@@ -20,7 +20,6 @@
 pluginManagement {
   includeBuild("build-logic")
   repositories {
-    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     google()
     mavenCentral()
     gradlePluginPortal()
@@ -30,10 +29,8 @@ pluginManagement {
 @Suppress("UnstableApiUsage")
 dependencyResolutionManagement {
   repositories {
-    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     google()
     mavenCentral()
-    maven(url = "https://jitpack.io")
   }
 }
 
