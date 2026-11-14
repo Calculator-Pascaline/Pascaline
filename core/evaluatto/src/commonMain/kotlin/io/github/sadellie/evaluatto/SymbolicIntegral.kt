@@ -905,7 +905,7 @@ private fun Surd.times(value: Rational): Surd = Surd(coefficient * value, radica
 private fun Node.fromDegrees(radianMode: Boolean): Node =
   if (radianMode) this else times(divide(Node.Pi, number(DEGREES_IN_HALF_TURN)), this)
 
-private fun Node.polynomialOrNull(evaluator: Evaluator): Polynomial? =
+internal fun Node.polynomialOrNull(evaluator: Evaluator): Polynomial? =
   try {
     toPolynomial(evaluator)
   } catch (e: ExpressionException) {

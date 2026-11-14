@@ -137,6 +137,7 @@ import unitto.core.common.generated.resources.calculator_argument
 import unitto.core.common.generated.resources.calculator_binary
 import unitto.core.common.generated.resources.calculator_complex_plane
 import unitto.core.common.generated.resources.calculator_decimal
+import unitto.core.common.generated.resources.calculator_di_method
 import unitto.core.common.generated.resources.calculator_delete_history_entry
 import unitto.core.common.generated.resources.calculator_delete_history_entry_support
 import unitto.core.common.generated.resources.calculator_discriminant
@@ -535,6 +536,10 @@ private fun MoreMenu(
           // Everything is drawn on the complex plane
           if (hasPlane && section != MenuSection.COMPLEX_PLANE) return@forEach
           MenuTitle(stringResource(section.title()))
+          if (section == MenuSection.DI_METHOD) {
+            DiMethodMenu(lines, formatterSymbols, style, MENU_CONTENT_WIDTH)
+            return@forEach
+          }
           lines.forEach { line ->
             val modifier =
               if (section.isInsertable) {
@@ -607,6 +612,7 @@ private val MENU_TITLES: Map<MenuSection, StringResource> by lazy {
     MenuSection.ARGUMENT to Res.string.calculator_argument,
     MenuSection.SI_UNITS to Res.string.calculator_si_units,
     MenuSection.OTHER_UNITS to Res.string.calculator_other_temperatures,
+    MenuSection.DI_METHOD to Res.string.calculator_di_method,
   )
 }
 

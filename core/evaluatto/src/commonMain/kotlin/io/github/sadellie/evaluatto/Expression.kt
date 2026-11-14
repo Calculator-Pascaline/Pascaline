@@ -167,6 +167,26 @@ class Expression(
     )
   }
 
+  /** `true` for ∫f dx without bounds. */
+  val isIndefiniteIntegral: Boolean
+    get() = tree is Node.Integral && tree.lower == null
+
+  /**
+   * Integration by parts of ∫f dx as a DI table, null for anything else or when f isn't a product
+   * that is integrated by parts.
+   */
+  fun diTable(precision: Int, outputFormat: Int): DiTable? {
+    val integral = tree as? Node.Integral ?: return null
+    if (integral.lower != null) return null
+    return try {
+      integral.body.diTable(radianMode, evaluator, NodeFormatter(precision, outputFormat))
+    } catch (e: ExpressionException) {
+      null
+    } catch (e: SymbolicExpressionException) {
+      null
+    }
+  }
+
   /**
    * Polynomials are factorized (with roots), derivatives and integrals of polynomials are expanded.
    * Other derivatives and integrals are calculated symbolically: d/dx(cos(x)) = −sin(x). Other

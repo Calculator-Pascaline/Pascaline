@@ -46,6 +46,7 @@ import com.sadellie.unitto.core.ui.textfield.deleteTokens
 import com.sadellie.unitto.core.ui.textfield.getTextFieldState
 import com.sadellie.unitto.core.ui.textfield.observe
 import com.sadellie.unitto.core.ui.textfield.placeCursorAtTheEnd
+import com.sadellie.unitto.feature.calculator.components.toMenuLines
 import io.github.sadellie.evaluatto.ExactFraction
 import io.github.sadellie.evaluatto.Expression
 import io.github.sadellie.evaluatto.ExpressionException
@@ -332,8 +333,23 @@ internal class CalculatorViewModel(
         null
       }
     val lines = if (evaluated == null) emptyList() else resultLines(evaluated, input, prefs)
-    return HistoryResult(lines = lines, menu = evaluated?.menuSections() ?: emptyList()).encode()
+    val menu = evaluated?.menuSections().orEmpty() + listOfNotNull(evaluated?.let { diMethodSection(input, prefs) })
+    return HistoryResult(lines = lines, menu = menu).encode()
   }
+
+  /** The DI method of an integral without bounds, with its table when it is integrated by parts. */
+  private suspend fun diMethodSection(input: String, prefs: CalculatorPreferences): Pair<MenuSection, List<String>>? =
+    withContext(Dispatchers.Default) {
+      try {
+        val expression = Expression(input, prefs.radianMode)
+        if (!expression.isIndefiniteIntegral) return@withContext null
+        MenuSection.DI_METHOD to expression.diTable(prefs.precision, prefs.outputFormat).toMenuLines()
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        null
+      }
+    }
 
   /**
    * Oldest first, so that a calculation that reused one that reused [editedId] gets the new result.

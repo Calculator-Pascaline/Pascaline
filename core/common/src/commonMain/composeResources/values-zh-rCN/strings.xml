@@ -1947,4 +1947,14 @@
     <string name="physical_unit_kilocalorie">千卡</string>
     <string name="units_menu_food">食物</string>
     <string name="units_menu_particles">粒子</string>
+    <string name="calculator_di_method">DI 法</string>
+    <string name="calculator_di_not_by_parts">这个积分不是需要分部积分的乘积，不需要 DI 法。下面是这个方法的做法。</string>
+    <string name="calculator_di_stops">3 种停止</string>
+    <string name="calculator_di_how">把求导后会变简单的放在 D 列，顺序为：ln、反三角、xⁿ、sin 和 cos、eˣ。其余放在 I 列。D 列往下求导，I 列往下积分，符号依次为 +、−、+、… 把每个 D 与下一行的 I 斜着相乘。</string>
+    <string name="calculator_di_stop_zero">1. D 列到 0</string>
+    <string name="calculator_di_stop_zero_text">把斜线乘积连同符号相加，就是答案。</string>
+    <string name="calculator_di_stop_integrable">2. 某一行可以积分</string>
+    <string name="calculator_di_stop_integrable_text">先把斜线相加，再把最后一行横着的乘积连同符号积分。</string>
+    <string name="calculator_di_stop_repeats">3. 积分又出现</string>
+    <string name="calculator_di_stop_repeats_text">最后一行横着的乘积就是原来的积分。把它移到左边再相除：2∫ = …，所以 ∫ = …/2。</string>
 </resources>

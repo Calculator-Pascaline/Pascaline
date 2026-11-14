@@ -1947,4 +1947,14 @@
     <string name="physical_unit_kilocalorie">Quilocaloria</string>
     <string name="units_menu_food">Alimentação</string>
     <string name="units_menu_particles">Partículas</string>
+    <string name="calculator_di_method">Método DI</string>
+    <string name="calculator_di_not_by_parts">Esta integral não é um produto para integrar por partes, então não precisa do método DI. Veja como o método funciona.</string>
+    <string name="calculator_di_stops">As 3 paradas</string>
+    <string name="calculator_di_how">Coloque em D o que fica mais simples ao derivar, nesta ordem: ln, trigonométricas inversas, xⁿ, sen e cos, eˣ. O resto vai em I. Derive para baixo em D, integre para baixo em I, com os sinais +, −, +, … Multiplique cada D pelo I da linha de baixo, na diagonal.</string>
+    <string name="calculator_di_stop_zero">1. D chega a 0</string>
+    <string name="calculator_di_stop_zero_text">Some os produtos na diagonal com seus sinais: essa é a resposta.</string>
+    <string name="calculator_di_stop_integrable">2. Uma linha pode ser integrada</string>
+    <string name="calculator_di_stop_integrable_text">Some as diagonais e depois integre o produto da última linha, na horizontal, com seu sinal.</string>
+    <string name="calculator_di_stop_repeats">3. A integral volta</string>
+    <string name="calculator_di_stop_repeats_text">A última linha na horizontal é a integral do início. Passe-a para a esquerda e divida: 2∫ = …, então ∫ = …/2.</string>
 </resources>

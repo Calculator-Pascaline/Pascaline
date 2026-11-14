@@ -1947,4 +1947,14 @@
     <string name="physical_unit_kilocalorie">Kilocalorie</string>
     <string name="units_menu_food">Voeding</string>
     <string name="units_menu_particles">Deeltjes</string>
+    <string name="calculator_di_method">DI-methode</string>
+    <string name="calculator_di_not_by_parts">Deze integraal is geen product voor partiële integratie en heeft de DI-methode niet nodig. Zo werkt de methode.</string>
+    <string name="calculator_di_stops">De 3 stops</string>
+    <string name="calculator_di_how">Zet in D wat eenvoudiger wordt bij differentiëren, in deze volgorde: ln, inverse goniometrie, xⁿ, sin en cos, eˣ. De rest gaat in I. Differentieer omlaag in D, integreer omlaag in I, met de tekens +, −, +, … Vermenigvuldig elke D met de I een rij lager, diagonaal.</string>
+    <string name="calculator_di_stop_zero">1. D bereikt 0</string>
+    <string name="calculator_di_stop_zero_text">Tel de diagonale producten met hun tekens op: dat is het antwoord.</string>
+    <string name="calculator_di_stop_integrable">2. Een rij is te integreren</string>
+    <string name="calculator_di_stop_integrable_text">Tel de diagonalen op en integreer dan het product van de laatste rij, horizontaal, met zijn teken.</string>
+    <string name="calculator_di_stop_repeats">3. De integraal komt terug</string>
+    <string name="calculator_di_stop_repeats_text">De laatste rij horizontaal is de integraal waarmee je begon. Breng hem naar links en deel: 2∫ = …, dus ∫ = …/2.</string>
 </resources>

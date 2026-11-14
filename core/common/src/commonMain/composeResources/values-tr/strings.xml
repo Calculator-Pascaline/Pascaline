@@ -1947,4 +1947,14 @@
     <string name="physical_unit_kilocalorie">Kilokalori</string>
     <string name="units_menu_food">Gıda</string>
     <string name="units_menu_particles">Parçacıklar</string>
+    <string name="calculator_di_method">DI yöntemi</string>
+    <string name="calculator_di_not_by_parts">Bu integral kısmi integrasyon için bir çarpım değil, DI yöntemine gerek yok. Yöntem şöyle çalışır.</string>
+    <string name="calculator_di_stops">3 durma noktası</string>
+    <string name="calculator_di_how">Türevi alınınca basitleşeni D’ye koyun, bu sırayla: ln, ters trigonometrik, xⁿ, sin ve cos, eˣ. Kalanı I’ya gider. D’de aşağı doğru türev, I’da aşağı doğru integral alın, işaretler +, −, +, … Her D’yi bir alt satırdaki I ile çapraz çarpın.</string>
+    <string name="calculator_di_stop_zero">1. D 0’a ulaşır</string>
+    <string name="calculator_di_stop_zero_text">Çapraz çarpımları işaretleriyle toplayın: cevap budur.</string>
+    <string name="calculator_di_stop_integrable">2. Bir satırın integrali alınabilir</string>
+    <string name="calculator_di_stop_integrable_text">Çaprazları toplayın, sonra son satırın çarpımının yatay olarak işaretiyle integralini alın.</string>
+    <string name="calculator_di_stop_repeats">3. İntegral geri gelir</string>
+    <string name="calculator_di_stop_repeats_text">Son satır yatay olarak başladığınız integraldir. Sol tarafa geçirin, sonra bölün: 2∫ = …, yani ∫ = …/2.</string>
 </resources>

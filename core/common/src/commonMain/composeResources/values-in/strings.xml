@@ -1947,4 +1947,14 @@
     <string name="physical_unit_kilocalorie">Kilokalori</string>
     <string name="units_menu_food">Makanan</string>
     <string name="units_menu_particles">Partikel</string>
+    <string name="calculator_di_method">Metode DI</string>
+    <string name="calculator_di_not_by_parts">Integral ini bukan perkalian untuk integrasi parsial, jadi tidak perlu metode DI. Begini cara kerja metodenya.</string>
+    <string name="calculator_di_stops">3 titik berhenti</string>
+    <string name="calculator_di_how">Taruh di D yang makin sederhana saat diturunkan, urutannya: ln, trigonometri invers, xⁿ, sin dan cos, eˣ. Sisanya di I. Turunkan ke bawah di D, integralkan ke bawah di I, dengan tanda +, −, +, … Kalikan tiap D dengan I satu baris di bawahnya, secara diagonal.</string>
+    <string name="calculator_di_stop_zero">1. D mencapai 0</string>
+    <string name="calculator_di_stop_zero_text">Jumlahkan hasil kali diagonal dengan tandanya: itulah jawabannya.</string>
+    <string name="calculator_di_stop_integrable">2. Satu baris bisa diintegralkan</string>
+    <string name="calculator_di_stop_integrable_text">Jumlahkan diagonalnya, lalu integralkan hasil kali baris terakhir secara mendatar, dengan tandanya.</string>
+    <string name="calculator_di_stop_repeats">3. Integralnya kembali</string>
+    <string name="calculator_di_stop_repeats_text">Baris terakhir secara mendatar adalah integral awal. Pindahkan ke kiri, lalu bagi: 2∫ = …, jadi ∫ = …/2.</string>
 </resources>

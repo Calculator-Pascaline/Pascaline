@@ -1947,4 +1947,14 @@
     <string name="physical_unit_kilocalorie">किलोकैलोरी</string>
     <string name="units_menu_food">भोजन</string>
     <string name="units_menu_particles">कण</string>
+    <string name="calculator_di_method">DI विधि</string>
+    <string name="calculator_di_not_by_parts">यह समाकल खंडशः समाकलन वाला गुणनफल नहीं है, इसलिए DI विधि की ज़रूरत नहीं। विधि ऐसे काम करती है।</string>
+    <string name="calculator_di_stops">3 पड़ाव</string>
+    <string name="calculator_di_how">D में वह रखें जो अवकलन से सरल हो, इस क्रम में: ln, प्रतिलोम त्रिकोणमितीय, xⁿ, sin और cos, eˣ। बाकी I में जाता है। D में नीचे अवकलन करें, I में नीचे समाकलन करें, चिह्न +, −, +, … के साथ। हर D को एक पंक्ति नीचे वाले I से तिरछा गुणा करें।</string>
+    <string name="calculator_di_stop_zero">1. D 0 पर पहुँचता है</string>
+    <string name="calculator_di_stop_zero_text">तिरछे गुणनफलों को उनके चिह्नों के साथ जोड़ें: यही उत्तर है।</string>
+    <string name="calculator_di_stop_integrable">2. एक पंक्ति का समाकलन हो सकता है</string>
+    <string name="calculator_di_stop_integrable_text">तिरछे गुणनफल जोड़ें, फिर आख़िरी पंक्ति के गुणनफल का उसके चिह्न के साथ आड़ा समाकलन करें।</string>
+    <string name="calculator_di_stop_repeats">3. समाकल लौट आता है</string>
+    <string name="calculator_di_stop_repeats_text">आख़िरी पंक्ति आड़ी वही समाकल है जिससे शुरू किया था। उसे बाईं ओर ले जाएँ, फिर भाग दें: 2∫ = …, तो ∫ = …/2।</string>
 </resources>

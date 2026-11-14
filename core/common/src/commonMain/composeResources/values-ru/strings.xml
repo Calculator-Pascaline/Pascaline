@@ -1947,4 +1947,14 @@
     <string name="physical_unit_kilocalorie">Килокалория</string>
     <string name="units_menu_food">Питание</string>
     <string name="units_menu_particles">Частицы</string>
+    <string name="calculator_di_method">Метод DI</string>
+    <string name="calculator_di_not_by_parts">Этот интеграл не произведение для интегрирования по частям, метод DI не нужен. Вот как работает метод.</string>
+    <string name="calculator_di_stops">3 остановки</string>
+    <string name="calculator_di_how">В D ставьте то, что упрощается при дифференцировании, в таком порядке: ln, обратные тригонометрические, xⁿ, sin и cos, eˣ. Остальное идёт в I. Дифференцируйте вниз по D, интегрируйте вниз по I, со знаками +, −, +, … Умножайте каждое D на I строкой ниже, по диагонали.</string>
+    <string name="calculator_di_stop_zero">1. D доходит до 0</string>
+    <string name="calculator_di_stop_zero_text">Сложите диагональные произведения с их знаками: это и есть ответ.</string>
+    <string name="calculator_di_stop_integrable">2. Строку можно проинтегрировать</string>
+    <string name="calculator_di_stop_integrable_text">Сложите диагонали, затем проинтегрируйте произведение последней строки, по горизонтали, с его знаком.</string>
+    <string name="calculator_di_stop_repeats">3. Интеграл возвращается</string>
+    <string name="calculator_di_stop_repeats_text">Последняя строка по горизонтали — это исходный интеграл. Перенесите его влево и разделите: 2∫ = …, значит ∫ = …/2.</string>
 </resources>

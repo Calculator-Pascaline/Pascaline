@@ -1947,4 +1947,14 @@
     <string name="physical_unit_kilocalorie">Kilokalória</string>
     <string name="units_menu_food">Táplálkozás</string>
     <string name="units_menu_particles">Részecskék</string>
+    <string name="calculator_di_method">DI-módszer</string>
+    <string name="calculator_di_not_by_parts">Ez az integrál nem parciálisan integrálandó szorzat, nem kell hozzá a DI-módszer. Így működik a módszer.</string>
+    <string name="calculator_di_stops">A 3 megálló</string>
+    <string name="calculator_di_how">D-be az kerül, ami deriválva egyszerűbb lesz, ebben a sorrendben: ln, arkuszfüggvények, xⁿ, sin és cos, eˣ. A többi I-be kerül. D-ben lefelé deriválj, I-ben lefelé integrálj, +, −, +, … előjelekkel. Minden D-t szorozz az eggyel lejjebb lévő I-vel, átlósan.</string>
+    <string name="calculator_di_stop_zero">1. D eléri a 0-t</string>
+    <string name="calculator_di_stop_zero_text">Add össze az átlós szorzatokat az előjelükkel: ez a válasz.</string>
+    <string name="calculator_di_stop_integrable">2. Egy sor integrálható</string>
+    <string name="calculator_di_stop_integrable_text">Add össze az átlókat, majd integráld az utolsó sor szorzatát vízszintesen, az előjelével.</string>
+    <string name="calculator_di_stop_repeats">3. Az integrál visszatér</string>
+    <string name="calculator_di_stop_repeats_text">Az utolsó sor vízszintesen a kiinduló integrál. Vidd át a bal oldalra, majd ossz: 2∫ = …, tehát ∫ = …/2.</string>
 </resources>

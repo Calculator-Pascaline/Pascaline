@@ -2234,4 +2234,14 @@
     <string name="physical_unit_kilocalorie">Kilocalorie</string>
     <string name="units_menu_food">Food</string>
     <string name="units_menu_particles">Particles</string>
+    <string name="calculator_di_method">DI method</string>
+    <string name="calculator_di_not_by_parts">This integral isn’t a product to integrate by parts, so it doesn’t need the DI method. Here is how the method works.</string>
+    <string name="calculator_di_stops">The 3 stops</string>
+    <string name="calculator_di_how">Put in D what gets simpler when differentiated, in this order: ln, inverse trig, xⁿ, sin and cos, eˣ. The rest goes in I. Differentiate down D, integrate down I, with the signs +, −, +, … Multiply each D with the I one row below it, diagonally.</string>
+    <string name="calculator_di_stop_zero">1. D reaches 0</string>
+    <string name="calculator_di_stop_zero_text">Add up the diagonal products with their signs: that’s the answer.</string>
+    <string name="calculator_di_stop_integrable">2. A row can be integrated</string>
+    <string name="calculator_di_stop_integrable_text">Add the diagonals, then integrate the product of the last row, across, with its sign.</string>
+    <string name="calculator_di_stop_repeats">3. The integral comes back</string>
+    <string name="calculator_di_stop_repeats_text">The last row across is the integral you started with. Move it to the left side, then divide: 2∫ = …, so ∫ = …/2.</string>
 </resources>

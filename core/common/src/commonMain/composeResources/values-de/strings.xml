@@ -1947,4 +1947,14 @@
     <string name="physical_unit_kilocalorie">Kilokalorie</string>
     <string name="units_menu_food">Ernährung</string>
     <string name="units_menu_particles">Teilchen</string>
+    <string name="calculator_di_method">DI-Methode</string>
+    <string name="calculator_di_not_by_parts">Dieses Integral ist kein Produkt für die partielle Integration und braucht die DI-Methode nicht. So funktioniert die Methode.</string>
+    <string name="calculator_di_stops">Die 3 Stopps</string>
+    <string name="calculator_di_how">In D kommt, was beim Ableiten einfacher wird, in dieser Reihenfolge: ln, Arkusfunktionen, xⁿ, sin und cos, eˣ. Der Rest kommt in I. D nach unten ableiten, I nach unten integrieren, mit den Vorzeichen +, −, +, … Jedes D mit dem I eine Zeile tiefer multiplizieren, diagonal.</string>
+    <string name="calculator_di_stop_zero">1. D erreicht 0</string>
+    <string name="calculator_di_stop_zero_text">Die Diagonalprodukte mit ihren Vorzeichen addieren: das ist das Ergebnis.</string>
+    <string name="calculator_di_stop_integrable">2. Eine Zeile ist integrierbar</string>
+    <string name="calculator_di_stop_integrable_text">Die Diagonalen addieren, dann das Produkt der letzten Zeile waagerecht mit seinem Vorzeichen integrieren.</string>
+    <string name="calculator_di_stop_repeats">3. Das Integral kommt zurück</string>
+    <string name="calculator_di_stop_repeats_text">Die letzte Zeile waagerecht ist das Ausgangsintegral. Auf die linke Seite bringen, dann teilen: 2∫ = …, also ∫ = …/2.</string>
 </resources>

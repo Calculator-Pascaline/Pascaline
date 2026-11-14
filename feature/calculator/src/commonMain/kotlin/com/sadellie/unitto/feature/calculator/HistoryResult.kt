@@ -50,6 +50,8 @@ internal enum class MenuSection(
   /** Same value in other usual units: 55 °C ==> 328.15 K and 131 °F, 55 J ==> 15.28 mWh */
   // Key from when it was only for temperatures, kept for history
   OTHER_UNITS("other_temperatures", isExpression = true, isInsertable = true),
+  /** DI table of an integral by parts and the three stops of the method, see `DiMethodMenu`. */
+  DI_METHOD("di_method", isExpression = true, isInsertable = false),
 }
 
 /**
