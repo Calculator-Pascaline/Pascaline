@@ -1985,6 +1985,14 @@
     <string name="changeover_shillings">Xelins</string>
     <string name="changeover_pence">Pence</string>
     <string name="changeover_sources">As taxas são as fixadas por lei: 100 francos antigos por 1 franco novo em 1960, 100 marcos antigos por 1 marco em 1963 e as taxas do euro fixadas em 1999 (2001 para a Grécia). O valor de hoje usa a inflação do país, antes e depois da troca.</string>
+    <string name="changeover_then_and_now">Antes e agora</string>
+    <string name="changeover_baguette">Baguete, 250 g</string>
+    <string name="changeover_loaf">Pão de forma branco, 800 g</string>
+    <string name="changeover_buys">Seu valor compra</string>
+    <string name="changeover_pay">Salário médio por mês</string>
+    <string name="changeover_pay_share">Parte de um mês de salário</string>
+    <string name="changeover_pay_note">Salário médio de um empregado, antes dos impostos e com as contribuições do empregador.</string>
+    <string name="changeover_context_sources">Salários do banco de dados AMECO da Comissão Europeia (remuneração por empregado, Alemanha Ocidental até 1990). Pão do INSEE (baguete desde 1992, preço por quilo, nenhum em 2020) e do ONS (pão branco de 800 g desde 1968, último em 2024).</string>
     <string name="currency_euro">Euro</string>
     <string name="currency_us_dollar">Dólar americano</string>
     <string name="currency_pound">Libra esterlina</string>

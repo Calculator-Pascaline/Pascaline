@@ -21,6 +21,8 @@ package com.sadellie.unitto.feature.calculator.inflation
 import kotlin.math.pow
 import org.jetbrains.compose.resources.StringResource
 import unitto.core.common.generated.resources.Res
+import unitto.core.common.generated.resources.changeover_baguette
+import unitto.core.common.generated.resources.changeover_loaf
 import unitto.core.common.generated.resources.country_austria
 import unitto.core.common.generated.resources.country_belgium
 import unitto.core.common.generated.resources.country_finland
@@ -128,8 +130,19 @@ internal class Era(
   val fixedIn: Int? = null,
 )
 
-/** The currencies of a country one after the other, and its prices. */
-internal class Country(val name: StringResource, val history: PriceHistory, val eras: List<Era>) {
+/**
+ * The currencies of a country one after the other, and its prices.
+ *
+ * @property pay Average yearly pay of an employee, in the currency used today.
+ * @property bread A loaf and its price year by year, when there is one.
+ */
+internal class Country(
+  val name: StringResource,
+  val history: PriceHistory,
+  val eras: List<Era>,
+  val pay: YearlyValues? = null,
+  val bread: Bread? = null,
+) {
   /** Years an amount in [era] can be from, where there are prices. */
   fun years(era: Era): IntRange = maxOf(era.since, history.baseYear)..minOf(era.until ?: history.lastYear, history.lastYear)
 }
@@ -145,7 +158,9 @@ internal val COUNTRIES: List<Country> by lazy {
     Country(
       Res.string.country_france,
       PriceData.FRANCE,
-      listOf(
+      pay = PayData.FRANCE,
+      bread = Bread(Res.string.changeover_baguette, BreadData.BAGUETTE_KG, perLoaf = BAGUETTE_KG),
+      eras = listOf(
         // 100 old francs became 1 new franc on 1 January 1960
         Era(Res.string.currency_old_franc, "AF", FIRST_YEAR, until = 1959, perNext = 100.0),
         toEuro(Res.string.currency_french_franc, "F", 1960, 6.55957),
@@ -155,47 +170,56 @@ internal val COUNTRIES: List<Country> by lazy {
     Country(
       Res.string.country_germany,
       PriceData.GERMANY,
-      listOf(toEuro(Res.string.currency_deutsche_mark, "DM", FIRST_YEAR, 1.95583), euro(EURO_FIXED)),
+      pay = PayData.GERMANY,
+      eras = listOf(toEuro(Res.string.currency_deutsche_mark, "DM", FIRST_YEAR, 1.95583), euro(EURO_FIXED)),
     ),
     Country(
       Res.string.country_italy,
       PriceData.ITALY,
-      listOf(toEuro(Res.string.currency_lira, "L", FIRST_YEAR, 1936.27), euro(EURO_FIXED)),
+      pay = PayData.ITALY,
+      eras = listOf(toEuro(Res.string.currency_lira, "L", FIRST_YEAR, 1936.27), euro(EURO_FIXED)),
     ),
     Country(
       Res.string.country_spain,
       PriceData.SPAIN,
-      listOf(toEuro(Res.string.currency_peseta, "Pta", FIRST_YEAR, 166.386), euro(EURO_FIXED)),
+      pay = PayData.SPAIN,
+      eras = listOf(toEuro(Res.string.currency_peseta, "Pta", FIRST_YEAR, 166.386), euro(EURO_FIXED)),
     ),
     Country(
       Res.string.country_netherlands,
       PriceData.NETHERLANDS,
-      listOf(toEuro(Res.string.currency_guilder, "ƒ", FIRST_YEAR, 2.20371), euro(EURO_FIXED)),
+      pay = PayData.NETHERLANDS,
+      eras = listOf(toEuro(Res.string.currency_guilder, "ƒ", FIRST_YEAR, 2.20371), euro(EURO_FIXED)),
     ),
     Country(
       Res.string.country_belgium,
       PriceData.BELGIUM,
-      listOf(toEuro(Res.string.currency_belgian_franc, "FB", FIRST_YEAR, 40.3399), euro(EURO_FIXED)),
+      pay = PayData.BELGIUM,
+      eras = listOf(toEuro(Res.string.currency_belgian_franc, "FB", FIRST_YEAR, 40.3399), euro(EURO_FIXED)),
     ),
     Country(
       Res.string.country_austria,
       PriceData.AUSTRIA,
-      listOf(toEuro(Res.string.currency_schilling, "S", FIRST_YEAR, 13.7603), euro(EURO_FIXED)),
+      pay = PayData.AUSTRIA,
+      eras = listOf(toEuro(Res.string.currency_schilling, "S", FIRST_YEAR, 13.7603), euro(EURO_FIXED)),
     ),
     Country(
       Res.string.country_portugal,
       PriceData.PORTUGAL,
-      listOf(toEuro(Res.string.currency_escudo, "Esc", FIRST_YEAR, 200.482), euro(EURO_FIXED)),
+      pay = PayData.PORTUGAL,
+      eras = listOf(toEuro(Res.string.currency_escudo, "Esc", FIRST_YEAR, 200.482), euro(EURO_FIXED)),
     ),
     Country(
       Res.string.country_ireland,
       PriceData.IRELAND,
-      listOf(toEuro(Res.string.currency_irish_pound, "IR£", FIRST_YEAR, 0.787564), euro(EURO_FIXED)),
+      pay = PayData.IRELAND,
+      eras = listOf(toEuro(Res.string.currency_irish_pound, "IR£", FIRST_YEAR, 0.787564), euro(EURO_FIXED)),
     ),
     Country(
       Res.string.country_finland,
       PriceData.FINLAND,
-      listOf(
+      pay = PayData.FINLAND,
+      eras = listOf(
         // 100 old markkaa became 1 new markka on 1 January 1963
         Era(Res.string.currency_old_markka, "mk", FIRST_YEAR, until = 1962, perNext = 100.0),
         toEuro(Res.string.currency_markka, "mk", 1963, 5.94573),
@@ -205,13 +229,16 @@ internal val COUNTRIES: List<Country> by lazy {
     Country(
       Res.string.country_greece,
       PriceData.GREECE,
+      pay = PayData.GREECE,
       // Greece joined in 2001, with euro coins and notes in 2002 like the others
-      listOf(toEuro(Res.string.currency_drachma, "Dr", FIRST_YEAR, 340.75, fixedIn = 2001), euro(2001)),
+      eras = listOf(toEuro(Res.string.currency_drachma, "Dr", FIRST_YEAR, 340.75, fixedIn = 2001), euro(2001)),
     ),
     Country(
       Res.string.country_united_kingdom,
       PriceData.UNITED_KINGDOM,
-      listOf(
+      pay = PayData.UNITED_KINGDOM,
+      bread = Bread(Res.string.changeover_loaf, BreadData.WHITE_LOAF_PENCE, perLoaf = 1.0 / PENCE_PER_POUND),
+      eras = listOf(
         // Decimal Day, 15 February 1971: the pound stayed, it was split in 100 pence instead of 240
         Era(Res.string.currency_lsd, "£sd", FIRST_YEAR, until = 1970),
         Era(Res.string.currency_pound, "£", 1971, null),
@@ -220,11 +247,72 @@ internal val COUNTRIES: List<Country> by lazy {
   )
 }
 
+/** Values year by year from [firstYear], NaN for a year without one. */
+internal class YearlyValues(val firstYear: Int, private val values: DoubleArray) {
+  val lastYear: Int
+    get() = firstYear + values.size - 1
+
+  /** The value of [year], null when there is none. */
+  operator fun get(year: Int): Double? = values.getOrNull(year - firstYear)?.takeUnless { it.isNaN() }
+
+  /** The last value up to [year] and its year, null when there is none. */
+  fun latest(year: Int): Pair<Int, Double>? =
+    (minOf(year, lastYear) downTo firstYear).firstNotNullOfOrNull { y -> get(y)?.let { y to it } }
+}
+
+/**
+ * A loaf of bread of a country.
+ *
+ * @property prices Prices year by year, in the currency used today.
+ * @property perLoaf How much of a price is one loaf: a quarter for a 250 g baguette priced by the kilo.
+ */
+internal class Bread(val name: StringResource, val prices: YearlyValues, val perLoaf: Double = 1.0) {
+  fun price(year: Int): Double? = prices[year]?.times(perLoaf)
+}
+
+/** One year compared with today, a null value where there is no data for it. */
+internal data class Side(val year: Int, val amount: Double, val loaf: Double?, val monthlyPay: Double?) {
+  /** How many loaves the amount buys. */
+  val loaves: Double?
+    get() = loaf?.let { amount / it }
+
+  /** The amount as a share of a month of pay, in %. */
+  val payShare: Double?
+    get() = monthlyPay?.let { amount / it * PERCENT }
+}
+
+/**
+ * [amount], in the currency used today, in [year] and its value today with the inflation, each with
+ * the bread and the pay of its time. Null when the country has neither for [year].
+ */
+internal fun Country.thenAndNow(amount: Double, year: Int): Pair<Side, Side>? {
+  val today = history.lastYear
+  val loafThen = bread?.price(year)
+  val payThen = pay?.get(year)
+  if (loafThen == null && payThen == null) return null
+  val then = Side(year, amount, loafThen, payThen?.div(MONTHS))
+  val now =
+    Side(
+      today,
+      history.value(amount, year, today),
+      loaf = bread?.prices?.latest(today)?.second?.times(bread.perLoaf)?.takeIf { loafThen != null },
+      monthlyPay = pay?.latest(today)?.second?.div(MONTHS)?.takeIf { payThen != null },
+    )
+  return then to now
+}
+
+/** How many of the currency used today one of [era] is worth: 6.55957 francs for a euro gives 1 / 6.55957. */
+internal fun Country.toToday(era: Era): Double =
+  eras.drop(eras.indexOf(era)).dropLast(1).fold(1.0) { factor, next -> factor / next.perNext }
+
 /** Shillings in a pound and pence in a shilling before 1971. */
 internal const val SHILLINGS_PER_POUND = 20
 internal const val PENCE_PER_SHILLING = 12
 
 private const val PERCENT = 100
+private const val MONTHS = 12
+private const val PENCE_PER_POUND = 100
+private const val BAGUETTE_KG = 0.25
 private const val FIRST_YEAR = 1900
 private const val EURO_FIXED = 1999
 private const val EURO_CASH = 2002

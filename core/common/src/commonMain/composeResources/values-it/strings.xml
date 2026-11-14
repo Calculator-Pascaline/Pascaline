@@ -1985,6 +1985,14 @@
     <string name="changeover_shillings">Scellini</string>
     <string name="changeover_pence">Penny</string>
     <string name="changeover_sources">I tassi sono quelli fissati per legge: 100 vecchi franchi per 1 nuovo franco nel 1960, 100 vecchi marchi per 1 marco nel 1963 e i tassi dell’euro fissati nel 1999 (2001 per la Grecia). Il valore di oggi usa l’inflazione del paese, prima e dopo il cambio.</string>
+    <string name="changeover_then_and_now">Allora e oggi</string>
+    <string name="changeover_baguette">Baguette, 250 g</string>
+    <string name="changeover_loaf">Pane bianco in cassetta, 800 g</string>
+    <string name="changeover_buys">Il tuo importo compra</string>
+    <string name="changeover_pay">Stipendio medio al mese</string>
+    <string name="changeover_pay_share">Quota di un mese di stipendio</string>
+    <string name="changeover_pay_note">Stipendio medio di un dipendente, prima delle tasse e con i contributi del datore di lavoro.</string>
+    <string name="changeover_context_sources">Stipendi dalla banca dati AMECO della Commissione europea (redditi per dipendente, Germania Ovest fino al 1990). Pane dall’INSEE (baguette dal 1992, prezzo al chilo, nessuno per il 2020) e dall’ONS (pane bianco da 800 g dal 1968, ultimo 2024).</string>
     <string name="currency_euro">Euro</string>
     <string name="currency_us_dollar">Dollaro USA</string>
     <string name="currency_pound">Sterlina</string>

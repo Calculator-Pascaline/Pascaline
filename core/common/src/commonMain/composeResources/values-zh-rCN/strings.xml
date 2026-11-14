@@ -1985,6 +1985,14 @@
     <string name="changeover_shillings">先令</string>
     <string name="changeover_pence">便士</string>
     <string name="changeover_sources">汇率均由法律规定：1960 年 100 旧法郎换 1 新法郎，1963 年 100 旧马克换 1 马克，以及 1999 年确定的欧元汇率（希腊为 2001 年）。今天的价值使用该国在更替前后的通胀。</string>
+    <string name="changeover_then_and_now">当年与现在</string>
+    <string name="changeover_baguette">法棍，250 克</string>
+    <string name="changeover_loaf">白吐司，800 克</string>
+    <string name="changeover_buys">这笔钱可买</string>
+    <string name="changeover_pay">月平均工资</string>
+    <string name="changeover_pay_share">占一个月工资的比例</string>
+    <string name="changeover_pay_note">雇员的平均工资，税前，含雇主缴纳的部分。</string>
+    <string name="changeover_context_sources">工资来自欧盟委员会 AMECO 数据库（每名雇员的劳动报酬，1990 年前为西德）。面包价格来自 INSEE（1992 年起的法棍，按公斤计价，缺 2020 年）和 ONS（1968 年起的 800 克白吐司，最新为 2024 年）。</string>
     <string name="currency_euro">欧元</string>
     <string name="currency_us_dollar">美元</string>
     <string name="currency_pound">英镑</string>

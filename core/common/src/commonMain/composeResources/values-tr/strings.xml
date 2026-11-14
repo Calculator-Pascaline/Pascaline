@@ -1985,6 +1985,14 @@
     <string name="changeover_shillings">Şilin</string>
     <string name="changeover_pence">Peni</string>
     <string name="changeover_sources">Oranlar yasayla belirlenmiştir: 1960’ta 1 yeni frank için 100 eski frank, 1963’te 1 markka için 100 eski markka ve 1999’da sabitlenen euro oranları (Yunanistan için 2001). Bugünkü değer, değişimden önce ve sonra ülkenin enflasyonunu kullanır.</string>
+    <string name="changeover_then_and_now">O zaman ve şimdi</string>
+    <string name="changeover_baguette">Baget, 250 g</string>
+    <string name="changeover_loaf">Beyaz tost ekmeği, 800 g</string>
+    <string name="changeover_buys">Tutarınızla alınan</string>
+    <string name="changeover_pay">Aylık ortalama ücret</string>
+    <string name="changeover_pay_share">Bir aylık ücretin payı</string>
+    <string name="changeover_pay_note">Bir çalışanın vergi öncesi, işveren katkıları dahil ortalama ücreti.</string>
+    <string name="changeover_context_sources">Ücretler Avrupa Komisyonu AMECO veritabanından (çalışan başına ücret, 1990’a kadar Batı Almanya). Ekmek INSEE’den (1992’den beri baget, kilogram fiyatı, 2020 yok) ve ONS’ten (1968’den beri 800 g beyaz ekmek, son 2024).</string>
     <string name="currency_euro">Euro</string>
     <string name="currency_us_dollar">ABD doları</string>
     <string name="currency_pound">İngiliz sterlini</string>

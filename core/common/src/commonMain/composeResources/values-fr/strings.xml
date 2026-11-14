@@ -1985,6 +1985,14 @@
     <string name="changeover_shillings">Shillings</string>
     <string name="changeover_pence">Pence</string>
     <string name="changeover_sources">Les taux sont ceux fixés par la loi : 100 anciens francs pour 1 nouveau franc en 1960, 100 anciens markkaa pour 1 markka en 1963, et les taux de l’euro fixés en 1999 (2001 pour la Grèce). La valeur actuelle utilise l’inflation du pays, avant et après le changement.</string>
+    <string name="changeover_then_and_now">Alors et aujourd’hui</string>
+    <string name="changeover_baguette">Baguette, 250 g</string>
+    <string name="changeover_loaf">Pain de mie blanc, 800 g</string>
+    <string name="changeover_buys">Votre montant achète</string>
+    <string name="changeover_pay">Salaire moyen par mois</string>
+    <string name="changeover_pay_share">Part d’un mois de salaire</string>
+    <string name="changeover_pay_note">Salaire moyen d’un salarié, avant impôts et avec les cotisations de l’employeur.</string>
+    <string name="changeover_context_sources">Salaires de la base AMECO de la Commission européenne (rémunération par salarié, Allemagne de l’Ouest jusqu’en 1990). Pain de l’INSEE (baguette depuis 1992, prix au kilo, aucun pour 2020) et de l’ONS (pain blanc de 800 g depuis 1968, dernier en 2024).</string>
     <string name="currency_euro">Euro</string>
     <string name="currency_us_dollar">Dollar américain</string>
     <string name="currency_pound">Livre sterling</string>

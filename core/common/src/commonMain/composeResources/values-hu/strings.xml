@@ -1985,6 +1985,14 @@
     <string name="changeover_shillings">Shilling</string>
     <string name="changeover_pence">Penny</string>
     <string name="changeover_sources">Az árfolyamokat törvény rögzítette: 1960-ban 100 régi frank 1 új frank, 1963-ban 100 régi márka 1 márka, és az 1999-ben rögzített euróárfolyamok (Görögországnál 2001). A mai érték az ország inflációját használja a váltás előtt és után.</string>
+    <string name="changeover_then_and_now">Akkor és most</string>
+    <string name="changeover_baguette">Bagett, 250 g</string>
+    <string name="changeover_loaf">Fehér szeletelt kenyér, 800 g</string>
+    <string name="changeover_buys">Az összegből vehető</string>
+    <string name="changeover_pay">Havi átlagbér</string>
+    <string name="changeover_pay_share">Egy havi bér hányada</string>
+    <string name="changeover_pay_note">Egy munkavállaló átlagbére, adózás előtt, a munkáltatói járulékokkal.</string>
+    <string name="changeover_context_sources">Bérek az Európai Bizottság AMECO adatbázisából (munkavállalónkénti munkavállalói jövedelem, 1990-ig Nyugat-Németország). Kenyér az INSEE-től (bagett 1992 óta, kilónkénti ár, 2020-ra nincs) és az ONS-tól (800 g-os fehér kenyér 1968 óta, utoljára 2024).</string>
     <string name="currency_euro">Euró</string>
     <string name="currency_us_dollar">Amerikai dollár</string>
     <string name="currency_pound">Font sterling</string>

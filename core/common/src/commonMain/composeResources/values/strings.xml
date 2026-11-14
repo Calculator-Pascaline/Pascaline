@@ -2272,6 +2272,14 @@
     <string name="changeover_shillings">Shillings</string>
     <string name="changeover_pence">Pence</string>
     <string name="changeover_sources">Rates are the ones fixed by law: 100 old francs for 1 new franc in 1960, 100 old markkaa for 1 markka in 1963, and the euro rates fixed in 1999 (2001 for Greece). The value today uses the inflation of the country, before and after the change.</string>
+    <string name="changeover_then_and_now">Then and now</string>
+    <string name="changeover_baguette">Baguette, 250 g</string>
+    <string name="changeover_loaf">White loaf, 800 g</string>
+    <string name="changeover_buys">Your amount buys</string>
+    <string name="changeover_pay">Average pay per month</string>
+    <string name="changeover_pay_share">Share of a month’s pay</string>
+    <string name="changeover_pay_note">Average pay of an employee, before tax and with the employer’s contributions.</string>
+    <string name="changeover_context_sources">Pay from the European Commission’s AMECO database (compensation per employee, West Germany until 1990). Bread from INSEE (baguette since 1992, priced by the kilogram, none for 2020) and the ONS (800 g white loaf since 1968, latest 2024).</string>
     <string name="currency_euro">Euro</string>
     <string name="currency_us_dollar">US dollar</string>
     <string name="currency_pound">Pound sterling</string>

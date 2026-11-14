@@ -469,8 +469,8 @@ private fun DrawScope.drawComparison(start: Int, last: Int, highlighted: Int?) {
 }
 
 /** Grouped like the calculator, 2 decimals: 1 234.50 €. Symbols like $ go first. */
-internal fun money(value: Double, symbol: String, symbols: FormatterSymbols): String {
-  val text = number(value, symbols)
+internal fun money(value: Double, symbol: String, symbols: FormatterSymbols, decimals: Int = MONEY_DECIMALS): String {
+  val text = number(value, symbols, decimals)
   return if (symbol in SYMBOLS_FIRST) symbol + text else "$text $symbol"
 }
 

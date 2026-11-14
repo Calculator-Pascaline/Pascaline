@@ -1985,6 +1985,14 @@
     <string name="changeover_shillings">शिलिंग</string>
     <string name="changeover_pence">पेंस</string>
     <string name="changeover_sources">दरें क़ानून से तय हैं: 1960 में 100 पुराने फ़्रैंक = 1 नया फ़्रैंक, 1963 में 100 पुराने मार्क्का = 1 मार्क्का, और 1999 में तय यूरो दरें (ग्रीस के लिए 2001)। आज का मूल्य बदलाव से पहले और बाद देश की मुद्रास्फीति से निकलता है।</string>
+    <string name="changeover_then_and_now">तब और अब</string>
+    <string name="changeover_baguette">बैगेट, 250 ग्रा</string>
+    <string name="changeover_loaf">सफ़ेद ब्रेड, 800 ग्रा</string>
+    <string name="changeover_buys">आपकी राशि से मिलते हैं</string>
+    <string name="changeover_pay">औसत मासिक वेतन</string>
+    <string name="changeover_pay_share">एक महीने के वेतन का हिस्सा</string>
+    <string name="changeover_pay_note">एक कर्मचारी का औसत वेतन, कर से पहले और नियोक्ता के योगदान सहित।</string>
+    <string name="changeover_context_sources">वेतन यूरोपीय आयोग के AMECO डेटाबेस से (प्रति कर्मचारी पारिश्रमिक, 1990 तक पश्चिम जर्मनी)। ब्रेड INSEE से (1992 से बैगेट, प्रति किलो मूल्य, 2020 का नहीं) और ONS से (1968 से 800 ग्रा सफ़ेद ब्रेड, अंतिम 2024)।</string>
     <string name="currency_euro">यूरो</string>
     <string name="currency_us_dollar">अमेरिकी डॉलर</string>
     <string name="currency_pound">पाउंड स्टर्लिंग</string>

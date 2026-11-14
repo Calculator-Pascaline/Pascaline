@@ -1985,6 +1985,14 @@
     <string name="changeover_shillings">Shilling</string>
     <string name="changeover_pence">Pence</string>
     <string name="changeover_sources">Kursnya ditetapkan undang-undang: 100 franc lama untuk 1 franc baru pada 1960, 100 markka lama untuk 1 markka pada 1963, dan kurs euro yang ditetapkan pada 1999 (2001 untuk Yunani). Nilai hari ini memakai inflasi negara itu, sebelum dan sesudah pergantian.</string>
+    <string name="changeover_then_and_now">Dulu dan sekarang</string>
+    <string name="changeover_baguette">Baguette, 250 g</string>
+    <string name="changeover_loaf">Roti tawar putih, 800 g</string>
+    <string name="changeover_buys">Jumlah Anda membeli</string>
+    <string name="changeover_pay">Gaji rata-rata per bulan</string>
+    <string name="changeover_pay_share">Bagian dari gaji sebulan</string>
+    <string name="changeover_pay_note">Gaji rata-rata seorang karyawan, sebelum pajak dan dengan iuran pemberi kerja.</string>
+    <string name="changeover_context_sources">Gaji dari basis data AMECO Komisi Eropa (kompensasi per karyawan, Jerman Barat hingga 1990). Roti dari INSEE (baguette sejak 1992, harga per kilogram, tidak ada untuk 2020) dan ONS (roti putih 800 g sejak 1968, terakhir 2024).</string>
     <string name="currency_euro">Euro</string>
     <string name="currency_us_dollar">Dolar AS</string>
     <string name="currency_pound">Pound sterling</string>

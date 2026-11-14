@@ -1985,6 +1985,14 @@
     <string name="changeover_shillings">Шиллинги</string>
     <string name="changeover_pence">Пенсы</string>
     <string name="changeover_sources">Курсы установлены законом: 100 старых франков за 1 новый франк в 1960 году, 100 старых марок за 1 марку в 1963 году и курсы евро, зафиксированные в 1999 году (2001 для Греции). Сегодняшняя стоимость учитывает инфляцию страны до и после смены.</string>
+    <string name="changeover_then_and_now">Тогда и сейчас</string>
+    <string name="changeover_baguette">Багет, 250 г</string>
+    <string name="changeover_loaf">Белый хлеб, 800 г</string>
+    <string name="changeover_buys">На вашу сумму можно купить</string>
+    <string name="changeover_pay">Средняя зарплата в месяц</string>
+    <string name="changeover_pay_share">Доля месячной зарплаты</string>
+    <string name="changeover_pay_note">Средняя зарплата работника, до налогов и с взносами работодателя.</string>
+    <string name="changeover_context_sources">Зарплаты из базы данных AMECO Европейской комиссии (оплата труда на одного работника, Западная Германия до 1990 года). Хлеб — INSEE (багет с 1992 года, цена за килограмм, нет данных за 2020) и ONS (белый хлеб 800 г с 1968 года, последний 2024).</string>
     <string name="currency_euro">Евро</string>
     <string name="currency_us_dollar">Доллар США</string>
     <string name="currency_pound">Фунт стерлингов</string>

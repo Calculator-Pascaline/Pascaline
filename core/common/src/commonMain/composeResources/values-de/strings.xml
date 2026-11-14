@@ -1985,6 +1985,14 @@
     <string name="changeover_shillings">Schilling</string>
     <string name="changeover_pence">Pence</string>
     <string name="changeover_sources">Die Kurse sind gesetzlich festgelegt: 100 alte Francs für 1 neuen Franc 1960, 100 alte Markkaa für 1 Markka 1963 und die 1999 festgelegten Euro-Kurse (2001 für Griechenland). Der heutige Wert nutzt die Inflation des Landes vor und nach der Umstellung.</string>
+    <string name="changeover_then_and_now">Damals und heute</string>
+    <string name="changeover_baguette">Baguette, 250 g</string>
+    <string name="changeover_loaf">Weißbrot, 800 g</string>
+    <string name="changeover_buys">Ihr Betrag kauft</string>
+    <string name="changeover_pay">Durchschnittslohn pro Monat</string>
+    <string name="changeover_pay_share">Anteil an einem Monatslohn</string>
+    <string name="changeover_pay_note">Durchschnittslohn eines Arbeitnehmers, vor Steuern und mit den Arbeitgeberbeiträgen.</string>
+    <string name="changeover_context_sources">Löhne aus der AMECO-Datenbank der Europäischen Kommission (Arbeitnehmerentgelt je Arbeitnehmer, bis 1990 Westdeutschland). Brot von INSEE (Baguette seit 1992, Kilopreis, keiner für 2020) und vom ONS (800-g-Weißbrot seit 1968, zuletzt 2024).</string>
     <string name="currency_euro">Euro</string>
     <string name="currency_us_dollar">US-Dollar</string>
     <string name="currency_pound">Pfund Sterling</string>

@@ -52,6 +52,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.sadellie.unitto.core.common.FormatterSymbols
@@ -60,15 +61,22 @@ import com.sadellie.unitto.core.ui.textfield.formatExpression
 import com.sadellie.unitto.feature.calculator.physics.PhysicsScreen
 import com.sadellie.unitto.feature.calculator.projectile.Card
 import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 import org.jetbrains.compose.resources.stringResource
 import unitto.core.common.generated.resources.Res
 import unitto.core.common.generated.resources.changeover_amount_in
+import unitto.core.common.generated.resources.changeover_buys
 import unitto.core.common.generated.resources.changeover_cash
+import unitto.core.common.generated.resources.changeover_context_sources
 import unitto.core.common.generated.resources.changeover_decimal
+import unitto.core.common.generated.resources.changeover_pay
+import unitto.core.common.generated.resources.changeover_pay_note
+import unitto.core.common.generated.resources.changeover_pay_share
 import unitto.core.common.generated.resources.changeover_pence
 import unitto.core.common.generated.resources.changeover_pounds
 import unitto.core.common.generated.resources.changeover_shillings
 import unitto.core.common.generated.resources.changeover_sources
+import unitto.core.common.generated.resources.changeover_then_and_now
 import unitto.core.common.generated.resources.changeover_title
 import unitto.core.common.generated.resources.changeover_today
 import unitto.core.common.generated.resources.changeover_year
@@ -137,6 +145,11 @@ internal fun ChangeoverRoute(openDrawer: () -> Unit) {
     explanation = {
       Text(
         stringResource(Res.string.changeover_sources),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+      )
+      Text(
+        stringResource(Res.string.changeover_context_sources),
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
       )
@@ -262,7 +275,64 @@ private fun Steps(country: Country, era: Era, year: Int, value: Double, symbols:
       color = colors.primary,
     )
     Text(stringResource(Res.string.inflation_in_year, country.history.lastYear), style = MaterialTheme.typography.bodySmall)
+    country.thenAndNow(converted, year)?.let { (then, now) -> ThenAndNow(country, era, then, now, symbols) }
   }
+}
+
+/** Bread and pay in [then] and today, with what the amount was worth of each. */
+@Composable
+private fun ThenAndNow(country: Country, era: Era, then: Side, now: Side, symbols: FormatterSymbols) {
+  val factor = country.toToday(era)
+  val todaySymbol = country.eras.last().symbol
+  val thenMoney = { value: Double?, decimals: Int ->
+    value?.let { if (era.isLsd) lsd(it) else money(it / factor, era.symbol, symbols, decimals) } ?: "—"
+  }
+  val nowMoney = { value: Double?, decimals: Int -> value?.let { money(it, todaySymbol, symbols, decimals) } ?: "—" }
+  val count = { value: Double? -> value?.let { number(it, symbols, 0) } ?: "—" }
+  val share = { value: Double? -> value?.let { percent(it, symbols) } ?: "—" }
+  HorizontalDivider(modifier = Modifier.padding(vertical = 6.dp))
+  Text(
+    stringResource(Res.string.changeover_then_and_now),
+    style = MaterialTheme.typography.labelLarge,
+    color = MaterialTheme.colorScheme.primary,
+  )
+  ContextRow("", "${then.year}", "${now.year}", header = true)
+  val bread = country.bread
+  if (bread != null && then.loaf != null) {
+    ContextRow(stringResource(bread.name), thenMoney(then.loaf, MONEY_DECIMALS), nowMoney(now.loaf, MONEY_DECIMALS))
+    ContextRow(stringResource(Res.string.changeover_buys), count(then.loaves), count(now.loaves))
+  }
+  if (then.monthlyPay != null) {
+    ContextRow(stringResource(Res.string.changeover_pay), thenMoney(then.monthlyPay, 0), nowMoney(now.monthlyPay, 0))
+    ContextRow(stringResource(Res.string.changeover_pay_share), share(then.payShare), share(now.payShare))
+    Text(
+      stringResource(Res.string.changeover_pay_note),
+      style = MaterialTheme.typography.bodySmall,
+      color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+  }
+}
+
+/** A line of the then and now table: a label and two values. */
+@Composable
+private fun ContextRow(label: String, then: String, now: String, header: Boolean = false) {
+  val style = if (header) MaterialTheme.typography.labelMedium else MaterialTheme.typography.bodyMedium
+  val color = if (header) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface
+  Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+    Text(label, modifier = Modifier.weight(LABEL_WEIGHT), style = style, color = color)
+    Text(then, modifier = Modifier.weight(1f), style = style, color = color, textAlign = TextAlign.End)
+    Text(now, modifier = Modifier.weight(1f), style = style, color = color, textAlign = TextAlign.End)
+  }
+}
+
+/** An amount in pounds as pounds, shillings and pence: £1 2s 6d, 1s 7d. */
+internal fun lsd(pounds: Double): String {
+  val pence = (pounds * SHILLINGS_PER_POUND * PENCE_PER_SHILLING).roundToLong()
+  val l = pence / (SHILLINGS_PER_POUND * PENCE_PER_SHILLING)
+  val s = pence / PENCE_PER_SHILLING % SHILLINGS_PER_POUND
+  val d = pence % PENCE_PER_SHILLING
+  return listOfNotNull("£$l".takeIf { l > 0 }, "${s}s".takeIf { s > 0 }, "${d}d".takeIf { d > 0 || pence == 0L })
+    .joinToString(" ")
 }
 
 /** A container and its text color for each currency of a country, in order. */
@@ -286,5 +356,7 @@ private val Era.isLsd: Boolean
   get() = symbol == "£sd"
 
 private const val UNSELECTED_ALPHA = 0.45f
+private const val LABEL_WEIGHT = 1.4f
+private const val MONEY_DECIMALS = 2
 private val TIMELINE_HEIGHT = 40.dp
 private val MARK_WIDTH = 2.dp
