@@ -300,6 +300,7 @@ private fun TextFieldState.deleteLastInSlot(slotEnd: Int) {
 }
 
 private fun TextFieldState.deleteAtSlotStart(slotStart: Int) {
+  if (deleteEmptyNumerator(slotStart)) return
   val text = text.toString()
   val slotEnd = text.slotEnd(slotStart)
   val isEmpty = slotEnd == slotStart + 1
@@ -326,6 +327,31 @@ private fun TextFieldState.deleteAtSlotStart(slotStart: Int) {
         selection = TextRange(ownerStart)
       }
   }
+}
+
+/**
+ * A fraction with nothing on top loses its bar and the denominator stays, from the start of the
+ * denominator or from the empty numerator: `N}D|2}` and `N|}D2}` become `|2`.
+ *
+ * @return `false` when the slot at [slotStart] isn't part of such a fraction.
+ */
+private fun TextFieldState.deleteEmptyNumerator(slotStart: Int): Boolean {
+  val text = text.toString()
+  val numeratorStart = if (text[slotStart] == SLOT_DEN) slotStart - 2 else slotStart
+  val denominatorStart = numeratorStart + 2
+  val isEmptyNumerator =
+    text.getOrNull(numeratorStart) == SLOT_NUM &&
+      text.getOrNull(numeratorStart + 1) == SLOT_END &&
+      text.getOrNull(denominatorStart) == SLOT_DEN
+  val denominatorEnd = if (isEmptyNumerator) text.slotEnd(denominatorStart) else -1
+  // An empty denominator too: the whole fraction goes, like other empty templates
+  if (denominatorEnd == -1 || denominatorEnd == denominatorStart + 1) return false
+  edit {
+    delete(denominatorEnd, denominatorEnd + 1)
+    delete(numeratorStart, denominatorStart + 1)
+    selection = TextRange(numeratorStart)
+  }
+  return true
 }
 
 /** Owner of the slot at [slotStart], for example "^" for power. Deleted together with an empty slot. */

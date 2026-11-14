@@ -141,6 +141,12 @@ class SlotExtensionsTest {
     compareSlots("[]", "N[]}D}") { it.deleteTokens() }
     compareSlots("[]N1}D}", "N[]1}D}") { it.deleteTokens() }
     compareSlots("N1}D[]}", "N1}D2}[]") { it.deleteTokens() }
+    // Nothing on top: the bar goes, the denominator stays
+    compareSlots("[]2π", "N}D[]2π}") { it.deleteTokens() }
+    compareSlots("[]2π", "N[]}D2π}") { it.deleteTokens() }
+    compareSlots("3+[]2", "3+N}D[]2}") { it.deleteTokens() }
+    // In the denominator of another fraction, it becomes that denominator
+    compareSlots("N5}D[]2π}", "N5}DN}D[]2π}}") { it.deleteTokens() }
   }
 
   @Test
