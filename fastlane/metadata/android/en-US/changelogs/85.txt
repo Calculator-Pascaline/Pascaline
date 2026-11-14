@@ -1,0 +1,5 @@
+New tools: Gears, Inflation, Currency changeover and 3D graphs with maxima, minima and saddle points.
+Unit key: constants in five groups with five new ones, and more units.
+Hours as hours and minutes in the converter, the apostrophe as thousands separator, and a switch for the backspace key.
+9 new languages, 22 in all, with Arabic from right to left.
+Widgets and the quick settings tile have to be added again once.

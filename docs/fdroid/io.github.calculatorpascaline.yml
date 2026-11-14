@@ -13,9 +13,9 @@ RepoType: git
 Repo: https://github.com/Calculator-Pascaline/Pascaline.git
 
 Builds:
-  - versionName: 1.7.1
+  - versionName: 1.8.0
     versionCode: 85
-    commit: v1.7.1
+    commit: v1.8.0
     subdir: androidApp
     sudo:
       - apt-get update
@@ -27,5 +27,5 @@ Builds:
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
 UpdateCheckData: gradle/libs.versions.toml|versionCode\s*=\s*"(\d+)"|.|versionName\s*=\s*"([^"]+)"
-CurrentVersion: 1.7.1
+CurrentVersion: 1.8.0
 CurrentVersionCode: 85
