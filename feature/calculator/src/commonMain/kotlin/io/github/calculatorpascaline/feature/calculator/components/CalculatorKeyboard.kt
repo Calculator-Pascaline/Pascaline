@@ -28,11 +28,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import io.github.calculatorpascaline.core.common.Token
 import io.github.calculatorpascaline.core.designsystem.LocalWindowSize
@@ -62,6 +64,7 @@ import io.github.calculatorpascaline.core.ui.KeypadButton.Companion.MultiplyKey
 import io.github.calculatorpascaline.core.ui.KeypadButton.Companion.PlusKey
 import io.github.calculatorpascaline.core.ui.KeypadButton.Companion.PowerKey
 import io.github.calculatorpascaline.core.ui.KeypadFlow
+import io.github.calculatorpascaline.core.ui.LeftToRight
 import io.github.calculatorpascaline.core.ui.inKeypadRow
 
 /**
@@ -81,60 +84,64 @@ internal fun CalculatorKeyboard(
   firstFunctionKeys: List<Pair<String, String>> = emptyList(),
   showCalculus: Boolean = true,
 ) {
-  var showUnits by remember { mutableStateOf(false) }
-  val keypad: @Composable (Modifier, Float) -> Unit = { keypadModifier, iconHeight ->
-    BottomGrid(
-      modifier = keypadModifier,
-      iconHeight = iconHeight,
-      onAddTokenClick = onAddTokenClick,
-      onBracketsClick = onBracketsClick,
-      onDeleteClick = onDeleteClick,
-      onClearClick = onClearClick,
-      onEqualClick = onEqualClick,
-      onUnitsClick = { showUnits = true },
-      isInSeries = isInSeries,
-      fractional = fractional,
-    )
-  }
-  if (LocalWindowSize.current.heightSizeClass >= WindowHeightSizeClass.Medium) {
-    ColumnWithConstraints(modifier = modifier) { constraints ->
-      // Function rows are lower than digit rows: digits get most of the height
-      val rowHeight =
-        (constraints.maxHeight - DOTS_HEIGHT) / (BOTTOM_ROWS + PAGE_ROWS * FUNCTION_ROW_SCALE)
-      FunctionRows(
-        modifier = Modifier.fillMaxWidth(),
-        rowHeight = rowHeight * FUNCTION_ROW_SCALE,
+  // The units menu is text: it keeps the direction of the language
+  val readingDirection = LocalLayoutDirection.current
+  LeftToRight {
+    var showUnits by remember { mutableStateOf(false) }
+    val keypad: @Composable (Modifier, Float) -> Unit = { keypadModifier, iconHeight ->
+      BottomGrid(
+        modifier = keypadModifier,
+        iconHeight = iconHeight,
         onAddTokenClick = onAddTokenClick,
-        // Same gaps as the keypad under it
-        spacing = constraints.maxWidth * KEYPAD_SPACING_FRACTION,
-        rowGap = rowHeight * BOTTOM_ROWS * KEYPAD_SPACING_FRACTION,
-        firstKeys = firstFunctionKeys,
-        showCalculus = showCalculus,
+        onBracketsClick = onBracketsClick,
+        onDeleteClick = onDeleteClick,
+        onClearClick = onClearClick,
+        onEqualClick = onEqualClick,
+        onUnitsClick = { showUnits = true },
+        isInSeries = isInSeries,
+        fractional = fractional,
       )
-      keypad(Modifier.fillMaxWidth().weight(1f), KeyboardButtonToken.ICON_HEIGHT_TALL)
     }
-  } else {
-    Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(LANDSCAPE_PANE_GAP)) {
-      BoxWithConstraints(modifier = Modifier.weight(FUNCTIONS_PANE_WEIGHT).fillMaxHeight()) {
+    if (LocalWindowSize.current.heightSizeClass >= WindowHeightSizeClass.Medium) {
+      ColumnWithConstraints(modifier = modifier) { constraints ->
+        // Function rows are lower than digit rows: digits get most of the height
+        val rowHeight =
+          (constraints.maxHeight - DOTS_HEIGHT) / (BOTTOM_ROWS + PAGE_ROWS * FUNCTION_ROW_SCALE)
         FunctionRows(
           modifier = Modifier.fillMaxWidth(),
-          rowHeight = (maxHeight - DOTS_HEIGHT) / PAGE_ROWS,
+          rowHeight = rowHeight * FUNCTION_ROW_SCALE,
           onAddTokenClick = onAddTokenClick,
+          // Same gaps as the keypad under it
+          spacing = constraints.maxWidth * KEYPAD_SPACING_FRACTION,
+          rowGap = rowHeight * BOTTOM_ROWS * KEYPAD_SPACING_FRACTION,
           firstKeys = firstFunctionKeys,
           showCalculus = showCalculus,
         )
+        keypad(Modifier.fillMaxWidth().weight(1f), KeyboardButtonToken.ICON_HEIGHT_TALL)
       }
-      keypad(Modifier.weight(KEYPAD_PANE_WEIGHT).fillMaxHeight(), KeyboardButtonToken.ICON_HEIGHT_SHORT)
+    } else {
+      Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(LANDSCAPE_PANE_GAP)) {
+        BoxWithConstraints(modifier = Modifier.weight(FUNCTIONS_PANE_WEIGHT).fillMaxHeight()) {
+          FunctionRows(
+            modifier = Modifier.fillMaxWidth(),
+            rowHeight = (maxHeight - DOTS_HEIGHT) / PAGE_ROWS,
+            onAddTokenClick = onAddTokenClick,
+            firstKeys = firstFunctionKeys,
+            showCalculus = showCalculus,
+          )
+        }
+        keypad(Modifier.weight(KEYPAD_PANE_WEIGHT).fillMaxHeight(), KeyboardButtonToken.ICON_HEIGHT_SHORT)
+      }
     }
-  }
-  if (showUnits) {
-    UnitsSheet(
-      onDismiss = { showUnits = false },
-      onUnitClick = {
-        onAddTokenClick(it)
-        showUnits = false
-      },
-    )
+    if (showUnits) CompositionLocalProvider(LocalLayoutDirection provides readingDirection) {
+      UnitsSheet(
+        onDismiss = { showUnits = false },
+        onUnitClick = {
+          onAddTokenClick(it)
+          showUnits = false
+        },
+      )
+    }
   }
 }
 

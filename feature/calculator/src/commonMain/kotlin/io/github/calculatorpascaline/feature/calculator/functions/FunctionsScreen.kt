@@ -86,6 +86,7 @@ import io.github.calculatorpascaline.core.designsystem.icons.symbols.Close
 import io.github.calculatorpascaline.core.designsystem.icons.symbols.Symbols
 import io.github.calculatorpascaline.core.ui.DrawerButton
 import io.github.calculatorpascaline.core.ui.EmptyScreen
+import io.github.calculatorpascaline.core.ui.LeftToRight
 import io.github.calculatorpascaline.core.ui.ScaffoldWithTopBar
 import io.github.calculatorpascaline.core.ui.textfield.ExpressionLayoutText
 import io.github.calculatorpascaline.core.ui.textfield.ExpressionLayoutTextField
@@ -277,17 +278,19 @@ private fun FunctionList(
 /** Calculator keyboard while a function is being edited, its equal key finishes. */
 @Composable
 private fun FunctionsKeyboard(modifier: Modifier, uiState: FunctionsUIState.Ready, viewModel: FunctionsViewModel) {
-  val selected = uiState.selected?.let { uiState.functions.getOrNull(it) } ?: return
-  CalculatorKeyboard(
-    modifier = modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-    onAddTokenClick = viewModel::addTokens,
-    onBracketsClick = viewModel::addBracket,
-    onDeleteClick = viewModel::deleteTokens,
-    onClearClick = viewModel::clearInput,
-    onEqualClick = viewModel::done,
-    fractional = uiState.formatterSymbols.fractional,
-    isInSeries = isInSeries(selected.input),
-  )
+  LeftToRight {
+    val selected = uiState.selected?.let { uiState.functions.getOrNull(it) } ?: return@LeftToRight
+    CalculatorKeyboard(
+      modifier = modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+      onAddTokenClick = viewModel::addTokens,
+      onBracketsClick = viewModel::addBracket,
+      onDeleteClick = viewModel::deleteTokens,
+      onClearClick = viewModel::clearInput,
+      onEqualClick = viewModel::done,
+      fractional = uiState.formatterSymbols.fractional,
+      isInSeries = isInSeries(selected.input),
+    )
+  }
 }
 
 /** `● f(x)=x²  ×`. The dot shows or hides the curve, the expression is editable when [isSelected]. */

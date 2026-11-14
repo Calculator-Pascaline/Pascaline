@@ -56,6 +56,7 @@ import io.github.calculatorpascaline.core.ui.KeypadButton.Companion.PlusKey
 import io.github.calculatorpascaline.core.ui.KeypadButton.Companion.PowerKey
 import io.github.calculatorpascaline.core.ui.KeypadButton.Companion.RootKey
 import io.github.calculatorpascaline.core.ui.KeypadFlow
+import io.github.calculatorpascaline.core.ui.LeftToRight
 import io.github.calculatorpascaline.core.ui.LocalSwapPointBackspace
 import io.github.calculatorpascaline.core.ui.inKeypadRow
 
@@ -68,48 +69,50 @@ internal fun DefaultKeyboard(
   onBracketsClick: () -> Unit,
   fractional: String,
 ) {
-  val iconHeight: Float =
-    if (LocalWindowSize.current.heightSizeClass < WindowHeightSizeClass.Medium)
-      KeyboardButtonToken.ICON_HEIGHT_SHORT
-    else KeyboardButtonToken.ICON_HEIGHT_TALL
+  LeftToRight {
+    val iconHeight: Float =
+      if (LocalWindowSize.current.heightSizeClass < WindowHeightSizeClass.Medium)
+        KeyboardButtonToken.ICON_HEIGHT_SHORT
+      else KeyboardButtonToken.ICON_HEIGHT_TALL
 
-  val fractionalKey = remember(fractional) { if (fractional == Token.PERIOD) DotKey else CommaKey }
-  val swapPointBackspace = LocalSwapPointBackspace.current
-  KeypadFlow(modifier = modifier, iconHeight = iconHeight) {
-    KeypadRow {
-      ButtonTertiary(ClearKey, onClearClick)
-      ButtonFilled(BracketsKey, onBracketsClick)
-      ButtonFilled(PowerKey, onAddTokenClick)
-      ButtonFilled(RootKey, onAddTokenClick)
-    }
-    KeypadRow {
-      ButtonLight(Key7.inKeypadRow(), onAddTokenClick)
-      ButtonLight(Key8.inKeypadRow(), onAddTokenClick)
-      ButtonLight(Key9.inKeypadRow(), onAddTokenClick)
-      ButtonFilled(DivideKey, onAddTokenClick)
-    }
-    KeypadRow {
-      ButtonLight(Key4, onAddTokenClick)
-      ButtonLight(Key5, onAddTokenClick)
-      ButtonLight(Key6, onAddTokenClick)
-      ButtonFilled(MultiplyKey, onAddTokenClick)
-    }
-    KeypadRow {
-      ButtonLight(Key1.inKeypadRow(), onAddTokenClick)
-      ButtonLight(Key2.inKeypadRow(), onAddTokenClick)
-      ButtonLight(Key3.inKeypadRow(), onAddTokenClick)
-      ButtonFilled(MinusKey, onAddTokenClick)
-    }
-    KeypadRow {
-      ButtonLight(Key0, onAddTokenClick)
-      if (swapPointBackspace) {
-        ButtonLight(BackspaceKey, onLongClick = onClearClick, onClick = onDeleteClick)
-        ButtonLight(fractionalKey, onAddTokenClick)
-      } else {
-        ButtonLight(fractionalKey, onAddTokenClick)
-        ButtonLight(BackspaceKey, onLongClick = onClearClick, onClick = onDeleteClick)
+    val fractionalKey = remember(fractional) { if (fractional == Token.PERIOD) DotKey else CommaKey }
+    val swapPointBackspace = LocalSwapPointBackspace.current
+    KeypadFlow(modifier = modifier, iconHeight = iconHeight) {
+      KeypadRow {
+        ButtonTertiary(ClearKey, onClearClick)
+        ButtonFilled(BracketsKey, onBracketsClick)
+        ButtonFilled(PowerKey, onAddTokenClick)
+        ButtonFilled(RootKey, onAddTokenClick)
       }
-      ButtonFilled(PlusKey, onAddTokenClick)
+      KeypadRow {
+        ButtonLight(Key7.inKeypadRow(), onAddTokenClick)
+        ButtonLight(Key8.inKeypadRow(), onAddTokenClick)
+        ButtonLight(Key9.inKeypadRow(), onAddTokenClick)
+        ButtonFilled(DivideKey, onAddTokenClick)
+      }
+      KeypadRow {
+        ButtonLight(Key4, onAddTokenClick)
+        ButtonLight(Key5, onAddTokenClick)
+        ButtonLight(Key6, onAddTokenClick)
+        ButtonFilled(MultiplyKey, onAddTokenClick)
+      }
+      KeypadRow {
+        ButtonLight(Key1.inKeypadRow(), onAddTokenClick)
+        ButtonLight(Key2.inKeypadRow(), onAddTokenClick)
+        ButtonLight(Key3.inKeypadRow(), onAddTokenClick)
+        ButtonFilled(MinusKey, onAddTokenClick)
+      }
+      KeypadRow {
+        ButtonLight(Key0, onAddTokenClick)
+        if (swapPointBackspace) {
+          ButtonLight(BackspaceKey, onLongClick = onClearClick, onClick = onDeleteClick)
+          ButtonLight(fractionalKey, onAddTokenClick)
+        } else {
+          ButtonLight(fractionalKey, onAddTokenClick)
+          ButtonLight(BackspaceKey, onLongClick = onClearClick, onClick = onDeleteClick)
+        }
+        ButtonFilled(PlusKey, onAddTokenClick)
+      }
     }
   }
 }
@@ -121,40 +124,42 @@ internal fun NumberBaseKeyboard(
   onClearClick: () -> Unit,
   onDeleteClick: () -> Unit,
 ) {
-  val iconHeight: Float =
-    if (LocalWindowSize.current.heightSizeClass < WindowHeightSizeClass.Medium)
-      KeyboardButtonToken.ICON_HEIGHT_SHORT
-    else KeyboardButtonToken.ICON_HEIGHT_TALL
+  LeftToRight {
+    val iconHeight: Float =
+      if (LocalWindowSize.current.heightSizeClass < WindowHeightSizeClass.Medium)
+        KeyboardButtonToken.ICON_HEIGHT_SHORT
+      else KeyboardButtonToken.ICON_HEIGHT_TALL
 
-  KeypadFlow(modifier = modifier, iconHeight = iconHeight) {
-    KeypadRow {
-      ButtonFilled(KeyA, onAddTokenClick)
-      ButtonFilled(KeyB, onAddTokenClick)
-      ButtonFilled(KeyC, onAddTokenClick)
-    }
-    KeypadRow {
-      ButtonFilled(KeyD, onAddTokenClick)
-      ButtonFilled(KeyE, onAddTokenClick)
-      ButtonFilled(KeyF, onAddTokenClick)
-    }
-    KeypadRow {
-      ButtonLight(Key7.inKeypadRow(), onAddTokenClick)
-      ButtonLight(Key8.inKeypadRow(), onAddTokenClick)
-      ButtonLight(Key9.inKeypadRow(), onAddTokenClick)
-    }
-    KeypadRow {
-      ButtonLight(Key4, onAddTokenClick)
-      ButtonLight(Key5, onAddTokenClick)
-      ButtonLight(Key6, onAddTokenClick)
-    }
-    KeypadRow {
-      ButtonLight(Key1.inKeypadRow(), onAddTokenClick)
-      ButtonLight(Key2.inKeypadRow(), onAddTokenClick)
-      ButtonLight(Key3.inKeypadRow(), onAddTokenClick)
-    }
-    KeypadRow {
-      ButtonLight(Key0, onAddTokenClick)
-      ButtonLight(BackspaceKey, onLongClick = onClearClick, onClick = onDeleteClick, weight = 2f)
+    KeypadFlow(modifier = modifier, iconHeight = iconHeight) {
+      KeypadRow {
+        ButtonFilled(KeyA, onAddTokenClick)
+        ButtonFilled(KeyB, onAddTokenClick)
+        ButtonFilled(KeyC, onAddTokenClick)
+      }
+      KeypadRow {
+        ButtonFilled(KeyD, onAddTokenClick)
+        ButtonFilled(KeyE, onAddTokenClick)
+        ButtonFilled(KeyF, onAddTokenClick)
+      }
+      KeypadRow {
+        ButtonLight(Key7.inKeypadRow(), onAddTokenClick)
+        ButtonLight(Key8.inKeypadRow(), onAddTokenClick)
+        ButtonLight(Key9.inKeypadRow(), onAddTokenClick)
+      }
+      KeypadRow {
+        ButtonLight(Key4, onAddTokenClick)
+        ButtonLight(Key5, onAddTokenClick)
+        ButtonLight(Key6, onAddTokenClick)
+      }
+      KeypadRow {
+        ButtonLight(Key1.inKeypadRow(), onAddTokenClick)
+        ButtonLight(Key2.inKeypadRow(), onAddTokenClick)
+        ButtonLight(Key3.inKeypadRow(), onAddTokenClick)
+      }
+      KeypadRow {
+        ButtonLight(Key0, onAddTokenClick)
+        ButtonLight(BackspaceKey, onLongClick = onClearClick, onClick = onDeleteClick, weight = 2f)
+      }
     }
   }
 }

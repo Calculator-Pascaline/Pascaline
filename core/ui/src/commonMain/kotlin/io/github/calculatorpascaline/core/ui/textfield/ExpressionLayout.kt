@@ -24,6 +24,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.Density
 import io.github.calculatorpascaline.core.common.FormatterSymbols
 import io.github.calculatorpascaline.core.common.PhysicalUnit
@@ -417,6 +418,8 @@ private class LayoutBuilder(
         softWrap = false,
         maxLines = 1,
         density = density,
+        // Math reads from left to right in every language: ≈1.7 stays ≈1.7 in Arabic
+        layoutDirection = LayoutDirection.Ltr,
       )
     val offsets = displayOffsets(node.text, display)
     val carets =
@@ -711,6 +714,7 @@ private class LayoutBuilder(
       softWrap = false,
       maxLines = 1,
       density = density,
+      layoutDirection = LayoutDirection.Ltr,
     )
 }
 

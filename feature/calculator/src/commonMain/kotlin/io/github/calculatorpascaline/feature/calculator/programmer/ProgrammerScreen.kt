@@ -97,6 +97,8 @@ import io.github.calculatorpascaline.core.ui.KeypadButton.Companion.PlusKey
 import io.github.calculatorpascaline.core.ui.KeypadButton.Companion.RightBracketKey
 import io.github.calculatorpascaline.core.ui.KeypadFlow
 import io.github.calculatorpascaline.core.ui.KeypadFlowScope
+import io.github.calculatorpascaline.core.ui.LeftToRight
+import io.github.calculatorpascaline.core.ui.leftToRight
 import io.github.calculatorpascaline.core.ui.ScaffoldWithTopBar
 import io.github.calculatorpascaline.feature.calculator.components.DayTitle
 import io.github.calculatorpascaline.feature.calculator.components.HistoryRow
@@ -317,20 +319,20 @@ private fun HistoryCard(entry: ProgrammerHistoryEntry, onUseExpression: () -> Un
     Row(verticalAlignment = Alignment.CenterVertically) {
       Text(
         modifier = Modifier.padding(end = 8.dp),
-        text = "${entry.base.name} · ${entry.wordSize.bits}",
+        text = "${entry.base.name} · ${entry.wordSize.bits}".leftToRight(),
         style = MaterialTheme.typography.labelMedium,
         color = MaterialTheme.colorScheme.primary,
       )
       Text(
         modifier = Modifier.weight(1f).clickable(onClick = onUseExpression),
-        text = entry.expressionText,
+        text = entry.expressionText.leftToRight(),
         style = MaterialTheme.typography.titleLarge,
         maxLines = 2,
       )
     }
     Text(
       modifier = Modifier.fillMaxWidth().clickable(onClick = onUseResult),
-      text = entry.resultText.groupedFor(entry.base),
+      text = entry.resultText.groupedFor(entry.base).leftToRight(),
       style = MaterialTheme.typography.titleLarge,
       fontFamily = FontFamily.Monospace,
       color = MaterialTheme.colorScheme.primary,
@@ -347,7 +349,7 @@ private fun WordSizeSelector(selected: WordSize, onSelect: (WordSize) -> Unit) {
         selected = size == selected,
         onClick = { onSelect(size) },
         shape = SegmentedButtonDefaults.itemShape(index, WordSize.entries.size),
-        label = { Text("${size.bits} bit") },
+        label = { Text("${size.bits} bit".leftToRight()) },
       )
     }
   }
@@ -356,7 +358,7 @@ private fun WordSizeSelector(selected: WordSize, onSelect: (WordSize) -> Unit) {
 /** Typed expression, words are spaced: 12 AND FF. */
 @Composable
 private fun Input(tokens: List<String>) {
-  val text = tokens.toProgrammerText().ifEmpty { "0" }
+  val text = tokens.toProgrammerText().ifEmpty { "0" }.leftToRight()
   Text(
     modifier =
       Modifier.fillMaxWidth()
@@ -387,7 +389,7 @@ private fun Results(
         when {
           isError -> stringResource(Res.string.common_error)
           value == null -> ""
-          else -> programmerFormat(value, base, wordSize).groupedFor(base)
+          else -> programmerFormat(value, base, wordSize).groupedFor(base).leftToRight()
         }
       Row(
         modifier =
@@ -434,57 +436,59 @@ private fun String.grouped(size: Int): String {
  */
 @Composable
 private fun ProgrammerKeypad(modifier: Modifier, viewModel: ProgrammerViewModel) {
-  val digits = viewModel.digits
-  KeypadFlow(modifier = modifier, iconHeight = KeyboardButtonToken.ICON_HEIGHT_TALL) {
-    KeypadRow {
-      Digit(this, KeyA, digits, viewModel)
-      Digit(this, KeyB, digits, viewModel)
-      Digit(this, KeyC, digits, viewModel)
-      ButtonText(ProgrammerOperator.AND, { viewModel.addOperator(ProgrammerOperator.AND) })
-      ButtonText(ProgrammerOperator.OR, { viewModel.addOperator(ProgrammerOperator.OR) })
-      ButtonText(ProgrammerOperator.NAND, { viewModel.addOperator(ProgrammerOperator.NAND) })
-    }
-    KeypadRow {
-      Digit(this, KeyD, digits, viewModel)
-      Digit(this, KeyE, digits, viewModel)
-      Digit(this, KeyF, digits, viewModel)
-      ButtonText(ProgrammerOperator.XOR, { viewModel.addOperator(ProgrammerOperator.XOR) })
-      ButtonText(ProgrammerOperator.NOR, { viewModel.addOperator(ProgrammerOperator.NOR) })
-      ButtonText(ProgrammerOperator.NOT, viewModel::addNot)
-    }
-    KeypadRow {
-      ButtonText(ProgrammerOperator.SHIFT_LEFT, { viewModel.addOperator(ProgrammerOperator.SHIFT_LEFT) })
-      ButtonText(ProgrammerOperator.SHIFT_RIGHT, { viewModel.addOperator(ProgrammerOperator.SHIFT_RIGHT) })
-      ButtonText(ProgrammerOperator.ROTATE_LEFT, { viewModel.addOperator(ProgrammerOperator.ROTATE_LEFT) })
-      ButtonText(ProgrammerOperator.ROTATE_RIGHT, { viewModel.addOperator(ProgrammerOperator.ROTATE_RIGHT) })
-      ButtonText(ProgrammerOperator.MOD, { viewModel.addOperator(ProgrammerOperator.MOD) })
-    }
-    KeypadRow {
-      Digit(this, Key7, digits, viewModel)
-      Digit(this, Key8, digits, viewModel)
-      Digit(this, Key9, digits, viewModel)
-      ButtonFilled(LeftBracketKey, { viewModel.addLeftBracket() })
-      ButtonFilled(RightBracketKey, { viewModel.addRightBracket() })
-    }
-    KeypadRow {
-      Digit(this, Key4, digits, viewModel)
-      Digit(this, Key5, digits, viewModel)
-      Digit(this, Key6, digits, viewModel)
-      ButtonFilled(MultiplyKey, viewModel::addOperator)
-      ButtonFilled(DivideKey, viewModel::addOperator)
-    }
-    KeypadRow {
-      Digit(this, Key1, digits, viewModel)
-      Digit(this, Key2, digits, viewModel)
-      Digit(this, Key3, digits, viewModel)
-      ButtonFilled(PlusKey, viewModel::addOperator)
-      ButtonFilled(MinusKey, viewModel::addOperator)
-    }
-    KeypadRow {
-      ButtonTertiary(ClearKey, viewModel::clear)
-      Digit(this, Key0, digits, viewModel)
-      ButtonFilled(BackspaceKey, viewModel::delete)
-      ButtonFilledPrimary(EqualKey, viewModel::equal, weight = 2f)
+  LeftToRight {
+    val digits = viewModel.digits
+    KeypadFlow(modifier = modifier, iconHeight = KeyboardButtonToken.ICON_HEIGHT_TALL) {
+      KeypadRow {
+        Digit(this, KeyA, digits, viewModel)
+        Digit(this, KeyB, digits, viewModel)
+        Digit(this, KeyC, digits, viewModel)
+        ButtonText(ProgrammerOperator.AND, { viewModel.addOperator(ProgrammerOperator.AND) })
+        ButtonText(ProgrammerOperator.OR, { viewModel.addOperator(ProgrammerOperator.OR) })
+        ButtonText(ProgrammerOperator.NAND, { viewModel.addOperator(ProgrammerOperator.NAND) })
+      }
+      KeypadRow {
+        Digit(this, KeyD, digits, viewModel)
+        Digit(this, KeyE, digits, viewModel)
+        Digit(this, KeyF, digits, viewModel)
+        ButtonText(ProgrammerOperator.XOR, { viewModel.addOperator(ProgrammerOperator.XOR) })
+        ButtonText(ProgrammerOperator.NOR, { viewModel.addOperator(ProgrammerOperator.NOR) })
+        ButtonText(ProgrammerOperator.NOT, viewModel::addNot)
+      }
+      KeypadRow {
+        ButtonText(ProgrammerOperator.SHIFT_LEFT, { viewModel.addOperator(ProgrammerOperator.SHIFT_LEFT) })
+        ButtonText(ProgrammerOperator.SHIFT_RIGHT, { viewModel.addOperator(ProgrammerOperator.SHIFT_RIGHT) })
+        ButtonText(ProgrammerOperator.ROTATE_LEFT, { viewModel.addOperator(ProgrammerOperator.ROTATE_LEFT) })
+        ButtonText(ProgrammerOperator.ROTATE_RIGHT, { viewModel.addOperator(ProgrammerOperator.ROTATE_RIGHT) })
+        ButtonText(ProgrammerOperator.MOD, { viewModel.addOperator(ProgrammerOperator.MOD) })
+      }
+      KeypadRow {
+        Digit(this, Key7, digits, viewModel)
+        Digit(this, Key8, digits, viewModel)
+        Digit(this, Key9, digits, viewModel)
+        ButtonFilled(LeftBracketKey, { viewModel.addLeftBracket() })
+        ButtonFilled(RightBracketKey, { viewModel.addRightBracket() })
+      }
+      KeypadRow {
+        Digit(this, Key4, digits, viewModel)
+        Digit(this, Key5, digits, viewModel)
+        Digit(this, Key6, digits, viewModel)
+        ButtonFilled(MultiplyKey, viewModel::addOperator)
+        ButtonFilled(DivideKey, viewModel::addOperator)
+      }
+      KeypadRow {
+        Digit(this, Key1, digits, viewModel)
+        Digit(this, Key2, digits, viewModel)
+        Digit(this, Key3, digits, viewModel)
+        ButtonFilled(PlusKey, viewModel::addOperator)
+        ButtonFilled(MinusKey, viewModel::addOperator)
+      }
+      KeypadRow {
+        ButtonTertiary(ClearKey, viewModel::clear)
+        Digit(this, Key0, digits, viewModel)
+        ButtonFilled(BackspaceKey, viewModel::delete)
+        ButtonFilledPrimary(EqualKey, viewModel::equal, weight = 2f)
+      }
     }
   }
 }

@@ -33,10 +33,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFontFamilyResolver
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.window.ComposeViewport
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -118,6 +120,9 @@ fun main() {
   initKoin()
   ComposeViewport(document.body!!) {
     CompositionLocalProvider(
+      // The browser does not mirror the app: Arabic reads from right to left like on Android
+      LocalLayoutDirection provides
+        if (Locale.current.language in RIGHT_TO_LEFT_LANGUAGES) LayoutDirection.Rtl else LayoutDirection.Ltr,
       LocalWindowSize provides rememberWindowSizeClass(),
       LocalNumberTypography provides numberTypographyPascaline(),
       LocalPlatformDateFormatSettings provides
@@ -260,3 +265,6 @@ private fun rememberWindowSizeClass(): WindowSizeClass {
     }
   }
 }
+
+/** Languages of the app written from right to left. */
+private val RIGHT_TO_LEFT_LANGUAGES = setOf("ar", "fa", "he", "ur")
