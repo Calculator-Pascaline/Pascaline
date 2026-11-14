@@ -121,6 +121,8 @@ import com.sadellie.unitto.core.navigation.FiltersDrawerItem
 import com.sadellie.unitto.core.navigation.FinanceDrawerItem
 import com.sadellie.unitto.core.navigation.FunctionsDrawerItem
 import com.sadellie.unitto.core.navigation.InferenceDrawerItem
+import com.sadellie.unitto.core.navigation.ChangeoverDrawerItem
+import com.sadellie.unitto.core.navigation.InflationDrawerItem
 import com.sadellie.unitto.core.navigation.IntegralsDrawerItem
 import com.sadellie.unitto.core.navigation.LocalNavigator
 import com.sadellie.unitto.core.navigation.LogicDrawerItem
@@ -774,7 +776,7 @@ private enum class Topic(val title: StringResource, val palette: TilePalette, va
   EVERYDAY(
     Res.string.home_everyday,
     PEACH,
-    listOf(ConverterDrawerItem, PricesDrawerItem, FinanceDrawerItem, DateCalculatorDrawerItem, BodyMassDrawerItem),
+    listOf(ConverterDrawerItem, PricesDrawerItem, FinanceDrawerItem, InflationDrawerItem, ChangeoverDrawerItem, DateCalculatorDrawerItem, BodyMassDrawerItem),
   ),
   DATA(Res.string.home_data, GREEN, listOf(StatisticsDrawerItem, RegressionDrawerItem, InferenceDrawerItem, ProbabilityDrawerItem)),
   SCIENCE(Res.string.home_science, SKY, listOf(ElementsDrawerItem, ProjectileDrawerItem, OrbitsDrawerItem, PlaceDrawerItem)),

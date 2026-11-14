@@ -51,6 +51,7 @@ import com.sadellie.unitto.core.designsystem.theme.LocalNumberTypography
 import com.sadellie.unitto.core.designsystem.theme.numberTypographyUnitto
 import com.sadellie.unitto.core.navigation.BodyMassStartRoute
 import com.sadellie.unitto.core.navigation.CalculatorStartRoute
+import com.sadellie.unitto.core.navigation.ChangeoverStartRoute
 import com.sadellie.unitto.core.navigation.ChargingStartRoute
 import com.sadellie.unitto.core.navigation.ConverterStartRoute
 import com.sadellie.unitto.core.navigation.DateCalculatorStartRoute
@@ -60,6 +61,7 @@ import com.sadellie.unitto.core.navigation.FinanceStartRoute
 import com.sadellie.unitto.core.navigation.FunctionsStartRoute
 import com.sadellie.unitto.core.navigation.HomeStartRoute
 import com.sadellie.unitto.core.navigation.InferenceStartRoute
+import com.sadellie.unitto.core.navigation.InflationStartRoute
 import com.sadellie.unitto.core.navigation.IntegralsStartRoute
 import com.sadellie.unitto.core.navigation.LAST_TOOL_KEY
 import com.sadellie.unitto.core.navigation.LogicStartRoute
@@ -202,6 +204,8 @@ private val navBackStackConfig = SavedStateConfiguration {
       this.subclass(PlaceStartRoute::class, PlaceStartRoute.serializer())
       this.subclass(ProjectileStartRoute::class, ProjectileStartRoute.serializer())
       this.subclass(OrbitsStartRoute::class, OrbitsStartRoute.serializer())
+      this.subclass(ChangeoverStartRoute::class, ChangeoverStartRoute.serializer())
+      this.subclass(InflationStartRoute::class, InflationStartRoute.serializer())
       this.subclass(VectorFieldsStartRoute::class, VectorFieldsStartRoute.serializer())
       this.subclass(IntegralsStartRoute::class, IntegralsStartRoute.serializer())
       this.subclass(FiltersStartRoute::class, FiltersStartRoute.serializer())

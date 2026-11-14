@@ -20,6 +20,7 @@
 package com.sadellie.unitto.feature.calculator.navigation
 
 import com.sadellie.unitto.core.navigation.CalculatorStartRoute
+import com.sadellie.unitto.core.navigation.ChangeoverStartRoute
 import com.sadellie.unitto.core.navigation.ChargingStartRoute
 import com.sadellie.unitto.core.navigation.ElementsStartRoute
 import com.sadellie.unitto.core.navigation.FiltersStartRoute
@@ -27,6 +28,7 @@ import com.sadellie.unitto.core.navigation.FinanceStartRoute
 import com.sadellie.unitto.core.navigation.FunctionsStartRoute
 import com.sadellie.unitto.core.navigation.HomeStartRoute
 import com.sadellie.unitto.core.navigation.InferenceStartRoute
+import com.sadellie.unitto.core.navigation.InflationStartRoute
 import com.sadellie.unitto.core.navigation.IntegralsStartRoute
 import com.sadellie.unitto.core.navigation.LocalNavigator
 import com.sadellie.unitto.core.navigation.LogicStartRoute
@@ -51,6 +53,8 @@ import com.sadellie.unitto.feature.calculator.finance.FinanceRoute
 import com.sadellie.unitto.feature.calculator.functions.FunctionsRoute
 import com.sadellie.unitto.feature.calculator.home.HomeRoute
 import com.sadellie.unitto.feature.calculator.inference.InferenceRoute
+import com.sadellie.unitto.feature.calculator.inflation.ChangeoverRoute
+import com.sadellie.unitto.feature.calculator.inflation.InflationRoute
 import com.sadellie.unitto.feature.calculator.integrals.IntegralsRoute
 import com.sadellie.unitto.feature.calculator.physics.OrbitsRoute
 import com.sadellie.unitto.feature.calculator.place.PlaceRoute
@@ -144,6 +148,14 @@ fun Module.calculatorNavigation() {
   navigation<VectorFieldsStartRoute> {
     val navigator = LocalNavigator.current
     VectorFieldsRoute(openDrawer = navigator::openDrawer)
+  }
+  navigation<InflationStartRoute> {
+    val navigator = LocalNavigator.current
+    InflationRoute(openDrawer = navigator::openDrawer)
+  }
+  navigation<ChangeoverStartRoute> {
+    val navigator = LocalNavigator.current
+    ChangeoverRoute(openDrawer = navigator::openDrawer)
   }
   navigation<PlaceStartRoute> {
     val navigator = LocalNavigator.current

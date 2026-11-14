@@ -25,6 +25,8 @@ actual val mainDrawerItems: List<DrawerItem> by lazy {
     FunctionsDrawerItem,
     StatisticsDrawerItem,
     FinanceDrawerItem,
+    InflationDrawerItem,
+    ChangeoverDrawerItem,
     ElementsDrawerItem,
     PlaceDrawerItem,
     ProjectileDrawerItem,

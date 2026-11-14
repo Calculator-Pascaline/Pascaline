@@ -27,12 +27,14 @@ import com.sadellie.unitto.core.designsystem.icons.symbols.BellCurve
 import com.sadellie.unitto.core.designsystem.icons.symbols.BoxPlot
 import com.sadellie.unitto.core.designsystem.icons.symbols.Calculate
 import com.sadellie.unitto.core.designsystem.icons.symbols.CalculateFill
+import com.sadellie.unitto.core.designsystem.icons.symbols.Changeover
 import com.sadellie.unitto.core.designsystem.icons.symbols.Charging
 import com.sadellie.unitto.core.designsystem.icons.symbols.Code
 import com.sadellie.unitto.core.designsystem.icons.symbols.Event
 import com.sadellie.unitto.core.designsystem.icons.symbols.EventFill
 import com.sadellie.unitto.core.designsystem.icons.symbols.Filters
 import com.sadellie.unitto.core.designsystem.icons.symbols.Home
+import com.sadellie.unitto.core.designsystem.icons.symbols.Inflation
 import com.sadellie.unitto.core.designsystem.icons.symbols.Integrals
 import com.sadellie.unitto.core.designsystem.icons.symbols.LineAxis
 import com.sadellie.unitto.core.designsystem.icons.symbols.Logic
@@ -55,6 +57,7 @@ import org.jetbrains.compose.resources.StringResource
 import unitto.core.common.generated.resources.Res
 import unitto.core.common.generated.resources.body_mass_title
 import unitto.core.common.generated.resources.calculator_title
+import unitto.core.common.generated.resources.changeover_title
 import unitto.core.common.generated.resources.charging_title
 import unitto.core.common.generated.resources.converter_title
 import unitto.core.common.generated.resources.date_calculator_title
@@ -64,6 +67,7 @@ import unitto.core.common.generated.resources.finance_title
 import unitto.core.common.generated.resources.functions_title
 import unitto.core.common.generated.resources.home_title
 import unitto.core.common.generated.resources.inference_title
+import unitto.core.common.generated.resources.inflation_title
 import unitto.core.common.generated.resources.integrals_title
 import unitto.core.common.generated.resources.logic_title
 import unitto.core.common.generated.resources.orbits_title
@@ -246,6 +250,20 @@ data object VectorFieldsDrawerItem : DrawerItem {
   override val name = Res.string.vectors_title
   override val selectedIcon = Symbols.VectorFields
   override val defaultIcon = Symbols.VectorFields
+}
+
+data object InflationDrawerItem : DrawerItem {
+  override val topLevelRoute = InflationStartRoute
+  override val name = Res.string.inflation_title
+  override val selectedIcon = Symbols.Inflation
+  override val defaultIcon = Symbols.Inflation
+}
+
+data object ChangeoverDrawerItem : DrawerItem {
+  override val topLevelRoute = ChangeoverStartRoute
+  override val name = Res.string.changeover_title
+  override val selectedIcon = Symbols.Changeover
+  override val defaultIcon = Symbols.Changeover
 }
 
 data object PlaceDrawerItem : DrawerItem {
