@@ -7,6 +7,7 @@ keystore.properties to apksigner through environment variables: they are never p
 """
 
 import os
+import struct
 import subprocess
 import sys
 from pathlib import Path
@@ -35,6 +36,9 @@ def main():
             "--ks-key-alias", props["keyAlias"],
             "--ks-pass", "env:PASCALINE_STORE_PASS",
             "--key-pass", "env:PASCALINE_KEY_PASS",
+            # Keeps every entry where Gradle put it: F-Droid copies this signature onto its own
+            # build of the same commit, which only works if the bytes before the signature match
+            "--alignment-preserved",
             "--out", str(signed),
             str(unsigned),
         ],
@@ -42,6 +46,14 @@ def main():
         check=True,
     )
     result = subprocess.run([str(apksigner), "verify", "--print-certs", str(signed)], capture_output=True, text=True, check=True)
+
+    # Like F-Droid's check: every entry of the unsigned APK must still be there, byte for byte
+    before = unsigned.read_bytes()
+    eocd = before.rfind(b"PK\x05\x06")
+    entries_end = struct.unpack("<I", before[eocd + 16:eocd + 20])[0]
+    if signed.read_bytes()[:entries_end] != before[:entries_end]:
+        signed.unlink()
+        sys.exit("The signed APK moved some entries: F-Droid could not copy its signature. Nothing written.")
     print(signed)
     print("\n".join(line for line in result.stdout.splitlines() if "SHA-256" in line))
 
