@@ -1,0 +1,5 @@
+New tool: Geometry, with triangles from any three values, quadrilaterals, circles and 3D solids, each drawn to scale with its formulas.
+Gears: rings, belts, worms, racks, planetary sets and a ratio finder.
+Currency changeover: what money was worth then and now, against pay and the price of bread.
+Persian, from right to left: 23 languages.
+A smaller app.
