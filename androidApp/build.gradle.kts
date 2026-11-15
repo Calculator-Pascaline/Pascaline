@@ -85,6 +85,7 @@ android {
         "cs",
         "de",
         "es",
+        "fa",
         "fr",
         "hi",
         "hu",

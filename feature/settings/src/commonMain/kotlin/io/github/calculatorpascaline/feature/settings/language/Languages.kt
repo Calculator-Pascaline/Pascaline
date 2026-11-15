@@ -26,6 +26,7 @@ import pascaline.core.common.generated.resources.locale_de
 import pascaline.core.common.generated.resources.locale_en
 import pascaline.core.common.generated.resources.locale_en_rGB
 import pascaline.core.common.generated.resources.locale_es
+import pascaline.core.common.generated.resources.locale_fa
 import pascaline.core.common.generated.resources.locale_fr
 import pascaline.core.common.generated.resources.locale_hi
 import pascaline.core.common.generated.resources.locale_hu
@@ -54,6 +55,7 @@ internal val languages by lazy {
     "cs" to Res.string.locale_cs,
     "de" to Res.string.locale_de,
     "es" to Res.string.locale_es,
+    "fa" to Res.string.locale_fa,
     "fr" to Res.string.locale_fr,
     "hi" to Res.string.locale_hi,
     "hu" to Res.string.locale_hu,

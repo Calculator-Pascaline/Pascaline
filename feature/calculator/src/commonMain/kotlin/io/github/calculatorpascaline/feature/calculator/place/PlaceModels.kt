@@ -528,6 +528,7 @@ private val LANGUAGE_CITIES =
     "cs" to "Prague",
     "de" to "Berlin",
     "es" to "Madrid",
+    "fa" to "Tehran",
     "fr" to "Paris",
     "hi" to "New Delhi",
     "hu" to "Budapest",

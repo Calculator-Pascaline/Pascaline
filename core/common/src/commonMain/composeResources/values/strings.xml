@@ -478,6 +478,7 @@
     <string name="locale_en" translatable="false">English</string>
     <string name="locale_en_rGB" translatable="false">English (UK)</string>
     <string name="locale_es" translatable="false">Español</string>
+    <string name="locale_fa" translatable="false">فارسی</string>
     <string name="locale_fr" translatable="false">Français</string>
     <string name="locale_hi" translatable="false">हिन्दी</string>
     <string name="locale_hu" translatable="false">Magyar</string>
