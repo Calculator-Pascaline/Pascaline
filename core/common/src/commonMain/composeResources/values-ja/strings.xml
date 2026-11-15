@@ -1967,10 +1967,10 @@
     <string name="changeover_baguette">バゲット、250 g</string>
     <string name="changeover_loaf">食パン、800 g</string>
     <string name="changeover_buys">この金額で買えるもの</string>
-    <string name="changeover_pay">1か月の平均賃金</string>
-    <string name="changeover_pay_share">1か月の賃金に占める割合</string>
-    <string name="changeover_pay_note">従業員の平均賃金で、税引き前、雇用主負担の社会保険料を含みます。</string>
-    <string name="changeover_context_sources">賃金は欧州委員会のAMECOデータベース（従業員1人あたりの報酬、1990年までは西ドイツ）によります。パンはINSEE（1992年以降のバゲット、キログラムあたりの価格、2020年はデータなし）とONS（1968年以降の800 gの食パン、最新は2024年）によります。</string>
+    <string name="changeover_pay">月の手取り</string>
+    <string name="changeover_pay_share">月の手取りに占める割合</string>
+    <string name="changeover_pay_note">平均賃金で働く単身者の、所得税と社会保険料を引いた手取りです。2000年より前は当時の平均賃金から見積もっています。これは平均で、働く人の半分がそれより少なく稼ぐ中央値はもっと低くなります。労働はその年に実際に働いた時間で数えます。</string>
+    <string name="changeover_context_sources">手取りはユーロスタット（OECDの税と給付のモデルによる純所得、2000年から）、それより前は欧州委員会のAMECOデータベース（雇用者1人あたりの報酬、1990年までは西ドイツ）。労働時間はOur World in Data（Penn World Table）。食品とすべての物価は1996年からユーロスタットのHICP、イギリスは1988年からONSのCPI。パンはINSEE（1992年からバゲット、1キロの値段、2020年はなし）とONS（1968年から800 gの白いパン、最新は2024年）。</string>
     <string name="currency_euro">ユーロ</string>
     <string name="currency_us_dollar">米ドル</string>
     <string name="currency_pound">英ポンド</string>
@@ -2150,4 +2150,15 @@
     <string name="gears_worm_text">ウォームが1回転するとホイールは条数と同じ歯数だけ進みます。比はホイールの歯数を条数で割ったものです。すべりが大きく、効率がおよそ50 %未満ならホイールからウォームを回せません。</string>
     <string name="place_sun_above">太陽は地平線の上 %1$s</string>
     <string name="place_sun_below">太陽は地平線の下 %1$s</string>
+    <string name="changeover_at_inflation">インフレどおりなら</string>
+    <string name="changeover_loaf_work">パン1個のための労働</string>
+    <string name="changeover_amount_work">この金額のための労働</string>
+    <string name="changeover_food_since">%1$d年から：食品と飲み物 %2$s、すべての物価 %3$s</string>
+    <string name="changeover_food_faster">食品は物価より早く上がりました。</string>
+    <string name="changeover_food_slower">食品は物価よりゆっくり上がりました。</string>
+    <string name="changeover_food_same">食品は物価とほぼ同じだけ上がりました。</string>
+    <string name="changeover_fixed_rates">固定レートで</string>
+    <string name="changeover_timeline_hint">通貨をタップするか、年の上をタップしてドラッグします。</string>
+    <string name="changeover_food">食料・飲料</string>
+    <string name="changeover_all_prices">物価全体</string>
 </resources>

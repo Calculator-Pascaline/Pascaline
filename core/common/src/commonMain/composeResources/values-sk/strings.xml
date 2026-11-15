@@ -1967,10 +1967,10 @@
     <string name="changeover_baguette">Bageta, 250 g</string>
     <string name="changeover_loaf">Biely chlieb, 800 g</string>
     <string name="changeover_buys">Vaša suma kúpi</string>
-    <string name="changeover_pay">Priemerná mesačná mzda</string>
-    <string name="changeover_pay_share">Podiel mesačnej mzdy</string>
-    <string name="changeover_pay_note">Priemerná mzda zamestnanca pred zdanením a s odvodmi zamestnávateľa.</string>
-    <string name="changeover_context_sources">Mzdy z databázy AMECO Európskej komisie (náhrady na zamestnanca, Západné Nemecko do roku 1990). Chlieb z INSEE (bageta od roku 1992, cena za kilogram, bez roku 2020) a z ONS (biely chlieb 800 g od roku 1968, naposledy 2024).</string>
+    <string name="changeover_pay">Čistá mzda za mesiac</string>
+    <string name="changeover_pay_share">Podiel mesačnej čistej mzdy</string>
+    <string name="changeover_pay_note">Čistá mzda osamelého človeka s priemernou mzdou, po dani z príjmu a sociálnych odvodoch; pred rokom 2000 odhadnutá z vtedajšej priemernej mzdy. Je to priemer: medián, pod ktorým zarába polovica zamestnancov, je nižší. Práca počíta hodiny, ktoré sa v ten rok naozaj odpracovali.</string>
+    <string name="changeover_context_sources">Čistá mzda od Eurostatu (čisté zárobky podľa daňovo-dávkového modelu OECD, od roku 2000), predtým z databázy AMECO Európskej komisie (náhrady na zamestnanca, do roku 1990 západné Nemecko). Odpracované hodiny z Our World in Data (Penn World Table). Jedlo a všetky ceny z HICP Eurostatu od roku 1996 a z CPI ONS od roku 1988 pre Spojené kráľovstvo. Chlieb od INSEE (bageta od roku 1992, za kilogram, bez údaja za rok 2020) a ONS (biely chlieb 800 g od roku 1968, posledný 2024).</string>
     <string name="currency_euro">Euro</string>
     <string name="currency_us_dollar">Americký dolár</string>
     <string name="currency_pound">Britská libra</string>
@@ -2150,4 +2150,15 @@
     <string name="gears_worm_text">Každá otáčka závitovky posunie jej koleso o toľko zubov, koľko má chodov: prevod je počet zubov kolesa delený chodmi. Veľmi preklzáva: pod asi 50 % účinnosti koleso závitovku späť neroztočí.</string>
     <string name="place_sun_above">Slnko %1$s nad obzorom</string>
     <string name="place_sun_below">Slnko %1$s pod obzorom</string>
+    <string name="changeover_at_inflation">Keby sledoval infláciu</string>
+    <string name="changeover_loaf_work">Práca na bochník</string>
+    <string name="changeover_amount_work">Práca na sumu</string>
+    <string name="changeover_food_since">Od roku %1$d: jedlo a nápoje %2$s, všetky ceny %3$s</string>
+    <string name="changeover_food_faster">Jedlo zdražovalo rýchlejšie ako ceny.</string>
+    <string name="changeover_food_slower">Jedlo zdražovalo pomalšie ako ceny.</string>
+    <string name="changeover_food_same">Jedlo zdražovalo zhruba rovnako ako ceny.</string>
+    <string name="changeover_fixed_rates">Podľa pevných kurzov</string>
+    <string name="changeover_timeline_hint">Ťuknite na menu, alebo ťuknite a ťahajte po rokoch.</string>
+    <string name="changeover_food">Jedlo a nápoje</string>
+    <string name="changeover_all_prices">Všetky ceny</string>
 </resources>

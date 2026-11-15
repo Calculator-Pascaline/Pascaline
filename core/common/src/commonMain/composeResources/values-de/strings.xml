@@ -1967,10 +1967,10 @@
     <string name="changeover_baguette">Baguette, 250 g</string>
     <string name="changeover_loaf">Weißbrot, 800 g</string>
     <string name="changeover_buys">Ihr Betrag kauft</string>
-    <string name="changeover_pay">Durchschnittslohn pro Monat</string>
-    <string name="changeover_pay_share">Anteil an einem Monatslohn</string>
-    <string name="changeover_pay_note">Durchschnittslohn eines Arbeitnehmers, vor Steuern und mit den Arbeitgeberbeiträgen.</string>
-    <string name="changeover_context_sources">Löhne aus der AMECO-Datenbank der Europäischen Kommission (Arbeitnehmerentgelt je Arbeitnehmer, bis 1990 Westdeutschland). Brot von INSEE (Baguette seit 1992, Kilopreis, keiner für 2020) und vom ONS (800-g-Weißbrot seit 1968, zuletzt 2024).</string>
+    <string name="changeover_pay">Nettolohn pro Monat</string>
+    <string name="changeover_pay_share">Anteil eines Monats-Nettolohns</string>
+    <string name="changeover_pay_note">Nettolohn einer alleinstehenden Person mit Durchschnittslohn, nach Einkommensteuer und Sozialbeiträgen; vor 2000 aus dem damaligen Durchschnittslohn geschätzt. Es ist ein Durchschnitt: Der Median, unter dem die Hälfte der Beschäftigten verdient, ist niedriger. Die Arbeit zählt die in dem Jahr tatsächlich gearbeiteten Stunden.</string>
+    <string name="changeover_context_sources">Nettolohn von Eurostat (Nettoverdienste, nach dem Steuer-Leistungs-Modell der OECD, seit 2000), davor aus der AMECO-Datenbank der Europäischen Kommission (Arbeitnehmerentgelt je Arbeitnehmer, Westdeutschland bis 1990). Arbeitsstunden von Our World in Data (Penn World Table). Nahrung und alle Preise aus dem HVPI von Eurostat seit 1996 und dem VPI des ONS seit 1988 für das Vereinigte Königreich. Brot von INSEE (Baguette seit 1992, je Kilogramm, keine Angabe für 2020) und vom ONS (800-g-Weißbrot seit 1968, zuletzt 2024).</string>
     <string name="currency_euro">Euro</string>
     <string name="currency_us_dollar">US-Dollar</string>
     <string name="currency_pound">Pfund Sterling</string>
@@ -2150,4 +2150,15 @@
     <string name="gears_worm_text">Jede Umdrehung der Schnecke bewegt ihr Rad um so viele Zähne, wie sie Gänge hat: Die Übersetzung ist die Zähnezahl des Rads geteilt durch die Gänge. Sie gleitet stark: Unter etwa 50 % Wirkungsgrad kann das Rad die Schnecke nicht zurückdrehen.</string>
     <string name="place_sun_above">Sonne %1$s über dem Horizont</string>
     <string name="place_sun_below">Sonne %1$s unter dem Horizont</string>
+    <string name="changeover_at_inflation">Hätte es die Inflation mitgemacht</string>
+    <string name="changeover_loaf_work">Arbeit für ein Brot</string>
+    <string name="changeover_amount_work">Arbeit für den Betrag</string>
+    <string name="changeover_food_since">Seit %1$d: Nahrung und Getränke %2$s, alle Preise %3$s</string>
+    <string name="changeover_food_faster">Nahrung wurde schneller teurer als die Preise.</string>
+    <string name="changeover_food_slower">Nahrung wurde langsamer teurer als die Preise.</string>
+    <string name="changeover_food_same">Nahrung wurde etwa so schnell teurer wie die Preise.</string>
+    <string name="changeover_fixed_rates">Zu den festen Kursen</string>
+    <string name="changeover_timeline_hint">Eine Währung antippen oder entlang der Jahre tippen und ziehen.</string>
+    <string name="changeover_food">Lebensmittel und Getränke</string>
+    <string name="changeover_all_prices">Alle Preise</string>
 </resources>

@@ -1967,10 +1967,10 @@
     <string name="changeover_baguette">باغيت، 250 g</string>
     <string name="changeover_loaf">رغيف أبيض، 800 g</string>
     <string name="changeover_buys">مبلغك يشتري</string>
-    <string name="changeover_pay">متوسط الأجر الشهري</string>
-    <string name="changeover_pay_share">حصة من أجر شهر</string>
-    <string name="changeover_pay_note">متوسط أجر الموظف، قبل الضريبة ومع مساهمات صاحب العمل.</string>
-    <string name="changeover_context_sources">الأجور من قاعدة بيانات AMECO التابعة للمفوضية الأوروبية (التعويض لكل موظف، ألمانيا الغربية حتى 1990). الخبز من INSEE (الباغيت منذ 1992، بسعر الكيلوغرام، ولا شيء لعام 2020) ومن ONS (رغيف أبيض 800 g منذ 1968، آخرها 2024).</string>
+    <string name="changeover_pay">الأجر الصافي في الشهر</string>
+    <string name="changeover_pay_share">حصة من الأجر الصافي لشهر</string>
+    <string name="changeover_pay_note">الأجر الصافي لعامل أعزب يتقاضى متوسط الأجر، بعد ضريبة الدخل والاشتراكات الاجتماعية؛ وقبل عام 2000 يُقدَّر من متوسط أجر تلك الفترة. إنه متوسط: الوسيط، الذي يكسب نصف العمال أقل منه، أدنى منه. ويُحسب العمل بالساعات التي عُملت فعلًا في تلك السنة.</string>
+    <string name="changeover_context_sources">الأجر الصافي من يوروستات (الكسب الصافي وفق نموذج الضرائب والإعانات لمنظمة التعاون الاقتصادي والتنمية، منذ 2000)، وقبل ذلك من قاعدة بيانات AMECO للمفوضية الأوروبية (تعويض كل موظف، ألمانيا الغربية حتى 1990). ساعات العمل من Our World in Data (جدول بن العالمي). الطعام وكل الأسعار من مؤشر HICP ليوروستات منذ 1996، ومن مؤشر CPI لمكتب ONS منذ 1988 للمملكة المتحدة. الخبز من INSEE (الباغيت منذ 1992، بسعر الكيلوغرام، لا بيانات لعام 2020) ومن ONS (رغيف أبيض 800 غ منذ 1968، آخره 2024).</string>
     <string name="currency_euro">يورو</string>
     <string name="currency_us_dollar">دولار أمريكي</string>
     <string name="currency_pound">جنيه إسترليني</string>
@@ -2150,4 +2150,15 @@
     <string name="gears_worm_text">كل دورة للدودة تحرك عجلتها بعدد من الأسنان يساوي عدد أفواهها: النسبة هي أسنان العجلة مقسومة على الأفواه. انزلاقها كبير: تحت نحو 50 % من الكفاءة لا تستطيع العجلة إدارة الدودة إلى الخلف.</string>
     <string name="place_sun_above">الشمس %1$s فوق الأفق</string>
     <string name="place_sun_below">الشمس %1$s تحت الأفق</string>
+    <string name="changeover_at_inflation">لو تبع التضخم</string>
+    <string name="changeover_loaf_work">العمل مقابل رغيف</string>
+    <string name="changeover_amount_work">العمل مقابل المبلغ</string>
+    <string name="changeover_food_since">منذ %1$d: الطعام والمشروبات %2$s، كل الأسعار %3$s</string>
+    <string name="changeover_food_faster">ارتفع الطعام أسرع من الأسعار.</string>
+    <string name="changeover_food_slower">ارتفع الطعام أبطأ من الأسعار.</string>
+    <string name="changeover_food_same">ارتفع الطعام تقريبًا مثل الأسعار.</string>
+    <string name="changeover_fixed_rates">بأسعار الصرف الثابتة</string>
+    <string name="changeover_timeline_hint">المس عملة، أو المس واسحب على امتداد السنوات.</string>
+    <string name="changeover_food">الطعام والشراب</string>
+    <string name="changeover_all_prices">كل الأسعار</string>
 </resources>

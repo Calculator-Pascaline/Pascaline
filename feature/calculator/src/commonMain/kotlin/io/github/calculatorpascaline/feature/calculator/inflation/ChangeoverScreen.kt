@@ -20,6 +20,9 @@ package io.github.calculatorpascaline.feature.calculator.inflation
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,26 +33,32 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -57,19 +66,32 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.calculatorpascaline.core.common.FormatterSymbols
 import io.github.calculatorpascaline.core.common.KBigDecimal
-import io.github.calculatorpascaline.core.ui.textfield.formatExpression
+import io.github.calculatorpascaline.core.designsystem.icons.symbols.Add
+import io.github.calculatorpascaline.core.designsystem.icons.symbols.Remove
+import io.github.calculatorpascaline.core.designsystem.icons.symbols.Symbols
 import io.github.calculatorpascaline.feature.calculator.physics.PhysicsScreen
 import io.github.calculatorpascaline.feature.calculator.projectile.Card
+import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import pascaline.core.common.generated.resources.Res
+import pascaline.core.common.generated.resources.changeover_all_prices
 import pascaline.core.common.generated.resources.changeover_amount_in
+import pascaline.core.common.generated.resources.changeover_amount_work
+import pascaline.core.common.generated.resources.changeover_at_inflation
 import pascaline.core.common.generated.resources.changeover_buys
 import pascaline.core.common.generated.resources.changeover_cash
 import pascaline.core.common.generated.resources.changeover_context_sources
 import pascaline.core.common.generated.resources.changeover_decimal
-import pascaline.core.common.generated.resources.changeover_pay
+import pascaline.core.common.generated.resources.changeover_fixed_rates
+import pascaline.core.common.generated.resources.changeover_food
+import pascaline.core.common.generated.resources.changeover_food_faster
+import pascaline.core.common.generated.resources.changeover_food_same
+import pascaline.core.common.generated.resources.changeover_food_since
+import pascaline.core.common.generated.resources.changeover_food_slower
+import pascaline.core.common.generated.resources.changeover_loaf_work
 import pascaline.core.common.generated.resources.changeover_pay_note
 import pascaline.core.common.generated.resources.changeover_pay_share
 import pascaline.core.common.generated.resources.changeover_pence
@@ -77,26 +99,35 @@ import pascaline.core.common.generated.resources.changeover_pounds
 import pascaline.core.common.generated.resources.changeover_shillings
 import pascaline.core.common.generated.resources.changeover_sources
 import pascaline.core.common.generated.resources.changeover_then_and_now
+import pascaline.core.common.generated.resources.changeover_timeline_hint
 import pascaline.core.common.generated.resources.changeover_title
 import pascaline.core.common.generated.resources.changeover_today
 import pascaline.core.common.generated.resources.changeover_year
 import pascaline.core.common.generated.resources.inflation_amount
 import pascaline.core.common.generated.resources.inflation_amount_in_year
 import pascaline.core.common.generated.resources.inflation_in_year
+import pascaline.core.common.generated.resources.unit_hour_short
+import pascaline.core.common.generated.resources.unit_minute_short
+
+/** What is typed: the amount, in pounds, shillings and pence before 1971 in the United Kingdom. */
+private class Typed(val amount: String, val shillings: String, val pence: String)
 
 /**
  * Old money of a country in the currencies that followed it, at their fixed rates, then what it is
- * worth today with the inflation since.
+ * worth today with the inflation since, and what it meant then and means now: pay, work and bread.
  */
 @Composable
 internal fun ChangeoverRoute(openDrawer: () -> Unit) {
   val symbols = rememberFormatterSymbols() ?: return
   var countryIndex by rememberSaveable { mutableIntStateOf(0) }
   val country = COUNTRIES[countryIndex]
-  var eraIndex by rememberSaveable(countryIndex) { mutableIntStateOf(0) }
+  // Starts on the money of 1995, a year with pay, bread and the money before the euro
+  var eraIndex by rememberSaveable(countryIndex) {
+    mutableIntStateOf(country.eras.indexOfFirst { DEFAULT_YEAR in country.years(it) }.coerceAtLeast(0))
+  }
   val era = country.eras[eraIndex.coerceIn(country.eras.indices)]
   val years = country.years(era)
-  var chosenYear by rememberSaveable(countryIndex, eraIndex) { mutableIntStateOf((years.first + years.last) / 2) }
+  var chosenYear by rememberSaveable(countryIndex) { mutableIntStateOf(DEFAULT_YEAR) }
   val year = chosenYear.coerceIn(years)
   var amount by rememberSaveable { mutableStateOf("1000") }
   var shillings by rememberSaveable { mutableStateOf("0") }
@@ -105,13 +136,20 @@ internal fun ChangeoverRoute(openDrawer: () -> Unit) {
   val value =
     if (era.isLsd) parse(amount) + parse(shillings) / SHILLINGS_PER_POUND + parse(pence) / (SHILLINGS_PER_POUND * PENCE_PER_SHILLING)
     else parse(amount)
+  // A year picks the currency used then, unless the one chosen was still used
+  fun pickYear(newYear: Int) {
+    chosenYear = newYear
+    if (newYear !in country.years(era)) {
+      eraIndex = country.eras.indexOfFirst { newYear in country.years(it) }.coerceAtLeast(0)
+    }
+  }
   PhysicsScreen(
     title = Res.string.changeover_title,
     openDrawer = openDrawer,
     live = {
       CountryChips(countryIndex) { countryIndex = it }
-      Timeline(country, era, year)
-      Steps(country, era, year, value, symbols, lsd = Triple(amount, shillings, pence))
+      Result(country, era, year, value, symbols, Typed(amount, shillings, pence))
+      Timeline(country, era, year, onEra = { eraIndex = it }, onYear = ::pickYear)
     },
     settings = {
       Text(stringResource(Res.string.changeover_amount_in), style = MaterialTheme.typography.titleSmall)
@@ -133,26 +171,11 @@ internal fun ChangeoverRoute(openDrawer: () -> Unit) {
       } else {
         AmountField(amount, Res.string.inflation_amount, Modifier.fillMaxWidth(), suffix = era.symbol) { amount = it }
       }
-      Text("${stringResource(Res.string.changeover_year)}: $year", style = MaterialTheme.typography.titleSmall)
-      if (years.last > years.first) {
-        Slider(
-          value = year.toFloat(),
-          onValueChange = { chosenYear = it.roundToInt() },
-          valueRange = years.first.toFloat()..years.last.toFloat(),
-        )
-      }
+      country.thenAndNow(value * country.toToday(era), year)?.let { (then, now) -> ThenAndNow(country, era, then, now, symbols) }
     },
     explanation = {
-      Text(
-        stringResource(Res.string.changeover_sources),
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-      )
-      Text(
-        stringResource(Res.string.changeover_context_sources),
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-      )
+      Note(stringResource(Res.string.changeover_sources))
+      Note(stringResource(Res.string.changeover_context_sources))
     },
   )
 }
@@ -170,13 +193,7 @@ private fun CountryChips(selected: Int, onSelect: (Int) -> Unit) {
 }
 
 @Composable
-private fun AmountField(
-  value: String,
-  label: org.jetbrains.compose.resources.StringResource,
-  modifier: Modifier,
-  suffix: String? = null,
-  onChange: (String) -> Unit,
-) {
+private fun AmountField(value: String, label: StringResource, modifier: Modifier, suffix: String? = null, onChange: (String) -> Unit) {
   OutlinedTextField(
     modifier = modifier,
     value = value,
@@ -188,9 +205,59 @@ private fun AmountField(
   )
 }
 
-/** The currencies of the country one after the other, with a mark at [year]. */
 @Composable
-private fun Timeline(country: Country, selected: Era, year: Int) {
+private fun Note(text: String) =
+  Text(text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+
+/**
+ * The answer first: the amount and the year, what it is worth today with inflation, and under it the
+ * same money at the fixed rates of each changeover.
+ */
+@Composable
+private fun Result(country: Country, era: Era, year: Int, value: Double, symbols: FormatterSymbols, typed: Typed) {
+  val colors = MaterialTheme.colorScheme
+  val start = country.eras.indexOf(era)
+  val written = if (era.isLsd) "£${typed.amount} ${typed.shillings}s ${typed.pence}d" else money(value, era.symbol, symbols)
+  val converted = value * country.toToday(era)
+  val today = country.history.value(converted, year, country.history.lastYear)
+  Column(
+    modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(colors.primaryContainer).padding(16.dp),
+    verticalArrangement = Arrangement.spacedBy(2.dp),
+  ) {
+    Text(stringResource(Res.string.inflation_amount_in_year, written, year), style = MaterialTheme.typography.bodyLarge, color = colors.onPrimaryContainer)
+    Text(
+      "≈ " + money(today, country.eras.last().symbol, symbols),
+      style = MaterialTheme.typography.displaySmall,
+      fontWeight = FontWeight.Bold,
+      color = colors.onPrimaryContainer,
+    )
+    Text(
+      stringResource(Res.string.changeover_today) + " · " + stringResource(Res.string.inflation_in_year, country.history.lastYear),
+      style = MaterialTheme.typography.bodyMedium,
+      color = colors.onPrimaryContainer,
+    )
+    val steps = country.eras.drop(start + 1)
+    if (steps.isNotEmpty()) {
+      HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = colors.onPrimaryContainer.copy(alpha = DIVIDER_ALPHA))
+      Text(stringResource(Res.string.changeover_fixed_rates), style = MaterialTheme.typography.labelMedium, color = colors.onPrimaryContainer)
+      var amount = value
+      steps.forEachIndexed { offset, next ->
+        amount /= country.eras[start + offset].perNext
+        Row(verticalAlignment = Alignment.Bottom) {
+          Text("= " + money(amount, next.symbol, symbols), modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleMedium, color = colors.onPrimaryContainer)
+          Text("${next.since}", style = MaterialTheme.typography.labelMedium, color = colors.onPrimaryContainer)
+        }
+      }
+    }
+  }
+}
+
+/**
+ * The currencies of the country one after the other. A tap on one picks it, a tap or a drag along the
+ * years picks the year, and the buttons move it a year at a time.
+ */
+@Composable
+private fun Timeline(country: Country, selected: Era, year: Int, onEra: (Int) -> Unit, onYear: (Int) -> Unit) {
   val first = country.history.baseYear
   val last = country.history.lastYear
   val spans = country.eras.mapIndexed { index, era ->
@@ -199,32 +266,61 @@ private fun Timeline(country: Country, selected: Era, year: Int) {
   }
   val colors = eraColors()
   Card(stringResource(country.name)) {
-    Box(modifier = Modifier.fillMaxWidth().height(TIMELINE_HEIGHT).clip(RoundedCornerShape(8.dp))) {
-      Row(modifier = Modifier.fillMaxSize()) {
-        country.eras.forEachIndexed { index, era ->
-          val (background, content) = colors[index % colors.size]
-          Box(
-            modifier =
-              Modifier.weight((spans[index].last - spans[index].first + 1).coerceAtLeast(1).toFloat())
-                .fillMaxHeight()
-                .background(if (era == selected) background else background.copy(alpha = UNSELECTED_ALPHA)),
-            contentAlignment = Alignment.Center,
-          ) {
-            Text(era.symbol, color = content, style = MaterialTheme.typography.labelLarge, maxLines = 1)
-          }
+    Row(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(10.dp)).height(ERA_HEIGHT)) {
+      country.eras.forEachIndexed { index, era ->
+        val (background, content) = colors[index % colors.size]
+        Box(
+          modifier =
+            Modifier.weight((spans[index].last - spans[index].first + 1).coerceAtLeast(1).toFloat())
+              .fillMaxHeight()
+              .background(if (era == selected) background else background.copy(alpha = UNSELECTED_ALPHA))
+              .clickable { onEra(index) },
+          contentAlignment = Alignment.Center,
+        ) {
+          Text(era.symbol, color = content, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold, maxLines = 1)
         }
       }
-      val mark = MaterialTheme.colorScheme.onSurface
-      Canvas(Modifier.fillMaxSize()) {
-        val x = (year - first + 0.5f) / (last - first + 1) * size.width
-        drawLine(mark, Offset(x, 0f), Offset(x, size.height), strokeWidth = MARK_WIDTH.toPx())
-      }
     }
-    Row(modifier = Modifier.fillMaxWidth()) {
-      Text("$first", modifier = Modifier.weight(1f), style = MaterialTheme.typography.labelSmall)
+    YearTrack(first, last, year, onYear)
+    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+      Text("$first", style = MaterialTheme.typography.labelSmall)
+      Row(modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+        IconButton(onClick = { onYear((year - 1).coerceAtLeast(first)) }) { Icon(Symbols.Remove, null) }
+        Text(
+          "${stringResource(Res.string.changeover_year)} $year",
+          modifier = Modifier.width(YEAR_WIDTH),
+          style = MaterialTheme.typography.titleMedium,
+          fontWeight = FontWeight.Bold,
+          textAlign = TextAlign.Center,
+        )
+        IconButton(onClick = { onYear((year + 1).coerceAtMost(last)) }) { Icon(Symbols.Add, null) }
+      }
       Text("$last", style = MaterialTheme.typography.labelSmall)
     }
+    Note(stringResource(Res.string.changeover_timeline_hint))
     country.eras.zipWithNext().forEach { (era, next) -> ChangeLine(era, next) }
+  }
+}
+
+/** The years as a track with a knob at [year]: tap or drag it. */
+@Composable
+private fun YearTrack(first: Int, last: Int, year: Int, onYear: (Int) -> Unit) {
+  val track = MaterialTheme.colorScheme.surfaceContainerHighest
+  val knob = MaterialTheme.colorScheme.primary
+  val pick by rememberUpdatedState(onYear)
+  fun yearAt(x: Float, width: Int) = (first + (x / width * (last - first)).roundToInt()).coerceIn(first, last)
+  Canvas(
+    Modifier.fillMaxWidth()
+      .height(TRACK_HEIGHT)
+      .pointerInput(first, last) { detectTapGestures { pick(yearAt(it.x, size.width)) } }
+      .pointerInput(first, last) { detectHorizontalDragGestures { change, _ -> pick(yearAt(change.position.x, size.width)) } }
+  ) {
+    val middle = size.height / 2
+    val thickness = TRACK_THICKNESS.toPx()
+    drawRoundRect(track, Offset(0f, middle - thickness / 2), Size(size.width, thickness), CornerRadius(thickness / 2))
+    val x = (year - first).toFloat() / (last - first).coerceAtLeast(1) * size.width
+    drawRoundRect(knob, Offset(0f, middle - thickness / 2), Size(x, thickness), CornerRadius(thickness / 2))
+    drawCircle(knob, KNOB_RADIUS.toPx(), Offset(x, middle))
   }
 }
 
@@ -240,90 +336,113 @@ private fun ChangeLine(era: Era, next: Era) {
       if (era.fixedIn != null && cashYear != null && cashYear != era.fixedIn) rate + ", " + stringResource(Res.string.changeover_cash, cashYear)
       else rate
     }
-  Text(text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+  Note(text)
 }
 
 /**
- * The amount in each currency that followed, then what it is worth today. Inflation is the one of
- * the country, before and after the changeovers.
+ * What the amount meant in its year and means today: a share of a month's pay, hours of work, loaves
+ * of bread, and how food prices went compared with all prices.
  */
 @Composable
-private fun Steps(country: Country, era: Era, year: Int, value: Double, symbols: FormatterSymbols, lsd: Triple<String, String, String>) {
-  val colors = MaterialTheme.colorScheme
-  val start = country.eras.indexOf(era)
-  val written = if (era.isLsd) "£${lsd.first} ${lsd.second}s ${lsd.third}d" else money(value, era.symbol, symbols)
-  var converted = value
-  Column(
-    modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(colors.surfaceContainer).padding(14.dp),
-    verticalArrangement = Arrangement.spacedBy(4.dp),
-  ) {
-    Text(stringResource(Res.string.inflation_amount_in_year, written, year), style = MaterialTheme.typography.bodyMedium)
-    country.eras.drop(start + 1).forEachIndexed { offset, next ->
-      converted /= country.eras[start + offset].perNext
-      Row(verticalAlignment = Alignment.Bottom) {
-        Text("= " + money(converted, next.symbol, symbols), modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
-        Text("${next.since}", style = MaterialTheme.typography.labelMedium, color = colors.onSurfaceVariant)
-      }
+private fun ThenAndNow(country: Country, era: Era, then: Side, now: Side, symbols: FormatterSymbols) {
+  val todaySymbol = country.eras.last().symbol
+  val factor = country.toToday(era)
+  val nowMoney = { value: Double? -> value?.let { money(it, todaySymbol, symbols) } ?: DASH }
+  val time = workTime(symbols)
+  Card(stringResource(Res.string.changeover_then_and_now)) {
+    TableRow("", "${then.year}", "${now.year}", header = true)
+    if (then.payShare != null) {
+      TableRow(stringResource(Res.string.changeover_pay_share), percentText(then.payShare, symbols), percentText(now.payShare, symbols))
+      TableRow(stringResource(Res.string.changeover_amount_work), time(then.workHours?.times(MINUTES_PER_HOUR)), time(now.workHours?.times(MINUTES_PER_HOUR)))
     }
-    HorizontalDivider(modifier = Modifier.padding(vertical = 6.dp))
-    Text(stringResource(Res.string.changeover_today), style = MaterialTheme.typography.labelLarge, color = colors.primary)
-    val today = country.history.value(converted, year, country.history.lastYear)
-    Text(
-      "≈ " + money(today, country.eras.last().symbol, symbols),
-      style = MaterialTheme.typography.headlineMedium,
-      fontWeight = FontWeight.Bold,
-      color = colors.primary,
-    )
-    Text(stringResource(Res.string.inflation_in_year, country.history.lastYear), style = MaterialTheme.typography.bodySmall)
-    country.thenAndNow(converted, year)?.let { (then, now) -> ThenAndNow(country, era, then, now, symbols) }
+    val bread = country.bread
+    val loaf = then.loaf
+    if (bread != null && loaf != null) {
+      HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+      val thenLoaf = if (era.isLsd) lsd(loaf) else money(loaf / factor, era.symbol, symbols)
+      TableRow(stringResource(bread.name), thenLoaf, nowMoney(now.loaf))
+      TableRow(stringResource(Res.string.changeover_at_inflation), "", nowMoney(country.history.value(loaf, then.year, now.year)), muted = true)
+      TableRow(stringResource(Res.string.changeover_buys), count(then.loaves, symbols), count(now.loaves, symbols))
+      if (then.loafMinutes != null) TableRow(stringResource(Res.string.changeover_loaf_work), time(then.loafMinutes), time(now.loafMinutes))
+    }
+    country.foodRise(then.year)?.let { FoodBars(it, symbols) }
+    Note(stringResource(Res.string.changeover_pay_note))
   }
 }
 
-/** Bread and pay in [then] and today, with what the amount was worth of each. */
+/** Food and all prices since the year as two bars, and which rose faster. */
 @Composable
-private fun ThenAndNow(country: Country, era: Era, then: Side, now: Side, symbols: FormatterSymbols) {
-  val factor = country.toToday(era)
-  val todaySymbol = country.eras.last().symbol
-  val thenMoney = { value: Double?, decimals: Int ->
-    value?.let { if (era.isLsd) lsd(it) else money(it / factor, era.symbol, symbols, decimals) } ?: "—"
-  }
-  val nowMoney = { value: Double?, decimals: Int -> value?.let { money(it, todaySymbol, symbols, decimals) } ?: "—" }
-  val count = { value: Double? -> value?.let { number(it, symbols, 0) } ?: "—" }
-  val share = { value: Double? -> value?.let { percent(it, symbols) } ?: "—" }
-  HorizontalDivider(modifier = Modifier.padding(vertical = 6.dp))
+private fun FoodBars(rise: FoodRise, symbols: FormatterSymbols) {
+  HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+  val signed = { share: Double -> (if (share >= 0) "+" else "") + percentText(share * PERCENT_SCALE, symbols) }
   Text(
-    stringResource(Res.string.changeover_then_and_now),
-    style = MaterialTheme.typography.labelLarge,
-    color = MaterialTheme.colorScheme.primary,
+    stringResource(Res.string.changeover_food_since, rise.from, signed(rise.food), signed(rise.prices)),
+    style = MaterialTheme.typography.bodyMedium,
   )
-  ContextRow("", "${then.year}", "${now.year}", header = true)
-  val bread = country.bread
-  if (bread != null && then.loaf != null) {
-    ContextRow(stringResource(bread.name), thenMoney(then.loaf, MONEY_DECIMALS), nowMoney(now.loaf, MONEY_DECIMALS))
-    ContextRow(stringResource(Res.string.changeover_buys), count(then.loaves), count(now.loaves))
-  }
-  if (then.monthlyPay != null) {
-    ContextRow(stringResource(Res.string.changeover_pay), thenMoney(then.monthlyPay, 0), nowMoney(now.monthlyPay, 0))
-    ContextRow(stringResource(Res.string.changeover_pay_share), share(then.payShare), share(now.payShare))
-    Text(
-      stringResource(Res.string.changeover_pay_note),
-      style = MaterialTheme.typography.bodySmall,
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
+  val top = maxOf(rise.food, rise.prices, MIN_BAR_TOP)
+  val colors = MaterialTheme.colorScheme
+  Bar(stringResource(Res.string.changeover_food), signed(rise.food), rise.food / top, colors.tertiary)
+  Bar(stringResource(Res.string.changeover_all_prices), signed(rise.prices), rise.prices / top, colors.primary)
+  val verdict =
+    when {
+      abs(rise.food - rise.prices) < SAME_RISE -> Res.string.changeover_food_same
+      rise.food > rise.prices -> Res.string.changeover_food_faster
+      else -> Res.string.changeover_food_slower
+    }
+  Text(stringResource(verdict), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+}
+
+/** A rise as a bar as long as its [share] of the longest, with its name and value above it. */
+@Composable
+private fun Bar(label: String, value: String, share: Double, color: Color) {
+  Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+    Row(modifier = Modifier.fillMaxWidth()) {
+      Text(label, modifier = Modifier.weight(1f), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+      Text(value, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = color)
+    }
+    Box(
+      Modifier.fillMaxWidth(share.toFloat().coerceIn(MIN_BAR, 1f))
+        .height(BAR_HEIGHT)
+        .clip(RoundedCornerShape(BAR_HEIGHT / 2))
+        .background(color)
     )
   }
 }
 
 /** A line of the then and now table: a label and two values. */
 @Composable
-private fun ContextRow(label: String, then: String, now: String, header: Boolean = false) {
-  val style = if (header) MaterialTheme.typography.labelMedium else MaterialTheme.typography.bodyMedium
-  val color = if (header) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface
-  Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+private fun TableRow(label: String, then: String, now: String, header: Boolean = false, muted: Boolean = false) {
+  val style = if (header) MaterialTheme.typography.labelLarge else MaterialTheme.typography.bodyMedium
+  val color =
+    if (header || muted) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface
+  Row(modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
     Text(label, modifier = Modifier.weight(LABEL_WEIGHT), style = style, color = color)
     Text(then, modifier = Modifier.weight(1f), style = style, color = color, textAlign = TextAlign.End)
-    Text(now, modifier = Modifier.weight(1f), style = style, color = color, textAlign = TextAlign.End)
+    Text(now, modifier = Modifier.weight(1f), style = style, color = color, textAlign = TextAlign.End, fontWeight = if (header || muted) null else FontWeight.Bold)
   }
 }
+
+/** A time of work given in minutes: 2.8 m under 10 minutes, 14 m, then hours and minutes, 3 h 05 m. */
+@Composable
+private fun workTime(symbols: FormatterSymbols): (Double?) -> String {
+  val minute = stringResource(Res.string.unit_minute_short)
+  val hour = stringResource(Res.string.unit_hour_short)
+  return { minutes ->
+    when {
+      minutes == null || !minutes.isFinite() -> DASH
+      minutes < MINUTES_WITH_DECIMAL -> number(minutes, symbols, 1) + " " + minute
+      minutes < MINUTES_PER_HOUR -> number(minutes, symbols, 0) + " " + minute
+      else -> {
+        val total = minutes.roundToLong()
+        "${total / MINUTES_PER_HOUR} $hour ${(total % MINUTES_PER_HOUR).toString().padStart(2, '0')} $minute"
+      }
+    }
+  }
+}
+
+private fun percentText(value: Double?, symbols: FormatterSymbols) = value?.let { percent(it, symbols) } ?: DASH
+
+private fun count(value: Double?, symbols: FormatterSymbols) = value?.let { number(it, symbols, 0) } ?: DASH
 
 /** An amount in pounds as pounds, shillings and pence: £1 2s 6d, 1s 7d. */
 internal fun lsd(pounds: Double): String {
@@ -355,8 +474,22 @@ private fun exact(rate: Double): String = KBigDecimal(rate.toString()).stripTrai
 private val Era.isLsd: Boolean
   get() = symbol == "£sd"
 
+private const val DASH = "—"
+private const val DEFAULT_YEAR = 1995
 private const val UNSELECTED_ALPHA = 0.45f
-private const val LABEL_WEIGHT = 1.4f
-private const val MONEY_DECIMALS = 2
-private val TIMELINE_HEIGHT = 40.dp
-private val MARK_WIDTH = 2.dp
+private const val DIVIDER_ALPHA = 0.3f
+private const val LABEL_WEIGHT = 1.6f
+private const val PERCENT_SCALE = 100
+private const val MINUTES_PER_HOUR = 60
+private const val MIN_BAR_TOP = 0.01
+private const val MIN_BAR = 0.02f
+private const val SAME_RISE = 0.03
+
+/** Minutes under this are written with a decimal: 2.8 m, 14 m. */
+private const val MINUTES_WITH_DECIMAL = 10
+private val ERA_HEIGHT = 44.dp
+private val TRACK_HEIGHT = 32.dp
+private val TRACK_THICKNESS = 6.dp
+private val KNOB_RADIUS = 10.dp
+private val YEAR_WIDTH = 120.dp
+private val BAR_HEIGHT = 10.dp

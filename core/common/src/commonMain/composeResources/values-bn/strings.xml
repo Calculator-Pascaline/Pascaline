@@ -1967,10 +1967,10 @@
     <string name="changeover_baguette">ব্যাগেট, 250 g</string>
     <string name="changeover_loaf">সাদা পাউরুটি, 800 g</string>
     <string name="changeover_buys">আপনার পরিমাণে কেনা যায়</string>
-    <string name="changeover_pay">গড় মাসিক বেতন</string>
-    <string name="changeover_pay_share">এক মাসের বেতনের অংশ</string>
-    <string name="changeover_pay_note">একজন কর্মচারীর গড় বেতন, কর কাটার আগে এবং নিয়োগকর্তার অংশসহ।</string>
-    <string name="changeover_context_sources">বেতন ইউরোপীয় কমিশনের AMECO ডেটাবেস থেকে (কর্মচারীপ্রতি পারিশ্রমিক, 1990 পর্যন্ত পশ্চিম জার্মানি)। রুটি INSEE থেকে (1992 থেকে ব্যাগেট, কিলোগ্রাম দরে, 2020-এর জন্য নেই) এবং ONS থেকে (1968 থেকে 800 g সাদা পাউরুটি, সর্বশেষ 2024)।</string>
+    <string name="changeover_pay">মাসে হাতে পাওয়া বেতন</string>
+    <string name="changeover_pay_share">মাসে হাতে পাওয়া বেতনের অংশ</string>
+    <string name="changeover_pay_note">গড় বেতনের একা একজন কর্মীর আয়কর ও সামাজিক অবদানের পরে হাতে পাওয়া বেতন; ২০০০-এর আগে সেই সময়ের গড় বেতন থেকে অনুমান করা। এটি গড়: মধ্যমা, যার কম আয় করেন অর্ধেক কর্মী, তা আরও কম। কাজ সেই বছর সত্যিই কাজ করা ঘণ্টা ধরে গোনা।</string>
+    <string name="changeover_context_sources">হাতে পাওয়া বেতন ইউরোস্ট্যাট থেকে (OECD-র কর ও সুবিধা মডেল অনুযায়ী নিট আয়, ২০০০ থেকে), তার আগে ইউরোপীয় কমিশনের AMECO ডেটাবেস থেকে (কর্মী প্রতি পারিশ্রমিক, ১৯৯০ পর্যন্ত পশ্চিম জার্মানি)। কাজের ঘণ্টা Our World in Data থেকে (Penn World Table)। খাবার ও সব দাম ১৯৯৬ থেকে ইউরোস্ট্যাটের HICP থেকে, আর যুক্তরাজ্যের জন্য ১৯৮৮ থেকে ONS-এর CPI থেকে। পাউরুটি INSEE থেকে (১৯৯২ থেকে ব্যাগেট, কেজি দরে, ২০২০-এর নেই) ও ONS থেকে (১৯৬৮ থেকে ৮০০ গ্রাম সাদা পাউরুটি, শেষ ২০২৪)।</string>
     <string name="currency_euro">ইউরো</string>
     <string name="currency_us_dollar">মার্কিন ডলার</string>
     <string name="currency_pound">পাউন্ড স্টার্লিং</string>
@@ -2150,4 +2150,15 @@
     <string name="gears_worm_text">ওয়ার্মের প্রতিটি পাক তার চাকাকে প্যাঁচের সংখ্যার সমান দাঁত এগিয়ে দেয়: অনুপাত হলো চাকার দাঁত ভাগ প্যাঁচ। এটি অনেক পিছলায়: প্রায় ৫০ % দক্ষতার নিচে চাকাটি ওয়ার্মকে উল্টো ঘোরাতে পারে না।</string>
     <string name="place_sun_above">সূর্য দিগন্তের %1$s ওপরে</string>
     <string name="place_sun_below">সূর্য দিগন্তের %1$s নিচে</string>
+    <string name="changeover_at_inflation">যদি মূল্যস্ফীতির সঙ্গে চলত</string>
+    <string name="changeover_loaf_work">একটি পাউরুটির জন্য কাজ</string>
+    <string name="changeover_amount_work">এই অঙ্কের জন্য কাজ</string>
+    <string name="changeover_food_since">%1$d থেকে: খাবার ও পানীয় %2$s, সব দাম %3$s</string>
+    <string name="changeover_food_faster">খাবারের দাম সব দামের চেয়ে দ্রুত বেড়েছে।</string>
+    <string name="changeover_food_slower">খাবারের দাম সব দামের চেয়ে ধীরে বেড়েছে।</string>
+    <string name="changeover_food_same">খাবারের দাম মোটামুটি সব দামের মতোই বেড়েছে।</string>
+    <string name="changeover_fixed_rates">নির্ধারিত বিনিময় হারে</string>
+    <string name="changeover_timeline_hint">একটি মুদ্রায় ট্যাপ করুন, অথবা বছরগুলোর ওপর ট্যাপ করে টেনে নিন।</string>
+    <string name="changeover_food">খাদ্য ও পানীয়</string>
+    <string name="changeover_all_prices">সব দাম</string>
 </resources>

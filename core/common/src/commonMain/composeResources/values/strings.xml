@@ -2263,10 +2263,10 @@
     <string name="changeover_baguette">Baguette, 250 g</string>
     <string name="changeover_loaf">White loaf, 800 g</string>
     <string name="changeover_buys">Your amount buys</string>
-    <string name="changeover_pay">Average pay per month</string>
-    <string name="changeover_pay_share">Share of a month’s pay</string>
-    <string name="changeover_pay_note">Average pay of an employee, before tax and with the employer’s contributions.</string>
-    <string name="changeover_context_sources">Pay from the European Commission’s AMECO database (compensation per employee, West Germany until 1990). Bread from INSEE (baguette since 1992, priced by the kilogram, none for 2020) and the ONS (800 g white loaf since 1968, latest 2024).</string>
+    <string name="changeover_pay">Take-home pay per month</string>
+    <string name="changeover_pay_share">Share of a month’s take-home pay</string>
+    <string name="changeover_pay_note">Take-home pay of a single worker on the average wage, after income tax and social contributions; before 2000 estimated from the average pay of the time. It is an average: the median, which half of workers earn less than, is lower. Work counts the hours actually worked that year.</string>
+    <string name="changeover_context_sources">Take-home pay from Eurostat (net earnings, from the OECD’s tax and benefit model, since 2000), before that from the European Commission’s AMECO database (compensation per employee, West Germany until 1990). Hours worked from Our World in Data (Penn World Table). Food and all prices from Eurostat’s HICP since 1996, and the ONS’s CPI since 1988 for the United Kingdom. Bread from INSEE (baguette since 1992, priced by the kilogram, none for 2020) and the ONS (800 g white loaf since 1968, latest 2024).</string>
     <string name="currency_euro">Euro</string>
     <string name="currency_us_dollar">US dollar</string>
     <string name="currency_pound">Pound sterling</string>
@@ -2446,4 +2446,15 @@
     <string name="gears_worm_text">Each turn of the worm moves its wheel by as many teeth as it has threads, so the ratio is the wheel's teeth over the threads. It slips a lot: below about 50 % efficiency, the wheel can't turn the worm back.</string>
     <string name="place_sun_above">Sun %1$s above the horizon</string>
     <string name="place_sun_below">Sun %1$s below the horizon</string>
+    <string name="changeover_at_inflation">If it had followed inflation</string>
+    <string name="changeover_loaf_work">Work for a loaf</string>
+    <string name="changeover_amount_work">Work for the amount</string>
+    <string name="changeover_food_since">Since %1$d: food and drink %2$s, all prices %3$s</string>
+    <string name="changeover_food_faster">Food rose faster than prices.</string>
+    <string name="changeover_food_slower">Food rose slower than prices.</string>
+    <string name="changeover_food_same">Food rose about as fast as prices.</string>
+    <string name="changeover_fixed_rates">At the fixed rates</string>
+    <string name="changeover_timeline_hint">Tap a currency, or tap and drag along the years.</string>
+    <string name="changeover_food">Food and drink</string>
+    <string name="changeover_all_prices">All prices</string>
 </resources>

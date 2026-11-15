@@ -1967,10 +1967,10 @@
     <string name="changeover_baguette">Bageta, 250 g</string>
     <string name="changeover_loaf">Bílý chléb, 800 g</string>
     <string name="changeover_buys">Vaše částka koupí</string>
-    <string name="changeover_pay">Průměrná měsíční mzda</string>
-    <string name="changeover_pay_share">Podíl měsíční mzdy</string>
-    <string name="changeover_pay_note">Průměrná mzda zaměstnance před zdaněním a s odvody zaměstnavatele.</string>
-    <string name="changeover_context_sources">Mzdy z databáze AMECO Evropské komise (náhrady na zaměstnance, Západní Německo do roku 1990). Chléb z INSEE (bageta od roku 1992, cena za kilogram, bez roku 2020) a z ONS (bílý chléb 800 g od roku 1968, naposledy 2024).</string>
+    <string name="changeover_pay">Čistá mzda za měsíc</string>
+    <string name="changeover_pay_share">Podíl měsíční čisté mzdy</string>
+    <string name="changeover_pay_note">Čistá mzda osamělého člověka s průměrnou mzdou, po dani z příjmu a sociálních odvodech; před rokem 2000 odhadnutá z tehdejší průměrné mzdy. Je to průměr: medián, pod kterým vydělává polovina zaměstnanců, je nižší. Práce počítá hodiny, které se ten rok opravdu odpracovaly.</string>
+    <string name="changeover_context_sources">Čistá mzda od Eurostatu (čisté výdělky podle daňově-dávkového modelu OECD, od roku 2000), předtím z databáze AMECO Evropské komise (náhrady na zaměstnance, do roku 1990 západní Německo). Odpracované hodiny z Our World in Data (Penn World Table). Jídlo a všechny ceny z HICP Eurostatu od roku 1996 a z CPI ONS od roku 1988 pro Spojené království. Chléb od INSEE (bageta od roku 1992, za kilogram, bez údaje za rok 2020) a ONS (bílý chléb 800 g od roku 1968, poslední 2024).</string>
     <string name="currency_euro">Euro</string>
     <string name="currency_us_dollar">Americký dolar</string>
     <string name="currency_pound">Britská libra</string>
@@ -2150,4 +2150,15 @@
     <string name="gears_worm_text">Každá otáčka šneku posune jeho kolo o tolik zubů, kolik má chodů: převod je počet zubů kola dělený chody. Hodně prokluzuje: pod asi 50 % účinnosti kolo šnek zpět neroztočí.</string>
     <string name="place_sun_above">Slunce %1$s nad obzorem</string>
     <string name="place_sun_below">Slunce %1$s pod obzorem</string>
+    <string name="changeover_at_inflation">Kdyby sledoval inflaci</string>
+    <string name="changeover_loaf_work">Práce na bochník</string>
+    <string name="changeover_amount_work">Práce na částku</string>
+    <string name="changeover_food_since">Od roku %1$d: jídlo a nápoje %2$s, všechny ceny %3$s</string>
+    <string name="changeover_food_faster">Jídlo zdražovalo rychleji než ceny.</string>
+    <string name="changeover_food_slower">Jídlo zdražovalo pomaleji než ceny.</string>
+    <string name="changeover_food_same">Jídlo zdražovalo zhruba stejně jako ceny.</string>
+    <string name="changeover_fixed_rates">Podle pevných kurzů</string>
+    <string name="changeover_timeline_hint">Klepněte na měnu, nebo klepněte a táhněte po letech.</string>
+    <string name="changeover_food">Jídlo a pití</string>
+    <string name="changeover_all_prices">Všechny ceny</string>
 </resources>

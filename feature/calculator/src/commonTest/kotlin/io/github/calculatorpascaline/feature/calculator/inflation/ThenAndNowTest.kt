@@ -58,16 +58,70 @@ class ThenAndNowTest {
     assertEquals(260.6, assertNotNull(then.loaves), 0.1)
   }
 
-  // AMECO: 29 212 € a year in 1995 is 2 434 € a month; 152.45 € is 6.3 % of it
+  // Before 2000, the AMECO pay of 1995 (29 212 €) times the share of it taken home in 2000
   @Test
   fun shareOfPayIn1995() {
     val (then, now) = assertNotNull(france.thenAndNow(1000 / 6.55957, 1995))
-    assertEquals(29212.0 / 12, assertNotNull(then.monthlyPay), 1e-9)
-    assertEquals(6.26, assertNotNull(then.payShare), 0.01)
+    val takenHome = 18923.0 / assertNotNull(PayData.FRANCE[2000])
+    assertEquals(29212.0 * takenHome / 12, assertNotNull(then.monthlyPay), 1e-9)
+    assertEquals(1000 / 6.55957 / (29212.0 * takenHome / 12) * 100, assertNotNull(then.payShare), 1e-9)
     assertEquals(2025, now.year)
     assertEquals(france.history.value(1000 / 6.55957, 1995, 2025), now.amount, 1e-9)
-    assertEquals(56426.0 / 12, assertNotNull(now.monthlyPay), 1e-9)
+    // Eurostat: 32 346 € taken home in 2025
+    assertEquals(32346.0 / 12, assertNotNull(now.monthlyPay), 1e-9)
   }
+
+  @Test fun takeHomePayFromEurostat() = assertEquals(25032.0, france.netPay(2010))
+
+  @Test
+  fun everyCountryHasTakeHomePayFrom1960() =
+    COUNTRIES.forEach { country -> (1960..2025).forEach { assertNotNull(country.netPay(it), "$it") } }
+
+  // Eurostat stops in 2019 for the United Kingdom: later years take home the share of 2019
+  @Test
+  fun ukAfter2019() {
+    val takenHome = 31409.0 / assertNotNull(PayData.UNITED_KINGDOM[2019])
+    assertEquals(assertNotNull(PayData.UNITED_KINGDOM[2024]) * takenHome, assertNotNull(uk.netPay(2024)), 1e-6)
+  }
+
+  @Test
+  fun hourlyPayIsTakeHomePayOverHoursWorked() {
+    val hours = assertNotNull(assertNotNull(france.living).hours[2010])
+    assertEquals(25032.0 / hours, assertNotNull(france.hourlyPay(2010)), 1e-9)
+  }
+
+  // Hours worked stop in 2023: later years use the hours of 2023
+  @Test
+  fun hoursOfTheLastYearAfterwards() {
+    val hours = assertNotNull(assertNotNull(france.living).hours[2023])
+    assertEquals(32346.0 / hours, assertNotNull(france.hourlyPay(2025)), 1e-9)
+  }
+
+  @Test
+  fun minutesOfWorkForABaguette() {
+    val (then, _) = assertNotNull(france.thenAndNow(100.0, 2010))
+    val loaf = assertNotNull(then.loaf)
+    assertEquals(loaf / assertNotNull(france.hourlyPay(2010)) * 60, assertNotNull(then.loafMinutes), 1e-9)
+    assertEquals(100.0 / assertNotNull(france.hourlyPay(2010)), assertNotNull(then.workHours), 1e-9)
+  }
+
+  // HICP of France: food 73.30 and all items 74.93 in 1996, 134.89 and 124.43 in 2025
+  @Test
+  fun foodAgainstAllPrices() {
+    val rise = assertNotNull(france.foodRise(1996))
+    assertEquals(1996 to 2025, rise.from to rise.to)
+    assertEquals(134.89 / 73.30 - 1, rise.food, 1e-9)
+    assertEquals(124.43 / 74.93 - 1, rise.prices, 1e-9)
+  }
+
+  @Test fun noFoodIndexBefore1996() = assertNull(france.foodRise(1995))
+
+  @Test
+  fun ukFoodIndexFrom1988() {
+    assertNotNull(uk.foodRise(1988))
+  }
+
+  @Test fun noFoodRiseFromTheLastYear() = assertNull(france.foodRise(2025))
 
   @Test
   fun noBreadBeforeItsFirstYear() {

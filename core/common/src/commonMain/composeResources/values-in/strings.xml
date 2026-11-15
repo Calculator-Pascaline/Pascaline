@@ -1967,10 +1967,10 @@
     <string name="changeover_baguette">Baguette, 250 g</string>
     <string name="changeover_loaf">Roti tawar putih, 800 g</string>
     <string name="changeover_buys">Jumlah Anda membeli</string>
-    <string name="changeover_pay">Gaji rata-rata per bulan</string>
-    <string name="changeover_pay_share">Bagian dari gaji sebulan</string>
-    <string name="changeover_pay_note">Gaji rata-rata seorang karyawan, sebelum pajak dan dengan iuran pemberi kerja.</string>
-    <string name="changeover_context_sources">Gaji dari basis data AMECO Komisi Eropa (kompensasi per karyawan, Jerman Barat hingga 1990). Roti dari INSEE (baguette sejak 1992, harga per kilogram, tidak ada untuk 2020) dan ONS (roti putih 800 g sejak 1968, terakhir 2024).</string>
+    <string name="changeover_pay">Gaji bersih per bulan</string>
+    <string name="changeover_pay_share">Bagian dari gaji bersih sebulan</string>
+    <string name="changeover_pay_note">Gaji bersih seorang lajang bergaji rata-rata, setelah pajak penghasilan dan iuran sosial; sebelum 2000 diperkirakan dari gaji rata-rata saat itu. Ini rata-rata: median, yang di bawahnya separuh pekerja berpenghasilan, lebih rendah. Kerja dihitung dari jam yang benar-benar dikerjakan tahun itu.</string>
+    <string name="changeover_context_sources">Gaji bersih dari Eurostat (penghasilan bersih, menurut model pajak dan tunjangan OECD, sejak 2000), sebelumnya dari basis data AMECO Komisi Eropa (kompensasi per karyawan, Jerman Barat hingga 1990). Jam kerja dari Our World in Data (Penn World Table). Makanan dan semua harga dari HICP Eurostat sejak 1996, dan CPI ONS sejak 1988 untuk Inggris. Roti dari INSEE (baguette sejak 1992, per kilogram, tanpa data 2020) dan ONS (roti putih 800 g sejak 1968, terakhir 2024).</string>
     <string name="currency_euro">Euro</string>
     <string name="currency_us_dollar">Dolar AS</string>
     <string name="currency_pound">Pound sterling</string>
@@ -2150,4 +2150,15 @@
     <string name="gears_worm_text">Setiap putaran cacing menggeser rodanya sebanyak jumlah ulirnya: rasionya adalah gigi roda dibagi ulir. Gesekannya besar: di bawah sekitar 50 % efisiensi, roda tidak bisa memutar balik cacing.</string>
     <string name="place_sun_above">Matahari %1$s di atas cakrawala</string>
     <string name="place_sun_below">Matahari %1$s di bawah cakrawala</string>
+    <string name="changeover_at_inflation">Jika mengikuti inflasi</string>
+    <string name="changeover_loaf_work">Kerja untuk sepotong roti</string>
+    <string name="changeover_amount_work">Kerja untuk jumlah ini</string>
+    <string name="changeover_food_since">Sejak %1$d: makanan dan minuman %2$s, semua harga %3$s</string>
+    <string name="changeover_food_faster">Makanan naik lebih cepat daripada harga.</string>
+    <string name="changeover_food_slower">Makanan naik lebih lambat daripada harga.</string>
+    <string name="changeover_food_same">Makanan naik kurang lebih secepat harga.</string>
+    <string name="changeover_fixed_rates">Dengan kurs tetap</string>
+    <string name="changeover_timeline_hint">Ketuk mata uang, atau ketuk dan geser di sepanjang tahun.</string>
+    <string name="changeover_food">Makanan dan minuman</string>
+    <string name="changeover_all_prices">Semua harga</string>
 </resources>

@@ -1967,10 +1967,10 @@
     <string name="changeover_baguette">法式长面包，250 克</string>
     <string name="changeover_loaf">白吐司，800 克</string>
     <string name="changeover_buys">这笔钱可买</string>
-    <string name="changeover_pay">月平均工资</string>
-    <string name="changeover_pay_share">占一个月工资的比例</string>
-    <string name="changeover_pay_note">员工的平均工资，为扣除前的金额，含公司承担的社会保险等费用。</string>
-    <string name="changeover_context_sources">工资来自欧洲委员会（European Commission）的 AMECO 数据库（每名员工的人均劳动成本，1990 年前为西德）。面包价格来自 INSEE（1992 年起的法式长面包，按千克计价，无 2020 年数据）和 ONS（1968 年起的 800 克白吐司，最新为 2024 年）。</string>
+    <string name="changeover_pay">每月到手工资</string>
+    <string name="changeover_pay_share">占一个月到手工资的比例</string>
+    <string name="changeover_pay_note">拿平均工资的单身职工扣除个人所得税和社保后的到手工资；2000 年以前按当时的平均工资估算。这是平均数：一半职工收入低于的中位数更低。工作时间按当年实际工作的小时数计算。</string>
+    <string name="changeover_context_sources">到手工资来自欧盟统计局（按经合组织税收和福利模型计算的净收入，2000 年起），更早来自欧盟委员会的 AMECO 数据库（每名雇员的报酬，1990 年前为西德）。工作时间来自 Our World in Data（宾州世界表）。食品和全部物价 1996 年起来自欧盟统计局的 HICP，英国 1988 年起来自英国国家统计局的 CPI。面包来自法国国家统计局（1992 年起为法棍，按公斤计价，2020 年无数据）和英国国家统计局（1968 年起为 800 克白面包，最新为 2024 年）。</string>
     <string name="currency_euro">欧元</string>
     <string name="currency_us_dollar">美元</string>
     <string name="currency_pound">英镑</string>
@@ -2150,4 +2150,15 @@
     <string name="gears_worm_text">蜗杆每转一圈，蜗轮转过的齿数等于蜗杆头数，所以传动比是蜗轮齿数除以头数。蜗杆滑动很大：效率低于约 50 % 时，蜗轮不能反过来带动蜗杆。</string>
     <string name="place_sun_above">太阳在地平线上 %1$s</string>
     <string name="place_sun_below">太阳在地平线下 %1$s</string>
+    <string name="changeover_at_inflation">如果随通胀上涨</string>
+    <string name="changeover_loaf_work">买一个面包要工作</string>
+    <string name="changeover_amount_work">挣这笔钱要工作</string>
+    <string name="changeover_food_since">自 %1$d 年：食品和饮料 %2$s，全部物价 %3$s</string>
+    <string name="changeover_food_faster">食品涨得比物价快。</string>
+    <string name="changeover_food_slower">食品涨得比物价慢。</string>
+    <string name="changeover_food_same">食品涨得和物价差不多。</string>
+    <string name="changeover_fixed_rates">按固定汇率</string>
+    <string name="changeover_timeline_hint">点按一种货币，或沿着年份点按并拖动。</string>
+    <string name="changeover_food">食品和饮料</string>
+    <string name="changeover_all_prices">全部物价</string>
 </resources>

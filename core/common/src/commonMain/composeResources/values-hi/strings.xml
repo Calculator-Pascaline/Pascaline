@@ -1967,10 +1967,10 @@
     <string name="changeover_baguette">बैगेट, 250 ग्रा</string>
     <string name="changeover_loaf">सफ़ेद ब्रेड, 800 ग्रा</string>
     <string name="changeover_buys">आपकी राशि से मिलते हैं</string>
-    <string name="changeover_pay">औसत मासिक वेतन</string>
-    <string name="changeover_pay_share">एक महीने के वेतन का हिस्सा</string>
-    <string name="changeover_pay_note">एक कर्मचारी का औसत वेतन, कर से पहले और नियोक्ता के योगदान सहित।</string>
-    <string name="changeover_context_sources">वेतन यूरोपीय आयोग के AMECO डेटाबेस से (प्रति कर्मचारी पारिश्रमिक, 1990 तक पश्चिम जर्मनी)। ब्रेड INSEE से (1992 से बैगेट, प्रति किलो मूल्य, 2020 का नहीं) और ONS से (1968 से 800 ग्रा सफ़ेद ब्रेड, अंतिम 2024)।</string>
+    <string name="changeover_pay">हर महीने हाथ में आने वाला वेतन</string>
+    <string name="changeover_pay_share">महीने के हाथ में आने वाले वेतन का हिस्सा</string>
+    <string name="changeover_pay_note">औसत वेतन पाने वाले अकेले कर्मचारी का आयकर और सामाजिक अंशदान के बाद हाथ में आने वाला वेतन; 2000 से पहले उस समय के औसत वेतन से अनुमानित। यह औसत है: माध्यिका, जिससे आधे कर्मचारी कम कमाते हैं, इससे कम है। काम उस साल सचमुच किए गए घंटों से गिना जाता है।</string>
+    <string name="changeover_context_sources">हाथ में आने वाला वेतन यूरोस्टैट से (OECD के कर और लाभ मॉडल से शुद्ध कमाई, 2000 से), उससे पहले यूरोपीय आयोग के AMECO डेटाबेस से (प्रति कर्मचारी पारिश्रमिक, 1990 तक पश्चिम जर्मनी)। काम के घंटे Our World in Data से (Penn World Table)। खाना और सभी दाम 1996 से यूरोस्टैट के HICP से, और यूनाइटेड किंगडम के लिए 1988 से ONS के CPI से। पावरोटी INSEE से (1992 से बगेट, प्रति किलोग्राम दाम, 2020 का नहीं) और ONS से (1968 से 800 ग्राम सफ़ेद पावरोटी, आख़िरी 2024)।</string>
     <string name="currency_euro">यूरो</string>
     <string name="currency_us_dollar">अमेरिकी डॉलर</string>
     <string name="currency_pound">पाउंड स्टर्लिंग</string>
@@ -2150,4 +2150,15 @@
     <string name="gears_worm_text">वर्म का हर चक्कर उसके पहिये को उतने दाँत आगे करता है जितनी उसकी चूड़ियाँ हैं: अनुपात पहिये के दाँत भाग चूड़ियाँ है। इसमें बहुत फिसलन है: लगभग 50 % दक्षता से कम पर पहिया वर्म को उल्टा नहीं घुमा सकता।</string>
     <string name="place_sun_above">सूर्य क्षितिज से %1$s ऊपर</string>
     <string name="place_sun_below">सूर्य क्षितिज से %1$s नीचे</string>
+    <string name="changeover_at_inflation">अगर यह महँगाई के साथ चलता</string>
+    <string name="changeover_loaf_work">एक पावरोटी के लिए काम</string>
+    <string name="changeover_amount_work">इस रकम के लिए काम</string>
+    <string name="changeover_food_since">%1$d से: खाना और पेय %2$s, सभी दाम %3$s</string>
+    <string name="changeover_food_faster">खाना दामों से तेज़ी से महँगा हुआ।</string>
+    <string name="changeover_food_slower">खाना दामों से धीरे महँगा हुआ।</string>
+    <string name="changeover_food_same">खाना लगभग दामों जितना महँगा हुआ।</string>
+    <string name="changeover_fixed_rates">तय दरों पर</string>
+    <string name="changeover_timeline_hint">किसी मुद्रा को छुएँ, या वर्षों पर छूकर खींचें।</string>
+    <string name="changeover_food">खाद्य और पेय</string>
+    <string name="changeover_all_prices">सभी कीमतें</string>
 </resources>

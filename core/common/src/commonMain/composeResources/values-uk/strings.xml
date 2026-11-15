@@ -1967,10 +1967,10 @@
     <string name="changeover_baguette">Багет, 250 g</string>
     <string name="changeover_loaf">Білий хліб, 800 g</string>
     <string name="changeover_buys">На вашу суму можна купити</string>
-    <string name="changeover_pay">Середня зарплата на місяць</string>
-    <string name="changeover_pay_share">Частка місячної зарплати</string>
-    <string name="changeover_pay_note">Середня зарплата працівника до сплати податків і з внесками роботодавця.</string>
-    <string name="changeover_context_sources">Зарплати з бази даних AMECO Європейської комісії (оплата праці на одного працівника, Західна Німеччина до 1990 року). Хліб — від INSEE (багет з 1992 року, ціна за кілограм, без даних за 2020 рік) та ONS (білий хліб 800 g з 1968 року, останні дані за 2024 рік).</string>
+    <string name="changeover_pay">Зарплата на руки за місяць</string>
+    <string name="changeover_pay_share">Частка місячної зарплати на руки</string>
+    <string name="changeover_pay_note">Зарплата на руки самотнього працівника із середньою зарплатою, після податку на доходи й внесків; до 2000 року оцінена за тодішньою середньою зарплатою. Це середнє: медіана, меншу за яку отримує половина працівників, нижча. Праця рахується в годинах, справді відпрацьованих того року.</string>
+    <string name="changeover_context_sources">Зарплата на руки — Євростат (чистий заробіток за моделлю податків і допомог ОЕСР, з 2000 року), до того — база AMECO Європейської комісії (оплата праці на працівника, до 1990 року Західна Німеччина). Відпрацьовані години — Our World in Data (Penn World Table). Їжа й усі ціни — ГІСЦ Євростату з 1996 року та CPI ONS з 1988 року для Великої Британії. Хліб — INSEE (багет з 1992 року, за кілограм, немає даних за 2020) та ONS (білий хліб 800 г з 1968 року, останній 2024).</string>
     <string name="currency_euro">Євро</string>
     <string name="currency_us_dollar">Долар США</string>
     <string name="currency_pound">Фунт стерлінгів</string>
@@ -2150,4 +2150,15 @@
     <string name="gears_worm_text">Кожен оберт черв'яка повертає його колесо на стільки зубців, скільки в нього заходів: передаточне число — зубці колеса, поділені на заходи. Він сильно ковзає: за ККД нижче приблизно 50 % колесо не може провернути черв'як.</string>
     <string name="place_sun_above">Сонце на %1$s над горизонтом</string>
     <string name="place_sun_below">Сонце на %1$s під горизонтом</string>
+    <string name="changeover_at_inflation">Якби йшов за інфляцією</string>
+    <string name="changeover_loaf_work">Праці на хлібину</string>
+    <string name="changeover_amount_work">Праці на суму</string>
+    <string name="changeover_food_since">З %1$d року: їжа й напої %2$s, усі ціни %3$s</string>
+    <string name="changeover_food_faster">Їжа дорожчала швидше за ціни.</string>
+    <string name="changeover_food_slower">Їжа дорожчала повільніше за ціни.</string>
+    <string name="changeover_food_same">Їжа дорожчала приблизно як ціни.</string>
+    <string name="changeover_fixed_rates">За фіксованими курсами</string>
+    <string name="changeover_timeline_hint">Торкніться валюти або торкніться й проведіть уздовж років.</string>
+    <string name="changeover_food">Їжа та напої</string>
+    <string name="changeover_all_prices">Усі ціни</string>
 </resources>

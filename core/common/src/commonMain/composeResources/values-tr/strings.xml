@@ -1967,10 +1967,10 @@
     <string name="changeover_baguette">Baget, 250 g</string>
     <string name="changeover_loaf">Beyaz tost ekmeği, 800 g</string>
     <string name="changeover_buys">Tutarınızla alınan</string>
-    <string name="changeover_pay">Aylık ortalama ücret</string>
-    <string name="changeover_pay_share">Bir aylık ücretin payı</string>
-    <string name="changeover_pay_note">Bir çalışanın vergi öncesi, işveren katkıları dahil ortalama ücreti.</string>
-    <string name="changeover_context_sources">Ücretler Avrupa Komisyonu AMECO veritabanından (çalışan başına ücret, 1990’a kadar Batı Almanya). Ekmek INSEE’den (1992’den beri baget, kilogram fiyatı, 2020 yok) ve ONS’ten (1968’den beri 800 g beyaz ekmek, son 2024).</string>
+    <string name="changeover_pay">Aylık net maaş</string>
+    <string name="changeover_pay_share">Aylık net maaşın payı</string>
+    <string name="changeover_pay_note">Ortalama ücretle çalışan bekâr bir kişinin gelir vergisi ve sosyal kesintilerden sonraki net maaşı; 2000 öncesi o yılların ortalama ücretinden tahmin edilir. Bu bir ortalamadır: çalışanların yarısının altında kazandığı medyan daha düşüktür. Çalışma, o yıl gerçekten çalışılan saatleri sayar.</string>
+    <string name="changeover_context_sources">Net maaş Eurostat'tan (OECD vergi ve yardım modeline göre net kazanç, 2000'den beri), öncesi Avrupa Komisyonu'nun AMECO veritabanından (çalışan başına ücret, 1990'a kadar Batı Almanya). Çalışılan saatler Our World in Data'dan (Penn World Table). Gıda ve tüm fiyatlar 1996'dan beri Eurostat HICP'den, Birleşik Krallık için 1988'den beri ONS CPI'dan. Ekmek INSEE'den (1992'den beri baget, kilo fiyatı, 2020 için yok) ve ONS'tan (1968'den beri 800 g beyaz ekmek, son 2024).</string>
     <string name="currency_euro">Euro</string>
     <string name="currency_us_dollar">ABD doları</string>
     <string name="currency_pound">İngiliz sterlini</string>
@@ -2150,4 +2150,15 @@
     <string name="gears_worm_text">Sonsuz vidanın her turu, çarkını ağız sayısı kadar diş ilerletir: oran, çarkın dişlerinin ağız sayısına bölümüdür. Çok kayar: yaklaşık %50 verimin altında çark vidayı geri döndüremez.</string>
     <string name="place_sun_above">Güneş ufkun %1$s üstünde</string>
     <string name="place_sun_below">Güneş ufkun %1$s altında</string>
+    <string name="changeover_at_inflation">Enflasyonu izleseydi</string>
+    <string name="changeover_loaf_work">Bir ekmek için çalışma</string>
+    <string name="changeover_amount_work">Tutar için çalışma</string>
+    <string name="changeover_food_since">%1$d yılından beri: gıda ve içecek %2$s, tüm fiyatlar %3$s</string>
+    <string name="changeover_food_faster">Gıda fiyatlardan hızlı arttı.</string>
+    <string name="changeover_food_slower">Gıda fiyatlardan yavaş arttı.</string>
+    <string name="changeover_food_same">Gıda aşağı yukarı fiyatlar kadar arttı.</string>
+    <string name="changeover_fixed_rates">Sabit kurlarla</string>
+    <string name="changeover_timeline_hint">Bir para birimine dokunun ya da yıllar boyunca dokunup sürükleyin.</string>
+    <string name="changeover_food">Gıda ve içecek</string>
+    <string name="changeover_all_prices">Tüm fiyatlar</string>
 </resources>

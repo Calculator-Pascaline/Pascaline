@@ -1967,10 +1967,10 @@
     <string name="changeover_baguette">Baguette, 250 g</string>
     <string name="changeover_loaf">Pain de mie blanc, 800 g</string>
     <string name="changeover_buys">Votre montant achète</string>
-    <string name="changeover_pay">Salaire moyen par mois</string>
-    <string name="changeover_pay_share">Part d’un mois de salaire</string>
-    <string name="changeover_pay_note">Salaire moyen d’un salarié, avant impôts et avec les cotisations de l’employeur.</string>
-    <string name="changeover_context_sources">Salaires de la base AMECO de la Commission européenne (rémunération par salarié, Allemagne de l’Ouest jusqu’en 1990). Pain de l’INSEE (baguette depuis 1992, prix au kilo, aucun pour 2020) et de l’ONS (pain blanc de 800 g depuis 1968, dernier en 2024).</string>
+    <string name="changeover_pay">Salaire net par mois</string>
+    <string name="changeover_pay_share">Part d'un mois de salaire net</string>
+    <string name="changeover_pay_note">Salaire net d'une personne seule au salaire moyen, après impôt sur le revenu et cotisations sociales ; avant 2000, estimé d'après le salaire moyen de l'époque. C'est une moyenne : le salaire médian, sous lequel gagne la moitié des salariés, est plus bas. Le travail compte les heures réellement travaillées cette année-là.</string>
+    <string name="changeover_context_sources">Salaire net d'Eurostat (gains nets, d'après le modèle impôts-prestations de l'OCDE, depuis 2000), avant cela de la base AMECO de la Commission européenne (rémunération par salarié, Allemagne de l'Ouest jusqu'en 1990). Heures travaillées d'Our World in Data (Penn World Table). Alimentation et tous les prix de l'IPCH d'Eurostat depuis 1996, et de l'IPC de l'ONS depuis 1988 pour le Royaume-Uni. Pain de l'INSEE (baguette depuis 1992, au kilo, rien pour 2020) et de l'ONS (pain blanc de 800 g depuis 1968, dernier en 2024).</string>
     <string name="currency_euro">Euro</string>
     <string name="currency_us_dollar">Dollar américain</string>
     <string name="currency_pound">Livre sterling</string>
@@ -2150,4 +2150,15 @@
     <string name="gears_worm_text">Chaque tour de la vis avance sa roue d'autant de dents qu'elle a de filets : le rapport est le nombre de dents de la roue divisé par les filets. Elle glisse beaucoup : sous environ 50 % de rendement, la roue ne peut pas faire tourner la vis.</string>
     <string name="place_sun_above">Soleil à %1$s au-dessus de l'horizon</string>
     <string name="place_sun_below">Soleil à %1$s sous l'horizon</string>
+    <string name="changeover_at_inflation">S'il avait suivi l'inflation</string>
+    <string name="changeover_loaf_work">Travail pour un pain</string>
+    <string name="changeover_amount_work">Travail pour la somme</string>
+    <string name="changeover_food_since">Depuis %1$d : alimentation et boissons %2$s, tous les prix %3$s</string>
+    <string name="changeover_food_faster">L'alimentation a augmenté plus vite que les prix.</string>
+    <string name="changeover_food_slower">L'alimentation a augmenté moins vite que les prix.</string>
+    <string name="changeover_food_same">L'alimentation a augmenté à peu près comme les prix.</string>
+    <string name="changeover_fixed_rates">Aux taux fixés</string>
+    <string name="changeover_timeline_hint">Touchez une monnaie, ou touchez et faites glisser le long des années.</string>
+    <string name="changeover_food">Alimentation et boissons</string>
+    <string name="changeover_all_prices">Tous les prix</string>
 </resources>

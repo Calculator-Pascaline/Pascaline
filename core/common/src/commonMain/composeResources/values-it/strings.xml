@@ -1967,10 +1967,10 @@
     <string name="changeover_baguette">Baguette, 250 g</string>
     <string name="changeover_loaf">Pane bianco in cassetta, 800 g</string>
     <string name="changeover_buys">Il tuo importo compra</string>
-    <string name="changeover_pay">Stipendio medio al mese</string>
-    <string name="changeover_pay_share">Quota di un mese di stipendio</string>
-    <string name="changeover_pay_note">Stipendio medio di un dipendente, prima delle tasse e con i contributi del datore di lavoro.</string>
-    <string name="changeover_context_sources">Stipendi dalla banca dati AMECO della Commissione europea (redditi per dipendente, Germania Ovest fino al 1990). Pane dall’INSEE (baguette dal 1992, prezzo al chilo, nessuno per il 2020) e dall’ONS (pane bianco da 800 g dal 1968, ultimo 2024).</string>
+    <string name="changeover_pay">Stipendio netto al mese</string>
+    <string name="changeover_pay_share">Parte di un mese di stipendio netto</string>
+    <string name="changeover_pay_note">Stipendio netto di una persona sola con il salario medio, dopo l'imposta sul reddito e i contributi sociali; prima del 2000 stimato dal salario medio dell'epoca. È una media: la mediana, sotto la quale guadagna metà dei lavoratori, è più bassa. Il lavoro conta le ore lavorate davvero quell'anno.</string>
+    <string name="changeover_context_sources">Stipendio netto da Eurostat (guadagni netti, dal modello fiscale e dei sussidi dell'OCSE, dal 2000), prima dalla banca dati AMECO della Commissione europea (redditi per dipendente, Germania Ovest fino al 1990). Ore lavorate da Our World in Data (Penn World Table). Alimentari e tutti i prezzi dall'IPCA di Eurostat dal 1996, e dall'IPC dell'ONS dal 1988 per il Regno Unito. Pane dall'INSEE (baguette dal 1992, al chilo, nessun dato per il 2020) e dall'ONS (pane bianco da 800 g dal 1968, ultimo del 2024).</string>
     <string name="currency_euro">Euro</string>
     <string name="currency_us_dollar">Dollaro USA</string>
     <string name="currency_pound">Sterlina</string>
@@ -2150,4 +2150,15 @@
     <string name="gears_worm_text">Ogni giro della vite fa avanzare la ruota di tanti denti quanti sono i suoi principi: il rapporto è il numero di denti della ruota diviso i principi. Striscia molto: sotto circa il 50 % di rendimento, la ruota non può far girare la vite.</string>
     <string name="place_sun_above">Sole a %1$s sopra l'orizzonte</string>
     <string name="place_sun_below">Sole a %1$s sotto l'orizzonte</string>
+    <string name="changeover_at_inflation">Se avesse seguito l'inflazione</string>
+    <string name="changeover_loaf_work">Lavoro per un pane</string>
+    <string name="changeover_amount_work">Lavoro per la somma</string>
+    <string name="changeover_food_since">Dal %1$d: alimentari e bevande %2$s, tutti i prezzi %3$s</string>
+    <string name="changeover_food_faster">Gli alimentari sono aumentati più dei prezzi.</string>
+    <string name="changeover_food_slower">Gli alimentari sono aumentati meno dei prezzi.</string>
+    <string name="changeover_food_same">Gli alimentari sono aumentati più o meno come i prezzi.</string>
+    <string name="changeover_fixed_rates">Ai tassi fissati</string>
+    <string name="changeover_timeline_hint">Tocca una valuta, oppure tocca e trascina lungo gli anni.</string>
+    <string name="changeover_food">Cibo e bevande</string>
+    <string name="changeover_all_prices">Tutti i prezzi</string>
 </resources>

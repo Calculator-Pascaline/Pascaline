@@ -135,6 +135,7 @@ internal class Era(
  *
  * @property pay Average yearly pay of an employee, in the currency used today.
  * @property bread A loaf and its price year by year, when there is one.
+ * @property living Food prices, take-home pay and hours of work, when there are.
  */
 internal class Country(
   val name: StringResource,
@@ -142,6 +143,7 @@ internal class Country(
   val eras: List<Era>,
   val pay: YearlyValues? = null,
   val bread: Bread? = null,
+  val living: Living? = null,
 ) {
   /** Years an amount in [era] can be from, where there are prices. */
   fun years(era: Era): IntRange = maxOf(era.since, history.baseYear)..minOf(era.until ?: history.lastYear, history.lastYear)
@@ -159,6 +161,7 @@ internal val COUNTRIES: List<Country> by lazy {
       Res.string.country_france,
       PriceData.FRANCE,
       pay = PayData.FRANCE,
+      living = LivingData.FRANCE,
       bread = Bread(Res.string.changeover_baguette, BreadData.BAGUETTE_KG, perLoaf = BAGUETTE_KG),
       eras = listOf(
         // 100 old francs became 1 new franc on 1 January 1960
@@ -171,54 +174,63 @@ internal val COUNTRIES: List<Country> by lazy {
       Res.string.country_germany,
       PriceData.GERMANY,
       pay = PayData.GERMANY,
+      living = LivingData.GERMANY,
       eras = listOf(toEuro(Res.string.currency_deutsche_mark, "DM", FIRST_YEAR, 1.95583), euro(EURO_FIXED)),
     ),
     Country(
       Res.string.country_italy,
       PriceData.ITALY,
       pay = PayData.ITALY,
+      living = LivingData.ITALY,
       eras = listOf(toEuro(Res.string.currency_lira, "L", FIRST_YEAR, 1936.27), euro(EURO_FIXED)),
     ),
     Country(
       Res.string.country_spain,
       PriceData.SPAIN,
       pay = PayData.SPAIN,
+      living = LivingData.SPAIN,
       eras = listOf(toEuro(Res.string.currency_peseta, "Pta", FIRST_YEAR, 166.386), euro(EURO_FIXED)),
     ),
     Country(
       Res.string.country_netherlands,
       PriceData.NETHERLANDS,
       pay = PayData.NETHERLANDS,
+      living = LivingData.NETHERLANDS,
       eras = listOf(toEuro(Res.string.currency_guilder, "ƒ", FIRST_YEAR, 2.20371), euro(EURO_FIXED)),
     ),
     Country(
       Res.string.country_belgium,
       PriceData.BELGIUM,
       pay = PayData.BELGIUM,
+      living = LivingData.BELGIUM,
       eras = listOf(toEuro(Res.string.currency_belgian_franc, "FB", FIRST_YEAR, 40.3399), euro(EURO_FIXED)),
     ),
     Country(
       Res.string.country_austria,
       PriceData.AUSTRIA,
       pay = PayData.AUSTRIA,
+      living = LivingData.AUSTRIA,
       eras = listOf(toEuro(Res.string.currency_schilling, "S", FIRST_YEAR, 13.7603), euro(EURO_FIXED)),
     ),
     Country(
       Res.string.country_portugal,
       PriceData.PORTUGAL,
       pay = PayData.PORTUGAL,
+      living = LivingData.PORTUGAL,
       eras = listOf(toEuro(Res.string.currency_escudo, "Esc", FIRST_YEAR, 200.482), euro(EURO_FIXED)),
     ),
     Country(
       Res.string.country_ireland,
       PriceData.IRELAND,
       pay = PayData.IRELAND,
+      living = LivingData.IRELAND,
       eras = listOf(toEuro(Res.string.currency_irish_pound, "IR£", FIRST_YEAR, 0.787564), euro(EURO_FIXED)),
     ),
     Country(
       Res.string.country_finland,
       PriceData.FINLAND,
       pay = PayData.FINLAND,
+      living = LivingData.FINLAND,
       eras = listOf(
         // 100 old markkaa became 1 new markka on 1 January 1963
         Era(Res.string.currency_old_markka, "mk", FIRST_YEAR, until = 1962, perNext = 100.0),
@@ -230,6 +242,7 @@ internal val COUNTRIES: List<Country> by lazy {
       Res.string.country_greece,
       PriceData.GREECE,
       pay = PayData.GREECE,
+      living = LivingData.GREECE,
       // Greece joined in 2001, with euro coins and notes in 2002 like the others
       eras = listOf(toEuro(Res.string.currency_drachma, "Dr", FIRST_YEAR, 340.75, fixedIn = 2001), euro(2001)),
     ),
@@ -237,6 +250,7 @@ internal val COUNTRIES: List<Country> by lazy {
       Res.string.country_united_kingdom,
       PriceData.UNITED_KINGDOM,
       pay = PayData.UNITED_KINGDOM,
+      living = LivingData.UNITED_KINGDOM,
       bread = Bread(Res.string.changeover_loaf, BreadData.WHITE_LOAF_PENCE, perLoaf = 1.0 / PENCE_PER_POUND),
       eras = listOf(
         // Decimal Day, 15 February 1971: the pound stayed, it was split in 100 pence instead of 240
@@ -270,35 +284,108 @@ internal class Bread(val name: StringResource, val prices: YearlyValues, val per
   fun price(year: Int): Double? = prices[year]?.times(perLoaf)
 }
 
-/** One year compared with today, a null value where there is no data for it. */
-internal data class Side(val year: Int, val amount: Double, val loaf: Double?, val monthlyPay: Double?) {
+/**
+ * Food prices, take-home pay and hours of work of a country.
+ *
+ * @property food Price index of food and non-alcoholic drinks, year by year.
+ * @property prices Price index of everything, from the same source as [food].
+ * @property netPay Yearly take-home pay of a single worker earning the average wage, in the currency used
+ *   today, for the years Eurostat has.
+ * @property hours Hours worked in a year by a worker.
+ */
+internal class Living(val food: YearlyValues, val prices: YearlyValues, val netPay: YearlyValues, val hours: YearlyValues)
+
+/**
+ * Yearly take-home pay in [year], in the currency used today. Where Eurostat has none, the average pay
+ * of the year times the share of it that was taken home in the closest year with both.
+ */
+internal fun Country.netPay(year: Int): Double? {
+  val living = living ?: return pay?.get(year)
+  val gross = pay?.get(year)
+  return living.netPay[year] ?: gross?.let { it * (takenHome(living, year) ?: return null) }
+}
+
+/** The share of the average pay taken home in the year closest to [year] with both. */
+private fun Country.takenHome(living: Living, year: Int): Double? =
+  (living.netPay.firstYear..living.netPay.lastYear)
+    .mapNotNull { y ->
+      val net = living.netPay[y]
+      val gross = pay?.get(y)
+      if (net != null && gross != null) y to net / gross else null
+    }
+    .minByOrNull { (y, _) -> kotlin.math.abs(y - year) }
+    ?.second
+
+/** Take-home pay for an hour of work in [year], with the hours worked that year or the closest before. */
+internal fun Country.hourlyPay(year: Int): Double? {
+  val yearly = netPay(year) ?: return null
+  val hours = living?.hours?.let { it[year] ?: it.latest(year)?.second } ?: return null
+  return yearly / hours
+}
+
+/**
+ * One year compared with today: a loaf, the take-home pay of a month and of an hour, null where there is
+ * no data.
+ */
+internal data class Side(val year: Int, val amount: Double, val loaf: Double?, val monthlyPay: Double?, val hourlyPay: Double?) {
   /** How many loaves the amount buys. */
   val loaves: Double?
     get() = loaf?.let { amount / it }
 
-  /** The amount as a share of a month of pay, in %. */
+  /** The amount as a share of a month of take-home pay, in %. */
   val payShare: Double?
     get() = monthlyPay?.let { amount / it * PERCENT }
+
+  /** Minutes of work that buy a loaf. */
+  val loafMinutes: Double?
+    get() = if (loaf != null && hourlyPay != null) loaf / hourlyPay * MINUTES_PER_HOUR else null
+
+  /** Hours of work that earn the amount. */
+  val workHours: Double?
+    get() = hourlyPay?.let { amount / it }
 }
 
 /**
  * [amount], in the currency used today, in [year] and its value today with the inflation, each with
- * the bread and the pay of its time. Null when the country has neither for [year].
+ * the bread of its time and the take-home pay. Null when the country has neither for [year]; today
+ * only has what [year] has, to compare.
  */
 internal fun Country.thenAndNow(amount: Double, year: Int): Pair<Side, Side>? {
   val today = history.lastYear
   val loafThen = bread?.price(year)
-  val payThen = pay?.get(year)
+  val payThen = netPay(year)
   if (loafThen == null && payThen == null) return null
-  val then = Side(year, amount, loafThen, payThen?.div(MONTHS))
+  val then = Side(year, amount, loafThen, payThen?.div(MONTHS), hourlyPay(year))
+  val payYear = (today downTo year).firstOrNull { netPay(it) != null } ?: today
   val now =
     Side(
       today,
       history.value(amount, year, today),
       loaf = bread?.prices?.latest(today)?.second?.times(bread.perLoaf)?.takeIf { loafThen != null },
-      monthlyPay = pay?.latest(today)?.second?.div(MONTHS)?.takeIf { payThen != null },
+      monthlyPay = netPay(payYear)?.div(MONTHS)?.takeIf { payThen != null },
+      hourlyPay = hourlyPay(payYear)?.takeIf { then.hourlyPay != null },
     )
   return then to now
+}
+
+/**
+ * How much food and all prices rose from [from] to [to], as shares: 0.84 is +84 %.
+ */
+internal class FoodRise(val from: Int, val to: Int, val food: Double, val prices: Double)
+
+/** Food against all prices from [year] to the last year with both, null without an index for [year]. */
+internal fun Country.foodRise(year: Int): FoodRise? {
+  val living = living ?: return null
+  val last = living.food.latest(history.lastYear)?.first?.takeIf { it > year }
+  val food = last?.let { rise(living.food, year, it) }
+  val prices = last?.let { rise(living.prices, year, it) }
+  return if (last == null || food == null || prices == null) null else FoodRise(year, last, food, prices)
+}
+
+/** How much [values] rose from [from] to [to], as a share, null when one of them is missing. */
+private fun rise(values: YearlyValues, from: Int, to: Int): Double? {
+  val start = values[from] ?: return null
+  return values[to]?.let { it / start - 1 }
 }
 
 /** How many of the currency used today one of [era] is worth: 6.55957 francs for a euro gives 1 / 6.55957. */
@@ -310,6 +397,7 @@ internal const val SHILLINGS_PER_POUND = 20
 internal const val PENCE_PER_SHILLING = 12
 
 private const val PERCENT = 100
+private const val MINUTES_PER_HOUR = 60
 private const val MONTHS = 12
 private const val PENCE_PER_POUND = 100
 private const val BAGUETTE_KG = 0.25

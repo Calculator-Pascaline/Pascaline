@@ -1967,10 +1967,10 @@
     <string name="changeover_baguette">Багет, 250 г</string>
     <string name="changeover_loaf">Белый хлеб, 800 г</string>
     <string name="changeover_buys">На вашу сумму можно купить</string>
-    <string name="changeover_pay">Средняя зарплата в месяц</string>
-    <string name="changeover_pay_share">Доля месячной зарплаты</string>
-    <string name="changeover_pay_note">Средняя зарплата работника, до налогов и с взносами работодателя.</string>
-    <string name="changeover_context_sources">Зарплаты из базы данных AMECO Европейской комиссии (оплата труда на одного работника, Западная Германия до 1990 года). Хлеб — INSEE (багет с 1992 года, цена за килограмм, нет данных за 2020) и ONS (белый хлеб 800 г с 1968 года, последний 2024).</string>
+    <string name="changeover_pay">Зарплата на руки в месяц</string>
+    <string name="changeover_pay_share">Доля месячной зарплаты на руки</string>
+    <string name="changeover_pay_note">Зарплата на руки одинокого работника со средней зарплатой, после подоходного налога и взносов; до 2000 года оценена по средней зарплате того времени. Это среднее: медиана, меньше которой получает половина работников, ниже. Работа считается в часах, реально отработанных в тот год.</string>
+    <string name="changeover_context_sources">Зарплата на руки — Евростат (чистый заработок по модели налогов и пособий ОЭСР, с 2000 года), до того — база AMECO Европейской комиссии (оплата труда на работника, до 1990 года Западная Германия). Отработанные часы — Our World in Data (Penn World Table). Еда и все цены — ИПЦ Евростата с 1996 года и CPI ONS с 1988 года для Великобритании. Хлеб — INSEE (багет с 1992 года, за килограмм, нет данных за 2020) и ONS (белый хлеб 800 г с 1968 года, последний 2024).</string>
     <string name="currency_euro">Евро</string>
     <string name="currency_us_dollar">Доллар США</string>
     <string name="currency_pound">Фунт стерлингов</string>
@@ -2150,4 +2150,15 @@
     <string name="gears_worm_text">Каждый оборот червяка поворачивает его колесо на столько зубьев, сколько у него заходов: передаточное число — зубья колеса, делённые на заходы. Он сильно скользит: при КПД ниже примерно 50 % колесо не может провернуть червяк.</string>
     <string name="place_sun_above">Солнце на %1$s над горизонтом</string>
     <string name="place_sun_below">Солнце на %1$s под горизонтом</string>
+    <string name="changeover_at_inflation">Если бы шёл за инфляцией</string>
+    <string name="changeover_loaf_work">Работы на буханку</string>
+    <string name="changeover_amount_work">Работы на сумму</string>
+    <string name="changeover_food_since">С %1$d года: еда и напитки %2$s, все цены %3$s</string>
+    <string name="changeover_food_faster">Еда дорожала быстрее цен.</string>
+    <string name="changeover_food_slower">Еда дорожала медленнее цен.</string>
+    <string name="changeover_food_same">Еда дорожала примерно как цены.</string>
+    <string name="changeover_fixed_rates">По фиксированным курсам</string>
+    <string name="changeover_timeline_hint">Нажмите на валюту или нажмите и проведите по годам.</string>
+    <string name="changeover_food">Еда и напитки</string>
+    <string name="changeover_all_prices">Все цены</string>
 </resources>

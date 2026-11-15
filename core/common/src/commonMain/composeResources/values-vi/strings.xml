@@ -1967,10 +1967,10 @@
     <string name="changeover_baguette">Bánh mì baguette, 250 g</string>
     <string name="changeover_loaf">Ổ bánh mì trắng, 800 g</string>
     <string name="changeover_buys">Số tiền của bạn mua được</string>
-    <string name="changeover_pay">Lương trung bình mỗi tháng</string>
-    <string name="changeover_pay_share">Tỉ lệ so với lương một tháng</string>
-    <string name="changeover_pay_note">Lương trung bình của người lao động, trước thuế và gồm cả phần đóng góp của người sử dụng lao động.</string>
-    <string name="changeover_context_sources">Lương từ cơ sở dữ liệu AMECO của Ủy ban châu Âu (thù lao mỗi người lao động, Tây Đức đến 1990). Bánh mì từ INSEE (baguette từ 1992, giá theo kilôgam, không có năm 2020) và ONS (ổ bánh mì trắng 800 g từ 1968, mới nhất 2024).</string>
+    <string name="changeover_pay">Lương thực nhận mỗi tháng</string>
+    <string name="changeover_pay_share">Phần của một tháng lương thực nhận</string>
+    <string name="changeover_pay_note">Lương thực nhận của một người độc thân hưởng lương trung bình, sau thuế thu nhập và đóng góp xã hội; trước năm 2000 được ước tính từ lương trung bình thời đó. Đây là trung bình cộng: trung vị, mức mà một nửa người lao động kiếm ít hơn, thấp hơn. Công làm tính theo số giờ thực sự làm trong năm đó.</string>
+    <string name="changeover_context_sources">Lương thực nhận từ Eurostat (thu nhập ròng, theo mô hình thuế và trợ cấp của OECD, từ năm 2000), trước đó từ cơ sở dữ liệu AMECO của Ủy ban châu Âu (thù lao mỗi người làm công, Tây Đức đến năm 1990). Số giờ làm từ Our World in Data (Penn World Table). Thực phẩm và mọi giá từ HICP của Eurostat từ năm 1996, và CPI của ONS từ năm 1988 cho Vương quốc Anh. Bánh mì từ INSEE (bánh baguette từ năm 1992, giá theo kilôgam, không có năm 2020) và ONS (ổ bánh mì trắng 800 g từ năm 1968, gần nhất năm 2024).</string>
     <string name="currency_euro">Euro</string>
     <string name="currency_us_dollar">Đô la Mỹ</string>
     <string name="currency_pound">Bảng Anh</string>
@@ -2150,4 +2150,15 @@
     <string name="gears_worm_text">Mỗi vòng quay của trục vít đẩy bánh vít đi số răng bằng số mối ren: tỉ số là số răng bánh vít chia cho số mối ren. Nó trượt nhiều: dưới khoảng 50 % hiệu suất, bánh vít không thể quay ngược trục vít.</string>
     <string name="place_sun_above">Mặt trời %1$s trên đường chân trời</string>
     <string name="place_sun_below">Mặt trời %1$s dưới đường chân trời</string>
+    <string name="changeover_at_inflation">Nếu đi theo lạm phát</string>
+    <string name="changeover_loaf_work">Công làm cho một ổ bánh</string>
+    <string name="changeover_amount_work">Công làm cho số tiền</string>
+    <string name="changeover_food_since">Từ năm %1$d: thực phẩm và đồ uống %2$s, mọi giá %3$s</string>
+    <string name="changeover_food_faster">Thực phẩm tăng nhanh hơn giá cả.</string>
+    <string name="changeover_food_slower">Thực phẩm tăng chậm hơn giá cả.</string>
+    <string name="changeover_food_same">Thực phẩm tăng gần bằng giá cả.</string>
+    <string name="changeover_fixed_rates">Theo tỷ giá cố định</string>
+    <string name="changeover_timeline_hint">Chạm vào một loại tiền, hoặc chạm và kéo dọc theo các năm.</string>
+    <string name="changeover_food">Thực phẩm và đồ uống</string>
+    <string name="changeover_all_prices">Mọi giá cả</string>
 </resources>

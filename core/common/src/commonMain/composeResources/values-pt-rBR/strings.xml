@@ -1967,10 +1967,10 @@
     <string name="changeover_baguette">Baguete, 250 g</string>
     <string name="changeover_loaf">Pão de forma branco, 800 g</string>
     <string name="changeover_buys">Seu valor compra</string>
-    <string name="changeover_pay">Salário médio por mês</string>
-    <string name="changeover_pay_share">Parte de um mês de salário</string>
-    <string name="changeover_pay_note">Salário médio de um empregado, antes dos impostos e com as contribuições do empregador.</string>
-    <string name="changeover_context_sources">Salários do banco de dados AMECO da Comissão Europeia (remuneração por empregado, Alemanha Ocidental até 1990). Pão do INSEE (baguete desde 1992, preço por quilo, nenhum em 2020) e do ONS (pão branco de 800 g desde 1968, último em 2024).</string>
+    <string name="changeover_pay">Salário líquido por mês</string>
+    <string name="changeover_pay_share">Parte de um mês de salário líquido</string>
+    <string name="changeover_pay_note">Salário líquido de uma pessoa sozinha com o salário médio, depois do imposto de renda e das contribuições sociais; antes de 2000, estimado a partir do salário médio da época. É uma média: a mediana, abaixo da qual ganha metade dos trabalhadores, é menor. O trabalho conta as horas realmente trabalhadas naquele ano.</string>
+    <string name="changeover_context_sources">Salário líquido do Eurostat (ganhos líquidos, pelo modelo de impostos e benefícios da OCDE, desde 2000), antes da base AMECO da Comissão Europeia (remuneração por empregado, Alemanha Ocidental até 1990). Horas trabalhadas do Our World in Data (Penn World Table). Alimentos e todos os preços do IHPC do Eurostat desde 1996, e do IPC do ONS desde 1988 para o Reino Unido. Pão do INSEE (baguete desde 1992, por quilo, sem dado para 2020) e do ONS (pão branco de 800 g desde 1968, último de 2024).</string>
     <string name="currency_euro">Euro</string>
     <string name="currency_us_dollar">Dólar americano</string>
     <string name="currency_pound">Libra esterlina</string>
@@ -2150,4 +2150,15 @@
     <string name="gears_worm_text">Cada volta da rosca move sua roda tantos dentes quanto ela tem entradas: a razão é o número de dentes da roda dividido pelas entradas. Ela desliza muito: abaixo de cerca de 50 % de rendimento, a roda não consegue girar a rosca.</string>
     <string name="place_sun_above">Sol a %1$s acima do horizonte</string>
     <string name="place_sun_below">Sol a %1$s abaixo do horizonte</string>
+    <string name="changeover_at_inflation">Se tivesse acompanhado a inflação</string>
+    <string name="changeover_loaf_work">Trabalho por um pão</string>
+    <string name="changeover_amount_work">Trabalho pela quantia</string>
+    <string name="changeover_food_since">Desde %1$d: alimentos e bebidas %2$s, todos os preços %3$s</string>
+    <string name="changeover_food_faster">Os alimentos subiram mais que os preços.</string>
+    <string name="changeover_food_slower">Os alimentos subiram menos que os preços.</string>
+    <string name="changeover_food_same">Os alimentos subiram mais ou menos como os preços.</string>
+    <string name="changeover_fixed_rates">Pelas taxas fixas</string>
+    <string name="changeover_timeline_hint">Toque em uma moeda, ou toque e arraste ao longo dos anos.</string>
+    <string name="changeover_food">Alimentos e bebidas</string>
+    <string name="changeover_all_prices">Todos os preços</string>
 </resources>

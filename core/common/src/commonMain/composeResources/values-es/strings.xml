@@ -1967,10 +1967,10 @@
     <string name="changeover_baguette">Baguette, 250 g</string>
     <string name="changeover_loaf">Pan de molde blanco, 800 g</string>
     <string name="changeover_buys">Tu importe compra</string>
-    <string name="changeover_pay">Salario medio al mes</string>
-    <string name="changeover_pay_share">Parte de un mes de salario</string>
-    <string name="changeover_pay_note">Salario medio de un asalariado, antes de impuestos y con las cotizaciones del empleador.</string>
-    <string name="changeover_context_sources">Salarios de la base de datos AMECO de la Comisión Europea (remuneración por asalariado, Alemania Occidental hasta 1990). Pan del INSEE (baguette desde 1992, precio por kilo, sin dato en 2020) y de la ONS (pan blanco de 800 g desde 1968, último 2024).</string>
+    <string name="changeover_pay">Sueldo neto al mes</string>
+    <string name="changeover_pay_share">Parte de un mes de sueldo neto</string>
+    <string name="changeover_pay_note">Sueldo neto de una persona sola con el salario medio, después del impuesto sobre la renta y las cotizaciones sociales; antes de 2000, estimado a partir del salario medio de la época. Es una media: la mediana, por debajo de la cual gana la mitad de los trabajadores, es más baja. El trabajo cuenta las horas trabajadas de verdad ese año.</string>
+    <string name="changeover_context_sources">Sueldo neto de Eurostat (ganancias netas, según el modelo de impuestos y prestaciones de la OCDE, desde 2000), antes de la base AMECO de la Comisión Europea (remuneración por asalariado, Alemania Occidental hasta 1990). Horas trabajadas de Our World in Data (Penn World Table). Alimentos y todos los precios del IPCA de Eurostat desde 1996, y del IPC de la ONS desde 1988 para el Reino Unido. Pan del INSEE (baguette desde 1992, por kilo, sin dato para 2020) y de la ONS (pan blanco de 800 g desde 1968, último de 2024).</string>
     <string name="currency_euro">Euro</string>
     <string name="currency_us_dollar">Dólar estadounidense</string>
     <string name="currency_pound">Libra esterlina</string>
@@ -2150,4 +2150,15 @@
     <string name="gears_worm_text">Cada vuelta del tornillo mueve su rueda tantos dientes como entradas tiene: la relación es los dientes de la rueda entre las entradas. Desliza mucho: por debajo de un 50 % de rendimiento, la rueda no puede hacer girar el tornillo.</string>
     <string name="place_sun_above">Sol a %1$s sobre el horizonte</string>
     <string name="place_sun_below">Sol a %1$s bajo el horizonte</string>
+    <string name="changeover_at_inflation">Si hubiera seguido la inflación</string>
+    <string name="changeover_loaf_work">Trabajo para una barra</string>
+    <string name="changeover_amount_work">Trabajo para la cantidad</string>
+    <string name="changeover_food_since">Desde %1$d: alimentos y bebidas %2$s, todos los precios %3$s</string>
+    <string name="changeover_food_faster">Los alimentos subieron más que los precios.</string>
+    <string name="changeover_food_slower">Los alimentos subieron menos que los precios.</string>
+    <string name="changeover_food_same">Los alimentos subieron más o menos como los precios.</string>
+    <string name="changeover_fixed_rates">A los tipos fijos</string>
+    <string name="changeover_timeline_hint">Toca una moneda, o toca y arrastra por los años.</string>
+    <string name="changeover_food">Alimentos y bebidas</string>
+    <string name="changeover_all_prices">Todos los precios</string>
 </resources>

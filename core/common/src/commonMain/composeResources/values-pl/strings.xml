@@ -1967,10 +1967,10 @@
     <string name="changeover_baguette">Bagietka, 250 g</string>
     <string name="changeover_loaf">Biały chleb, 800 g</string>
     <string name="changeover_buys">Za Twoją kwotę kupisz</string>
-    <string name="changeover_pay">Średnie wynagrodzenie miesięczne</string>
-    <string name="changeover_pay_share">Część miesięcznego wynagrodzenia</string>
-    <string name="changeover_pay_note">Średnie wynagrodzenie pracownika brutto, ze składkami pracodawcy.</string>
-    <string name="changeover_context_sources">Wynagrodzenia z bazy AMECO Komisji Europejskiej (wynagrodzenie na pracownika, Niemcy Zachodnie do 1990 roku). Chleb z INSEE (bagietka od 1992 roku, cena za kilogram, brak danych za 2020) i z ONS (biały chleb 800 g od 1968 roku, ostatnie dane z 2024).</string>
+    <string name="changeover_pay">Płaca netto na miesiąc</string>
+    <string name="changeover_pay_share">Część miesięcznej płacy netto</string>
+    <string name="changeover_pay_note">Płaca netto osoby samotnej zarabiającej przeciętną pensję, po podatku dochodowym i składkach; przed 2000 szacowana z ówczesnej przeciętnej płacy. To średnia: mediana, poniżej której zarabia połowa pracowników, jest niższa. Praca liczy godziny faktycznie przepracowane w danym roku.</string>
+    <string name="changeover_context_sources">Płaca netto z Eurostatu (zarobki netto według modelu podatków i świadczeń OECD, od 2000), wcześniej z bazy AMECO Komisji Europejskiej (wynagrodzenie na pracownika, do 1990 Niemcy Zachodnie). Przepracowane godziny z Our World in Data (Penn World Table). Żywność i wszystkie ceny ze wskaźnika HICP Eurostatu od 1996 oraz CPI ONS od 1988 dla Wielkiej Brytanii. Chleb z INSEE (bagietka od 1992, za kilogram, brak danych za 2020) i ONS (biały chleb 800 g od 1968, ostatni z 2024).</string>
     <string name="currency_euro">Euro</string>
     <string name="currency_us_dollar">Dolar amerykański</string>
     <string name="currency_pound">Funt szterling</string>
@@ -2150,4 +2150,15 @@
     <string name="gears_worm_text">Każdy obrót ślimaka przesuwa jego koło o tyle zębów, ile ma zwojów: przełożenie to liczba zębów koła podzielona przez zwoje. Mocno się ślizga: poniżej około 50 % sprawności koło nie obróci ślimaka.</string>
     <string name="place_sun_above">Słońce %1$s nad horyzontem</string>
     <string name="place_sun_below">Słońce %1$s pod horyzontem</string>
+    <string name="changeover_at_inflation">Gdyby nadążał za inflacją</string>
+    <string name="changeover_loaf_work">Praca na bochenek</string>
+    <string name="changeover_amount_work">Praca na kwotę</string>
+    <string name="changeover_food_since">Od %1$d: żywność i napoje %2$s, wszystkie ceny %3$s</string>
+    <string name="changeover_food_faster">Żywność drożała szybciej niż ceny.</string>
+    <string name="changeover_food_slower">Żywność drożała wolniej niż ceny.</string>
+    <string name="changeover_food_same">Żywność drożała mniej więcej jak ceny.</string>
+    <string name="changeover_fixed_rates">Po stałych kursach</string>
+    <string name="changeover_timeline_hint">Dotknij waluty albo dotknij i przeciągnij wzdłuż lat.</string>
+    <string name="changeover_food">Żywność i napoje</string>
+    <string name="changeover_all_prices">Wszystkie ceny</string>
 </resources>

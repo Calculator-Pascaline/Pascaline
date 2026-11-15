@@ -1967,10 +1967,10 @@
     <string name="changeover_baguette">바게트, 250 g</string>
     <string name="changeover_loaf">식빵, 800 g</string>
     <string name="changeover_buys">이 금액으로 살 수 있는 양</string>
-    <string name="changeover_pay">월평균 임금</string>
-    <string name="changeover_pay_share">한 달 임금 대비 비율</string>
-    <string name="changeover_pay_note">근로자의 평균 임금으로, 세전 금액이며 고용주 부담금을 포함합니다.</string>
-    <string name="changeover_context_sources">임금은 유럽연합 집행위원회 AMECO 데이터베이스(근로자 1인당 보수, 1990년까지는 서독) 자료입니다. 빵 가격은 INSEE(1992년 이후 바게트, 킬로그램당 가격, 2020년 자료 없음)와 ONS(1968년 이후 800 g 식빵, 최신 2024년) 자료입니다.</string>
+    <string name="changeover_pay">월 실수령액</string>
+    <string name="changeover_pay_share">월 실수령액에서 차지하는 비율</string>
+    <string name="changeover_pay_note">평균 임금을 받는 1인 가구 노동자의 소득세와 사회보험료를 뺀 실수령액입니다. 2000년 이전은 그때의 평균 임금으로 추정했습니다. 평균이라서, 노동자 절반이 그보다 적게 버는 중앙값은 더 낮습니다. 노동은 그해 실제로 일한 시간으로 셉니다.</string>
+    <string name="changeover_context_sources">실수령액은 유로스타트(OECD 세금·급여 모델에 따른 순소득, 2000년부터), 그 이전은 유럽연합 집행위원회의 AMECO 데이터베이스(피고용인 1인당 보수, 1990년까지 서독). 노동 시간은 Our World in Data(Penn World Table). 식품과 모든 물가는 1996년부터 유로스타트의 HICP, 영국은 1988년부터 ONS의 CPI. 빵은 INSEE(1992년부터 바게트, 킬로그램당 가격, 2020년 없음)와 ONS(1968년부터 800 g 흰 식빵, 최근 2024년).</string>
     <string name="currency_euro">유로</string>
     <string name="currency_us_dollar">미국 달러</string>
     <string name="currency_pound">영국 파운드</string>
@@ -2150,4 +2150,15 @@
     <string name="gears_worm_text">웜이 한 바퀴 돌면 휠은 줄 수만큼 이가 나아갑니다. 비는 휠의 잇수를 줄 수로 나눈 값입니다. 미끄럼이 커서 효율이 약 50 %보다 낮으면 휠이 웜을 거꾸로 돌릴 수 없습니다.</string>
     <string name="place_sun_above">해가 지평선 위 %1$s</string>
     <string name="place_sun_below">해가 지평선 아래 %1$s</string>
+    <string name="changeover_at_inflation">물가를 따라 올랐다면</string>
+    <string name="changeover_loaf_work">빵 한 덩이를 위한 노동</string>
+    <string name="changeover_amount_work">이 금액을 위한 노동</string>
+    <string name="changeover_food_since">%1$d년부터: 식품과 음료 %2$s, 모든 물가 %3$s</string>
+    <string name="changeover_food_faster">식품이 물가보다 빨리 올랐습니다.</string>
+    <string name="changeover_food_slower">식품이 물가보다 천천히 올랐습니다.</string>
+    <string name="changeover_food_same">식품이 물가와 거의 같이 올랐습니다.</string>
+    <string name="changeover_fixed_rates">고정 환율로</string>
+    <string name="changeover_timeline_hint">통화를 탭하거나 연도를 따라 탭한 뒤 끌어 보세요.</string>
+    <string name="changeover_food">식품·음료</string>
+    <string name="changeover_all_prices">전체 물가</string>
 </resources>
