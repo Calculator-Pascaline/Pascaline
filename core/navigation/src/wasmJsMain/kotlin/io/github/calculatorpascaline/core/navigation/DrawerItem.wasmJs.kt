@@ -34,6 +34,7 @@ actual val mainDrawerItems: List<DrawerItem> by lazy {
     ConverterDrawerItem,
     SequencesDrawerItem,
     IntegralsDrawerItem,
+    GeometryDrawerItem,
     SurfacesDrawerItem,
     InferenceDrawerItem,
     ProbabilityDrawerItem,

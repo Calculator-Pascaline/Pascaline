@@ -24,9 +24,10 @@ import io.github.calculatorpascaline.core.navigation.ChangeoverStartRoute
 import io.github.calculatorpascaline.core.navigation.ChargingStartRoute
 import io.github.calculatorpascaline.core.navigation.ElementsStartRoute
 import io.github.calculatorpascaline.core.navigation.FiltersStartRoute
-import io.github.calculatorpascaline.core.navigation.GearsStartRoute
 import io.github.calculatorpascaline.core.navigation.FinanceStartRoute
 import io.github.calculatorpascaline.core.navigation.FunctionsStartRoute
+import io.github.calculatorpascaline.core.navigation.GearsStartRoute
+import io.github.calculatorpascaline.core.navigation.GeometryStartRoute
 import io.github.calculatorpascaline.core.navigation.HomeStartRoute
 import io.github.calculatorpascaline.core.navigation.InferenceStartRoute
 import io.github.calculatorpascaline.core.navigation.InflationStartRoute
@@ -51,8 +52,9 @@ import io.github.calculatorpascaline.feature.calculator.electrical.LogicRoute
 import io.github.calculatorpascaline.feature.calculator.electrical.ResistorsRoute
 import io.github.calculatorpascaline.feature.calculator.elements.ElementsRoute
 import io.github.calculatorpascaline.feature.calculator.finance.FinanceRoute
-import io.github.calculatorpascaline.feature.calculator.gears.GearsRoute
 import io.github.calculatorpascaline.feature.calculator.functions.FunctionsRoute
+import io.github.calculatorpascaline.feature.calculator.gears.GearsRoute
+import io.github.calculatorpascaline.feature.calculator.geometry.GeometryRoute
 import io.github.calculatorpascaline.feature.calculator.home.HomeRoute
 import io.github.calculatorpascaline.feature.calculator.inference.InferenceRoute
 import io.github.calculatorpascaline.feature.calculator.inflation.ChangeoverRoute
@@ -162,6 +164,10 @@ fun Module.calculatorNavigation() {
   navigation<SurfacesStartRoute> {
     val navigator = LocalNavigator.current
     SurfacesRoute(openDrawer = navigator::openDrawer)
+  }
+  navigation<GeometryStartRoute> {
+    val navigator = LocalNavigator.current
+    GeometryRoute(openDrawer = navigator::openDrawer)
   }
   navigation<PlaceStartRoute> {
     val navigator = LocalNavigator.current

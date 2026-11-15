@@ -122,6 +122,7 @@ import io.github.calculatorpascaline.core.navigation.FiltersDrawerItem
 import io.github.calculatorpascaline.core.navigation.FinanceDrawerItem
 import io.github.calculatorpascaline.core.navigation.FunctionsDrawerItem
 import io.github.calculatorpascaline.core.navigation.GearsDrawerItem
+import io.github.calculatorpascaline.core.navigation.GeometryDrawerItem
 import io.github.calculatorpascaline.core.navigation.InferenceDrawerItem
 import io.github.calculatorpascaline.core.navigation.InflationDrawerItem
 import io.github.calculatorpascaline.core.navigation.IntegralsDrawerItem
@@ -770,6 +771,7 @@ private enum class Topic(val title: StringResource, val palette: TilePalette, va
       SequencesDrawerItem,
       ProgrammerDrawerItem,
       IntegralsDrawerItem,
+      GeometryDrawerItem,
       SurfacesDrawerItem,
     ),
   ),

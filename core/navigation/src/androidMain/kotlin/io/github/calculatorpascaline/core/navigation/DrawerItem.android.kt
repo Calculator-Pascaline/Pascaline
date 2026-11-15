@@ -55,6 +55,7 @@ actual val mainDrawerItems: List<DrawerItem> by lazy {
       ConverterDrawerItem,
       SequencesDrawerItem,
       IntegralsDrawerItem,
+      GeometryDrawerItem,
       SurfacesDrawerItem,
       InferenceDrawerItem,
       ProbabilityDrawerItem,
@@ -151,6 +152,7 @@ private fun generateShortcut(drawerItem: DrawerItem): Shortcut? {
     InflationDrawerItem,
     ChangeoverDrawerItem,
     SurfacesDrawerItem,
+    GeometryDrawerItem,
     HomeDrawerItem,
     SettingsDrawerItem -> null
   }

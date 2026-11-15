@@ -34,6 +34,7 @@ import io.github.calculatorpascaline.core.designsystem.icons.symbols.Event
 import io.github.calculatorpascaline.core.designsystem.icons.symbols.EventFill
 import io.github.calculatorpascaline.core.designsystem.icons.symbols.Filters
 import io.github.calculatorpascaline.core.designsystem.icons.symbols.Gears
+import io.github.calculatorpascaline.core.designsystem.icons.symbols.Geometry
 import io.github.calculatorpascaline.core.designsystem.icons.symbols.Home
 import io.github.calculatorpascaline.core.designsystem.icons.symbols.Inflation
 import io.github.calculatorpascaline.core.designsystem.icons.symbols.Integrals
@@ -64,9 +65,10 @@ import pascaline.core.common.generated.resources.converter_title
 import pascaline.core.common.generated.resources.date_calculator_title
 import pascaline.core.common.generated.resources.elements_title
 import pascaline.core.common.generated.resources.filters_title
-import pascaline.core.common.generated.resources.gears_title
 import pascaline.core.common.generated.resources.finance_title
 import pascaline.core.common.generated.resources.functions_title
+import pascaline.core.common.generated.resources.gears_title
+import pascaline.core.common.generated.resources.geometry_title
 import pascaline.core.common.generated.resources.home_title
 import pascaline.core.common.generated.resources.inference_title
 import pascaline.core.common.generated.resources.inflation_title
@@ -273,6 +275,13 @@ data object SurfacesDrawerItem : DrawerItem {
   override val name = Res.string.surfaces_title
   override val selectedIcon = Symbols.Surfaces
   override val defaultIcon = Symbols.Surfaces
+}
+
+data object GeometryDrawerItem : DrawerItem {
+  override val topLevelRoute = GeometryStartRoute
+  override val name = Res.string.geometry_title
+  override val selectedIcon = Symbols.Geometry
+  override val defaultIcon = Symbols.Geometry
 }
 
 data object PlaceDrawerItem : DrawerItem {

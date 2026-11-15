@@ -77,6 +77,10 @@ class ExtractRouteFromDeepLinkTest {
     assertExtractedRoute(OrbitsStartRoute, "app://io.github.calculatorpascaline/orbits_route")
 
   @Test
+  fun test_geometryStartRoute() =
+    assertExtractedRoute(GeometryStartRoute, "app://io.github.calculatorpascaline/geometry_route")
+
+  @Test
   fun test_surfacesStartRoute() =
     assertExtractedRoute(SurfacesStartRoute, "app://io.github.calculatorpascaline/surfaces_route")
 
