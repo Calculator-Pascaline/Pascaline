@@ -1,0 +1,77 @@
+# Builds the release APK on Linux, unsigned, like F-Droid does, so that its build can match ours
+# (reproducible builds: F-Droid checks that its APK is the same as the one on the release, then
+# publishes ours, signed with our key). A build on Windows can't match: R8 names a few classes in
+# another order there.
+#
+# For a release: push the tag, download the APK from this run's artifacts, sign it with apksigner
+# and attach it to the GitHub release as Pascaline-<version>.apk. The key never leaves the computer
+# that signs.
+name: Release APK
+
+on:
+  push:
+    tags: ['v*']
+    # A change to this file builds the latest release, to check that it still matches
+    branches: [main]
+    paths: ['.github/workflows/release-apk.yml']
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Tag or commit to build
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      # The tag pushed, the one asked for, or the latest release
+      - name: Choose what to build
+        id: ref
+        env:
+          ASKED: ${{ inputs.ref }}
+          PUSHED: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
+        run: |
+          if [ -n "$ASKED" ]; then ref="$ASKED"
+          elif [ -n "$PUSHED" ]; then ref="$PUSHED"
+          else ref=$(git tag --list 'v*' --sort=-v:refname | head -1); fi
+          git checkout --quiet "$ref"
+          echo "ref=$ref" >> "$GITHUB_OUTPUT"
+          echo "version=$(sed -n 's/^versionName = "\(.*\)"/\1/p' gradle/libs.versions.toml)" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      # The same build as F-Droid's recipe, without keystore.properties: unsigned
+      - name: Build release APK
+        run: ./gradlew --no-configuration-cache :androidApp:assembleRelease
+
+      - name: List what is inside
+        run: |
+          apk=androidApp/build/outputs/apk/release/androidApp-release-unsigned.apk
+          mv "$apk" "Pascaline-${{ steps.ref.outputs.version }}-unsigned.apk"
+          python3 - "Pascaline-${{ steps.ref.outputs.version }}-unsigned.apk" <<'EOF' | tee -a "$GITHUB_STEP_SUMMARY"
+          import hashlib, sys, zipfile
+          apk = zipfile.ZipFile(sys.argv[1])
+          print(f"Built `${{ steps.ref.outputs.ref }}` ({len(apk.infolist())} files)\n\n```")
+          for entry in apk.infolist():
+              print(hashlib.sha256(apk.read(entry)).hexdigest()[:16], entry.filename)
+          print("```")
+          EOF
+
+      - uses: actions/upload-artifact@v5
+        with:
+          name: Pascaline-${{ steps.ref.outputs.version }}-unsigned
+          path: Pascaline-${{ steps.ref.outputs.version }}-unsigned.apk
+          retention-days: 30
