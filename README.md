@@ -64,7 +64,7 @@ Apps like [AppVerifier](https://github.com/soupslurpr/AppVerifier) show it for a
 <table>
   <tr>
     <td align="center" valign="top" width="33%">
-      <img src="docs/screenshots/home.png" width="240" alt="Home with a search box, the recent tools, then the Math, Everyday and Data sections" /><br />
+      <img src="docs/screenshots/home.png" width="240" alt="Home with a search box, the recent tools, then the Math and Everyday sections with Geometry, 3D graphs, Inflation and Currency changeover" /><br />
     </td>
     <td valign="top">
       Home lists every tool, grouped by topic: <b>Math</b>, <b>Everyday</b>, <b>Data</b>, <b>Science</b> and <b>Electronics</b>.<br /><br />
@@ -122,10 +122,20 @@ Apps like [AppVerifier](https://github.com/soupslurpr/AppVerifier) show it for a
 
 <table>
   <tr>
-    <td align="center" valign="top" width="50%">
+    <td align="center" valign="top" width="33%">
       <b>Multiple integrals</b><br />
       <img src="docs/screenshots/multiple-integrals.png" width="240" alt="The double integral of 4 − x² − y² over the unit disk drawn as a volume in 3D, equal to 10.9957" /><br />
       <sub>Double and triple integrals in 3D you turn with a finger, with bounds that depend on x and y</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <b>3D graphs</b><br />
+      <img src="docs/screenshots/3d-graphs.png" width="240" alt="The level curves of x³ − 3x + y² with the gradient arrows, a minimum at (1, 0) and a saddle point at (−1, 0)" /><br />
+      <sub>Surfaces in 3D or as level curves, with ∇f, div and rot, and the critical points</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <b>Geometry</b><br />
+      <img src="docs/screenshots/geometry.png" width="240" alt="A triangle from a = 7, b = 5 and C = 60°, drawn to scale, with its sides, angles, area, perimeter and heights" /><br />
+      <sub>Triangles from any three values, quadrilaterals, circles and solids</sub>
     </td>
   </tr>
 </table>
@@ -181,6 +191,15 @@ Apps like [AppVerifier](https://github.com/soupslurpr/AppVerifier) show it for a
       <sub>The periodic table, with an animated atom</sub>
     </td>
   </tr>
+  <tr>
+    <td align="center" valign="top" width="33%">
+      <b>Gears</b><br />
+      <img src="docs/screenshots/gears.png" width="240" alt="A train of four gears with two on one shaft, a 6 : 1 ratio, 250 rpm out, the torque, efficiency and power" /><br />
+      <sub>Trains, worms, racks, planetary sets and a ratio finder</sub>
+    </td>
+    <td></td>
+    <td></td>
+  </tr>
 </table>
 
 ### ⚡ Electronics
@@ -220,15 +239,24 @@ Apps like [AppVerifier](https://github.com/soupslurpr/AppVerifier) show it for a
       <sub>Loans, savings, and simple and compound interest</sub>
     </td>
     <td align="center" valign="top" width="33%">
-      <b>And more</b><br />
-      <sub>Sequences, 3D graphs, Orbits, Gears (trains, worms, racks, planetary sets and a ratio finder), Logic gates, Inflation, Currency changeover, Price comparison, Date calculator and Body mass</sub>
+      <b>Currency changeover</b><br />
+      <img src="docs/screenshots/currency-changeover.png" width="240" alt="1 000 French francs in 1995 are worth about 244.98 € today with inflation, 152.45 € at the fixed rate, with the timeline of the franc" /><br />
+      <sub>Old money in euros, with what it was worth then and now</sub>
     </td>
+  </tr>
+  <tr>
+    <td align="center" valign="top" width="33%">
+      <b>And more</b><br />
+      <sub>Sequences, Orbits, Logic gates, Inflation, Price comparison, Date calculator and Body mass</sub>
+    </td>
+    <td></td>
+    <td></td>
   </tr>
 </table>
 
-## 🌍 22 languages
+## 🌍 23 languages
 
-Arabic, Bengali, Chinese, Czech, Dutch, English, French, German, Hindi, Hungarian, Indonesian, Italian, Japanese, Korean, Polish, Portuguese, Russian, Slovak, Spanish, Turkish, Ukrainian and Vietnamese. Arabic reads from right to left, while the keypads and the math stay left to right.
+Arabic, Bengali, Chinese, Czech, Dutch, English, French, German, Hindi, Hungarian, Indonesian, Italian, Japanese, Korean, Persian, Polish, Portuguese, Russian, Slovak, Spanish, Turkish, Ukrainian and Vietnamese. Arabic and Persian read from right to left, while the keypads and the math stay left to right.
 
 ## 🔒 Privacy
 
